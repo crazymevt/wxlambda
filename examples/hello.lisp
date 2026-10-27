@@ -1,0 +1,17 @@
+(require :asdf)
+(load (merge-pathnames "../wxlambda.asd" *load-truename*))
+(asdf:load-system "wxlambda")
+
+(wxlambda:with-application ()
+  (let* ((frame (wxlambda:make-frame :title "Hello from Common Lisp"))
+         (panel (wxlambda:make-panel frame))
+         (text (wxlambda:make-text panel :value "Hello, wxWidgets — λ"))
+         (button (wxlambda:make-button panel :label "Click me"))
+         (clicks 0))
+    (wxlambda:make-column panel)
+    (wxlambda:add-child panel text)
+    (wxlambda:add-child panel button)
+    (wxlambda:on-click button
+      (lambda () (wxlambda:set-text text (format nil "Clicked ~D times" (incf clicks)))))
+    (wxlambda:show-window frame)
+    (wxlambda:run)))
