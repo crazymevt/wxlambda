@@ -7,7 +7,8 @@
 (defclass window () ((handle :initarg :handle :reader handle)))
 (defclass frame (window) ())
 (defclass panel (window) ())
-(defclass button (window) ())
+(defclass button (window)
+  ((handler-token :initform nil :accessor handler-token)))
 (defclass text-control (window) ())
 (defvar *active* nil)
 (defvar *handlers* nil)
@@ -79,13 +80,38 @@ while native GUI code runs. The REPL blocks until FUNCTION returns."
 (defun show-window (window) (check-status (%show (handle window))) window)
 (defun destroy-window (window) (check-status (%destroy (handle window))))
 (defun set-text (control value) (check-status (%set-text (handle control) value)) value)
+(defun get-text (control)
+  "Return an independent Lisp string containing CONTROL's current text."
+  (let ((pointer (%get-text (handle control))))
+    (when (cffi:null-pointer-p pointer)
+      (error 'native-error :message (%last-error)))
+    (cffi:foreign-string-to-lisp pointer :encoding :utf-8)))
+
 (defun on-click (button function)
-  "Register a no-argument FUNCTION. Replaces this button's previous handler.
-Closures remain rooted until the application session ends."
+  "Register a no-argument FUNCTION, releasing any previous handler's closure."
   (unless *active* (error "No active application session"))
   (check-type function function)
-  (let ((token (incf *next-token*)))
-    (check-status (%on-click (handle button) token))
-    (setf (gethash token *handlers*) function))
+  (let ((token (incf *next-token*))
+        (old-token (handler-token button))
+        (registered nil))
+    ;; Root the closure before publishing its token to the bridge.
+    (setf (gethash token *handlers*) function)
+    (unwind-protect
+         (progn
+           (check-status (%on-click (handle button) token))
+           (setf (handler-token button) token registered t)
+           (when old-token (remhash old-token *handlers*)))
+      (unless registered (remhash token *handlers*))))
   button)
+
+(defun off-click (button)
+  "Remove BUTTON's handler and release its closure. Repeated removal is harmless.
+Queued clicks use the handler registered at dispatch time."
+  (unless *active* (error "No active application session"))
+  (check-status (%off-click (handle button)))
+  (let ((token (handler-token button)))
+    (when token (remhash token *handlers*)))
+  (setf (handler-token button) nil)
+  button)
+
 (defun queue-click (button) (check-status (%click (handle button))))

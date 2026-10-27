@@ -20,6 +20,8 @@
 (cffi:defcfun ("wxl_show" %show) :int (window :uint64))
 (cffi:defcfun ("wxl_destroy" %destroy) :int (window :uint64))
 (cffi:defcfun ("wxl_set_text" %set-text) :int (control :uint64) (value (:string :encoding :utf-8)))
+(cffi:defcfun ("wxl_get_text" %get-text) :pointer (control :uint64))
+(cffi:defcfun ("wxl_off_click" %off-click) :int (button :uint64))
 (cffi:defcfun ("wxl_on_click" %on-click) :int (button :uint64) (token :uint64))
 (cffi:defcfun ("wxl_click" %click) :int (button :uint64))
 
@@ -33,6 +35,6 @@
       (cond (path (cffi:load-foreign-library path))
             ((probe-file local) (cffi:load-foreign-library local))
             (t (cffi:use-foreign-library wxlambda-native)))
-      (unless (= 1 (%abi-version)) (error "Unsupported wxlambda native ABI"))
+      (unless (= 2 (%abi-version)) (error "Unsupported wxlambda native ABI"))
       (setf *native-loaded* t)))
   t)

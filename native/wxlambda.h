@@ -31,6 +31,10 @@ WXL_API int wxl_add(wxl_handle parent, wxl_handle child, int proportion);
 WXL_API int wxl_show(wxl_handle window);
 WXL_API int wxl_destroy(wxl_handle window);
 WXL_API int wxl_set_text(wxl_handle control, const char *value);
+/* UTF-8 text borrowed until the next wxl_get_text call on this thread.
+   NULL indicates failure; an empty string indicates a successful empty value. */
+WXL_API const char *wxl_get_text(wxl_handle control);
+WXL_API int wxl_off_click(wxl_handle button);
 WXL_API int wxl_on_click(wxl_handle button, uint64_t token);
 /* Queue a normal button event; useful for lifecycle smoke tests. */
 WXL_API int wxl_click(wxl_handle button);

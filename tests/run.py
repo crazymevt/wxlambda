@@ -12,3 +12,7 @@ for mode in ("normal", "callback-error", "setup-error"):
     subprocess.run(command + ["--load", str(root / "tests/smoke.lisp")],
                    cwd=root, env={**os.environ, "WXLAMBDA_TEST_MODE": mode},
                    check=True, timeout=30)
+
+print(f"Testing text and handler API: {command[0]}", flush=True)
+subprocess.run(command + ["--load", str(root / "tests/api.lisp")],
+               cwd=root, check=True, timeout=30)

@@ -12,6 +12,8 @@
     (wxlambda:add-child panel text)
     (wxlambda:add-child panel button)
     (wxlambda:on-click button
-      (lambda () (wxlambda:set-text text (format nil "Clicked ~D times" (incf clicks)))))
+      (lambda ()
+        (format t "Text before click: ~A~%" (wxlambda:get-text text))
+        (wxlambda:set-text text (format nil "Clicked ~D times" (incf clicks)))))
     (wxlambda:show-window frame)
     (wxlambda:run)))

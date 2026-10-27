@@ -14,6 +14,7 @@ public:
     bool OnInit() override { return true; }
 };
 thread_local std::string error;
+thread_local std::string text_result;
 std::unordered_map<wxl_handle, wxWindow*> windows;
 std::unordered_map<wxl_handle, uint64_t> handlers;
 wxl_handle next_handle = 1;
@@ -72,7 +73,7 @@ wxString utf8(const char* value) {
 }
 }
 extern "C" {
-int wxl_abi_version() { return 1; }
+int wxl_abi_version() { return 2; }
 const char* wxl_last_error() { return error.c_str(); }
 int wxl_start(wxl_callback callback) {
     return status([&] {
@@ -162,6 +163,18 @@ int wxl_add(wxl_handle parent, wxl_handle child, int proportion) {
 int wxl_show(wxl_handle id) { return status([&] { window(id)->Show(); }); }
 int wxl_destroy(wxl_handle id) { return status([&] { window(id)->Destroy(); }); }
 int wxl_set_text(wxl_handle id, const char* value) { return status([&] { as<wxTextCtrl>(id)->ChangeValue(utf8(value)); }); }
+const char* wxl_get_text(wxl_handle id) {
+    const int result = status([&] {
+        // ToUTF8 may borrow storage from its wxString; keep the source alive.
+        const auto text = as<wxTextCtrl>(id)->GetValue();
+        const auto value = text.ToUTF8();
+        text_result.assign(value.data() ? value.data() : "", value.length());
+    });
+    return result == 0 ? text_result.c_str() : nullptr;
+}
+int wxl_off_click(wxl_handle id) {
+    return status([&] { as<wxButton>(id); handlers.erase(id); });
+}
 int wxl_on_click(wxl_handle id, uint64_t token) { return status([&] { as<wxButton>(id); handlers[id] = token; }); }
 int wxl_click(wxl_handle id) {
     return status([&] {

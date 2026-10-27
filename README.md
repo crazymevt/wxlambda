@@ -5,7 +5,8 @@ versioned C ABI. This is an application lifecycle prototype, not a complete
 wxWidgets binding.
 
 Implemented: application startup/shutdown, frames, panels, buttons, editable text
-controls, vertical sizers, click handlers, and programmatically queued clicks.
+controls, vertical sizers, text reading/writing, removable click handlers, and
+programmatically queued clicks.
 Lisp objects wrap checked integer handles; native pointers never escape the bridge.
 
 ## Build
@@ -37,8 +38,9 @@ application with `(wxlambda:load-native-library #P"C:/path/to/wxlambda.dll")`.
 Dependent wxWidgets DLLs must also be discoverable by the OS loader.
 
 The bridge normally loads from `build/`, then falls back to the system library
-search path. The Lisp/native ABI version is checked on load. Installing the bridge
-with CMake does not install the ASDF system.
+search path. The Lisp/native ABI version (currently 2) is checked on load; rebuild
+the bridge after updating the bindings. Installing the bridge with CMake does not
+install the ASDF system.
 
 ## Run
 
@@ -90,14 +92,23 @@ The basic API is:
 - Parents own their children. Closing/destroying a parent invalidates child
   handles. Lisp wrapper objects may survive, but subsequent operations signal
   `native-error`. Destruction can be deferred by wxWidgets until event processing.
-- Handlers are zero-argument Lisp functions rooted until the application session
-  ends. Registering again replaces the native handler, but earlier closures remain
-  rooted until cleanup. There are no GC-driven native destructors.
+- Handlers are zero-argument Lisp functions. `on-click` replaces a previous
+  handler and releases its closure. `off-click` removes the current handler and
+  releases its closure; repeating it on a live button is harmless. Queued clicks
+  use the handler present when they are dispatched, so unbinding suppresses queued
+  clicks and rebinding redirects them to the new handler. Unbinding from inside
+  the handler itself is supported. Closures for destroyed buttons remain rooted
+  until session cleanup unless explicitly unbound before destruction. There are
+  no GC-driven native destructors.
 - Handler errors stop the loop, are re-signaled in Lisp after the native loop
   returns, and trigger application cleanup when they escape the application body.
   Do not use `throw`, `return-from`, or other nonlocal exits across a callback's
   foreign boundary. Handle expected conditions inside the handler.
-- Strings passed to controls use UTF-8. The prototype has no text getter yet.
+- `get-text` returns an independent Lisp string containing the current text;
+  `set-text` updates it. Both use UTF-8. The native `wxl_get_text` buffer is borrowed
+  until the next getter call on that thread and is copied immediately by Lisp.
+  A null pointer reports failure; an empty string is a successful empty value.
+  Strings containing embedded NUL characters are not supported by this interface.
 - One GUI session per process; no application restart, interactive REPL event-loop
   integration, background-thread GUI scheduling, or virtual-method overrides yet.
 
@@ -116,14 +127,16 @@ python3 tests/run.py
 python3 tests/run.py ccl --no-init --batch --load ~/quicklisp/setup.lisp
 ```
 
-Coverage: callback dispatch and replacement, Unicode input, parent/child
-invalidation, wrong-type handles, duplicate sizer insertion, cleanup on setup and
-callback errors, and rejection of a second session. Unicode rendering and manual
+Coverage: callback dispatch and replacement, empty/long/Unicode text round trips,
+independent text copies, explicit closure release, queued click suppression,
+rebinding and self-unbinding, parent/child invalidation, wrong-type handles,
+duplicate sizer insertion, cleanup on setup and callback errors, and rejection
+of a second session. Unicode rendering and manual
 mouse input have not been visually verified by these tests.
 
 Validated locally on Apple Silicon macOS with wxWidgets 3.2.12, SBCL 2.6.9, and
 CCL 1.13. Windows and Linux are intended targets but have not been tested.
 
-Next milestones: platform CI, explicit event unbinding, text/event payload access,
+Next milestones: platform CI, event payload access,
 more controls, standalone application packaging, and interactive development
 support. Establish those contracts before generating larger binding coverage.
