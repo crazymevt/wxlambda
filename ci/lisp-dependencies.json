@@ -1,0 +1,18 @@
+{
+  "alexandria": {
+    "url": "https://gitlab.common-lisp.net/alexandria/alexandria.git",
+    "revision": "49e82add16cb9f1ffa72c77cd687271247181ff3"
+  },
+  "babel": {
+    "url": "https://github.com/cl-babel/babel.git",
+    "revision": "4eaf3f228be4f6860ccc0b0fbb4c1781a1ee6597"
+  },
+  "cffi": {
+    "url": "https://github.com/cffi/cffi.git",
+    "revision": "677cabae64b181330a3bbbda9c11891a2a8edcdc"
+  },
+  "trivial-features": {
+    "url": "https://github.com/trivial-features/trivial-features.git",
+    "revision": "f6e8dd7268ae0137dbde4be469101a7f735f6416"
+  }
+}

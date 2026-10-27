@@ -137,6 +137,54 @@ mouse input have not been visually verified by these tests.
 Validated locally on Apple Silicon macOS with wxWidgets 3.2.12, SBCL 2.6.9, and
 CCL 1.13. Windows and Linux are intended targets but have not been tested.
 
-Next milestones: platform CI, event payload access,
-more controls, standalone application packaging, and interactive development
-support. Establish those contracts before generating larger binding coverage.
+## Continuous integration
+
+`.github/workflows/ci.yml` runs on pushes, pull requests, and manual dispatch.
+The configured jobs are:
+
+| Runner | Native build | Lisp GUI tests |
+| --- | --- | --- |
+| Ubuntu 24.04 | Distribution wxWidgets 3.2, GCC | SBCL, four scenarios under Xvfb |
+| macOS 15 | Homebrew wxWidgets 3.2, Clang | SBCL, four scenarios |
+| Windows Server 2022 x64 | wxWidgets 3.2.12 from source, MSVC | Not configured yet |
+
+These are configured checks, not a claim that the hosted jobs have passed. No
+hosted runs were available when the workflow was added. The Windows job checks
+compilation and linking only; it does not validate DLL loading, callbacks, or the
+GUI lifecycle. CCL remains locally tested on macOS, outside this CI matrix.
+
+The Windows build follows the upstream [MSVC makefile instructions](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/docs/msw/install.md).
+It builds wxWidgets release DLLs from a pinned commit, then passes explicit
+`wxWidgets_ROOT_DIR`, `wxWidgets_LIB_DIR`, and `wxWidgets_CONFIGURATION=mswu`
+settings to CMake. System package versions on Linux/macOS follow their package
+repositories; these native dependencies are not locked to an exact patch release.
+
+CI uses the exact CFFI, Babel, Alexandria, and trivial-features commits in
+`ci/lisp-dependencies.json`, fetched over HTTPS into ignored `.ci-deps/`
+checkouts. `ci/setup.lisp` isolates ASDF's source registry from user installations.
+This path requires Git and Python 3, and does not install or modify Quicklisp.
+To reproduce the CI Lisp environment locally after building the bridge:
+
+```sh
+python3 ci/fetch-deps.py
+python3 tests/run.py sbcl --noinform --no-sysinit --no-userinit \
+  --non-interactive --load ci/setup.lisp
+```
+
+On Linux, prefix the test command with `xvfb-run -a` if no display is available.
+CCL can use the same dependencies with:
+
+```sh
+python3 tests/run.py ccl --no-init --batch --load ci/setup.lisp
+```
+
+The fetcher verifies existing checkouts and refuses modified or mismatched ones.
+After deliberately changing a locked revision, remove the corresponding generated
+`.ci-deps/<name>/` directory before fetching again. Fresh compilation of the
+pinned Babel revision emits a warning about `HANDLE-ERROR` in its Korean codec;
+the UTF-8 paths exercised by these tests pass on both local Lisps.
+
+Next milestones: hosted platform validation, Windows Lisp/GUI testing, event
+payload access, more controls, standalone application packaging, and interactive
+development support. Establish those contracts before generating larger binding
+coverage.

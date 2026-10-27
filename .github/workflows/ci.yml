@@ -1,0 +1,87 @@
+name: Build and test
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  gui:
+    name: GUI tests / ${{ matrix.os }} / SBCL
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-15]
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Install Linux tools
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake g++ sbcl libwxgtk3.2-dev xvfb xauth
+      - name: Install macOS tools
+        if: runner.os == 'macOS'
+        run: brew install cmake sbcl wxwidgets@3.2
+      - name: Fetch pinned Lisp dependencies
+        run: python3 ci/fetch-deps.py
+      - name: Configure
+        run: |
+          if [[ "$RUNNER_OS" == macOS ]]; then
+            cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
+              -DwxWidgets_CONFIG_EXECUTABLE="$(brew --prefix wxwidgets@3.2)/bin/wx-config-3.2"
+          else
+            cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+          fi
+      - name: Build
+        run: cmake --build build --parallel 2
+      - name: Test under Xvfb
+        if: runner.os == 'Linux'
+        run: >-
+          xvfb-run -a python3 tests/run.py
+          sbcl --noinform --no-sysinit --no-userinit --non-interactive
+          --load ci/setup.lisp
+      - name: Test on macOS
+        if: runner.os == 'macOS'
+        run: >-
+          python3 tests/run.py
+          sbcl --noinform --no-sysinit --no-userinit --non-interactive
+          --load ci/setup.lisp
+
+  windows-native:
+    name: Native build / Windows x64 / MSVC
+    runs-on: windows-2022
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Check out wxWidgets 3.2.12
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          repository: wxWidgets/wxWidgets
+          ref: 3b7c7fc839093ad28146bd17555af2565c792c96 # v3.2.12
+          path: vendor/wxWidgets
+          submodules: recursive
+      - name: Set up MSVC x64
+        uses: ilammy/msvc-dev-cmd@0b201ec74fa43914dc39ae48a89fd1d8cb592756 # v1
+        with:
+          arch: x64
+      - name: Build wxWidgets release DLLs
+        shell: cmd
+        working-directory: vendor/wxWidgets/build/msw
+        run: nmake /f makefile.vc BUILD=release SHARED=1 TARGET_CPU=X64
+      - name: Configure bridge
+        run: >-
+          cmake -S . -B build -A x64
+          -DwxWidgets_ROOT_DIR="${{ github.workspace }}/vendor/wxWidgets"
+          -DwxWidgets_LIB_DIR="${{ github.workspace }}/vendor/wxWidgets/lib/vc_x64_dll"
+          -DwxWidgets_CONFIGURATION=mswu
+          -DwxWidgets_USE_REL_AND_DBG=OFF
+      - name: Build bridge
+        run: cmake --build build --config Release --parallel 2

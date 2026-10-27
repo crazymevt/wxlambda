@@ -2,3 +2,6 @@
 *.fasl
 *.dx64fsl
 .DS_Store
+/.ci-deps/
+/vendor/
+__pycache__/
