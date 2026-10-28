@@ -35,11 +35,12 @@ void inspect_binding(uint64_t token, const wxl_event* event) {
     saved_context = event->context;
     binding_called = true;
 }
-std::function<void(uint64_t, const wxl_event*)> notebook_probe, list_probe, tree_probe;
+std::function<void(uint64_t, const wxl_event*)> notebook_probe, list_probe, tree_probe, splitter_probe;
 void ignore_event(uint64_t token, const wxl_event* event) {
     if ((token == 904 || token == 905) && notebook_probe) notebook_probe(token, event);
     if (token >= 906 && token <= 908 && list_probe) list_probe(token, event);
     if ((token == 909 || token == 910) && tree_probe) tree_probe(token, event);
+    if ((token == 911 || token == 912) && splitter_probe) splitter_probe(token, event);
     if (token == 901) inspect_binding(token, event);
     if (token == 903) { ++menu_calls; menu_checked_payload = event->checked; menu_integer_payload = event->integer; menu_origin = event->origin_id; }
 }
@@ -794,6 +795,87 @@ void exercise_tree() {
     expect(wxl_tree_item_alive(other_root) == 0 && tree_nodes.empty() && tree_owners.empty(), "Tree owner teardown leaked item state");
 }
 
+
+struct SplitterProbe : FixedSplitter {
+    using FixedSplitter::FixedSplitter;
+    using wxSplitterWindow::SetSashPositionAndNotify;
+};
+void exercise_splitter() {
+    const auto frame = wxl_frame("Splitter", 640, 480);
+    const auto regular = wxl_splitter(frame, 0, 0, 20, 0.5);
+    expect(regular && !wxl_splitter(frame, 2, 0, 20, 0.5) && !wxl_splitter(frame, 0, -1, 20, 0.5) &&
+           !wxl_splitter(frame, 0, 0, 0, 0.5) && !wxl_splitter(frame, 0, 0, 20, std::numeric_limits<double>::quiet_NaN()),
+           "Splitter constructor flags/pixels/gravity validation failed");
+    const auto first = wxl_panel(regular), second = wxl_panel(regular), wrong = wxl_panel(frame);
+    window(regular)->SetSize(600, 400);
+    expect(wxl_splitter_attach(regular, first, first) == -1 && wxl_splitter_attach(regular, first, wrong) == -1 &&
+           wxl_splitter_attach(regular, first, second) == 0, "Splitter pane ownership checks failed");
+    int position = -1; wxl_handle pane = 0;
+    expect(wxl_splitter_int(regular, 0, &position) == 0 && std::abs(position - window(regular)->GetClientSize().x / 2) <= 2,
+           "Pre-attach zero request lost centering after resize");
+    expect(wxl_splitter_pane(regular, 0, &pane) == 0 && pane == first && wxl_splitter_pane(regular, 1, &pane) == 0 && pane == second &&
+           wxl_destroy(first) == -1 && wxl_column(regular) == -1 && wxl_splitter_attach(regular, first, second) == -1,
+           "Attached pane identity/lifetime guards failed");
+    expect(wxl_set_splitter_int(regular, 1, 0) == -1 && wxl_set_splitter_int(regular, 0, INT_MAX) == -1 &&
+           wxl_set_splitter_int(regular, 3, 1) == -1 && wxl_splitter_int(regular, 4, &position) == -1 &&
+           wxl_splitter_int(regular, 0, nullptr) == -1 && wxl_splitter_pane(regular, 2, &pane) == -1 &&
+           wxl_splitter_pane(regular, 0, nullptr) == -1 && wxl_splitter_gravity(regular, nullptr) == -1 &&
+           wxl_set_splitter_gravity(regular, 2) == -1 && wxl_set_splitter_gravity(regular, std::numeric_limits<double>::infinity()) == -1,
+           "Splitter raw field/output checks failed");
+    auto* probe = new ManagedWindow<SplitterProbe>(window(frame), wxID_ANY, wxDefaultPosition, wxSize(600,400), wxSP_3D | wxSP_LIVE_UPDATE);
+    probe->SetMinimumPaneSize(20); probe->SetSplitMode(wxSPLIT_VERTICAL);
+    const auto splitter = track(probe); splitter_owners.insert(probe);
+    const auto left = wxl_panel(splitter), right = wxl_panel(splitter);
+    expect(wxl_splitter_attach(splitter, left, right) == 0, "Native splitter protocol probe setup failed");
+    const auto dialog = wxl_message_dialog(frame, "Guard", 5, "Guard", 5, 0, 0);
+    expect(dialog, "Splitter guard dialog setup failed");
+    unsigned calls = 0; int action = 0; int frozen = 0;
+    splitter_probe = [&](uint64_t token, const wxl_event* event) {
+        ++calls; int live = -2, code = -1;
+        expect(event->family == WXL_FAMILY_NOTIFY && event->origin_id == splitter && wxl_event_sash(event->context, &live) == 0 && live == event->sash_position,
+               "Splitter typed snapshot/live metadata mismatch");
+        expect(wxl_destroy(splitter) == -1 && wxl_destroy(frame) == -1 && wxl_destroy(left) == -1 && wxl_destroy(right) == -1 &&
+               wxl_close(frame, 1) == -1 && wxl_set_splitter_int(splitter, 0, 90) == -1 && wxl_set_splitter_gravity(splitter, 0.2) == -1 &&
+               wxl_splitter_attach(splitter, left, right) == -1 && wxl_dialog_show(dialog, &code) == -1 &&
+               wxl_clipboard_text_available() == -1 && !wxl_clone_event(event->context, 1), "Actual sash callback bypassed lifetime/mutation/native-loop guards");
+        if (event->kind == WXL_EVENT_SPLITTER_CHANGING) {
+            frozen = event->sash_position;
+            expect(wxl_set_event_sash(event->context, token == 911 ? 150 : action == 2 ? -1 : 175) == 0 && event->sash_position == frozen,
+                   "Sash proposal editing changed immutable snapshot");
+            expect(wxl_set_event_sash(event->context, -2) == -1 && wxl_set_event_sash(event->context, INT_MAX) == -1,
+                   "Invalid proposed sash should reject");
+            if (token == 912 && action == 1) expect(wxl_context_set_vetoed(event->context, 1) == 0, "Sash Veto failed");
+        } else {
+            expect(wxl_set_event_sash(event->context, 175) == -1, "CHANGED position must be read-only");
+            expect(wxl_context_set_vetoed(event->context, 1) == 0, "CHANGED veto metadata unavailable");
+        }
+        // Origin callback propagates; parent consumes so native proposal changes take effect.
+        if (token == 911) expect(wxl_context_set_skipped(event->context, 1) == 0, "Sash propagation failed");
+    };
+    for (const int kind : {WXL_EVENT_SPLITTER_CHANGING, WXL_EVENT_SPLITTER_CHANGED}) {
+        expect(wxl_bind(splitter, kind, 911, wxID_ANY, wxID_ANY, 1, 0) == 0 && wxl_bind(frame, kind, 912, wxID_ANY, wxID_ANY, 1, 0) == 0,
+               "Sash event binding failed");
+        if (kind == WXL_EVENT_SPLITTER_CHANGING) {
+            expect(probe->OnSashPositionChanging(100) == 175, "Native CHANGING ignored consumed adjusted proposal");
+            action = 1; expect(probe->OnSashPositionChanging(100) == -1, "Native CHANGING veto did not cancel");
+            action = 2; expect(probe->OnSashPositionChanging(100) == -1, "Native CHANGING -1 did not cancel");
+        } else {
+            probe->SetSashPositionAndNotify(220);
+            expect(probe->GetSashPosition() == 220, "CHANGED veto incorrectly undid committed position");
+        }
+        expect(wxl_unbind(911) == 1 && wxl_unbind(912) == 1 && splitter_operations.empty(), "Sash event guard did not unwind");
+        expect(!wxl_owned_event(kind, 1, "", 0, 0, 0, 0, 0), "Derived sash event construction must reject");
+    }
+    expect(calls == 8, "Actual/propagated sash paths incomplete"); splitter_probe = nullptr;
+    probe->SetMinimumPaneSize(0); // Private native bypass proves override independently of public positive minimum.
+    probe->OnDoubleClickSash(100, 10);
+    expect(probe->IsSplit() && probe->GetWindow1() == window(left) && probe->GetWindow2() == window(right), "Double-click detached fixed panes");
+    probe->SetMinimumPaneSize(20);
+    delete window(frame);
+    expect(!splitter_owners.size() && wxl_handler_alive(left) == 0 && wxl_handler_alive(right) == 0 &&
+           wxl_splitter_pane(regular, 0, &pane) == -1, "Splitter teardown left stale pane state");
+}
+
 int main() {
     std::thread([] { std::this_thread::sleep_for(std::chrono::seconds(10)); std::_Exit(124); }).detach();
     auto old_assert_handler = wxSetAssertHandler(capture_assert);
@@ -813,6 +895,7 @@ int main() {
         exercise_notebook();
         exercise_list_box();
         exercise_tree();
+        exercise_splitter();
 #if wxUSE_CLIPBOARD
         exercise_clipboard();
 #endif

@@ -247,3 +247,9 @@ See [single-selection lists](LIST-BOX.md) for item and callback lifetime rules.
 `tree-control` is a concrete native-backed window. `tree-item` is a borrowed checked
 view, obtained from tree APIs rather than direct MAKE-INSTANCE. Canonical view
 identity can outlive native validity; see [tree ownership/navigation](TREE-NAVIGATION.md).
+
+## Fixed splitter panes
+
+The bounded splitter batch adds native-backed `splitter-window`, persistent panel
+panes and guarded sash notifications. See [supported scope and example](SPLITTER.md).
+Dynamic pane replacement/removal and complete splitter parity remain deferred.

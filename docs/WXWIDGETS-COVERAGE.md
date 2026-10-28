@@ -138,7 +138,7 @@ modal dialogs with Lisp-native open/save IO. Text clipboard Copy/Paste now exten
 the form/editor; multiline text primitives now support editor UI construction.
 Notebook navigation now adds fixed editor/settings pages. Single-selection
 list boxes and checked tree navigation now extend the tree/list-manager slice.
-Next add splitter windows for a two-pane manager with only its necessary prerequisites. Do not drain native ownership/utilities first.
+Fixed splitter panes now provide the two-pane manager slice. Next add bounded toolbar/status-bar actions. Do not drain native ownership/utilities first.
 
 ### Representative application acceptance
 
@@ -488,3 +488,15 @@ two-pane tree/list-manager workflow.
 
 The wxQt tree backend is explicitly unavailable pending generation-safe async
 item-event translation; constructor rejection is part of this bounded scope.
+
+## Fixed splitter panes
+
+The bounded splitter batch adds native-backed `splitter-window`, persistent panel
+panes and guarded sash notifications. See [supported scope and example](SPLITTER.md).
+Dynamic pane replacement/removal and complete splitter parity remain deferred.
+
+Both Lisps pass all 58 GUI scenarios for the splitter batch. Native probe, 13
+coverage checks, 16 Python checks, 291-entry zero-problem docset, both-Lisp export
+lookup and isolated Cadre discovery/install checks pass. Five package checks pass.
+See IMPLEMENTATION.md for evidence and remaining platform/manual limitations.
+Next selected feature: toolbar/status-bar actions; deeper native splitter APIs defer.

@@ -7,6 +7,8 @@
 #include <wx/notebook.h>
 #include <wx/listbox.h>
 #include <wx/treectrl.h>
+#include <wx/splitter.h>
+#include <cmath>
 #include <wx/textdlg.h>
 #include <wx/choicdlg.h>
 #include <wx/generic/msgdlgg.h>
@@ -79,6 +81,18 @@ public:
 thread_local std::string error;
 thread_local std::string label_result;
 thread_local std::string metadata_result;
+void require(bool ok, const char* message);
+class FixedSplitter : public wxSplitterWindow {
+public:
+    using wxSplitterWindow::wxSplitterWindow;
+    int requested_position = 0;
+    void OnDoubleClickSash(int, int) override { } // Fixed two-pane ownership.
+};
+std::unordered_set<wxWindow*> splitter_owners;
+constexpr int splitter_pixel_limit = std::numeric_limits<int>::max() / 4;
+void splitter_pixel(int value, bool positive = false) {
+    require(value >= (positive ? 1 : 0) && value <= splitter_pixel_limit, "Splitter pixel value out of supported range");
+}
 struct TreeNode {
     wxl_handle owner, parent;
     wxWindow* window;
@@ -139,7 +153,7 @@ public: using wxMenuItem::wxMenuItem; wxl_handle identity = 0;
 };
 struct RegisteredEvent { wxEventType type; int family; };
 std::unordered_map<int, RegisteredEvent> registered_events;
-constexpr int first_registered_event_kind = WXL_EVENT_TREE_CHANGED + 1;
+constexpr int first_registered_event_kind = WXL_EVENT_SPLITTER_CHANGED + 1;
 int next_event_kind = first_registered_event_kind;
 wxWeakRef<wxDialog> active_modal;
 std::unordered_map<wxWindow*, size_t> dialog_choice_counts;
@@ -329,7 +343,7 @@ template<class T> class ManagedWindow final : public T, public ClientDataAccess 
 public:
     using T::T;
     wxClientDataType ClientStorageKind() const override { return this->m_clientDataType; }
-    ~ManagedWindow() override { forget_tree_nodes(this); dialog_choice_counts.erase(this); dialog_message_buttons.erase(this); dialog_file_filters.erase(this); detach_window_stack(this); }
+    ~ManagedWindow() override { splitter_owners.erase(this); forget_tree_nodes(this); dialog_choice_counts.erase(this); dialog_message_buttons.erase(this); dialog_file_filters.erase(this); detach_window_stack(this); }
 };
 void set_registered_type(wxEvent& event, int type) {
         const RegisteredEvent* source = nullptr;
@@ -443,6 +457,44 @@ TreeNode& tree_node(wxl_handle id) {
     require(as<wxTreeCtrl>(found->second.owner) == found->second.window, "Tree item owner is invalid");
     return found->second;
 }
+struct SplitterActive { wxWeakRef<wxSplitterWindow> splitter; wxWeakRef<wxWindow> first, second; };
+std::vector<SplitterActive> splitter_operations;
+bool sash_event(wxEvent& event) {
+    return event.GetEventType() == wxEVT_SPLITTER_SASH_POS_CHANGING || event.GetEventType() == wxEVT_SPLITTER_SASH_POS_CHANGED;
+}
+bool protected_splitter_ancestor(wxWindow* object) {
+    for (const auto& active : splitter_operations) {
+        if (active.first.get() == object || active.second.get() == object) return true;
+        for (auto* node = static_cast<wxWindow*>(active.splitter.get()); node; node = node->GetParent()) if (node == object) return true;
+    }
+    return false;
+}
+bool attached_splitter_pane(wxWindow* object) {
+    auto* splitter = dynamic_cast<wxSplitterWindow*>(object->GetParent());
+    return splitter && (splitter->GetWindow1() == object || splitter->GetWindow2() == object);
+}
+struct SplitterOperation {
+    explicit SplitterOperation(wxSplitterWindow* splitter, wxWindow* first = nullptr, wxWindow* second = nullptr) {
+        for (const auto& active : splitter_operations) require(active.splitter.get() != splitter, "Defer splitter mutation until callback/operation returns");
+        splitter_operations.push_back({splitter, first, second});
+    }
+    ~SplitterOperation() { splitter_operations.pop_back(); }
+};
+struct SplitterCallbackOperation {
+    bool added = false, allow = true;
+    explicit SplitterCallbackOperation(wxEvent& event) {
+        if (!sash_event(event)) return;
+        auto* splitter = dynamic_cast<wxSplitterWindow*>(event.GetEventObject());
+        if (!splitter || !splitter_owners.count(splitter) || window_destruction_pending(splitter)) { allow = false; return; }
+        for (const auto& active : splitter_operations) if (active.splitter.get() == splitter) return;
+        splitter_operations.push_back({splitter, splitter->GetWindow1(), splitter->GetWindow2()}); added = true;
+    }
+    ~SplitterCallbackOperation() { if (added) splitter_operations.pop_back(); }
+};
+int event_sash_value(wxEvent& event) {
+    auto* splitter = dynamic_cast<wxSplitterEvent*>(&event);
+    return splitter && sash_event(event) ? splitter->GetSashPosition() : 0;
+}
 int selected_event_index(wxEvent& event) {
     if (auto* book = dynamic_cast<wxBookCtrlEvent*>(&event)) return book->GetSelection();
     auto* command = dynamic_cast<wxCommandEvent*>(&event);
@@ -450,7 +502,7 @@ int selected_event_index(wxEvent& event) {
 }
 void make_box(wxl_handle id, int orientation) {
     auto* parent = window(id);
-    require(!dynamic_cast<wxNotebook*>(parent), "Lay out notebook page panels, not the notebook itself");
+    require(!dynamic_cast<wxNotebook*>(parent) && !dynamic_cast<wxSplitterWindow*>(parent), "Lay out page/pane panels, not their native container");
     require(parent->GetSizer() == nullptr, "Window already has a sizer");
     parent->SetSizer(new wxBoxSizer(orientation));
 }
@@ -460,7 +512,7 @@ void invoke_callback(uint64_t token, const wxl_event& event) {
 }
 void require_dispatch_entry() {
     require(!active_modal.get() && actual_modals.empty(), "Cannot enter structural dispatch during a modal dialog");
-    require(notebook_operations.empty() && list_callback_operations.empty() && tree_operations.empty(), "Cannot enter structural dispatch during notebook/list/tree callbacks");
+    require(notebook_operations.empty() && list_callback_operations.empty() && tree_operations.empty() && splitter_operations.empty(), "Cannot enter structural dispatch during navigation callbacks");
     require(!running, "Event loop is already running");
     require(!pumping && callback_depth == 0, "Cannot enter event dispatch from a pump or callback");
 }
@@ -488,6 +540,8 @@ wxEventTypeTag<wxEvent> native_event_type(int kind) {
         case WXL_EVENT_LISTBOX_DOUBLE_CLICK: return wxEventTypeTag<wxEvent>(wxEVT_LISTBOX_DCLICK);
         case WXL_EVENT_TREE_CHANGING: return wxEventTypeTag<wxEvent>(wxEVT_TREE_SEL_CHANGING);
         case WXL_EVENT_TREE_CHANGED: return wxEventTypeTag<wxEvent>(wxEVT_TREE_SEL_CHANGED);
+        case WXL_EVENT_SPLITTER_CHANGING: return wxEventTypeTag<wxEvent>(wxEVT_SPLITTER_SASH_POS_CHANGING);
+        case WXL_EVENT_SPLITTER_CHANGED: return wxEventTypeTag<wxEvent>(wxEVT_SPLITTER_SASH_POS_CHANGED);
         default: {
             const auto it = registered_events.find(kind);
             require(it != registered_events.end(), "Unsupported event kind");
@@ -500,7 +554,7 @@ int native_event_family(int kind) {
     if (kind >= WXL_EVENT_CLOSE && kind <= WXL_EVENT_END_SESSION) return WXL_FAMILY_CLOSE;
     if (kind == WXL_EVENT_IDLE) return WXL_FAMILY_IDLE;
     if (kind == WXL_EVENT_MENU || kind == WXL_EVENT_LISTBOX_SELECTION || kind == WXL_EVENT_LISTBOX_DOUBLE_CLICK) return WXL_FAMILY_COMMAND;
-    if (kind == WXL_EVENT_NOTEBOOK_CHANGING || kind == WXL_EVENT_NOTEBOOK_CHANGED || kind == WXL_EVENT_TREE_CHANGING || kind == WXL_EVENT_TREE_CHANGED) return WXL_FAMILY_NOTIFY;
+    if (kind == WXL_EVENT_NOTEBOOK_CHANGING || kind == WXL_EVENT_NOTEBOOK_CHANGED || kind == WXL_EVENT_TREE_CHANGING || kind == WXL_EVENT_TREE_CHANGED || kind == WXL_EVENT_SPLITTER_CHANGING || kind == WXL_EVENT_SPLITTER_CHANGED) return WXL_FAMILY_NOTIFY;
     const auto it = registered_events.find(kind);
     require(it != registered_events.end(), "Unsupported event kind");
     return it->second.family;
@@ -517,8 +571,8 @@ bool event_vetoed(wxEvent& event) {
 std::unique_ptr<wxEvent> synthetic_event(wxEvtHandler* receiver, int kind, int event_id,
                                        const char* text, size_t length, int value,
                                        int can_veto, int vetoed, int logging_off) {
-    require(kind != WXL_EVENT_NOTEBOOK_CHANGING && kind != WXL_EVENT_NOTEBOOK_CHANGED && kind != WXL_EVENT_TREE_CHANGING && kind != WXL_EVENT_TREE_CHANGED,
-            "Notebook/tree events require native navigation; synthetic construction is unsupported");
+    require(kind != WXL_EVENT_NOTEBOOK_CHANGING && kind != WXL_EVENT_NOTEBOOK_CHANGED && kind != WXL_EVENT_TREE_CHANGING && kind != WXL_EVENT_TREE_CHANGED && kind != WXL_EVENT_SPLITTER_CHANGING && kind != WXL_EVENT_SPLITTER_CHANGED,
+            "Derived navigation events require native interaction; synthetic construction is unsupported");
     const auto type = native_event_type(kind);
     const int family = native_event_family(kind);
     require(text || length == 0, "Null event text");
@@ -555,7 +609,7 @@ std::unique_ptr<wxEvent> synthetic_event(wxEvtHandler* receiver, int kind, int e
     return event;
 }
 int kind_of(wxEvent& event) {
-    for (int kind = WXL_EVENT_CLICK; kind <= WXL_EVENT_TREE_CHANGED; ++kind)
+    for (int kind = WXL_EVENT_CLICK; kind <= WXL_EVENT_SPLITTER_CHANGED; ++kind)
         if (native_event_type(kind) == event.GetEventType()) return kind;
     for (const auto& item : registered_events)
         if (item.second.type == event.GetEventType()) return item.first;
@@ -685,7 +739,8 @@ struct Binding {
         NotebookCallbackOperation notebook_guard(event);
         ListCallbackOperation list_guard(event);
         TreeCallbackOperation tree_guard(event);
-        if (!notebook_guard.allow || !list_guard.allow || !tree_guard.allow) { event.Skip(); return; }
+        SplitterCallbackOperation splitter_guard(event);
+        if (!notebook_guard.allow || !list_guard.allow || !tree_guard.allow || !splitter_guard.allow) { event.Skip(); return; }
         const auto found = bindings.find(token);
         if (found == bindings.end()) { event.Skip(); return; }
         // Keep the method receiver alive if this or another binding is removed.
@@ -710,7 +765,7 @@ struct Binding {
                                      command ? command->GetExtraLong() : 0, command && command->IsSelection() ? 1 : 0,
                                      user_data && event.GetEventUserData() == user_data ? token : 0,
                                      dynamic_cast<wxIdleEvent*>(&event) && static_cast<wxIdleEvent&>(event).MoreRequested() ? 1 : 0,
-                                     event_tree_token(event)};
+                                     event_tree_token(event), event_sash_value(event)};
             if (with_context) {
                 event.Skip(false);
                 EventScope scope(event, snapshot.user_data);
@@ -860,7 +915,7 @@ protected:
     int Enter(wxDialog* object) override {
         // Lisp may defer rethrow until its nearest notifying operation returns.
         // Do not open a new native prompt while its callback error is pending.
-        if (pending_callback_error || !notebook_operations.empty() || !list_callback_operations.empty() || !tree_operations.empty()) return wxID_CANCEL;
+        if (pending_callback_error || !notebook_operations.empty() || !list_callback_operations.empty() || !tree_operations.empty() || !splitter_operations.empty()) return wxID_CANCEL;
         if (modal_cancel_requested && (active_modal.get() || !actual_modals.empty())) return wxID_CANCEL;
         // Native NSAlert modal loops cannot be aborted using wxDialog::EndModal.
         // Replace them before their platform ShowModal implementation is entered.
@@ -965,7 +1020,7 @@ class ClipboardSession {
 public:
     ClipboardSession() {
         ready();
-        require(notebook_operations.empty() && list_callback_operations.empty() && tree_operations.empty(), "Defer clipboard operations until notebook/list/tree callbacks return");
+        require(notebook_operations.empty() && list_callback_operations.empty() && tree_operations.empty() && splitter_operations.empty(), "Defer clipboard operations until navigation callbacks return");
         require(!clipboard_busy, "Clipboard operation is already in progress");
 #ifdef WXLAMBDA_NATIVE_TESTS
         clipboard = test_clipboard ? test_clipboard : wxTheClipboard;
@@ -996,7 +1051,7 @@ public:
 
 }
 extern "C" {
-int wxl_abi_version() { return 39; }
+int wxl_abi_version() { return 40; }
 const char* wxl_last_error() { return error.c_str(); }
 int wxl_clipboard_text_available() {
     return boolean_result([&] {
@@ -1252,7 +1307,7 @@ int wxl_dialog_show(wxl_handle id, int* code) {
     return status([&] {
         auto* object = as<wxDialog>(id);
         require(code, "Missing modal result output");
-        require(notebook_operations.empty() && list_callback_operations.empty() && tree_operations.empty(), "Defer dialogs until notebook/list/tree callbacks return");
+        require(notebook_operations.empty() && list_callback_operations.empty() && tree_operations.empty() && splitter_operations.empty(), "Defer dialogs until navigation callbacks return");
         require(!active_modal.get() && actual_modals.empty(), "Nested modal dialogs are not supported");
         require(!object->IsShown() && !object->IsModal(), "Dialog is already shown");
         struct ModalScope {
@@ -1724,7 +1779,7 @@ int wxl_context_set_logging_off(uint64_t token, int value) {
     });
 }
 int wxl_close(wxl_handle id, int force) {
-    return boolean_result([&] { auto* object = as<wxFrame>(id); require(!protected_modal_ancestor(object), "Cannot close an active modal dialog ancestor"); require(!protected_notebook_ancestor(object) && !protected_list_ancestor(object) && !protected_tree_ancestor(object), "Cannot close a navigation callback ancestor"); return object->Close(force != 0); });
+    return boolean_result([&] { auto* object = as<wxFrame>(id); require(!protected_modal_ancestor(object), "Cannot close an active modal dialog ancestor"); require(!protected_notebook_ancestor(object) && !protected_list_ancestor(object) && !protected_tree_ancestor(object) && !protected_splitter_ancestor(object), "Cannot close a navigation callback ancestor"); return object->Close(force != 0); });
 }
 int wxl_context_resume_propagation(uint64_t token, int level) {
     return status([&] {
@@ -1998,6 +2053,72 @@ wxl_handle wxl_button(wxl_handle parent, const char* label) {
         });
         return id;
     });
+}
+wxl_handle wxl_splitter(wxl_handle parent, int orientation, int position, int minimum, double gravity) {
+    return create([&] {
+        require(orientation == 0 || orientation == 1, "Invalid splitter orientation");
+        splitter_pixel(position); splitter_pixel(minimum, true);
+        require(std::isfinite(gravity) && gravity >= 0 && gravity <= 1, "Splitter gravity must be finite in [0,1]");
+        auto splitter = std::make_unique<ManagedWindow<FixedSplitter>>(window(parent), wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSP_3D | wxSP_LIVE_UPDATE);
+        splitter->SetSplitMode(orientation == 0 ? wxSPLIT_VERTICAL : wxSPLIT_HORIZONTAL);
+        splitter->SetMinimumPaneSize(minimum); splitter->SetSashGravity(gravity); splitter->SetSashPosition(position); splitter->requested_position = position;
+        const auto id = track(splitter.get()); splitter_owners.insert(splitter.get()); splitter.release(); return id;
+    });
+}
+int wxl_splitter_attach(wxl_handle id, wxl_handle first_id, wxl_handle second_id) {
+    return status([&] {
+        ready(); require(!running && !pumping && callback_depth == 0, "Attach splitter panes outside RUN, pumps and callbacks");
+        auto* splitter = as<FixedSplitter>(id); auto* first = as<wxPanel>(first_id); auto* second = as<wxPanel>(second_id);
+        require(!splitter->GetWindow1() && !splitter->GetWindow2(), "Splitter panes are already attached");
+        require(first != second && first->GetParent() == splitter && second->GetParent() == splitter &&
+                !first->GetContainingSizer() && !second->GetContainingSizer(), "Splitter needs distinct direct unsizered panel children");
+        SplitterOperation operation(splitter, first, second);
+        const auto position = splitter->requested_position;
+        const bool success = splitter->GetSplitMode() == wxSPLIT_VERTICAL ? splitter->SplitVertically(first, second, position)
+                                                                         : splitter->SplitHorizontally(first, second, position);
+        require(success, "Unable to attach splitter panes");
+    });
+}
+int wxl_splitter_pane(wxl_handle id, int index, wxl_handle* pane) {
+    return status([&] {
+        require(pane && (index == 0 || index == 1), "Invalid splitter pane query"); *pane = 0;
+        auto* splitter = as<FixedSplitter>(id); auto* window = index == 0 ? splitter->GetWindow1() : splitter->GetWindow2();
+        if (!window) return;
+        require(!window_destruction_pending(window), "Pane destruction is pending");
+        for (const auto& entry : windows) if (entry.second.get() == window) { *pane = entry.first; break; }
+        require(*pane, "Unmanaged native splitter pane");
+    });
+}
+int wxl_splitter_int(wxl_handle id, int field, int* result) {
+    return status([&] {
+        require(result && field >= 0 && field <= 3, "Invalid splitter integer query"); auto* splitter = as<FixedSplitter>(id);
+        *result = field == 0 ? splitter->GetSashPosition() : field == 1 ? splitter->GetMinimumPaneSize() : field == 2 ?
+                  (splitter->GetSplitMode() == wxSPLIT_VERTICAL ? 0 : 1) : (splitter->IsSplit() ? 1 : 0);
+    });
+}
+int wxl_set_splitter_int(wxl_handle id, int field, int value) {
+    return status([&] {
+        require(field == 0 || field == 1, "Invalid mutable splitter integer property"); splitter_pixel(value, field == 1);
+        auto* splitter = as<FixedSplitter>(id); SplitterOperation operation(splitter);
+        if (field == 0) { splitter->requested_position = value; splitter->SetSashPosition(value); } else splitter->SetMinimumPaneSize(value);
+    });
+}
+int wxl_splitter_gravity(wxl_handle id, double* gravity) {
+    return status([&] { require(gravity, "Null splitter gravity output"); *gravity = as<FixedSplitter>(id)->GetSashGravity(); });
+}
+int wxl_set_splitter_gravity(wxl_handle id, double gravity) {
+    return status([&] { require(std::isfinite(gravity) && gravity >= 0 && gravity <= 1, "Splitter gravity must be finite in [0,1]");
+        auto* splitter = as<FixedSplitter>(id); SplitterOperation operation(splitter); splitter->SetSashGravity(gravity); });
+}
+int wxl_event_sash(uint64_t token, int* position) {
+    return status([&] { require(position, "Null sash position output"); auto& event = current_event(token);
+        require(dynamic_cast<wxSplitterEvent*>(&event) && sash_event(event), "Sash metadata requires a native sash event"); *position = event_sash_value(event); });
+}
+int wxl_set_event_sash(uint64_t token, int position) {
+    return status([&] { require(position == -1 || (position >= 0 && position <= splitter_pixel_limit), "Event sash position out of supported range");
+        auto& event = current_event(token); auto* splitter = dynamic_cast<wxSplitterEvent*>(&event);
+        require(splitter && event.GetEventType() == wxEVT_SPLITTER_SASH_POS_CHANGING, "Only sash-changing contexts can edit proposed position");
+        splitter->SetSashPosition(position); });
 }
 wxl_handle wxl_tree(wxl_handle parent) {
     return create([&]() -> wxl_handle {
@@ -2535,8 +2656,8 @@ int wxl_destroy(wxl_handle id) {
     return status([&] {
         auto* object = window(id);
         require(!protected_modal_ancestor(object), "Cannot destroy an active modal dialog or its ancestor");
-        require(!protected_notebook_ancestor(object) && !protected_list_ancestor(object) && !protected_tree_ancestor(object), "Cannot destroy a navigation operation receiver or its ancestor");
-        require(!attached_notebook_page(object), "Attached notebook pages are owned by the notebook");
+        require(!protected_notebook_ancestor(object) && !protected_list_ancestor(object) && !protected_tree_ancestor(object) && !protected_splitter_ancestor(object), "Cannot destroy a navigation operation receiver or its ancestor");
+        require(!attached_notebook_page(object) && !attached_splitter_pane(object), "Attached pages/panes are owned by their native container");
         if (callback_depth) {
             wxWeakRef<wxWindow> weak(object);
             pending_destruction.insert(id);

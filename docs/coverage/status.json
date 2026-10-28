@@ -5167,6 +5167,564 @@
         "wxl_tree_item_alive"
       ],
       "scope": "Checked token/owner liveness adapter, not raw pointer/non-null validity or arbitrary wxTreeItemId adoption. wxQt backend unavailable pending generation-safe async item events; hosted GTK/MSW runtime still unverified."
+    },
+    {
+      "header": "wx/splitter.h",
+      "line": 134,
+      "declaration": "wxSplitterWindow(wxWindow* parent, wxWindowID id = wxID_ANY, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxSP_3D, const wxString& name = \"splitterWindow\");",
+      "status": "~",
+      "symbol": "wxSplitterWindow::wxSplitterWindow",
+      "lisp": [
+        "splitter-window",
+        "make-splitter-window",
+        "split-window",
+        "splitter-pane",
+        "splitter-split-p",
+        "splitter-orientation",
+        "splitter-sash-position",
+        "splitter-minimum-pane-size",
+        "splitter-sash-gravity",
+        "event-sash-position"
+      ],
+      "native": [
+        "wxl_splitter",
+        "wxl_splitter_attach",
+        "wxl_splitter_pane",
+        "wxl_splitter_int",
+        "wxl_set_splitter_int",
+        "wxl_splitter_gravity",
+        "wxl_set_splitter_gravity",
+        "wxl_event_sash",
+        "wxl_set_event_sash"
+      ],
+      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md."
+    },
+    {
+      "header": "wx/splitter.h",
+      "line": 159,
+      "declaration": "int GetMinimumPaneSize() const;",
+      "status": "~",
+      "symbol": "wxSplitterWindow::GetMinimumPaneSize",
+      "lisp": [
+        "splitter-window",
+        "make-splitter-window",
+        "split-window",
+        "splitter-pane",
+        "splitter-split-p",
+        "splitter-orientation",
+        "splitter-sash-position",
+        "splitter-minimum-pane-size",
+        "splitter-sash-gravity",
+        "event-sash-position"
+      ],
+      "native": [
+        "wxl_splitter",
+        "wxl_splitter_attach",
+        "wxl_splitter_pane",
+        "wxl_splitter_int",
+        "wxl_set_splitter_int",
+        "wxl_splitter_gravity",
+        "wxl_set_splitter_gravity",
+        "wxl_event_sash",
+        "wxl_set_event_sash"
+      ],
+      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md."
+    },
+    {
+      "header": "wx/splitter.h",
+      "line": 166,
+      "declaration": "double GetSashGravity() const;",
+      "status": "~",
+      "symbol": "wxSplitterWindow::GetSashGravity",
+      "lisp": [
+        "splitter-window",
+        "make-splitter-window",
+        "split-window",
+        "splitter-pane",
+        "splitter-split-p",
+        "splitter-orientation",
+        "splitter-sash-position",
+        "splitter-minimum-pane-size",
+        "splitter-sash-gravity",
+        "event-sash-position"
+      ],
+      "native": [
+        "wxl_splitter",
+        "wxl_splitter_attach",
+        "wxl_splitter_pane",
+        "wxl_splitter_int",
+        "wxl_set_splitter_int",
+        "wxl_splitter_gravity",
+        "wxl_set_splitter_gravity",
+        "wxl_event_sash",
+        "wxl_set_event_sash"
+      ],
+      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md."
+    },
+    {
+      "header": "wx/splitter.h",
+      "line": 173,
+      "declaration": "int GetSashPosition() const;",
+      "status": "~",
+      "symbol": "wxSplitterWindow::GetSashPosition",
+      "lisp": [
+        "splitter-window",
+        "make-splitter-window",
+        "split-window",
+        "splitter-pane",
+        "splitter-split-p",
+        "splitter-orientation",
+        "splitter-sash-position",
+        "splitter-minimum-pane-size",
+        "splitter-sash-gravity",
+        "event-sash-position"
+      ],
+      "native": [
+        "wxl_splitter",
+        "wxl_splitter_attach",
+        "wxl_splitter_pane",
+        "wxl_splitter_int",
+        "wxl_set_splitter_int",
+        "wxl_splitter_gravity",
+        "wxl_set_splitter_gravity",
+        "wxl_event_sash",
+        "wxl_set_event_sash"
+      ],
+      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md."
+    },
+    {
+      "header": "wx/splitter.h",
+      "line": 201,
+      "declaration": "wxSplitMode GetSplitMode() const;",
+      "status": "~",
+      "symbol": "wxSplitterWindow::GetSplitMode",
+      "lisp": [
+        "splitter-window",
+        "make-splitter-window",
+        "split-window",
+        "splitter-pane",
+        "splitter-split-p",
+        "splitter-orientation",
+        "splitter-sash-position",
+        "splitter-minimum-pane-size",
+        "splitter-sash-gravity",
+        "event-sash-position"
+      ],
+      "native": [
+        "wxl_splitter",
+        "wxl_splitter_attach",
+        "wxl_splitter_pane",
+        "wxl_splitter_int",
+        "wxl_set_splitter_int",
+        "wxl_splitter_gravity",
+        "wxl_set_splitter_gravity",
+        "wxl_event_sash",
+        "wxl_set_event_sash"
+      ],
+      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md."
+    },
+    {
+      "header": "wx/splitter.h",
+      "line": 206,
+      "declaration": "wxWindow* GetWindow1() const;",
+      "status": "~",
+      "symbol": "wxSplitterWindow::GetWindow1",
+      "lisp": [
+        "splitter-window",
+        "make-splitter-window",
+        "split-window",
+        "splitter-pane",
+        "splitter-split-p",
+        "splitter-orientation",
+        "splitter-sash-position",
+        "splitter-minimum-pane-size",
+        "splitter-sash-gravity",
+        "event-sash-position"
+      ],
+      "native": [
+        "wxl_splitter",
+        "wxl_splitter_attach",
+        "wxl_splitter_pane",
+        "wxl_splitter_int",
+        "wxl_set_splitter_int",
+        "wxl_splitter_gravity",
+        "wxl_set_splitter_gravity",
+        "wxl_event_sash",
+        "wxl_set_event_sash"
+      ],
+      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md."
+    },
+    {
+      "header": "wx/splitter.h",
+      "line": 211,
+      "declaration": "wxWindow* GetWindow2() const;",
+      "status": "~",
+      "symbol": "wxSplitterWindow::GetWindow2",
+      "lisp": [
+        "splitter-window",
+        "make-splitter-window",
+        "split-window",
+        "splitter-pane",
+        "splitter-split-p",
+        "splitter-orientation",
+        "splitter-sash-position",
+        "splitter-minimum-pane-size",
+        "splitter-sash-gravity",
+        "event-sash-position"
+      ],
+      "native": [
+        "wxl_splitter",
+        "wxl_splitter_attach",
+        "wxl_splitter_pane",
+        "wxl_splitter_int",
+        "wxl_set_splitter_int",
+        "wxl_splitter_gravity",
+        "wxl_set_splitter_gravity",
+        "wxl_event_sash",
+        "wxl_set_event_sash"
+      ],
+      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md."
+    },
+    {
+      "header": "wx/splitter.h",
+      "line": 241,
+      "declaration": "bool IsSplit() const;",
+      "status": "~",
+      "symbol": "wxSplitterWindow::IsSplit",
+      "lisp": [
+        "splitter-window",
+        "make-splitter-window",
+        "split-window",
+        "splitter-pane",
+        "splitter-split-p",
+        "splitter-orientation",
+        "splitter-sash-position",
+        "splitter-minimum-pane-size",
+        "splitter-sash-gravity",
+        "event-sash-position"
+      ],
+      "native": [
+        "wxl_splitter",
+        "wxl_splitter_attach",
+        "wxl_splitter_pane",
+        "wxl_splitter_int",
+        "wxl_set_splitter_int",
+        "wxl_splitter_gravity",
+        "wxl_set_splitter_gravity",
+        "wxl_event_sash",
+        "wxl_set_event_sash"
+      ],
+      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md."
+    },
+    {
+      "header": "wx/splitter.h",
+      "line": 257,
+      "declaration": "virtual void OnDoubleClickSash(int x, int y);",
+      "status": "~",
+      "symbol": "wxSplitterWindow::OnDoubleClickSash",
+      "lisp": [
+        "splitter-window",
+        "make-splitter-window",
+        "split-window",
+        "splitter-pane",
+        "splitter-split-p",
+        "splitter-orientation",
+        "splitter-sash-position",
+        "splitter-minimum-pane-size",
+        "splitter-sash-gravity",
+        "event-sash-position"
+      ],
+      "native": [
+        "wxl_splitter",
+        "wxl_splitter_attach",
+        "wxl_splitter_pane",
+        "wxl_splitter_int",
+        "wxl_set_splitter_int",
+        "wxl_splitter_gravity",
+        "wxl_set_splitter_gravity",
+        "wxl_event_sash",
+        "wxl_set_event_sash"
+      ],
+      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md."
+    },
+    {
+      "header": "wx/splitter.h",
+      "line": 317,
+      "declaration": "void SetMinimumPaneSize(int paneSize);",
+      "status": "~",
+      "symbol": "wxSplitterWindow::SetMinimumPaneSize",
+      "lisp": [
+        "splitter-window",
+        "make-splitter-window",
+        "split-window",
+        "splitter-pane",
+        "splitter-split-p",
+        "splitter-orientation",
+        "splitter-sash-position",
+        "splitter-minimum-pane-size",
+        "splitter-sash-gravity",
+        "event-sash-position"
+      ],
+      "native": [
+        "wxl_splitter",
+        "wxl_splitter_attach",
+        "wxl_splitter_pane",
+        "wxl_splitter_int",
+        "wxl_set_splitter_int",
+        "wxl_splitter_gravity",
+        "wxl_set_splitter_gravity",
+        "wxl_event_sash",
+        "wxl_set_event_sash"
+      ],
+      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md."
+    },
+    {
+      "header": "wx/splitter.h",
+      "line": 349,
+      "declaration": "void SetSashGravity(double gravity);",
+      "status": "~",
+      "symbol": "wxSplitterWindow::SetSashGravity",
+      "lisp": [
+        "splitter-window",
+        "make-splitter-window",
+        "split-window",
+        "splitter-pane",
+        "splitter-split-p",
+        "splitter-orientation",
+        "splitter-sash-position",
+        "splitter-minimum-pane-size",
+        "splitter-sash-gravity",
+        "event-sash-position"
+      ],
+      "native": [
+        "wxl_splitter",
+        "wxl_splitter_attach",
+        "wxl_splitter_pane",
+        "wxl_splitter_int",
+        "wxl_set_splitter_int",
+        "wxl_splitter_gravity",
+        "wxl_set_splitter_gravity",
+        "wxl_event_sash",
+        "wxl_set_event_sash"
+      ],
+      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md."
+    },
+    {
+      "header": "wx/splitter.h",
+      "line": 366,
+      "declaration": "void SetSashPosition(int position, bool redraw = true);",
+      "status": "~",
+      "symbol": "wxSplitterWindow::SetSashPosition",
+      "lisp": [
+        "splitter-window",
+        "make-splitter-window",
+        "split-window",
+        "splitter-pane",
+        "splitter-split-p",
+        "splitter-orientation",
+        "splitter-sash-position",
+        "splitter-minimum-pane-size",
+        "splitter-sash-gravity",
+        "event-sash-position"
+      ],
+      "native": [
+        "wxl_splitter",
+        "wxl_splitter_attach",
+        "wxl_splitter_pane",
+        "wxl_splitter_int",
+        "wxl_set_splitter_int",
+        "wxl_splitter_gravity",
+        "wxl_set_splitter_gravity",
+        "wxl_event_sash",
+        "wxl_set_event_sash"
+      ],
+      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md."
+    },
+    {
+      "header": "wx/splitter.h",
+      "line": 422,
+      "declaration": "virtual bool SplitHorizontally(wxWindow* window1, wxWindow* window2, int sashPosition = 0);",
+      "status": "~",
+      "symbol": "wxSplitterWindow::SplitHorizontally",
+      "lisp": [
+        "splitter-window",
+        "make-splitter-window",
+        "split-window",
+        "splitter-pane",
+        "splitter-split-p",
+        "splitter-orientation",
+        "splitter-sash-position",
+        "splitter-minimum-pane-size",
+        "splitter-sash-gravity",
+        "event-sash-position"
+      ],
+      "native": [
+        "wxl_splitter",
+        "wxl_splitter_attach",
+        "wxl_splitter_pane",
+        "wxl_splitter_int",
+        "wxl_set_splitter_int",
+        "wxl_splitter_gravity",
+        "wxl_set_splitter_gravity",
+        "wxl_event_sash",
+        "wxl_set_event_sash"
+      ],
+      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md."
+    },
+    {
+      "header": "wx/splitter.h",
+      "line": 449,
+      "declaration": "virtual bool SplitVertically(wxWindow* window1, wxWindow* window2, int sashPosition = 0);",
+      "status": "~",
+      "symbol": "wxSplitterWindow::SplitVertically",
+      "lisp": [
+        "splitter-window",
+        "make-splitter-window",
+        "split-window",
+        "splitter-pane",
+        "splitter-split-p",
+        "splitter-orientation",
+        "splitter-sash-position",
+        "splitter-minimum-pane-size",
+        "splitter-sash-gravity",
+        "event-sash-position"
+      ],
+      "native": [
+        "wxl_splitter",
+        "wxl_splitter_attach",
+        "wxl_splitter_pane",
+        "wxl_splitter_int",
+        "wxl_set_splitter_int",
+        "wxl_splitter_gravity",
+        "wxl_set_splitter_gravity",
+        "wxl_event_sash",
+        "wxl_set_event_sash"
+      ],
+      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md."
+    },
+    {
+      "header": "wx/splitter.h",
+      "line": 535,
+      "declaration": "int GetSashPosition() const;",
+      "status": "~",
+      "symbol": "wxSplitterEvent::GetSashPosition",
+      "lisp": [
+        "splitter-window",
+        "make-splitter-window",
+        "split-window",
+        "splitter-pane",
+        "splitter-split-p",
+        "splitter-orientation",
+        "splitter-sash-position",
+        "splitter-minimum-pane-size",
+        "splitter-sash-gravity",
+        "event-sash-position"
+      ],
+      "native": [
+        "wxl_splitter",
+        "wxl_splitter_attach",
+        "wxl_splitter_pane",
+        "wxl_splitter_int",
+        "wxl_set_splitter_int",
+        "wxl_splitter_gravity",
+        "wxl_set_splitter_gravity",
+        "wxl_event_sash",
+        "wxl_set_event_sash"
+      ],
+      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md."
+    },
+    {
+      "header": "wx/splitter.h",
+      "line": 578,
+      "declaration": "void SetSashPosition(int pos);",
+      "status": "~",
+      "symbol": "wxSplitterEvent::SetSashPosition",
+      "lisp": [
+        "splitter-window",
+        "make-splitter-window",
+        "split-window",
+        "splitter-pane",
+        "splitter-split-p",
+        "splitter-orientation",
+        "splitter-sash-position",
+        "splitter-minimum-pane-size",
+        "splitter-sash-gravity",
+        "event-sash-position"
+      ],
+      "native": [
+        "wxl_splitter",
+        "wxl_splitter_attach",
+        "wxl_splitter_pane",
+        "wxl_splitter_int",
+        "wxl_set_splitter_int",
+        "wxl_splitter_gravity",
+        "wxl_set_splitter_gravity",
+        "wxl_event_sash",
+        "wxl_set_event_sash"
+      ],
+      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md."
+    },
+    {
+      "header": "wx/splitter.h",
+      "line": 625,
+      "declaration": "wxEventType wxEVT_SPLITTER_SASH_POS_CHANGED;",
+      "status": "~",
+      "symbol": "wxEVT_SPLITTER_SASH_POS_CHANGED",
+      "lisp": [
+        "splitter-window",
+        "make-splitter-window",
+        "split-window",
+        "splitter-pane",
+        "splitter-split-p",
+        "splitter-orientation",
+        "splitter-sash-position",
+        "splitter-minimum-pane-size",
+        "splitter-sash-gravity",
+        "event-sash-position"
+      ],
+      "native": [
+        "wxl_splitter",
+        "wxl_splitter_attach",
+        "wxl_splitter_pane",
+        "wxl_splitter_int",
+        "wxl_set_splitter_int",
+        "wxl_splitter_gravity",
+        "wxl_set_splitter_gravity",
+        "wxl_event_sash",
+        "wxl_set_event_sash"
+      ],
+      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md."
+    },
+    {
+      "header": "wx/splitter.h",
+      "line": 626,
+      "declaration": "wxEventType wxEVT_SPLITTER_SASH_POS_CHANGING;",
+      "status": "~",
+      "symbol": "wxEVT_SPLITTER_SASH_POS_CHANGING",
+      "lisp": [
+        "splitter-window",
+        "make-splitter-window",
+        "split-window",
+        "splitter-pane",
+        "splitter-split-p",
+        "splitter-orientation",
+        "splitter-sash-position",
+        "splitter-minimum-pane-size",
+        "splitter-sash-gravity",
+        "event-sash-position"
+      ],
+      "native": [
+        "wxl_splitter",
+        "wxl_splitter_attach",
+        "wxl_splitter_pane",
+        "wxl_splitter_int",
+        "wxl_set_splitter_int",
+        "wxl_splitter_gravity",
+        "wxl_set_splitter_gravity",
+        "wxl_event_sash",
+        "wxl_set_event_sash"
+      ],
+      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md."
     }
   ],
   "classes": {
@@ -6106,6 +6664,60 @@
         "wxl_event_tree_item"
       ],
       "scope": "Native derived selection events only, view identity snapshots/current contexts and CHANGING veto. No old-item/public event construction/owned/cloning/other tree events. wxQt unavailable pending generation-safe async item events; no full platform claim."
+    },
+    "wxSplitterWindow": {
+      "status": "~",
+      "lisp": [
+        "splitter-window",
+        "make-splitter-window",
+        "split-window",
+        "splitter-pane",
+        "splitter-split-p",
+        "splitter-orientation",
+        "splitter-sash-position",
+        "splitter-minimum-pane-size",
+        "splitter-sash-gravity",
+        "event-sash-position"
+      ],
+      "native": [
+        "wxl_splitter",
+        "wxl_splitter_attach",
+        "wxl_splitter_pane",
+        "wxl_splitter_int",
+        "wxl_set_splitter_int",
+        "wxl_splitter_gravity",
+        "wxl_set_splitter_gravity",
+        "wxl_event_sash",
+        "wxl_set_event_sash"
+      ],
+      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md."
+    },
+    "wxSplitterEvent": {
+      "status": "~",
+      "lisp": [
+        "splitter-window",
+        "make-splitter-window",
+        "split-window",
+        "splitter-pane",
+        "splitter-split-p",
+        "splitter-orientation",
+        "splitter-sash-position",
+        "splitter-minimum-pane-size",
+        "splitter-sash-gravity",
+        "event-sash-position"
+      ],
+      "native": [
+        "wxl_splitter",
+        "wxl_splitter_attach",
+        "wxl_splitter_pane",
+        "wxl_splitter_int",
+        "wxl_set_splitter_int",
+        "wxl_splitter_gravity",
+        "wxl_set_splitter_gravity",
+        "wxl_event_sash",
+        "wxl_set_event_sash"
+      ],
+      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md."
     }
   }
 }

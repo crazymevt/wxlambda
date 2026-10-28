@@ -150,5 +150,9 @@
   "tree-navigation.lisp": {
     "description": "Visible-root single-selection managed tree, canonical item views, expand/collapse, native navigation veto and append/delete buttons. Bounded EXERCISE checks token ownership/subtree invalidation without physical input.",
     "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/tree-navigation.lisp --eval '(wxlambda:with-application () (wxlambda-tree-navigation:exercise))'"
+  },
+  "splitter-manager.lisp": {
+    "description": "Fixed two-pane in-memory tree/list manager with canonical panes, model-driven navigation and guarded sash observations.",
+    "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/splitter-manager.lisp --eval '(wxlambda-splitter-manager:start)'"
   }
 }

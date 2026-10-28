@@ -17,7 +17,7 @@ extern "C" {
 typedef uint64_t wxl_handle;
 enum wxl_alignment { WXL_ALIGN_START = 0, WXL_ALIGN_CENTER = 1, WXL_ALIGN_END = 2 };
 enum wxl_event_family { WXL_FAMILY_COMMAND = 0, WXL_FAMILY_CLOSE = 1, WXL_FAMILY_NOTIFY = 2, WXL_FAMILY_IDLE = 3 };
-enum wxl_event_kind { WXL_EVENT_CLICK = 1, WXL_EVENT_TEXT_CHANGE = 2, WXL_EVENT_TOGGLE = 3, WXL_EVENT_SELECTION = 4, WXL_EVENT_CLOSE = 5, WXL_EVENT_QUERY_END_SESSION = 6, WXL_EVENT_END_SESSION = 7, WXL_EVENT_IDLE = 8, WXL_EVENT_MENU = 9, WXL_EVENT_NOTEBOOK_CHANGING = 10, WXL_EVENT_NOTEBOOK_CHANGED = 11, WXL_EVENT_LISTBOX_SELECTION = 12, WXL_EVENT_LISTBOX_DOUBLE_CLICK = 13, WXL_EVENT_TREE_CHANGING = 14, WXL_EVENT_TREE_CHANGED = 15 };
+enum wxl_event_kind { WXL_EVENT_CLICK = 1, WXL_EVENT_TEXT_CHANGE = 2, WXL_EVENT_TOGGLE = 3, WXL_EVENT_SELECTION = 4, WXL_EVENT_CLOSE = 5, WXL_EVENT_QUERY_END_SESSION = 6, WXL_EVENT_END_SESSION = 7, WXL_EVENT_IDLE = 8, WXL_EVENT_MENU = 9, WXL_EVENT_NOTEBOOK_CHANGING = 10, WXL_EVENT_NOTEBOOK_CHANGED = 11, WXL_EVENT_LISTBOX_SELECTION = 12, WXL_EVENT_LISTBOX_DOUBLE_CLICK = 13, WXL_EVENT_TREE_CHANGING = 14, WXL_EVENT_TREE_CHANGED = 15, WXL_EVENT_SPLITTER_CHANGING = 16, WXL_EVENT_SPLITTER_CHANGED = 17 };
 typedef struct wxl_event {
     int kind;
     const char *text; /* UTF-8 for text changes, listbox events and registered command/notify tags. */
@@ -41,6 +41,7 @@ typedef struct wxl_event {
     uint64_t user_data; /* Binding root token, zero for none; never a native pointer. */
     int more_requested; /* Native idle RequestMore state; false for other families. */
     wxl_handle tree_item; /* Checked bridge item token, zero for none/unmanaged/non-tree. */
+    int sash_position; /* Native sash event position; meaningful only for splitter kinds. */
 } wxl_event;
 /* The record and its text are borrowed only until this callback returns.
    Callbacks must never unwind across this boundary. */
@@ -196,6 +197,17 @@ WXL_API int wxl_remove_handler(wxl_handle window, wxl_handle handler);
 WXL_API wxl_handle wxl_frame(const char *title, int width, int height);
 WXL_API wxl_handle wxl_panel(wxl_handle parent);
 WXL_API wxl_handle wxl_button(wxl_handle parent, const char *label);
+/* Fixed two-panel splitters. Integer fields: sash=0, minimum=1, orientation=2,
+   is-split=3. Mutable pixels are [0,INT_MAX/4], minimum positive. Status 0/-1. */
+WXL_API wxl_handle wxl_splitter(wxl_handle parent, int orientation, int position, int minimum, double gravity);
+WXL_API int wxl_splitter_attach(wxl_handle splitter, wxl_handle first, wxl_handle second);
+WXL_API int wxl_splitter_pane(wxl_handle splitter, int index, wxl_handle *pane);
+WXL_API int wxl_splitter_int(wxl_handle splitter, int field, int *value);
+WXL_API int wxl_set_splitter_int(wxl_handle splitter, int field, int value);
+WXL_API int wxl_splitter_gravity(wxl_handle splitter, double *gravity);
+WXL_API int wxl_set_splitter_gravity(wxl_handle splitter, double gravity);
+WXL_API int wxl_event_sash(uint64_t context, int *position);
+WXL_API int wxl_set_event_sash(uint64_t context, int position);
 /* Managed tree item tokens are not raw wxTreeItemId pointers. Status: 0/-1.
    wxQt tree creation is unavailable pending generation-safe async event translation. */
 WXL_API wxl_handle wxl_tree(wxl_handle parent);

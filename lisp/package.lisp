@@ -1,6 +1,8 @@
 (defpackage #:wxlambda
   (:use #:cl)
-  (:export #:tree-control #:tree-item #:make-tree-control #:add-tree-root #:append-tree-item
+  (:export #:splitter-window #:make-splitter-window #:split-window #:splitter-pane #:splitter-split-p
+           #:splitter-orientation #:splitter-sash-position #:splitter-minimum-pane-size #:splitter-sash-gravity #:event-sash-position
+           #:tree-control #:tree-item #:make-tree-control #:add-tree-root #:append-tree-item
            #:tree-root #:tree-item-parent #:tree-item-children #:tree-item-text #:tree-item-expanded-p
            #:tree-item-alive-p #:delete-tree-item #:event-tree-item
            #:list-box #:make-list-box #:item-count #:item-text #:append-item #:delete-item #:clear-items

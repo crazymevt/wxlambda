@@ -2046,3 +2046,40 @@ evidence/packaging/tree-navigation-20261028-final/. This packages the existing f
 executable; new tree example/docs remain repository/docset deliverables. Final
 inventory+13 checks and docset checker pass (quiet-run.jKBReUdM), and the docset is
 rebuilt/installed after final session notes. Qt-hosted rejection is not claimed run.
+
+## Fixed splitter panes (2026-10-28)
+
+ABI40 adds native-backed SPLITTER-WINDOW and once-only attachment of two canonical
+PANEL children, fixed orientation, bounded sash/minimum properties, gravity and
+native sash notifications. See docs/SPLITTER.md and examples/splitter-manager.lisp.
+Counts: 212 exports, 153 named generics, 48 SETF generics, 18 window wrapper classes
+(16 concrete+2 abstract), borrowed TREE-ITEM, 58 GUI scenarios, 39 examples and
+291 docset entries. Attachment is quiescent (outside RUN/pumps/callbacks); no
+Unsplit/Replace/Initialize or broad splitter parity. Positive minimum and disabled
+double-click keep panes attached. Candidate panes and native/propagated sash
+callbacks protect lifetime, same-splitter properties and nested native loop entry.
+
+Independent code/test review found no remaining actionable bugs after quiescent
+attachment was enforced. Documentation review corrected factory generic metadata
+and precise guard scope. Pinned generic native source confirms CHANGING edits/veto
+require handling; CHANGED occurs after commit and cannot undo it. Native probe
+exercises actual and propagated changes, -1/veto cancellation, observational
+CHANGED, invalid ranges, double-click and teardown with zero wx assertions.
+Focused native and SBCL/CCL tests/example pass (quiet-run.aQqhG6zS). Inventory
+and 13 coverage checks pass (quiet-run.gHUfcUdl). Five isolated package checks
+pass (quiet-run.a7fsFAuc): dist/wxlambda-form-splitter, evidence/packaging/splitter-20261028/.
+The packaged executable remains the form; splitter example/docs are separate
+repository/docset deliverables. Cadre installation follows docs/DOCSET.md.
+
+Session handoff: broad GUI coverage with selective depth remains the objective.
+Next selected slice: toolbar/status-bar actions for practical application shells.
+Do not exhaust native splitter methods before proceeding. Physical sash dragging,
+keyboard/accessibility, hosted Windows/Linux GUI and graphical Cadre remain
+unverified. The tree-based demo retains the existing wxQt tree gate.
+
+Final splitter verification: all 58 GUI scenarios pass on SBCL and CCL; evidence
+at evidence/splitter/{sbcl,ccl}-20261028-final/. All 16 Python checks and actual
+212-export/class/SETF docset coverage pass on both Lisps (quiet-run.PS1p1jl4);
+291-entry checker, isolated installation, discovery, symbol lookup and guide/example
+access pass after reviewed documentation fixes (quiet-run.yjJ6MnFp). The initial
+Python run caught a stale expected result count; corrected to 59 including preflight.

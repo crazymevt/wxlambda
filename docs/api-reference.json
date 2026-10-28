@@ -2173,5 +2173,125 @@
     "description": "Snapshot retains view identity, not live validity or frozen label. Non-tree snapshots return NIL; non-tree contexts reject. No owned-event method/setter; associated item can be invalidated later. Copy text while live if needed.",
     "scope": "Snapshot field access needs no session. Context access requires active main-thread exact borrowed context; dereferencing returned item requires live token/owner. Native derived selection events only, no synthetic/owned/cloning/old-item support. wxQt tree construction is explicitly unavailable pending generation-safe asynchronous event translation.",
     "wxwidgets": "wxTreeEvent::GetItem (wxWidgets 3.2.12)."
+  },
+  {
+    "name": "splitter-window",
+    "kind": "class",
+    "arguments": "Native-backed fixed two-panel window; :parent, :orientation, :sash-position, :minimum-pane-size and :sash-gravity initargs.",
+    "returns": "See arguments and supported behavior.",
+    "description": "Native-backed fixed two-panel window; :parent, :orientation, :sash-position, :minimum-pane-size and :sash-gravity initargs.",
+    "scope": "Fixed panes; guarded lifetimes and callback reentry. Invalid/native stale operations signal NATIVE-ERROR; Lisp type/range errors remain Lisp conditions. CHANGING must be handled to honor edits/veto; CHANGED is observational. See docs/SPLITTER.md for full scope.",
+    "wxwidgets": "wxSplitterWindow / wxSplitterEvent, wxWidgets 3.2.12.",
+    "syntax": "wxlambda:splitter-window",
+    "construction": {
+      "syntax": "(make-instance 'wxlambda:splitter-window :parent parent :orientation :vertical :sash-position 0 :minimum-pane-size 20 :sash-gravity 0.5d0)",
+      "description": "Supports subclass slots/default initargs and AFTER hooks with managed rollback."
+    }
+  },
+  {
+    "name": "make-splitter-window",
+    "kind": "generic-function",
+    "arguments": "PARENT and forwarded initargs, including validated :class subclass.",
+    "returns": "See arguments and supported behavior.",
+    "description": "PARENT and forwarded initargs, including validated :class subclass.",
+    "scope": "Fixed panes; guarded lifetimes and callback reentry. Invalid/native stale operations signal NATIVE-ERROR; Lisp type/range errors remain Lisp conditions. CHANGING must be handled to honor edits/veto; CHANGED is observational. See docs/SPLITTER.md for full scope.",
+    "wxwidgets": "wxSplitterWindow / wxSplitterEvent, wxWidgets 3.2.12.",
+    "syntax": "(wxlambda:make-splitter-window ...)"
+  },
+  {
+    "name": "split-window",
+    "kind": "generic-function",
+    "arguments": "SPLITTER FIRST SECOND: attach distinct fully initialized panel children once, outside RUN/pumps/callbacks. Returns T.",
+    "returns": "See arguments and supported behavior.",
+    "description": "SPLITTER FIRST SECOND: attach distinct fully initialized panel children once, outside RUN/pumps/callbacks. Returns T.",
+    "scope": "Fixed panes; guarded lifetimes and callback reentry. Invalid/native stale operations signal NATIVE-ERROR; Lisp type/range errors remain Lisp conditions. CHANGING must be handled to honor edits/veto; CHANGED is observational. See docs/SPLITTER.md for full scope.",
+    "wxwidgets": "wxSplitterWindow / wxSplitterEvent, wxWidgets 3.2.12.",
+    "syntax": "(wxlambda:split-window ...)"
+  },
+  {
+    "name": "splitter-pane",
+    "kind": "generic-function",
+    "arguments": "SPLITTER INDEX (0 or 1): canonical panel wrapper, or NIL before attachment.",
+    "returns": "See arguments and supported behavior.",
+    "description": "SPLITTER INDEX (0 or 1): canonical panel wrapper, or NIL before attachment.",
+    "scope": "Fixed panes; guarded lifetimes and callback reentry. Invalid/native stale operations signal NATIVE-ERROR; Lisp type/range errors remain Lisp conditions. CHANGING must be handled to honor edits/veto; CHANGED is observational. See docs/SPLITTER.md for full scope.",
+    "wxwidgets": "wxSplitterWindow / wxSplitterEvent, wxWidgets 3.2.12.",
+    "syntax": "(wxlambda:splitter-pane ...)"
+  },
+  {
+    "name": "splitter-split-p",
+    "kind": "generic-function",
+    "arguments": "SPLITTER: boolean native split state.",
+    "returns": "See arguments and supported behavior.",
+    "description": "SPLITTER: boolean native split state.",
+    "scope": "Fixed panes; guarded lifetimes and callback reentry. Invalid/native stale operations signal NATIVE-ERROR; Lisp type/range errors remain Lisp conditions. CHANGING must be handled to honor edits/veto; CHANGED is observational. See docs/SPLITTER.md for full scope.",
+    "wxwidgets": "wxSplitterWindow / wxSplitterEvent, wxWidgets 3.2.12.",
+    "syntax": "(wxlambda:splitter-split-p ...)"
+  },
+  {
+    "name": "splitter-orientation",
+    "kind": "generic-function",
+    "arguments": "SPLITTER: immutable :vertical (left/right) or :horizontal (top/bottom).",
+    "returns": "See arguments and supported behavior.",
+    "description": "SPLITTER: immutable :vertical (left/right) or :horizontal (top/bottom).",
+    "scope": "Fixed panes; guarded lifetimes and callback reentry. Invalid/native stale operations signal NATIVE-ERROR; Lisp type/range errors remain Lisp conditions. CHANGING must be handled to honor edits/veto; CHANGED is observational. See docs/SPLITTER.md for full scope.",
+    "wxwidgets": "wxSplitterWindow / wxSplitterEvent, wxWidgets 3.2.12.",
+    "syntax": "(wxlambda:splitter-orientation ...)"
+  },
+  {
+    "name": "splitter-sash-position",
+    "kind": "generic-function",
+    "arguments": "SPLITTER: native pixel position; generic SETF accepts 0..536870911, returns supplied value. Native centering/clamping/deferred geometry applies.",
+    "returns": "See arguments and supported behavior.",
+    "description": "SPLITTER: native pixel position; generic SETF accepts 0..536870911, returns supplied value. Native centering/clamping/deferred geometry applies.",
+    "scope": "Fixed panes; guarded lifetimes and callback reentry. Invalid/native stale operations signal NATIVE-ERROR; Lisp type/range errors remain Lisp conditions. CHANGING must be handled to honor edits/veto; CHANGED is observational. See docs/SPLITTER.md for full scope.",
+    "wxwidgets": "wxSplitterWindow / wxSplitterEvent, wxWidgets 3.2.12.",
+    "syntax": "(wxlambda:splitter-sash-position ...)",
+    "setf": {
+      "syntax": "(setf (wxlambda:splitter-sash-position object) value)",
+      "description": "SPLITTER: native pixel position; generic SETF accepts 0..536870911, returns supplied value. Native centering/clamping/deferred geometry applies."
+    }
+  },
+  {
+    "name": "splitter-minimum-pane-size",
+    "kind": "generic-function",
+    "arguments": "SPLITTER: positive pixel minimum; generic SETF accepts 1..536870911, returns supplied value.",
+    "returns": "See arguments and supported behavior.",
+    "description": "SPLITTER: positive pixel minimum; generic SETF accepts 1..536870911, returns supplied value.",
+    "scope": "Fixed panes; guarded lifetimes and callback reentry. Invalid/native stale operations signal NATIVE-ERROR; Lisp type/range errors remain Lisp conditions. CHANGING must be handled to honor edits/veto; CHANGED is observational. See docs/SPLITTER.md for full scope.",
+    "wxwidgets": "wxSplitterWindow / wxSplitterEvent, wxWidgets 3.2.12.",
+    "syntax": "(wxlambda:splitter-minimum-pane-size ...)",
+    "setf": {
+      "syntax": "(setf (wxlambda:splitter-minimum-pane-size object) value)",
+      "description": "SPLITTER: positive pixel minimum; generic SETF accepts 1..536870911, returns supplied value."
+    }
+  },
+  {
+    "name": "splitter-sash-gravity",
+    "kind": "generic-function",
+    "arguments": "SPLITTER: native double gravity; generic SETF accepts real [0,1], returns supplied value.",
+    "returns": "See arguments and supported behavior.",
+    "description": "SPLITTER: native double gravity; generic SETF accepts real [0,1], returns supplied value.",
+    "scope": "Fixed panes; guarded lifetimes and callback reentry. Invalid/native stale operations signal NATIVE-ERROR; Lisp type/range errors remain Lisp conditions. CHANGING must be handled to honor edits/veto; CHANGED is observational. See docs/SPLITTER.md for full scope.",
+    "wxwidgets": "wxSplitterWindow / wxSplitterEvent, wxWidgets 3.2.12.",
+    "syntax": "(wxlambda:splitter-sash-gravity ...)",
+    "setf": {
+      "syntax": "(setf (wxlambda:splitter-sash-gravity object) value)",
+      "description": "SPLITTER: native double gravity; generic SETF accepts real [0,1], returns supplied value."
+    }
+  },
+  {
+    "name": "event-sash-position",
+    "kind": "generic-function",
+    "arguments": "EVENT snapshot or context: sash pixels, NIL for unrelated snapshots. SETF only current CHANGING context: -1 cancels, or 0..536870911.",
+    "returns": "See arguments and supported behavior.",
+    "description": "EVENT snapshot or context: sash pixels, NIL for unrelated snapshots. SETF only current CHANGING context: -1 cancels, or 0..536870911.",
+    "scope": "Fixed panes; guarded lifetimes and callback reentry. Invalid/native stale operations signal NATIVE-ERROR; Lisp type/range errors remain Lisp conditions. CHANGING must be handled to honor edits/veto; CHANGED is observational. See docs/SPLITTER.md for full scope.",
+    "wxwidgets": "wxSplitterWindow / wxSplitterEvent, wxWidgets 3.2.12.",
+    "syntax": "(wxlambda:event-sash-position ...)",
+    "setf": {
+      "syntax": "(setf (wxlambda:event-sash-position object) value)",
+      "description": "EVENT snapshot or context: sash pixels, NIL for unrelated snapshots. SETF only current CHANGING context: -1 cancels, or 0..536870911."
+    }
   }
 ]

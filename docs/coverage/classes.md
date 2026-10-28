@@ -320,7 +320,7 @@ Class/struct definitions: 0 complete; 10 partial; 292 pending. Partial and pendi
 
 ## C2: Windows, layout, basic controls, and input
 
-Class/struct definitions: 0 complete; 14 partial; 118 pending. Partial and pending classes remain open.
+Class/struct definitions: 0 complete; 16 partial; 116 pending. Partial and pending classes remain open.
 
 [Declaration counts and remaining work](README.md).
 
@@ -412,8 +412,8 @@ Class/struct definitions: 0 complete; 14 partial; 118 pending. Partial and pendi
 - [ ] `wxSpinCtrl` — [`wx/spinctrl.h`](phase-c2.md), upstream line 53.
 - [ ] `wxSpinCtrlDouble` — [`wx/spinctrl.h`](phase-c2.md), upstream line 283.
 - [ ] `wxSpinDoubleEvent` — [`wx/spinctrl.h`](phase-c2.md), upstream line 452.
-- [ ] `wxSplitterWindow` — [`wx/splitter.h`](phase-c2.md), upstream line 100.
-- [ ] `wxSplitterEvent` — [`wx/splitter.h`](phase-c2.md), upstream line 518.
+- [~] `wxSplitterWindow` — [`wx/splitter.h`](phase-c2.md), upstream line 100. — **Partial**: `splitter-window`, `make-splitter-window`, `split-window`, `splitter-pane`, `splitter-split-p`, `splitter-orientation`, `splitter-sash-position`, `splitter-minimum-pane-size`, `splitter-sash-gravity`, `event-sash-position`; ABI: `wxl_splitter`, `wxl_splitter_attach`, `wxl_splitter_pane`, `wxl_splitter_int`, `wxl_set_splitter_int`, `wxl_splitter_gravity`, `wxl_set_splitter_gravity`, `wxl_event_sash`, `wxl_set_event_sash`. Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md.
+- [~] `wxSplitterEvent` — [`wx/splitter.h`](phase-c2.md), upstream line 518. — **Partial**: `splitter-window`, `make-splitter-window`, `split-window`, `splitter-pane`, `splitter-split-p`, `splitter-orientation`, `splitter-sash-position`, `splitter-minimum-pane-size`, `splitter-sash-gravity`, `event-sash-position`; ABI: `wxl_splitter`, `wxl_splitter_attach`, `wxl_splitter_pane`, `wxl_splitter_int`, `wxl_set_splitter_int`, `wxl_splitter_gravity`, `wxl_set_splitter_gravity`, `wxl_event_sash`, `wxl_set_event_sash`. Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md.
 - [ ] `wxSearchCtrl` — [`wx/srchctrl.h`](phase-c2.md), upstream line 68.
 - [ ] `wxStaticBitmap` — [`wx/statbmp.h`](phase-c2.md), upstream line 31.
 - [ ] `wxStaticBox` — [`wx/statbox.h`](phase-c2.md), upstream line 46.

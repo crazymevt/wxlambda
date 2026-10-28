@@ -27,7 +27,8 @@
   (selection-action :int)
   (user-data-token :uint64)
   (more-requested :int)
-  (tree-item :uint64))
+  (tree-item :uint64)
+  (sash-position :int))
 
 (cffi:defcfun ("wxl_abi_version" %abi-version) :int)
 (cffi:defcfun ("wxl_last_error" %last-error) :string)
@@ -94,7 +95,7 @@
           (if (probe-file local)
               (cffi:load-foreign-library local)
               (cffi:use-foreign-library wxlambda-native))))
-    (unless (= 39 (%abi-version)) (error "Unsupported wxlambda native ABI"))
+    (unless (= 40 (%abi-version)) (error "Unsupported wxlambda native ABI"))
     (setf *native-loaded* t))
   t)
 
@@ -287,3 +288,13 @@
 (cffi:defcfun ("wxl_tree_item_alive" %tree-item-alive) :int (item :uint64))
 (cffi:defcfun ("wxl_tree_revision" %tree-revision) :int (revision :pointer))
 (cffi:defcfun ("wxl_event_tree_item" %event-tree-item) :int (source :uint64) (contextual :int) (item :pointer))
+
+(cffi:defcfun ("wxl_splitter" %splitter) :uint64 (parent :uint64) (orientation :int) (position :int) (minimum :int) (gravity :double))
+(cffi:defcfun ("wxl_splitter_attach" %splitter-attach) :int (splitter :uint64) (first :uint64) (second :uint64))
+(cffi:defcfun ("wxl_splitter_pane" %splitter-pane) :int (splitter :uint64) (index :int) (pane :pointer))
+(cffi:defcfun ("wxl_splitter_int" %splitter-int) :int (splitter :uint64) (field :int) (value :pointer))
+(cffi:defcfun ("wxl_set_splitter_int" %set-splitter-int) :int (splitter :uint64) (field :int) (value :int))
+(cffi:defcfun ("wxl_splitter_gravity" %splitter-gravity) :int (splitter :uint64) (gravity :pointer))
+(cffi:defcfun ("wxl_set_splitter_gravity" %set-splitter-gravity) :int (splitter :uint64) (gravity :double))
+(cffi:defcfun ("wxl_event_sash" %event-sash) :int (context :uint64) (position :pointer))
+(cffi:defcfun ("wxl_set_event_sash" %set-event-sash) :int (context :uint64) (position :int))
