@@ -118,5 +118,9 @@
   "menus.lisp": {
     "description": "Frame-owned menu bar, normal/check/separator items, ID-routed menu callbacks, mutable resource state and hierarchical invalidation. Programmatic exercise; graphical OS menu selection is separate verification.",
     "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/menus.lisp --eval '(wxlambda-menus:start)'"
+  },
+  "standard-dialogs.lisp": {
+    "description": "Interactive START opens a native text prompt; EXERCISE within an active session deterministically cancels a real modal loop from native idle. Message/file dialogs remain deferred pending safe platform cancellation.",
+    "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/standard-dialogs.lisp --eval '(wxlambda-standard-dialogs:start)'"
   }
 }

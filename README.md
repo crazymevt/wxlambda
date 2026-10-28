@@ -6,13 +6,15 @@ desktop workflows, reliable lifetime/event contracts and Lisp-friendly APIs.
 The current implementation is still an early GUI binding; exhaustive native
 wxWidgets parity is not the delivery objective.
 
-The current GUI baseline includes eight concrete widget kinds (frame, panel,
-button, text control, label, checkbox, choice and gauge), basic row/column layout
+The current GUI baseline includes ten concrete window kinds (frame, panel,
+button, text control, label, checkbox, choice, gauge, text-entry dialog and
+single-choice dialog), basic row/column layout
 and native-backed CLOS construction/SETF. The event foundation includes immutable
 snapshots, scoped contexts, owned native events, copied/posted/transferred
 pending delivery, managed handler chains/window stacks and rooted Lisp data.
 Idle support adds bounded idle scheduling and policy. Frame menus/actions extend
-the everyday GUI surface; standard dialogs are the next priority.
+the everyday GUI surface; modal text/single-choice dialogs add input workflows. Message/file dialogs await
+a safe platform cancellation bridge.
 
 Native pointers never escape the bridge. Construction, callbacks and lifetime
 checks remain on the main GUI thread. There is one GUI session per process;
@@ -22,7 +24,7 @@ lifetime/weak invalidation rules.
 
 The [CLOS API](docs/CLOS-API.md) provides subclass initargs/defaults/AFTER hooks,
 thin :CLASS-validating factories and canonical generic SETF. The current public
-API has 146 exports, 103 named generic operations and 31 generic property writers.
+API has 158 exports, 110 named generic operations and 34 generic property writers.
 Native C++ virtual Lisp callbacks remain separate work. These counts describe
 public interfaces, not full native class coverage or completed platform validation.
 
@@ -91,7 +93,7 @@ application with `(wxlambda:load-native-library #P"C:/path/to/wxlambda.dll")`.
 Dependent wxWidgets DLLs must also be discoverable by the OS loader.
 
 The bridge normally loads from `build/`, then falls back to the system library
-search path. The Lisp/native ABI version (currently 32) is checked on load; rebuild
+search path. The Lisp/native ABI version (currently 33) is checked on load; rebuild
 the bridge after updating the bindings. Installing the bridge with CMake does not
 install the ASDF system.
 
@@ -743,9 +745,13 @@ managed typed native adapters while rejecting foreign storage safely.
 association reads with safe current-context and saved-snapshot lifetimes.
 
 [Idle events](docs/IDLE-EVENTS.md) support bounded work, RequestMore, native policy
-and own-window opt-in. Frame menus/actions are available; standard dialogs are the next planned breadth.
+and own-window opt-in. Frame menus/actions are available; bounded text/single-choice dialogs extend that breadth.
 
 [Frame menus and actions](docs/MENUS.md) provide native-owned menu bars, menus
 and normal/check/separator items, CLOS construction, ID-routed :MENU callbacks
-and guarded scalar/lifetime operations. Standard dialogs are the next part of
-this GUI slice. This batch does not claim OS menu selection/accelerator coverage.
+and guarded scalar/lifetime operations. [Modal text/single-choice dialogs](docs/STANDARD-DIALOGS.md) extend this GUI
+slice; native message/file cancellation needs further platform work. This batch does not claim OS menu selection/accelerator coverage.
+
+[Standard dialog scope](docs/STANDARD-DIALOGS.md) covers modal text entry and
+single choice, stored values/selection, callback context suspension and protected
+modal cleanup. Message/file, modeless and custom validation interfaces are deferred.

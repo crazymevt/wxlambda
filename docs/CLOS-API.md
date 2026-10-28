@@ -207,3 +207,14 @@ parent destruction invalidates descendant identities; wrappers and GC do not
 retain/delete native objects. Structural operations reject callbacks/pumps/RUN,
 while scalar label/check/enabled writes are allowed. See [menus](MENUS.md) for
 separator constraints, raw labels, per-bar IDs and command routing.
+
+## Modal dialog families
+
+DIALOG is an abstract WINDOW subclass. TEXT-ENTRY-DIALOG and SINGLE-CHOICE-DIALOG
+use native-backed direct initialization with optional :PARENT plus message/title
+and family payloads. Their keyword-only MAKE-* factories remain ordinary functions
+with validated :CLASS forwarding. Native properties are ready in subclass AFTER
+hooks; failure cleans new resources and roots. The modal-only protocol and
+active-modal/ancestor destruction guards are documented in
+[standard dialogs](STANDARD-DIALOGS.md). No native virtual subclass or general
+modeless/validation API is implied.

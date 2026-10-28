@@ -1,6 +1,9 @@
 (defpackage #:wxlambda
   (:use #:cl)
-  (:export #:menu-resource #:menu-bar #:menu #:menu-item #:make-menu-bar #:make-menu #:make-menu-item
+  (:export #:dialog #:text-entry-dialog #:single-choice-dialog
+           #:make-text-entry-dialog #:make-single-choice-dialog #:show-modal #:end-modal
+           #:dialog-modal-p #:dialog-title #:dialog-value #:dialog-selection #:dialog-selection-text
+           #:menu-resource #:menu-bar #:menu #:menu-item #:make-menu-bar #:make-menu #:make-menu-item
            #:menu-label #:menu-count #:menu-item-count #:menu-item-id #:menu-item-kind
            #:menu-resource-alive-p #:destroy-menu-resource #:activate-menu-item
            #:event-more-requested-p #:idle-mode #:window-process-idle-p #:wake-up-idle

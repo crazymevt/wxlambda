@@ -4,6 +4,10 @@
 #include "../native/wxlambda.cpp"
 #include <atomic>
 #include <iostream>
+#include <functional>
+#include <thread>
+#include <chrono>
+#include <wx/listbox.h>
 
 namespace {
 std::atomic<unsigned> assertion_count{0};
@@ -52,6 +56,118 @@ void expect_rejected(wxl_handle id) {
     expect(token == 999, "Failed read must preserve its output");
     expect(wxl_set_handler_client_data(id, 41) == -1, "Foreign storage replacement must reject");
     expect(wxl_set_handler_client_data(id, 0) == -1, "Foreign storage clearing must reject");
+}
+class DialogTimer final : public wxTimer {
+public:
+    std::function<void()> action;
+    explicit DialogTimer(std::function<void()> fn) : action(std::move(fn)) { }
+    void Notify() override { action(); }
+};
+void exercise_dialogs() {
+    const auto parent = wxl_frame("Dialog native regression", 240, 140);
+    const auto text = wxl_text_entry_dialog(parent, "Message", 7, "Title", 5, "initial", 7);
+    const char* choices[] = {"first", "second"};
+    const auto choice = wxl_single_choice_dialog(parent, "Message", 7, "Choice", 6, choices, 2, 0);
+    expect(text && choice && wxl_dialog_selection(choice) == 0, "Dialog construction failed");
+    expect(wxl_show(text) == -1 && wxl_show_state(choice, 1) == -1, "Ordinary dialog showing must reject");
+    size_t length = 0;
+    expect(std::string(wxl_dialog_selection_text(choice, &length)) == "", "Choice string is empty before first accepted transfer");
+    int result = -1;
+    {
+        wxCommandEvent outer_event(wxEVT_BUTTON);
+        EventScope outer_scope(outer_event);
+        CallbackScope outer_callback;
+        expect(wxl_context_active(outer_scope.token) == 1, "Outer context setup failed");
+        DialogTimer timer([&] {
+            expect(wxl_dialog_modal(text) == 1, "Dialog must be natively modal");
+            expect(wxl_context_active(outer_scope.token) == 0, "Outer context must suspend throughout modal scope");
+            expect(wxl_dialog_show(choice, &result) == -1, "Nested modal must reject");
+            const int destroy_text = wxl_destroy(text), destroy_parent = wxl_destroy(parent);
+            expect(destroy_text == -1 && destroy_parent == -1, "Active dialog/ancestor destruction must reject");
+            expect(wxl_close(parent, 1) == -1, "Active modal ancestor close must reject");
+            wxCloseEvent forced_close(wxEVT_CLOSE_WINDOW, as<wxFrame>(parent)->GetId()); forced_close.SetCanVeto(false);
+            as<wxFrame>(parent)->GetEventHandler()->ProcessEvent(forced_close);
+            expect(wxl_handler_alive(parent) == 1 && wxl_dialog_modal(text) == 1,
+                   "Queued/native forced close guard must preserve modal ancestor");
+            expect(wxl_poll() == -1 && wxl_finish() == -1, "Modal pump/finish must reject");
+            expect(wxl_dialog_end(text, 0) == 0 && wxl_dialog_modal(text) == 0, "Raw EndModal OK failed");
+            expect(wxl_destroy(text) == -1 && wxl_destroy(parent) == -1, "Ending modal remains protected until ShowModal returns");
+            expect(wxl_dialog_abort() == 1, "Already ending modal remains handled by abort");
+        });
+        timer.StartOnce(100);
+        const int raw_status = wxl_dialog_show(text, &result);
+        expect(raw_status == 0 && result == 0, "Raw modal OK did not return");
+        expect(wxl_context_active(outer_scope.token) == 1, "Outer context must restore after modal scope");
+    }
+    auto* native_text = as<wxTextEntryDialog>(text);
+    wxTextCtrl* entry = nullptr;
+    for (auto* child : native_text->GetChildren()) if (auto* candidate = dynamic_cast<wxTextCtrl*>(child)) entry = candidate;
+    expect(entry, "Text-entry child not found");
+    {
+        DialogTimer timer([&] { entry->ChangeValue("raw unsaved"); expect(wxl_dialog_end(text, 0) == 0, "Raw OK close failed"); });
+        timer.StartOnce(100);
+        expect(wxl_dialog_show(text, &result) == 0 && result == 0, "Text raw close failed");
+        expect(std::string(wxl_dialog_value(text, &length)) == "initial", "Raw EndModal must not transfer text control data");
+    }
+    {
+        DialogTimer timer([&] {
+            entry->ChangeValue("accepted");
+            wxCommandEvent button(wxEVT_BUTTON, wxID_OK); button.SetEventObject(native_text->FindWindow(wxID_OK));
+            native_text->GetEventHandler()->ProcessEvent(button);
+        }); timer.StartOnce(100);
+        expect(wxl_dialog_show(text, &result) == 0 && result == 0, "Text accept button failed");
+        expect(std::string(wxl_dialog_value(text, &length)) == "accepted", "OK button must transfer text data");
+    }
+    auto* native_choice = as<wxSingleChoiceDialog>(choice);
+    wxListBox* list = nullptr;
+    for (auto* child : native_choice->GetChildren()) if (auto* candidate = dynamic_cast<wxListBox*>(child)) list = candidate;
+    expect(list, "Choice list child not found");
+    {
+        DialogTimer timer([&] { list->SetSelection(1); expect(wxl_dialog_end(choice, 0) == 0, "Choice raw OK close failed"); }); timer.StartOnce(100);
+        expect(wxl_dialog_show(choice, &result) == 0 && wxl_dialog_selection(choice) == 0,
+               "Raw EndModal must not transfer choice data");
+    }
+    {
+        DialogTimer timer([&] {
+            list->SetSelection(1); wxCommandEvent button(wxEVT_BUTTON, wxID_OK);
+            button.SetEventObject(native_choice->FindWindow(wxID_OK)); native_choice->GetEventHandler()->ProcessEvent(button);
+        }); timer.StartOnce(100);
+        expect(wxl_dialog_show(choice, &result) == 0 && result == 0 && wxl_dialog_selection(choice) == 1,
+               "Choice OK button must transfer selection");
+        expect(std::string(wxl_dialog_selection_text(choice, &length)) == "second", "Choice accepted string mismatch");
+    }
+    {
+        DialogTimer timer([&] { expect(wxl_dialog_abort() == 1, "Active abort failed"); }); timer.StartOnce(100);
+        expect(wxl_dialog_show(text, &result) == 0 && result == 1, "Abort must return Cancel");
+    }
+    {
+        DialogTimer timer([&] {
+            wxCloseEvent close(wxEVT_CLOSE_WINDOW, as<wxTextEntryDialog>(text)->GetId());
+            close.SetEventObject(as<wxTextEntryDialog>(text));
+            as<wxTextEntryDialog>(text)->GetEventHandler()->ProcessEvent(close);
+        }); timer.StartOnce(100);
+        expect(wxl_dialog_show(text, &result) == 0 && result == 1, "Dialog close event must cancel modal");
+    }
+    expect(wxl_dialog_abort() == 0 && wxl_set_dialog_selection(choice, -1) == -1 && wxl_set_dialog_selection(choice, 2) == -1,
+           "Dialog inactive/bounds guards failed");
+    delete as<wxFrame>(parent);
+    expect(wxl_handler_alive(text) == 0 && wxl_handler_alive(choice) == 0 && dialog_choice_counts.empty(),
+           "Native parent deletion must clean dialog identities and choice count registry");
+    for (const bool direct_schedule : {false, true}) {
+        const auto doomed_parent = wxl_frame("Scheduled modal parent", 200, 100);
+        const auto doomed_child = wxl_text_entry_dialog(doomed_parent, "", 0, "", 0, "", 0);
+        const auto doomed_bar = wxl_menu_bar(doomed_parent);
+        auto* native_parent = as<wxFrame>(doomed_parent);
+        if (direct_schedule) wxTheApp->ScheduleForDestruction(native_parent);
+        else expect(wxl_destroy(doomed_parent) == 0, "Parent destroy request failed");
+        expect(wxTheApp->IsScheduledForDestruction(native_parent), "Expected native scheduled-deletion state");
+        int untouched_result = 72;
+        expect(wxl_dialog_show(doomed_child, &untouched_result) == -1 && untouched_result == 72 && !active_modal.get(),
+               "Scheduled ancestor must reject modal entry before entering native loop");
+        expect(wxl_handler_alive(doomed_parent) == 0 && wxl_handler_alive(doomed_child) == 0 && wxl_menu_alive(doomed_bar) == 0,
+               "Scheduled ancestors must invalidate window and menu liveness");
+    }
+
 }
 void exercise_menus() {
     const auto frame = wxl_frame("Menu native regression", 240, 140);
@@ -242,6 +358,7 @@ void exercise_client_data(unsigned& foreign_destroyed) {
 }
 
 int main() {
+    std::thread([] { std::this_thread::sleep_for(std::chrono::seconds(10)); std::_Exit(124); }).detach();
     auto old_assert_handler = wxSetAssertHandler(capture_assert);
     unsigned foreign_destroyed = 0;
     bool active = false;
@@ -253,6 +370,7 @@ int main() {
         exercise_binding_data();
         exercise_idle();
         exercise_menus();
+        exercise_dialogs();
         expect(wxl_finish() == 0, "Application cleanup failed");
         active = false;
         expect(wxIdleEvent::GetMode() == wxIDLE_PROCESS_ALL, "Finish did not restore pre-session idle mode");
@@ -261,7 +379,7 @@ int main() {
         expect(foreign_destroyed == 1, "Foreign data was deleted more than once");
         expect(assertion_count.load() == 0, "Client-data operations triggered a wx assertion");
         wxSetAssertHandler(old_assert_handler);
-        std::cout << "PASS: handler client data, binding user-data lifetime, idle metadata/mode/style restoration, menu ownership/actions, foreign guards and zero wx assertions\n";
+        std::cout << "PASS: handler client data, binding user-data lifetime, idle metadata/mode/style restoration, menu ownership/actions, dialog modal/transfer/parent guards, foreign guards and zero wx assertions\n";
         return 0;
     } catch (const std::exception& failure) {
         if (active) wxl_finish();

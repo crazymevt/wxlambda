@@ -4,6 +4,8 @@
 #include <wx/choice.h>
 #include <wx/gauge.h>
 #include <wx/menu.h>
+#include <wx/textdlg.h>
+#include <wx/choicdlg.h>
 #include <wx/weakref.h>
 #include <memory>
 #include <typeinfo>
@@ -96,6 +98,8 @@ struct RegisteredEvent { wxEventType type; int family; };
 std::unordered_map<int, RegisteredEvent> registered_events;
 constexpr int first_registered_event_kind = WXL_EVENT_MENU + 1;
 int next_event_kind = first_registered_event_kind;
+wxWeakRef<wxDialog> active_modal;
+std::unordered_map<wxWindow*, size_t> dialog_choice_counts;
 wxIdleMode initial_idle_mode = wxIDLE_PROCESS_ALL;
 wxl_handle next_handle = 1;
 wxl_handle application_handle = 0;
@@ -138,6 +142,19 @@ wxEvent& current_event(uint64_t token) {
             "Event context is expired or is not the current callback");
     return *EventScope::stack.back().event;
 }
+// Destroy() on top-level windows may only schedule deletion: IsBeingDeleted()
+// alone stays false until later. Include native scheduled deletion and bridge
+// deferred requests for the whole parent chain before any native access.
+bool window_destruction_pending(wxWindow* object) {
+    for (auto* node = object; node; node = node->GetParent()) {
+        if (node->IsBeingDeleted() || wxTheApp->IsScheduledForDestruction(node)) return true;
+        for (const auto id : pending_destruction) {
+            const auto found = windows.find(id);
+            if (found != windows.end() && found->second.get() == node) return true;
+        }
+    }
+    return false;
+}
 wxWindow* window(wxl_handle id) {
     ready();
     const auto it = windows.find(id);
@@ -145,7 +162,7 @@ wxWindow* window(wxl_handle id) {
     require(!pending_destruction.count(id), "Window destruction is pending");
     auto* object = it->second.get();
     require(object != nullptr, "Invalid or destroyed window handle");
-    require(!object->IsBeingDeleted(), "Window is being destroyed");
+    require(!window_destruction_pending(object), "Window or ancestor destruction is pending");
     return object;
 }
 wxEvtHandler* event_handler(wxl_handle id) {
@@ -262,7 +279,7 @@ template<class T> class ManagedWindow final : public T, public ClientDataAccess 
 public:
     using T::T;
     wxClientDataType ClientStorageKind() const override { return this->m_clientDataType; }
-    ~ManagedWindow() override { detach_window_stack(this); }
+    ~ManagedWindow() override { dialog_choice_counts.erase(this); detach_window_stack(this); }
 };
 void set_registered_type(wxEvent& event, int type) {
         const RegisteredEvent* source = nullptr;
@@ -300,6 +317,7 @@ void invoke_callback(uint64_t token, const wxl_event& event) {
     dispatch(token, &event);
 }
 void require_dispatch_entry() {
+    require(!active_modal.get(), "Cannot enter structural dispatch during a modal dialog");
     require(!running, "Event loop is already running");
     require(!pumping && callback_depth == 0, "Cannot enter event dispatch from a pump or callback");
 }
@@ -606,6 +624,32 @@ wxString utf8(const char* value) {
     require(value != nullptr, "Null UTF-8 string");
     return wxString::FromUTF8(value);
 }
+bool protected_modal_ancestor(wxWindow* object) {
+    for (wxWindow* node = active_modal.get(); node; node = node->GetParent()) if (node == object) return true;
+    return false;
+}
+class ModalCloseGuard {
+    std::vector<wxWindow*> ancestors;
+    size_t bound = 0;
+    void on_close(wxCloseEvent& event) {
+        if (auto* object = active_modal.get(); object && event.GetEventObject() == object && object->IsModal()) object->EndModal(wxID_CANCEL);
+        event.Skip(false);
+    }
+public:
+    explicit ModalCloseGuard(wxWindow* object) {
+        for (auto* node = object; node; node = node->GetParent()) {
+            require(!window_destruction_pending(node), "Dialog ancestor destruction is pending");
+            ancestors.push_back(node);
+        }
+        try {
+            for (auto* node : ancestors) { node->Bind(wxEVT_CLOSE_WINDOW, &ModalCloseGuard::on_close, this); ++bound; }
+        } catch (...) { detach(); throw; }
+    }
+    void detach() noexcept {
+        while (bound) ancestors[--bound]->Unbind(wxEVT_CLOSE_WINDOW, &ModalCloseGuard::on_close, this);
+    }
+    ~ModalCloseGuard() { detach(); }
+};
 wxString menu_string(const char* text, size_t length, bool allow_empty) {
     require(text || length == 0, "Null menu text");
     require(allow_empty || length != 0, "Menu label must be nonempty");
@@ -629,7 +673,7 @@ size_t menu_position(wxMenuBar* bar, wxMenu* menu) {
 
 }
 extern "C" {
-int wxl_abi_version() { return 32; }
+int wxl_abi_version() { return 33; }
 const char* wxl_last_error() { return error.c_str(); }
 int wxl_start(wxl_callback callback) {
     return status([&] {
@@ -713,6 +757,85 @@ int wxl_finish() {
         windows.clear(); handlers.clear(); pending_destruction.clear(); registered_events.clear(); dispatch = nullptr; started = false;
     });
 }
+wxl_handle wxl_text_entry_dialog(wxl_handle parent, const char* message, size_t message_length,
+                                const char* title, size_t title_length, const char* value, size_t value_length) {
+    return create([&] {
+        const auto msg = menu_string(message, message_length, true);
+        const auto caption = menu_string(title, title_length, true);
+        const auto initial = menu_string(value, value_length, true);
+        auto object = std::make_unique<ManagedWindow<wxTextEntryDialog>>(parent ? window(parent) : nullptr, msg, caption, initial);
+        auto* requested_parent = parent ? window(parent) : nullptr;
+        if (object->GetParent() != requested_parent) require(object->Reparent(requested_parent), "Cannot preserve requested dialog parent");
+        const auto id = track(object.get()); object.release(); return id;
+    });
+}
+wxl_handle wxl_single_choice_dialog(wxl_handle parent, const char* message, size_t message_length,
+                                   const char* title, size_t title_length, const char** items, size_t count, int selection) {
+    return create([&] {
+        require(items && count && count <= static_cast<size_t>(std::numeric_limits<int>::max()), "Choice dialog requires nonempty bounded items");
+        require(selection >= 0 && static_cast<size_t>(selection) < count, "Invalid dialog selection");
+        const auto msg = menu_string(message, message_length, true);
+        const auto caption = menu_string(title, title_length, true);
+        wxArrayString choices;
+        for (size_t index = 0; index < count; ++index) { require(items[index], "Null choice dialog item"); choices.Add(menu_string(items[index], std::strlen(items[index]), true)); }
+        auto object = std::make_unique<ManagedWindow<wxSingleChoiceDialog>>(parent ? window(parent) : nullptr, msg, caption, choices);
+        auto* requested_parent = parent ? window(parent) : nullptr;
+        if (object->GetParent() != requested_parent) require(object->Reparent(requested_parent), "Cannot preserve requested dialog parent");
+        object->SetSelection(selection);
+        dialog_choice_counts.emplace(object.get(), count);
+        const auto id = track(object.get()); object.release(); return id;
+    });
+}
+int wxl_dialog_show(wxl_handle id, int* code) {
+    return status([&] {
+        auto* object = as<wxDialog>(id);
+        require(code, "Missing modal result output");
+        require(!active_modal.get(), "Nested modal dialogs are not supported");
+        require(!object->IsShown() && !object->IsModal(), "Dialog is already shown");
+        struct ModalScope {
+            CallbackScope suspended_context;
+            ModalCloseGuard close_guard;
+            explicit ModalScope(wxDialog* object) : close_guard(object) { active_modal = object; }
+            ~ModalScope() {
+                if (auto* object = active_modal.get(); object && object->IsModal()) object->EndModal(wxID_CANCEL);
+                active_modal = nullptr;
+            }
+        } scope(object);
+        const auto native_code = object->ShowModal();
+        require(native_code == wxID_OK || native_code == wxID_CANCEL, "Unsupported modal result");
+        *code = native_code == wxID_OK ? 0 : 1;
+    });
+}
+int wxl_dialog_end(wxl_handle id, int code) {
+    return status([&] {
+        auto* object = as<wxDialog>(id);
+        require(code == 0 || code == 1, "Invalid modal result");
+        require(active_modal.get() == object && object->IsModal(), "Dialog is not currently modal");
+        object->EndModal(code == 0 ? wxID_OK : wxID_CANCEL);
+    });
+}
+int wxl_dialog_abort() {
+    return boolean_result([] {
+        ready(); auto* object = active_modal.get(); if (!object) return false;
+        if (object->IsModal()) object->EndModal(wxID_CANCEL);
+        return true;
+    });
+}
+int wxl_dialog_modal(wxl_handle id) { return boolean_result([&] { return as<wxDialog>(id)->IsModal(); }); }
+const char* wxl_dialog_title(wxl_handle id, size_t* length) { return metadata_string([&] { return as<wxDialog>(id)->GetTitle(); }, length); }
+int wxl_set_dialog_title(wxl_handle id, const char* title, size_t length) { return status([&] { as<wxDialog>(id)->SetTitle(menu_string(title, length, true)); }); }
+const char* wxl_dialog_value(wxl_handle id, size_t* length) { return metadata_string([&] { return as<wxTextEntryDialog>(id)->GetValue(); }, length); }
+int wxl_set_dialog_value(wxl_handle id, const char* value, size_t length) { return status([&] { as<wxTextEntryDialog>(id)->SetValue(menu_string(value, length, true)); }); }
+int wxl_dialog_selection(wxl_handle id) {
+    int value = -1; const auto result = status([&] { value = as<wxSingleChoiceDialog>(id)->GetSelection(); }); return result == 0 ? value : -1;
+}
+int wxl_set_dialog_selection(wxl_handle id, int value) { return status([&] {
+    auto* object = as<wxSingleChoiceDialog>(id);
+    const auto found = dialog_choice_counts.find(object);
+    require(found != dialog_choice_counts.end() && value >= 0 && static_cast<size_t>(value) < found->second, "Invalid dialog selection");
+    object->SetSelection(value);
+}); }
+const char* wxl_dialog_selection_text(wxl_handle id, size_t* length) { return metadata_string([&] { return as<wxSingleChoiceDialog>(id)->GetStringSelection(); }, length); }
 wxl_handle wxl_menu_bar(wxl_handle frame_id) {
     return create([&] {
         require_dispatch_entry(); auto* owner = as<wxFrame>(frame_id);
@@ -775,7 +898,7 @@ int wxl_menu_alive(wxl_handle id) {
     return boolean_result([&] {
         ready(); const auto found = menu_resources.find(id); if (found == menu_resources.end()) return false;
         const auto owner = windows.find(found->second.frame);
-        return !pending_destruction.count(found->second.frame) && owner != windows.end() && owner->second.get() && !owner->second.get()->IsBeingDeleted();
+        return owner != windows.end() && owner->second.get() && !window_destruction_pending(owner->second.get());
     });
 }
 int wxl_menu_destroy(wxl_handle id) {
@@ -860,7 +983,7 @@ int wxl_handler_alive(wxl_handle id) {
         const auto it = windows.find(id);
         if (it != windows.end()) {
             auto* object = it->second.get();
-            return object && !object->IsBeingDeleted();
+            return object && !window_destruction_pending(object);
         }
         return owned_handlers.find(id) != owned_handlers.end();
     });
@@ -1130,7 +1253,7 @@ int wxl_context_set_logging_off(uint64_t token, int value) {
     });
 }
 int wxl_close(wxl_handle id, int force) {
-    return boolean_result([&] { return as<wxFrame>(id)->Close(force != 0); });
+    return boolean_result([&] { auto* object = as<wxFrame>(id); require(!protected_modal_ancestor(object), "Cannot close an active modal dialog ancestor"); return object->Close(force != 0); });
 }
 int wxl_context_resume_propagation(uint64_t token, int level) {
     return status([&] {
@@ -1632,9 +1755,9 @@ int wxl_set_title(wxl_handle id, const char* value, size_t length) {
         frame->SetTitle(wxString::FromUTF8(value, length));
     });
 }
-int wxl_show(wxl_handle id) { return status([&] { window(id)->Show(); }); }
+int wxl_show(wxl_handle id) { return status([&] { auto* object = window(id); require(!dynamic_cast<wxDialog*>(object), "Use SHOW-MODAL for dialogs"); object->Show(); }); }
 int wxl_show_state(wxl_handle id, int show) {
-    return boolean_result([&] { return window(id)->Show(show != 0); });
+    return boolean_result([&] { auto* object = window(id); require(!dynamic_cast<wxDialog*>(object), "Use SHOW-MODAL for dialogs"); return object->Show(show != 0); });
 }
 int wxl_shown(wxl_handle id) {
     return boolean_result([&] { return window(id)->IsShown(); });
@@ -1648,13 +1771,18 @@ int wxl_enabled(wxl_handle id) {
 int wxl_destroy(wxl_handle id) {
     return status([&] {
         auto* object = window(id);
+        require(!protected_modal_ancestor(object), "Cannot destroy an active modal dialog or its ancestor");
         if (callback_depth) {
             wxWeakRef<wxWindow> weak(object);
             pending_destruction.insert(id);
             try {
                 wxTheApp->CallAfter([weak, id] {
-                    pending_destruction.erase(id);
+                    struct ClearRequest {
+                        wxl_handle id;
+                        ~ClearRequest() { pending_destruction.erase(id); }
+                    } clear{id};
                     if (auto* live = weak.get()) live->Destroy();
+                    // Native scheduled deletion now covers any surviving window.
                 });
             } catch (...) { pending_destruction.erase(id); throw; }
         } else object->Destroy();

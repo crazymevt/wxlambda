@@ -18,18 +18,18 @@ and verify platforms when selected features or completeness claims require it.
 
 | Category | Headers | Tasks | Implemented | Partial | Pending | Context |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| [C1: Foundation, values, application, events, and base utilities](phase-c1.md) | 119 | 5292 | 7 | 95 | 5190 | 26 |
+| [C1: Foundation, values, application, events, and base utilities](phase-c1.md) | 119 | 5292 | 7 | 96 | 5189 | 26 |
 | [C2: Windows, layout, basic controls, and input](phase-c2.md) | 82 | 2862 | 23 | 53 | 2786 | 0 |
-| [C3: Dialogs, navigation, menus, and application services](phase-c3.md) | 57 | 1875 | 0 | 27 | 1848 | 0 |
+| [C3: Dialogs, navigation, menus, and application services](phase-c3.md) | 57 | 1875 | 0 | 44 | 1831 | 0 |
 | [C4: Models, complex controls, and document frameworks](phase-c4.md) | 20 | 2328 | 0 | 0 | 2328 | 4 |
 | [C5: Drawing, images, graphics, and printing](phase-c5.md) | 52 | 2245 | 0 | 0 | 2245 | 0 |
 | [C6: Optional libraries, rich content, and integration](phase-c6.md) | 57 | 8912 | 0 | 0 | 8912 | 380 |
 | [C7: Platform extensions and remaining portability APIs](phase-c7.md) | 11 | 279 | 0 | 0 | 279 | 3 |
-| Total | 398 | 23793 | 30 | 175 | 23588 | 413 |
+| Total | 398 | 23793 | 30 | 193 | 23570 | 413 |
 
 ## Classes and widgets
 
-1016 class/struct definitions: 0 complete; 24 partial; 992 pending.
+1016 class/struct definitions: 0 complete; 27 partial; 989 pending.
 
 See the [complete class/widget index](classes.md) for partial scopes and missing
 types. An implemented constructor does not complete a class or its inherited API.
@@ -45,7 +45,7 @@ unreviewed inherited/platform behavior.
 | Header | Implemented | Partial | Pending | Context |
 | --- | ---: | ---: | ---: | ---: |
 | [wx/any.h](phase-c1.md#wxanyh) | 0 | 0 | 62 | 0 |
-| [wx/app.h](phase-c1.md#wxapph) | 0 | 13 | 91 | 0 |
+| [wx/app.h](phase-c1.md#wxapph) | 0 | 14 | 90 | 0 |
 | [wx/appprogress.h](phase-c1.md#wxappprogressh) | 0 | 0 | 7 | 0 |
 | [wx/apptrait.h](phase-c1.md#wxapptraith) | 0 | 0 | 15 | 0 |
 | [wx/archive.h](phase-c1.md#wxarchiveh) | 0 | 0 | 55 | 0 |
@@ -260,7 +260,7 @@ unreviewed inherited/platform behavior.
 | [wx/artprov.h](phase-c3.md#wxartprovh) | 0 | 0 | 90 | 0 |
 | [wx/bookctrl.h](phase-c3.md#wxbookctrlh) | 0 | 0 | 41 | 0 |
 | [wx/busyinfo.h](phase-c3.md#wxbusyinfoh) | 0 | 0 | 16 | 0 |
-| [wx/choicdlg.h](phase-c3.md#wxchoicdlgh) | 0 | 0 | 37 | 0 |
+| [wx/choicdlg.h](phase-c3.md#wxchoicdlgh) | 0 | 6 | 31 | 0 |
 | [wx/choicebk.h](phase-c3.md#wxchoicebkh) | 0 | 0 | 20 | 0 |
 | [wx/clipbrd.h](phase-c3.md#wxclipbrdh) | 0 | 0 | 16 | 0 |
 | [wx/colordlg.h](phase-c3.md#wxcolordlgh) | 0 | 0 | 14 | 0 |
@@ -268,7 +268,7 @@ unreviewed inherited/platform behavior.
 | [wx/creddlg.h](phase-c3.md#wxcreddlgh) | 0 | 0 | 7 | 0 |
 | [wx/cshelp.h](phase-c3.md#wxcshelph) | 0 | 0 | 22 | 0 |
 | [wx/dataobj.h](phase-c3.md#wxdataobjh) | 0 | 0 | 73 | 0 |
-| [wx/dialog.h](phase-c3.md#wxdialogh) | 0 | 0 | 76 | 0 |
+| [wx/dialog.h](phase-c3.md#wxdialogh) | 0 | 5 | 71 | 0 |
 | [wx/dirctrl.h](phase-c3.md#wxdirctrlh) | 0 | 0 | 48 | 0 |
 | [wx/dirdlg.h](phase-c3.md#wxdirdlgh) | 0 | 0 | 24 | 0 |
 | [wx/display.h](phase-c3.md#wxdisplayh) | 0 | 0 | 20 | 0 |
@@ -304,7 +304,7 @@ unreviewed inherited/platform behavior.
 | [wx/stockitem.h](phase-c3.md#wxstockitemh) | 0 | 0 | 4 | 0 |
 | [wx/taskbar.h](phase-c3.md#wxtaskbarh) | 0 | 0 | 34 | 0 |
 | [wx/taskbarbutton.h](phase-c3.md#wxtaskbarbuttonh) | 0 | 0 | 87 | 0 |
-| [wx/textdlg.h](phase-c3.md#wxtextdlgh) | 0 | 0 | 19 | 0 |
+| [wx/textdlg.h](phase-c3.md#wxtextdlgh) | 0 | 6 | 13 | 0 |
 | [wx/tipdlg.h](phase-c3.md#wxtipdlgh) | 0 | 0 | 7 | 0 |
 | [wx/toolbar.h](phase-c3.md#wxtoolbarh) | 0 | 0 | 124 | 0 |
 | [wx/toolbook.h](phase-c3.md#wxtoolbookh) | 0 | 0 | 15 | 0 |

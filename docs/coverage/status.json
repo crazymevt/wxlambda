@@ -629,12 +629,14 @@
       "status": "~",
       "symbol": "wxTopLevelWindow::GetTitle",
       "lisp": [
-        "frame-title"
+        "frame-title",
+        "dialog-title"
       ],
       "native": [
-        "wxl_title"
+        "wxl_title",
+        "wxl_dialog_title"
       ],
-      "scope": "Independent UTF-8 title string for wxFrame only; other top-level window receivers remain open."
+      "scope": "Managed frame and text-entry/single-choice dialog titles. Dialog strings are Unicode NUL-free (empty allowed). Other top-level native families remain unbound; canonical SETF returns supplied value."
     },
     {
       "header": "wx/toplevel.h",
@@ -643,12 +645,14 @@
       "status": "~",
       "symbol": "wxTopLevelWindow::SetTitle",
       "lisp": [
-        "(setf frame-title)"
+        "(setf frame-title)",
+        "dialog-title"
       ],
       "native": [
-        "wxl_set_title"
+        "wxl_set_title",
+        "wxl_set_dialog_title"
       ],
-      "scope": "Canonical SETF writer. Copied UTF-8 title for wxFrame only, returning the supplied Lisp string; other top-level window receivers remain open."
+      "scope": "Managed frame and text-entry/single-choice dialog titles. Dialog strings are Unicode NUL-free (empty allowed). Other top-level native families remain unbound; canonical SETF returns supplied value."
     },
     {
       "header": "wx/gauge.h",
@@ -2782,6 +2786,223 @@
         "wxl_menu_checked"
       ],
       "scope": "Internal prerequisite for managed normal/check/separator kind validation; no standalone public predicate or radio/submenu exposure."
+    },
+    {
+      "header": "wx/dialog.h",
+      "line": 610,
+      "declaration": "virtual int ShowModal();",
+      "status": "~",
+      "symbol": "wxDialog::ShowModal",
+      "lisp": [
+        "show-modal"
+      ],
+      "native": [
+        "wxl_dialog_show"
+      ],
+      "scope": "Managed text-entry/single-choice modal loop only. Allowed callback entry, rejects nested/already shown. Suspends outer event contexts; primary callback error cancels/unwinds and re-signals. No modeless/custom dialog API."
+    },
+    {
+      "header": "wx/dialog.h",
+      "line": 338,
+      "declaration": "virtual void EndModal(int retCode);",
+      "status": "~",
+      "symbol": "wxDialog::EndModal",
+      "lisp": [
+        "end-modal"
+      ],
+      "native": [
+        "wxl_dialog_end",
+        "wxl_dialog_abort"
+      ],
+      "scope": "Active managed modal only, :OK/:CANCEL results. Raw EndModal does not run button validation/data transfer. Dialog/ancestor destruction remains blocked until SHOW-MODAL returns; internal abort cancels callback errors."
+    },
+    {
+      "header": "wx/dialog.h",
+      "line": 470,
+      "declaration": "virtual bool IsModal() const;",
+      "status": "~",
+      "symbol": "wxDialog::IsModal",
+      "lisp": [
+        "dialog-modal-p"
+      ],
+      "native": [
+        "wxl_dialog_modal"
+      ],
+      "scope": "Native state only, distinct from the longer bridge active-modal lifetime guard."
+    },
+    {
+      "header": "wx/dialog.h",
+      "line": 202,
+      "declaration": "virtual ~wxDialog();",
+      "status": "~",
+      "symbol": "wxDialog::~wxDialog",
+      "lisp": [
+        "destroy-window"
+      ],
+      "native": [
+        "wxl_destroy"
+      ],
+      "scope": "Inherited managed native window destruction after modal unwind; parent cascade invalidates wrappers. No public direct wxDialog construction."
+    },
+    {
+      "header": "wx/textdlg.h",
+      "line": 95,
+      "declaration": "wxTextEntryDialog(wxWindow* parent, const wxString& message, const wxString& caption = wxGetTextFromUserPromptStr, const wxString& value = wxEmptyString, long style = wxTextEntryDialogStyle, const wxPoint& pos = wxDefaultPosition);",
+      "status": "~",
+      "symbol": "wxTextEntryDialog::wxTextEntryDialog",
+      "lisp": [
+        "text-entry-dialog",
+        "make-text-entry-dialog"
+      ],
+      "native": [
+        "wxl_text_entry_dialog"
+      ],
+      "scope": "Optional managed parent, Unicode NUL-free message/title/value, fixed native default style/position. Modal-only, direct CLOS subclasses/initargs/AFTER and rollback; no password/text-validator/style overload. Actual native parent is normalized to the explicit requested window (including hidden) or truly parentless NIL; native autoparenting is not retained."
+    },
+    {
+      "header": "wx/textdlg.h",
+      "line": 130,
+      "declaration": "virtual ~wxTextEntryDialog();",
+      "status": "~",
+      "symbol": "wxTextEntryDialog::~wxTextEntryDialog",
+      "lisp": [
+        "destroy-window"
+      ],
+      "native": [
+        "wxl_destroy"
+      ],
+      "scope": "Managed native window lifetime; active dialog/ancestor destruction rejects until modal unwind."
+    },
+    {
+      "header": "wx/textdlg.h",
+      "line": 136,
+      "declaration": "wxString GetValue() const;",
+      "status": "~",
+      "symbol": "wxTextEntryDialog::GetValue",
+      "lisp": [
+        "dialog-value"
+      ],
+      "native": [
+        "wxl_dialog_value"
+      ],
+      "scope": "Native stored value, not guaranteed live edit buffer. Raw END-MODAL does not perform OK-button validation/transfer."
+    },
+    {
+      "header": "wx/textdlg.h",
+      "line": 175,
+      "declaration": "void SetValue(const wxString& value);",
+      "status": "~",
+      "symbol": "wxTextEntryDialog::SetValue",
+      "lisp": [
+        "dialog-value"
+      ],
+      "native": [
+        "wxl_set_dialog_value"
+      ],
+      "scope": "Unicode NUL-free stored value update through notifying Lisp boundary; empty allowed."
+    },
+    {
+      "header": "wx/textdlg.h",
+      "line": 198,
+      "declaration": "int ShowModal();",
+      "status": "~",
+      "symbol": "wxTextEntryDialog::ShowModal",
+      "lisp": [
+        "show-modal"
+      ],
+      "native": [
+        "wxl_dialog_show"
+      ],
+      "scope": "Concrete text-entry modal loop under shared nonnested/lifetime/callback bridge."
+    },
+    {
+      "header": "wx/choicdlg.h",
+      "line": 222,
+      "declaration": "wxSingleChoiceDialog(wxWindow* parent, const wxString& message, const wxString& caption, const wxArrayString& choices, void** clientData = NULL, long style = wxCHOICEDLG_STYLE, const wxPoint& pos = wxDefaultPosition);",
+      "status": "~",
+      "symbol": "wxSingleChoiceDialog::wxSingleChoiceDialog",
+      "lisp": [
+        "single-choice-dialog",
+        "make-single-choice-dialog"
+      ],
+      "native": [
+        "wxl_single_choice_dialog"
+      ],
+      "scope": "Array-string constructor with optional managed parent, Unicode NUL-free message/title/items, nonempty items, initial valid index(default0), native styles/position defaults, no clientData. Other constructor overloads unbound. Actual native parent is normalized to the explicit requested window (including hidden) or truly parentless NIL; native autoparenting is not retained."
+    },
+    {
+      "header": "wx/choicdlg.h",
+      "line": 234,
+      "declaration": "int GetSelection() const;",
+      "status": "~",
+      "symbol": "wxSingleChoiceDialog::GetSelection",
+      "lisp": [
+        "dialog-selection"
+      ],
+      "native": [
+        "wxl_dialog_selection"
+      ],
+      "scope": "Native single selected index; fixed nonempty item set."
+    },
+    {
+      "header": "wx/choicdlg.h",
+      "line": 251,
+      "declaration": "void SetSelection(int selection);",
+      "status": "~",
+      "symbol": "wxSingleChoiceDialog::SetSelection",
+      "lisp": [
+        "dialog-selection"
+      ],
+      "native": [
+        "wxl_set_dialog_selection"
+      ],
+      "scope": "Validated integer index0..count-1, NIL rejects; no item mutation/client pointer ownership."
+    },
+    {
+      "header": "wx/choicdlg.h",
+      "line": 246,
+      "declaration": "wxString GetStringSelection() const;",
+      "status": "~",
+      "symbol": "wxSingleChoiceDialog::GetStringSelection",
+      "lisp": [
+        "dialog-selection-text"
+      ],
+      "native": [
+        "wxl_dialog_selection_text"
+      ],
+      "scope": "Last accepted native string cache, not derived current index. SetSelection changes index but cache can stay empty until actual OK-button transfer or retain prior accepted value after index changes/raw EndModal."
+    },
+    {
+      "header": "wx/choicdlg.h",
+      "line": 256,
+      "declaration": "int ShowModal();",
+      "status": "~",
+      "symbol": "wxSingleChoiceDialog::ShowModal",
+      "lisp": [
+        "show-modal"
+      ],
+      "native": [
+        "wxl_dialog_show"
+      ],
+      "scope": "Concrete single-choice modal loop under shared nonnested/lifetime/callback bridge."
+    },
+    {
+      "header": "wx/app.h",
+      "line": 220,
+      "declaration": "bool IsScheduledForDestruction(wxObject *object) const;",
+      "status": "~",
+      "symbol": "wxApp::IsScheduledForDestruction",
+      "lisp": [
+        "show-modal",
+        "handler-alive-p",
+        "menu-resource-alive-p"
+      ],
+      "native": [
+        "wxl_dialog_show",
+        "wxl_handler_alive",
+        "wxl_menu_alive"
+      ],
+      "scope": "Public native prerequisite for ancestor-aware managed window/resource validity: combine wxApp scheduled-deletion state with bridge pending markers before modal entry/liveness queries, even when IsBeingDeleted is false. No dedicated Lisp scheduled-deletion query/export or arbitrary wxObject adoption. Native zero-assert regression covers public Destroy and direct native scheduled-parent rejection before modal loop entry; full GUI/package validation is tracked in the handoff."
     }
   ],
   "classes": {
@@ -2901,19 +3122,22 @@
         "wxl_remove_handler",
         "wxl_dispatch_owned"
       ],
-      "scope": "Logical names, visibility and effective enabled state, layout, geometry and destruction are exposed; the remaining wxWindow API stays open. Managed handler stacks and explicit stack-aware copied routing are now supported. Push preserves bridge ownership; default pop/remove detach alive, deleting pop consumes native resource. All eight managed native widget destructors pop(false) before base teardown, independent of destroy observers/enabled flags. No external adoption/SetEventHandler or retained origins."
+      "scope": "Logical names, visibility and effective enabled state, layout, geometry and destruction are exposed; the remaining wxWindow API stays open. Managed handler stacks and explicit stack-aware copied routing are now supported. Push preserves bridge ownership; default pop/remove detach alive, deleting pop consumes native resource. All supported concrete native window destructors (including text/choice dialogs) pop(false) before base teardown, independent of destroy observers/enabled flags. No external adoption/SetEventHandler or retained origins. Modal-only dialog show writers reject; active modal/ancestor close/destroy guards preserve native modal lifetime. Native availability rejects pending/scheduled receiver or ancestor deletion through public wxApp::IsScheduledForDestruction plus bridge markers; no dedicated general deletion-query API."
     },
     "wxTopLevelWindow": {
       "status": "~",
       "lisp": [
         "frame-title",
-        "(setf frame-title)"
+        "(setf frame-title)",
+        "dialog-title"
       ],
       "native": [
         "wxl_title",
-        "wxl_set_title"
+        "wxl_set_title",
+        "wxl_dialog_title",
+        "wxl_set_dialog_title"
       ],
-      "scope": "Canonical SETF writer. Title get/set is exposed for wxFrame only; other top-level types and the remaining top-level API stay open."
+      "scope": "Title get/set is exposed for managed frames and text-entry/single-choice dialogs through canonical SETF. Dialogs are modal-only; other top-level families and remaining top-level API stay open."
     },
     "wxGauge": {
       "status": "~",
@@ -2974,7 +3198,7 @@
         "wxl_finish",
         "wxl_application_handler"
       ],
-      "scope": "One managed GUI application per process on its main thread. Native initialization/cleanup only; application subclass hooks, traits, top-window APIs and remaining GUI-application interfaces are unbound. The CLOS APPLICATION-HANDLER is a borrowed event-handler view only. Borrowed managed application handler view supports inherited binding/dispatch/state; construction and explicit deletion reject. OS session delivery and native application subclass hooks remain unverified/unbound. Query/end-session binding is available on the managed app and isolated owned handlers; synthetic app/window session emission rejects; OS delivery remains unverified."
+      "scope": "One managed GUI application per process on its main thread. Native initialization/cleanup only; application subclass hooks, traits, top-window APIs and remaining GUI-application interfaces are unbound. The CLOS APPLICATION-HANDLER is a borrowed event-handler view only. Borrowed managed application handler view supports inherited binding/dispatch/state; construction and explicit deletion reject. OS session delivery and native application subclass hooks remain unverified/unbound. Query/end-session binding is available on the managed app and isolated owned handlers; synthetic app/window session emission rejects; OS delivery remains unverified. Native availability rejects pending/scheduled receiver or ancestor deletion through public wxApp::IsScheduledForDestruction plus bridge markers; no dedicated general deletion-query API."
     },
     "wxEvtHandler": {
       "status": "~",
@@ -3360,6 +3584,61 @@
         "wxl_menu_destroy"
       ],
       "scope": "Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN. Normal/check/separator command actions only. Native OS menu interaction, accelerators, radio/submenu/popup and additional overloads remain outside this selected feature."
+    },
+    "wxDialog": {
+      "status": "~",
+      "lisp": [
+        "dialog",
+        "show-modal",
+        "end-modal",
+        "dialog-modal-p",
+        "dialog-title",
+        "destroy-window"
+      ],
+      "native": [
+        "wxl_dialog_show",
+        "wxl_dialog_end",
+        "wxl_dialog_abort",
+        "wxl_dialog_modal",
+        "wxl_dialog_title",
+        "wxl_set_dialog_title",
+        "wxl_destroy"
+      ],
+      "scope": "Abstract modal protocol only; no direct native wxDialog construction/modeless/custom validation/window-modal hooks. Active modal/ancestor destruction guarded until unwind. Message/file dialogs deferred after macOS cancellation probe hang; no exposure claimed. Native availability rejects pending/scheduled receiver or ancestor deletion through public wxApp::IsScheduledForDestruction plus bridge markers; no dedicated general deletion-query API."
+    },
+    "wxTextEntryDialog": {
+      "status": "~",
+      "lisp": [
+        "text-entry-dialog",
+        "make-text-entry-dialog",
+        "show-modal",
+        "dialog-value"
+      ],
+      "native": [
+        "wxl_text_entry_dialog",
+        "wxl_dialog_show",
+        "wxl_dialog_value",
+        "wxl_set_dialog_value"
+      ],
+      "scope": "Managed modal-only text entry with fixed defaults, native stored value and CLOS lifetime/rollback. Password/styles/validators/custom buttons and live internal text control unbound. Message/file dialogs deferred after macOS cancellation probe hang; no exposure claimed."
+    },
+    "wxSingleChoiceDialog": {
+      "status": "~",
+      "lisp": [
+        "single-choice-dialog",
+        "make-single-choice-dialog",
+        "show-modal",
+        "dialog-selection",
+        "dialog-selection-text"
+      ],
+      "native": [
+        "wxl_single_choice_dialog",
+        "wxl_dialog_show",
+        "wxl_dialog_selection",
+        "wxl_set_dialog_selection",
+        "wxl_dialog_selection_text"
+      ],
+      "scope": "Managed modal-only nonempty fixed choices, valid selection and native stored string; no multiselect/clientData/item mutation/custom style or generic choice control adoption. Message/file dialogs deferred after macOS cancellation probe hang; no exposure claimed."
     }
   }
 }

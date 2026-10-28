@@ -157,7 +157,10 @@ class CoverageInventoryChecks(unittest.TestCase):
     def test_reviewed_bindings_have_persistent_status(self):
         required = {
             'wxFrame::wxFrame', 'wxPanel::wxPanel', 'wxButton::wxButton',
-            'wxMenuBar::wxMenuBar', 'wxMenuBar::Append', 'wxMenuBar::GetMenuCount',
+            'wxApp::IsScheduledForDestruction', 'wxDialog::ShowModal', 'wxDialog::EndModal', 'wxDialog::IsModal',
+            'wxTextEntryDialog::wxTextEntryDialog', 'wxTextEntryDialog::GetValue',
+            'wxSingleChoiceDialog::wxSingleChoiceDialog', 'wxSingleChoiceDialog::GetSelection',
+            'wxSingleChoiceDialog::GetStringSelection', 'wxMenuBar::wxMenuBar', 'wxMenuBar::Append', 'wxMenuBar::GetMenuCount',
             'wxMenu::wxMenu', 'wxMenu::GetMenuItemCount', 'wxMenuItem::wxMenuItem',
             'wxMenuItem::GetId', 'wxMenuItem::GetKind', 'wxMenuItem::IsChecked',
             'wxMenuItem::IsEnabled', 'wxFrame::ProcessCommand', 'wxEVT_MENU',
@@ -191,7 +194,7 @@ class CoverageInventoryChecks(unittest.TestCase):
         self.assertEqual(set(self.status['classes']), {
             'wxFrame', 'wxPanel', 'wxButton', 'wxTextCtrl', 'wxStaticText',
             'wxCheckBox', 'wxChoice', 'wxGauge', 'wxBoxSizer', 'wxWindow', 'wxTopLevelWindow',
-            'wxMenuBar', 'wxMenu', 'wxMenuItem', 'wxAppConsole', 'wxApp', 'wxEvtHandler', 'wxClientData', 'wxObject', 'wxIdleEvent', 'wxEvent', 'wxCloseEvent', 'wxNotifyEvent', 'wxCommandEvent',
+            'wxDialog', 'wxTextEntryDialog', 'wxSingleChoiceDialog', 'wxMenuBar', 'wxMenu', 'wxMenuItem', 'wxAppConsole', 'wxApp', 'wxEvtHandler', 'wxClientData', 'wxObject', 'wxIdleEvent', 'wxEvent', 'wxCloseEvent', 'wxNotifyEvent', 'wxCommandEvent',
         })
 
     def test_compiler_scaffolding_is_context_but_public_macros_are_tasks(self):

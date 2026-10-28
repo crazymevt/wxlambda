@@ -79,23 +79,25 @@ as if later features or platform checks already passed.
 - Idle batch: :IDLE family/resources, bounded RequestMore, session-restored
   automatic mode, own-window opt-in and native wake scheduling. Independent review
   and final verification pass.
-- Current bridge ABI: 32. Public API: 146 exports, nine window wrapper classes
-  (eight concrete widget kinds) plus the event-handler base and frame-owned menu resources, 103 named generics and
-  thirty-one generic SETF writers. The application-handler is a borrowed view; no
+- Current bridge ABI: 33. Public API: 158 exports, twelve window wrapper classes
+  (ten concrete kinds plus WINDOW/DIALOG abstract bases) plus the event-handler base and frame-owned menu resources, 110 named generics and
+  thirty-four generic SETF writers. The application-handler is a borrowed view; no
   native application construction or arbitrary-event class binding exists yet; built-ins plus registered command/notify names have
   observer/contextual bindings.
-- Latest implementation verification: 49 GUI scenarios and native preflight
+- Latest implementation verification after the scheduled-deletion repair:
+  50 GUI scenarios and native preflight
   pass on local Apple Silicon macOS SBCL 2.6.9 and CCL 1.13. Final reports:
-  `evidence/menus/{sbcl,ccl}-20261028-final/`. Five package checks
-  pass in `evidence/packaging/menus-20261028/`.
+  `evidence/standard-dialogs/{sbcl,ccl}-20261028-final/`. Five package checks
+  pass in `evidence/packaging/standard-dialogs-20261028-final/`.
   Hosted Linux/Windows GUI behavior and the graphical Cadre viewer remain open.
 
 ### Feature priorities and working order
 
 1. Preserve core ownership/invalidation, callbacks/main-thread rules, CLOS APIs
    and required documentation/examples/docset/testing for every delivered feature.
-2. Menus/actions implement the first part of the selected GUI slice. Next implement
-   **standard dialogs** for a form/editor. Add only necessary
+2. Menus/actions and bounded text/single-choice dialogs extend the form/editor
+   slice. Next deliver **cancellation-safe message/file dialogs** using a tested
+   native bridge or a documented generic implementation. Add only necessary
    timer/value/lifetime prerequisites; do not drain native ownership/utilities.
 3. Expand controls/layout, navigation/notebooks, list/tree, clipboard and drawing
    against form/editor, tree/list manager and drawing/monitoring acceptance.
@@ -1451,7 +1453,7 @@ remain factual inventory entries, not automatic blockers for unrelated GUI work.
 with only the value/lifetime prerequisites that feature needs. The earlier saved
 native-only idle checkpoint is now integrated; do not reapply its patch.
 
-## Frame menus and actions (2026-10-28, verification pending)
+## Frame menus and actions (2026-10-28, verified)
 
 ABI 32 adds the menu portion of the selected everyday-GUI vertical slice.
 MENU-RESOURCE is abstract; native frame-owned MENU-BAR/MENU/MENU-ITEM resources
@@ -1504,6 +1506,99 @@ Manual OS menu selection/accelerator input, hosted Windows/Linux GUI, real OS
 session delivery and graphical Cadre remain unverified. Standard dialogs are the
 next selected GUI slice; menu radio/submenu/popup depth remains on-demand rather
 than an automatic blocker for that next feature.
+
+## Modal text-entry and single-choice dialogs (2026-10-28, verified)
+
+ABI 33 adds abstract DIALOG(window), native-backed TEXT-ENTRY-DIALOG and
+SINGLE-CHOICE-DIALOG, keyword-only factories, modal show/end/state and generic
+title/text value/choice selection accessors. Parent is optional; strings are
+Unicode without NUL, choice items nonempty with valid index(default0). Native
+styles/position are fixed. Direct subclass construction, defaults/AFTER hooks,
+initialization rollback and managed window invalidation follow existing contracts.
+Construction sections are required for all three class docset records.
+
+SHOW-MODAL permits entry from menus/RUN/pumps/callbacks but rejects nested modal
+loops and already shown dialogs. Outer contexts suspend during native modal
+processing; inner callbacks retain scoped lifetime. Unhandled callback errors
+cancel then re-signal after unwind; locally caught nested notifier errors can
+recover. Active dialog/ancestor destruction rejects until SHOW-MODAL returns,
+even after END-MODAL makes native IsModal false. Explicit manual pumping/lifecycle
+and structural menu edits remain guarded. These dialogs are modal-only; generic
+SHOW-WINDOW/SHOWN-P writers reject. END-MODAL is raw result assignment, not button
+validation/transfer. Native GetValue/GetStringSelection stored/cache timing must
+not be mistaken for live edit/index synchronization. See STANDARD-DIALOGS.md.
+
+A macOS exploratory wxMessageDialog/FileDialog cancellation probe hung past the
+five-second watchdog even with IsModal false; these families are deferred until
+a safe native cancellation bridge exists. Text/choice cancellation completed
+promptly in the bounded probe. This is evidence about that local probe only.
+No message/file public API, graphical acceptance or cross-platform claim is made.
+
+The final native modal close guard consumes current-dialog close and cancels it;
+ancestor close is consumed, while public CLOSE-WINDOW on a protected ancestor
+rejects. This supplements direct destruction guards against queued/native close.
+An initial example used a two-argument observer without :WITH-CONTEXT; the primary
+arity error correctly cancelled/unwound the modal loop without a hang, and the
+example callback was corrected to the one-argument observer contract.
+
+Verified counts: 158 exports,110 named generics,34 SETF generics,
+50 GUI scenarios,31 examples and221 docset entries. Independent runtime/native
+harness and documentation reviews pass. Documentation review clarified explicit
+parent normalization (hidden requested parent retained; NIL truly parentless)
+and outer-context suspension throughout the modal boundary. Native data-transfer
+semantics were verified with actual OK-button handler dispatch separately from
+raw END-MODAL. The initial test wrong-parent fixture used an incorrect MAKE-EVENT
+call and was corrected so it exercises the intended receiver rejection.
+
+Pre-repair checks, retained as historical evidence: focused regressions and the
+bounded example pass on SBCL and CCL (quiet-run.0emq63UB / quiet-run.JjAYhbfH). Both full 50-scenario GUI suites and
+native preflights pass (quiet-run.AOqbKVam); the watchdog-bounded native harness
+passes with zero wx assertions (quiet-run.16uKkU8j). Thirteen inventory tests,
+sixteen Python tests and five relocated package checks pass. Actual-package
+export/class/SETF checks and isolated docset installation, discovery, symbol lookup
+and guide/example access pass; docset checking reports zero problems.
+Evidence: evidence/standard-dialogs/{sbcl,ccl}-20261028/ and
+evidence/packaging/standard-dialogs-20261028/; package:
+dist/wxlambda-form-standard-dialogs.
+
+The interactive START prompt/physical input, hosted Windows/Linux GUI, real OS
+session delivery and graphical Cadre remain unverified; EXERCISE and native modal
+accept/cancel paths were automated. Native message/file panels are not delivered:
+complete a tested cancellation approach (platform bridge or documented generic
+implementation) next, preserving callback/lifetime guarantees. Continue selected
+GUI breadth without exhausting unrelated event/native utility declarations.
+
+### Late scheduled-deletion review finding (repaired and verified)
+
+After the first green 50-scenario runs, a direct native probe found that an
+ordinary wxFrame::Destroy request can enter wxApp's scheduled-deletion list while
+IsBeingDeleted still returns false. A child SHOW-MODAL incorrectly entered its
+loop under that queued-for-deletion ancestor and hit the five-second watchdog
+(quiet-run.g92SgChO). Prior green reports did not cover this branch and do not
+establish the repair.
+
+The repair combines bridge pending markers with the public
+wxApp::IsScheduledForDestruction query and validates the complete native ancestor
+chain for window/resource availability and modal preflight. Handler/menu liveness
+also follows the owning native hierarchy. A regression queues parent deletion
+before SHOW-MODAL and requires rejection before modal entry. This helper is a
+public wxWidgets interface dependency, not a private C7 implementation-header
+dependency and not a new exported general deletion-list query. Native rebuild and zero-assert harness now pass (quiet-run.isHjwh64 and
+quiet-run.ybnY3Eko). The harness proves both public Destroy and direct native
+ScheduleForDestruction on a parent reject child SHOW-MODAL before loop entry,
+leave output unchanged/no active modal and make parent/child/menu liveness false.
+The bridge deferred-destroy marker survives through native Destroy via RAII cleanup.
+Independent review clears the repair. Final expanded focused regressions pass on
+SBCL and CCL (quiet-run.RA2WbLD1), including immediate and callback-deferred parent
+Destroy before modal entry. Both full 50-scenario suites and native preflights
+pass after the repair (quiet-run.QKI5KW29). Thirteen inventory tests, sixteen
+Python tests, five relocated package checks and actual-export/class/SETF checks
+pass. The 221-entry docset reports zero problems; dedicated installation,
+discovery, symbol lookup and guide/example access pass. Final reports:
+evidence/standard-dialogs/{sbcl,ccl}-20261028-final/ and
+evidence/packaging/standard-dialogs-20261028-final/; final package:
+dist/wxlambda-form-standard-dialogs-final. Earlier pre-repair artifacts/reports
+are retained for diagnosis, not as proof of the corrected lifetime behavior.
 
 ## Decisions
 

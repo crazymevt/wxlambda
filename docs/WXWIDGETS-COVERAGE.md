@@ -53,7 +53,8 @@ automatic release requirements.
   with its stated Lisp mapping, `[~]` means partial support with the supported
   arguments/receivers and remaining limits stated inline, and `[ ]` means pending.
   The class index uses `[~]` for the managed `wxAppConsole`/`wxApp` interfaces,
-  `wxEvtHandler`, eight bound widgets, `wxBoxSizer`, `wxWindow` and `wxTopLevelWindow`; none has
+  `wxEvtHandler`, ten concrete window families, managed menu resources,
+  `wxBoxSizer`, `wxWindow` and `wxTopLevelWindow`; none has
   complete class coverage. Applications have lifecycle functions and a borrowed application-handler view;
   native application construction and subclass hooks remain unbound.
   Constructors with fixed IDs/styles remain partial.
@@ -86,25 +87,30 @@ is scheduled by feature priority, not automatically required for a release. A cl
 works. Context, class-definition and declaration counts must not be interpreted
 as percentages of distinct wxWidgets APIs.
 
-The current baseline has eight concrete widgets, basic layout and a deeply tested
+The current baseline has ten concrete window kinds, basic layout and a deeply tested
 managed lifetime/event layer, including command/notify/close/idle families, owned
 resources, pending delivery, handler chains/stacks and rooted Lisp associations.
 This foundation supports breadth; it is not a mandate to keep draining C1.
 Menus/actions deliver the first part of the selected form/editor slice.
-Standard dialogs are next, with only that feature's necessary prerequisites.
+Modal text-entry/single-choice dialogs add bounded input workflows; message/file
+families require a safe platform cancellation bridge.
 Native notify subclasses, retained origins and other unselected depth stay
 visible as native gaps without automatically blocking that GUI work.
 See the [C1 details](coverage/phase-c1.md), [C2 details](coverage/phase-c2.md) and
 [class index](coverage/classes.md) for the remaining work within bound families.
 
-The current bridge is ABI 32, with 146 public Lisp exports. The menu/action batch
-passes all 49 GUI scenarios on both local Apple Silicon macOS SBCL/CCL configurations
-and five packaging checks. Reports: `evidence/menus/{sbcl,ccl}-20261028-final/`
-and `evidence/packaging/menus-20261028/`. Independent reviews and the zero-assert
-native regression pass. Docset checks pass with 207 entries and zero problems,
-including actual public-export/class/SETF coverage and isolated discovery/lookup.
-These checks do not validate hosted Windows/Linux, manual OS menu selection or
-accelerator input, real OS session delivery, or the graphical Cadre viewer.
+The scheduled-deletion ancestor gap is repaired: the bridge uses public wxApp
+scheduled-deletion state plus its pending markers. Native regressions, independent
+review and the full GUI/package checks below validate the corrected behavior.
+
+The current bridge is ABI 33, with 158 public Lisp exports. The standard-dialog
+batch passes all 50 GUI scenarios on local Apple Silicon macOS SBCL and CCL, five
+package checks, independent reviews and the zero-assert native regression.
+Reports: `evidence/standard-dialogs/{sbcl,ccl}-20261028-final/` and
+`evidence/packaging/standard-dialogs-20261028-final/`. Docset checks pass with 221 entries
+and zero problems, including actual public-export/class/SETF coverage and isolated
+discovery/lookup. These checks do not validate hosted Windows/Linux, physical
+interactive input, real OS session delivery or the graphical Cadre viewer.
 
 A milestone is accepted against its selected GUI scope and representative
 workflows, not declaration totals or completion of every pending native entry.
@@ -124,7 +130,7 @@ status.json to represent deferral or assume a Lisp equivalent without checking
 its required semantics. A class can stay native-partial while its selected GUI
 feature scope is accepted. Native missing APIs are not automatic release blockers.
 
-**Current vertical slice:** menus/actions, followed next by standard dialogs for an
+**Current vertical slice:** menus/actions and bounded modal text/choice dialogs for an
 everyday form/editor, adding only timer/value/lifetime prerequisites actually
 needed by that slice. Do not drain native ownership/utilities first.
 
@@ -280,7 +286,7 @@ virtual overrides remain on-demand/deferred.
 
 [Complete C2 source inventory](coverage/phase-c2.md). Plan useful radio/toggle/
 combo/list controls, sliders/spinners, scrolling, layouts, focus/keyboard and
-practical font/colour/DPI support. Deepen the existing eight widgets as workflows
+practical font/colour/DPI support. Deepen the existing window/control families as workflows
 need; not every constructor option or inherited overload must precede the next
 useful control.
 
@@ -290,8 +296,9 @@ useful control.
 feedback, standard dialogs, books/notebooks and clipboard are everyday priorities.
 Drag/drop and specialized platform/help/wizard services follow concrete demand.
 Frame-owned normal/check/separator menus and ID-routed actions are implemented
-within the documented scope; final verification is pending. Standard dialogs are
-next. Popup/submenu/radio and full native menu overload depth stay in the inventory.
+within their verified scope. Modal text-entry/single-choice dialogs extend the
+selected workflow, with final checks pending. Message/file cancellation is deferred;
+popup/submenu/radio and full native menu overload depth stay in the inventory.
 
 ### C4: Models, complex controls, and document frameworks
 
@@ -386,5 +393,12 @@ package checks and the zero-assert native regression; independent reviews pass. 
 delivery and own-window opt-in is not an effective eligibility predicate.
 
 The verified ABI 32 menu batch adds managed native menu hierarchies and :MENU
-commands; [MENUS.md](MENUS.md) defines its selected scope and completed checks. Standard dialogs are next; native menu gaps do not automatically block
+commands; [MENUS.md](MENUS.md) defines its selected scope and completed checks. Bounded modal text/choice dialogs extend that scope; native menu gaps do not automatically block
 that GUI feature.
+
+The ABI33 modal base/text-entry/single-choice batch passes its documented
+local suites, native regression, package and docset/export checks. [STANDARD-DIALOGS.md](STANDARD-DIALOGS.md) distinguishes raw modal results
+from native validation/data transfer and stored-value/cache timing. Message/file
+dialogs remain deferred after a macOS cancellation probe hang; arbitrary native
+modal families are not claimed. Continue selected GUI features without requiring
+all native ownership/event declarations first.

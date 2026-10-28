@@ -17,7 +17,7 @@ class or constructor does not imply full upstream coverage.
 
 ## Current coverage and remaining work
 
-0 implemented; 27 partial; 1848 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
+0 implemented; 44 partial; 1831 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
 
 Counts describe inventory entries, not distinct APIs or percent completion.
 See the [coverage summary](README.md) for phase/header comparisons.
@@ -353,7 +353,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/choicdlg.h)
 
-0 implemented; 0 partial; 37 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
+0 implemented; 6 partial; 31 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
 
 - [ ] [L11](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/choicdlg.h#L11) `#define wxCHOICE_WIDTH 150`
 - [ ] [L16](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/choicdlg.h#L16) `#define wxCHOICE_HEIGHT 200`
@@ -370,14 +370,14 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [ ] [L139](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/choicdlg.h#L139) `documented style: wxOK`
 - [ ] [L141](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/choicdlg.h#L141) `documented style: wxCANCEL`
 - [ ] [L143](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/choicdlg.h#L143) `documented style: wxCENTRE`
-- [ ] [L152](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/choicdlg.h#L152) `class wxSingleChoiceDialog : public wxDialog {`
+- [~] [L152](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/choicdlg.h#L152) `class wxSingleChoiceDialog : public wxDialog {` — **Partial**: `single-choice-dialog`, `make-single-choice-dialog`, `show-modal`, `dialog-selection`, `dialog-selection-text`; ABI: `wxl_single_choice_dialog`, `wxl_dialog_show`, `wxl_dialog_selection`, `wxl_set_dialog_selection`, `wxl_dialog_selection_text`. Managed modal-only nonempty fixed choices, valid selection and native stored string; no multiselect/clientData/item mutation/custom style or generic choice control adoption. Message/file dialogs deferred after macOS cancellation probe hang; no exposure claimed.
 - [ ] [L187](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/choicdlg.h#L187) `wxSingleChoiceDialog(wxWindow* parent, const wxString& message, const wxString& caption, int n, const wxString* choices, void** clientData = NULL, long style = wxCHOICEDLG_STYLE, const wxPoint& pos = wxDefaultPosition);`
-- [ ] [L222](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/choicdlg.h#L222) `wxSingleChoiceDialog(wxWindow* parent, const wxString& message, const wxString& caption, const wxArrayString& choices, void** clientData = NULL, long style = wxCHOICEDLG_STYLE, const wxPoint& pos = wxDefaultPosition);`
-- [ ] [L234](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/choicdlg.h#L234) `int GetSelection() const;`
+- [~] [L222](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/choicdlg.h#L222) `wxSingleChoiceDialog(wxWindow* parent, const wxString& message, const wxString& caption, const wxArrayString& choices, void** clientData = NULL, long style = wxCHOICEDLG_STYLE, const wxPoint& pos = wxDefaultPosition);` — **Partial**: `single-choice-dialog`, `make-single-choice-dialog`; ABI: `wxl_single_choice_dialog`. Array-string constructor with optional managed parent, Unicode NUL-free message/title/items, nonempty items, initial valid index(default0), native styles/position defaults, no clientData. Other constructor overloads unbound. Actual native parent is normalized to the explicit requested window (including hidden) or truly parentless NIL; native autoparenting is not retained.
+- [~] [L234](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/choicdlg.h#L234) `int GetSelection() const;` — **Partial**: `dialog-selection`; ABI: `wxl_dialog_selection`. Native single selected index; fixed nonempty item set.
 - [ ] [L241](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/choicdlg.h#L241) `void* GetSelectionData() const;`
-- [ ] [L246](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/choicdlg.h#L246) `wxString GetStringSelection() const;`
-- [ ] [L251](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/choicdlg.h#L251) `void SetSelection(int selection);`
-- [ ] [L256](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/choicdlg.h#L256) `int ShowModal();`
+- [~] [L246](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/choicdlg.h#L246) `wxString GetStringSelection() const;` — **Partial**: `dialog-selection-text`; ABI: `wxl_dialog_selection_text`. Last accepted native string cache, not derived current index. SetSelection changes index but cache can stay empty until actual OK-button transfer or retain prior accepted value after index changes/raw EndModal.
+- [~] [L251](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/choicdlg.h#L251) `void SetSelection(int selection);` — **Partial**: `dialog-selection`; ABI: `wxl_set_dialog_selection`. Validated integer index0..count-1, NIL rejects; no item mutation/client pointer ownership.
+- [~] [L256](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/choicdlg.h#L256) `int ShowModal();` — **Partial**: `show-modal`; ABI: `wxl_dialog_show`. Concrete single-choice modal loop under shared nonnested/lifetime/callback bridge.
 - [ ] [L278](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/choicdlg.h#L278) `int wxGetSingleChoiceIndex(const wxString& message, const wxString& caption, const wxArrayString& aChoices, wxWindow* parent = NULL, int x = wxDefaultCoord, int y = wxDefaultCoord, bool centre = true, int width = wxCHOICE_WIDTH, int height = wxCHOICE_HEIGHT, int initialSelection = 0);`
 - [ ] [L289](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/choicdlg.h#L289) `int wxGetSingleChoiceIndex(const wxString& message, const wxString& caption, int n, const wxString& choices[], wxWindow* parent = NULL, int x = wxDefaultCoord, int y = wxDefaultCoord, bool centre = true, int width = wxCHOICE_WIDTH, int height = wxCHOICE_HEIGHT, int initialSelection = 0);`
 - [ ] [L302](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/choicdlg.h#L302) `int wxGetSingleChoiceIndex(const wxString& message, const wxString& caption, const wxArrayString& choices, int initialSelection, wxWindow *parent = NULL);`
@@ -614,7 +614,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dialog.h)
 
-0 implemented; 0 partial; 76 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
+0 implemented; 5 partial; 71 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
 
 - [ ] [L11](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dialog.h#L11) `enum wxDialogLayoutAdaptationMode {`
 - [ ] [L13](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dialog.h#L13) `wxDIALOG_ADAPTATION_MODE_DEFAULT = 0, wxDIALOG_ADAPTATION_MODE_ENABLED = 1, wxDIALOG_ADAPTATION_MODE_DISABLED = 2 }`
@@ -639,10 +639,10 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [ ] [L128](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dialog.h#L128) `documented style: wxDIALOG_EX_METAL`
 - [ ] [L139](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dialog.h#L139) `documented event: EVT_CLOSE(func)`
 - [ ] [L144](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dialog.h#L144) `documented event: EVT_INIT_DIALOG(func)`
-- [ ] [L153](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dialog.h#L153) `class wxDialog : public wxTopLevelWindow {`
+- [~] [L153](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dialog.h#L153) `class wxDialog : public wxTopLevelWindow {` — **Partial**: `dialog`, `show-modal`, `end-modal`, `dialog-modal-p`, `dialog-title`, `destroy-window`; ABI: `wxl_dialog_show`, `wxl_dialog_end`, `wxl_dialog_abort`, `wxl_dialog_modal`, `wxl_dialog_title`, `wxl_set_dialog_title`, `wxl_destroy`. Abstract modal protocol only; no direct native wxDialog construction/modeless/custom validation/window-modal hooks. Active modal/ancestor destruction guarded until unwind. Message/file dialogs deferred after macOS cancellation probe hang; no exposure claimed. Native availability rejects pending/scheduled receiver or ancestor deletion through public wxApp::IsScheduledForDestruction plus bridge markers; no dedicated general deletion-query API.
 - [ ] [L159](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dialog.h#L159) `wxDialog();`
 - [ ] [L189](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dialog.h#L189) `wxDialog(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE, const wxString& name = wxDialogNameStr);`
-- [ ] [L202](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dialog.h#L202) `virtual ~wxDialog();`
+- [~] [L202](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dialog.h#L202) `virtual ~wxDialog();` — **Partial**: `destroy-window`; ABI: `wxl_destroy`. Inherited managed native window destruction after modal unwind; parent cascade invalidates wrappers. No public direct wxDialog construction.
 - [ ] [L210](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dialog.h#L210) `void AddMainButtonId(wxWindowID id);`
 - [ ] [L219](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dialog.h#L219) `virtual bool CanDoLayoutAdaptation();`
 - [ ] [L227](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dialog.h#L227) `void Centre(int direction = wxBOTH);`
@@ -654,7 +654,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [ ] [L311](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dialog.h#L311) `wxSizer *CreateTextSizer(const wxString& message, int widthMax = -1);`
 - [ ] [L319](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dialog.h#L319) `virtual bool DoLayoutAdaptation();`
 - [ ] [L327](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dialog.h#L327) `static void EnableLayoutAdaptation(bool enable);`
-- [ ] [L338](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dialog.h#L338) `virtual void EndModal(int retCode);`
+- [~] [L338](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dialog.h#L338) `virtual void EndModal(int retCode);` — **Partial**: `end-modal`; ABI: `wxl_dialog_end`, `wxl_dialog_abort`. Active managed modal only, :OK/:CANCEL results. Raw EndModal does not run button validation/data transfer. Dialog/ancestor destruction remains blocked until SHOW-MODAL returns; internal abort cancels callback errors.
 - [ ] [L346](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dialog.h#L346) `int GetAffirmativeId() const;`
 - [ ] [L355](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dialog.h#L355) `virtual wxWindow* GetContentWindow() const;`
 - [ ] [L362](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dialog.h#L362) `int GetEscapeId() const;`
@@ -669,7 +669,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [ ] [L447](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dialog.h#L447) `virtual bool IsIconized() const;`
 - [ ] [L455](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dialog.h#L455) `static bool IsLayoutAdaptationEnabled();`
 - [ ] [L465](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dialog.h#L465) `bool IsMainButtonId(wxWindowID id) const;`
-- [ ] [L470](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dialog.h#L470) `virtual bool IsModal() const;`
+- [~] [L470](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dialog.h#L470) `virtual bool IsModal() const;` — **Partial**: `dialog-modal-p`; ABI: `wxl_dialog_modal`. Native state only, distinct from the longer bridge active-modal lifetime guard.
 - [ ] [L486](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dialog.h#L486) `void SetAffirmativeId(int id);`
 - [ ] [L507](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dialog.h#L507) `void SetEscapeId(int id);`
 - [ ] [L517](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dialog.h#L517) `void SetIcon(const wxIcon& icon);`
@@ -680,7 +680,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [ ] [L562](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dialog.h#L562) `static wxDialogLayoutAdapter* SetLayoutAdapter(wxDialogLayoutAdapter* adapter);`
 - [ ] [L576](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dialog.h#L576) `void SetReturnCode(int retCode);`
 - [ ] [L587](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dialog.h#L587) `virtual bool Show(bool show = true);`
-- [ ] [L610](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dialog.h#L610) `virtual int ShowModal();`
+- [~] [L610](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dialog.h#L610) `virtual int ShowModal();` — **Partial**: `show-modal`; ABI: `wxl_dialog_show`. Managed text-entry/single-choice modal loop only. Allowed callback entry, rejects nested/already shown. Suspends outer event contexts; primary callback error cancels/unwinds and re-signals. No modeless/custom dialog API.
 - [ ] [L630](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dialog.h#L630) `void ShowWindowModal();`
 - [ ] [L669](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dialog.h#L669) `template<typename Functor> void ShowWindowModalThenDo(const Functor& onEndModal);`
 - [ ] [L692](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dialog.h#L692) `class wxDialogLayoutAdapter {`
@@ -1958,25 +1958,25 @@ See the [coverage summary](README.md) for phase/header comparisons.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textdlg.h)
 
-0 implemented; 0 partial; 19 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
+0 implemented; 6 partial; 13 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
 
 - [ ] [L11](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textdlg.h#L11) `#define wxTextEntryDialogStyle (wxOK | wxCANCEL | wxCENTRE)`
 - [ ] [L14](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textdlg.h#L14) `const char wxGetTextFromUserPromptStr[] = "Input Text";`
 - [ ] [L17](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textdlg.h#L17) `const char wxGetPasswordFromUserPromptStr[] = "Enter Password";`
 - [ ] [L33](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textdlg.h#L33) `class wxPasswordEntryDialog : public wxTextEntryDialog {`
 - [ ] [L56](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textdlg.h#L56) `wxPasswordEntryDialog(wxWindow* parent, const wxString& message, const wxString& caption = wxGetPasswordFromUserPromptStr, const wxString& defaultValue = wxEmptyString, long style = wxTextEntryDialogStyle, const wxPoint& pos = wxDefaultPosition);`
-- [ ] [L76](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textdlg.h#L76) `class wxTextEntryDialog : public wxDialog {`
+- [~] [L76](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textdlg.h#L76) `class wxTextEntryDialog : public wxDialog {` — **Partial**: `text-entry-dialog`, `make-text-entry-dialog`, `show-modal`, `dialog-value`; ABI: `wxl_text_entry_dialog`, `wxl_dialog_show`, `wxl_dialog_value`, `wxl_set_dialog_value`. Managed modal-only text entry with fixed defaults, native stored value and CLOS lifetime/rollback. Password/styles/validators/custom buttons and live internal text control unbound. Message/file dialogs deferred after macOS cancellation probe hang; no exposure claimed.
 - [ ] [L86](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textdlg.h#L86) `wxTextEntryDialog();`
-- [ ] [L95](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textdlg.h#L95) `wxTextEntryDialog(wxWindow* parent, const wxString& message, const wxString& caption = wxGetTextFromUserPromptStr, const wxString& value = wxEmptyString, long style = wxTextEntryDialogStyle, const wxPoint& pos = wxDefaultPosition);`
+- [~] [L95](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textdlg.h#L95) `wxTextEntryDialog(wxWindow* parent, const wxString& message, const wxString& caption = wxGetTextFromUserPromptStr, const wxString& value = wxEmptyString, long style = wxTextEntryDialogStyle, const wxPoint& pos = wxDefaultPosition);` — **Partial**: `text-entry-dialog`, `make-text-entry-dialog`; ABI: `wxl_text_entry_dialog`. Optional managed parent, Unicode NUL-free message/title/value, fixed native default style/position. Modal-only, direct CLOS subclasses/initargs/AFTER and rollback; no password/text-validator/style overload. Actual native parent is normalized to the explicit requested window (including hidden) or truly parentless NIL; native autoparenting is not retained.
 - [ ] [L121](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textdlg.h#L121) `bool Create(wxWindow* parent, const wxString& message, const wxString& caption = wxGetTextFromUserPromptStr, const wxString& value = wxEmptyString, long style = wxTextEntryDialogStyle, const wxPoint& pos = wxDefaultPosition);`
-- [ ] [L130](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textdlg.h#L130) `virtual ~wxTextEntryDialog();`
-- [ ] [L136](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textdlg.h#L136) `wxString GetValue() const;`
+- [~] [L130](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textdlg.h#L130) `virtual ~wxTextEntryDialog();` — **Partial**: `destroy-window`; ABI: `wxl_destroy`. Managed native window lifetime; active dialog/ancestor destruction rejects until modal unwind.
+- [~] [L136](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textdlg.h#L136) `wxString GetValue() const;` — **Partial**: `dialog-value`; ABI: `wxl_dialog_value`. Native stored value, not guaranteed live edit buffer. Raw END-MODAL does not perform OK-button validation/transfer.
 - [ ] [L158](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textdlg.h#L158) `void SetTextValidator(const wxTextValidator& validator);`
 - [ ] [L159](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textdlg.h#L159) `void SetTextValidator(wxTextValidatorStyle style = wxFILTER_NONE);`
 - [ ] [L170](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textdlg.h#L170) `void SetMaxLength(unsigned long len);`
-- [ ] [L175](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textdlg.h#L175) `void SetValue(const wxString& value);`
+- [~] [L175](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textdlg.h#L175) `void SetValue(const wxString& value);` — **Partial**: `dialog-value`; ABI: `wxl_set_dialog_value`. Unicode NUL-free stored value update through notifying Lisp boundary; empty allowed.
 - [ ] [L189](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textdlg.h#L189) `void ForceUpper();`
-- [ ] [L198](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textdlg.h#L198) `int ShowModal();`
+- [~] [L198](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textdlg.h#L198) `int ShowModal();` — **Partial**: `show-modal`; ABI: `wxl_dialog_show`. Concrete text-entry modal loop under shared nonnested/lifetime/callback bridge.
 - [ ] [L226](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textdlg.h#L226) `wxString wxGetTextFromUser(const wxString& message, const wxString& caption = wxGetTextFromUserPromptStr, const wxString& default_value = wxEmptyString, wxWindow* parent = NULL, int x = wxDefaultCoord, int y = wxDefaultCoord, bool centre = true);`
 - [ ] [L241](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textdlg.h#L241) `wxString wxGetPasswordFromUser(const wxString& message, const wxString& caption = wxGetPasswordFromUserPromptStr, const wxString& default_value = wxEmptyString, wxWindow* parent = NULL, int x = wxDefaultCoord, int y = wxDefaultCoord, bool centre = true);`
 

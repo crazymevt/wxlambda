@@ -27,6 +27,7 @@ def scenarios():
     yield "event-bindings", "event-bindings.lisp", {}
     yield "event-contexts", "event-contexts.lisp", {}
     yield "close-events", "close-events.lisp", {}
+    yield "standard-dialogs", "standard-dialogs.lisp", {}
     yield "menus", "menus.lisp", {}
     yield "idle-events", "idle-events.lisp", {}
     yield "binding-user-data", "binding-user-data.lisp", {}

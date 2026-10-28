@@ -52,7 +52,8 @@ is the exception: it can read attached owned nodes and returns NIL.
 
 ## Window destruction and explicit handler destruction
 
-All eight concrete native widget kinds use an internal managed destructor that
+All supported concrete native window kinds, including text/choice dialogs, use
+an internal managed destructor that
 pops managed handlers with native deletion disabled before wxWindowBase teardown.
 Deleting a window or an ancestor therefore detaches pushed handlers; they remain
 alive, unlinked and session-owned. Their own pending queues remain with them and
@@ -125,7 +126,7 @@ Run the complete example:
 sbcl --load ~/quicklisp/setup.lisp --load examples/window-handler-stacks.lisp --eval '(wxlambda-window-handler-stacks:start)'
 ```
 
-Focused regression covers stack-aware explicit routing versus generic window
+The original eight-widget focused regression covers stack-aware explicit routing versus generic window
 bypass, pop/remove/deleting-pop lifetime, nonmember/stale probes, all eight widget
 destructors, parent-cascade detachment with window event processing disabled,
 pending delivery after pop/window deletion, session guards and rollback in both
@@ -135,7 +136,8 @@ structural/native review rather than a claimed destroy-callback test. A destroy
 request still differs from actual native detachment. Local checks do not establish hosted
 Windows/Linux GUI or graphical Cadre behavior. Remaining C1 work includes
 external/native stack adoption, arbitrary SetEventHandler, origin retention,
-client/userData ownership, timer/idle and worker dispatch.
+arbitrary native client/userData ownership, timer events and worker dispatch.
+Bounded idle scheduling and Lisp-rooted handler/binding data are now supported.
 
 Build/check with `python3 tools/docset.py build` and `check`; install with
 `python3 tools/docset.py install` under `$XDG_DATA_HOME/docsets/wxlambda/`

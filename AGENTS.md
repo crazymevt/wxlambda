@@ -95,7 +95,7 @@ maps native metadata directly (including re-enabling); snapshots remain immutabl
 and metadata changes do not guarantee OS veto policy. Frame close acceptance is not
 a destruction guarantee. The type lookup is `event-type`, with no old-name alias.
 
-The native-backed `owned-event` resource supports detached command/notify/close
+The native-backed `owned-event` resource supports detached command/notify/close/idle
 construction, independent cloning/disposal and copied dispatch. Reject ancestry
 combining it with `event-handler`/window resources before native allocation.
 Direct clone construction uses source native state over payload defaults; factory
@@ -141,4 +141,7 @@ Menu resources use the separate native-backed MENU-RESOURCE abstract hierarchy:
 MENU-BAR, MENU and MENU-ITEM. Direct constructors use :PARENT; native frame/bar/
 menu ownership controls invalidation. Structural menu edits reject callback/pump/
 RUN contexts; scalar writes follow the documented generic protocols. See
-`docs/MENUS.md`. The next selected GUI feature is standard dialogs.
+`docs/MENUS.md`. Modal DIALOG has bounded TEXT-ENTRY-DIALOG/SINGLE-CHOICE-DIALOG families;
+message/file dialogs await safe native platform cancellation. Preserve modal
+context suspension and active-dialog/ancestor lifetime guards. See
+`docs/STANDARD-DIALOGS.md`.

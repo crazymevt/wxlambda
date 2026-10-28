@@ -51,7 +51,7 @@
     "arguments": "No arguments.",
     "returns": "NIL after the event loop returns.",
     "description": "Block until STOP or the last top-level frame closes. Callback errors are re-signaled after returning from native code.",
-    "scope": "Requires an active main-thread GUI session and at least one frame. Forbidden inside RUN, either pump, any native-to-Lisp callback, and the application REPL. Native failures and callback conditions propagate.",
+    "scope": "Requires an active main-thread GUI session and at least one frame. Forbidden inside RUN, either pump, any native-to-Lisp callback, and the application REPL. Native failures and callback conditions propagate. Explicit manual dispatch/pumping is rejected while a managed modal call is active; the native modal loop owns dispatch.",
     "wxwidgets": "wxAppConsole::OnRun"
   },
   {
@@ -69,7 +69,7 @@
     "arguments": "No arguments.",
     "returns": "NIL.",
     "description": "Yield to GUI events and process idle work without waiting for new input; re-signal callback errors after returning from native polling.",
-    "scope": "Requires an active main-thread GUI session. Forbidden inside RUN, either event pump or any native-to-Lisp callback (NATIVE-ERROR), and inside the application REPL debugger (Lisp error). Existing synchronous notifying setters remain supported.",
+    "scope": "Requires an active main-thread GUI session. Forbidden inside RUN, either event pump or any native-to-Lisp callback (NATIVE-ERROR), and inside the application REPL debugger (Lisp error). Existing synchronous notifying setters remain supported. Explicit manual dispatch/pumping is rejected while a managed modal call is active; the native modal loop owns dispatch.",
     "wxwidgets": "wxAppConsole::Yield(true) and ProcessIdle"
   },
   {
@@ -213,7 +213,7 @@
     "arguments": "WINDOW is live; optional SHOW is a generalized boolean (default T).",
     "returns": "WINDOW, then a boolean indicating whether its shown state changed.",
     "description": "Show with true SHOW, hide with NIL. Existing one-argument calls still show the window and return it as their primary value.",
-    "scope": "Requires an active GUI session on the process main thread. Invalid/destroyed handles or unsupported native arguments signal NATIVE-ERROR; Lisp argument/type errors remain Lisp conditions. One GUI session per process. Widget behavior uses CLOS generic dispatch. Wrong receiver types signal Lisp dispatch conditions; native handle/state failures signal NATIVE-ERROR.",
+    "scope": "Requires an active GUI session on the process main thread. Invalid/destroyed handles or unsupported native arguments signal NATIVE-ERROR; Lisp argument/type errors remain Lisp conditions. One GUI session per process. Widget behavior uses CLOS generic dispatch. Wrong receiver types signal Lisp dispatch conditions; native handle/state failures signal NATIVE-ERROR. Supported dialogs are modal-only: SHOW-WINDOW and SHOWN-P SETF reject them; use SHOW-MODAL. SHOWN-P reader remains available.",
     "wxwidgets": "wxWindow::Show(bool) / Hide() equivalent (wxWidgets 3.2)."
   },
   {
@@ -222,7 +222,7 @@
     "arguments": "WINDOW is live.",
     "returns": "T after the destruction request.",
     "description": "Request destruction; first explicitly unbind handlers to release Lisp closures. Child handles become invalid when native destruction occurs. During native-to-Lisp callbacks the target becomes invalid immediately and native destruction is deferred using application CallAfter so dispatch/setter stacks can return safely. Generic bindings are reaped at Lisp boundaries; control-specific closures still require explicit unbinding or session cleanup.",
-    "scope": "Requires an active GUI session on the process main thread. Invalid/destroyed handles or unsupported native arguments signal NATIVE-ERROR; Lisp argument/type errors remain Lisp conditions. One GUI session per process. Widget behavior uses CLOS generic dispatch. Wrong receiver types signal Lisp dispatch conditions; native handle/state failures signal NATIVE-ERROR.",
+    "scope": "Requires an active GUI session on the process main thread. Invalid/destroyed handles or unsupported native arguments signal NATIVE-ERROR; Lisp argument/type errors remain Lisp conditions. One GUI session per process. Widget behavior uses CLOS generic dispatch. Wrong receiver types signal Lisp dispatch conditions; native handle/state failures signal NATIVE-ERROR. The active modal dialog and all its ancestors cannot be destroyed until SHOW-MODAL returns, even after END-MODAL reports native nonmodal state.",
     "wxwidgets": "wxWindow::Destroy"
   },
   {
@@ -456,7 +456,7 @@
     "arguments": "WINDOW is live.",
     "returns": "T or NIL.",
     "description": "Read the window's own shown flag. A hidden ancestor does not change this flag; it does not report effective screen visibility.",
-    "scope": "Requires an active GUI session on the process main thread. Invalid/destroyed handles or unsupported native arguments signal NATIVE-ERROR; Lisp argument/type errors remain Lisp conditions. One GUI session per process. Widget behavior uses CLOS generic dispatch. Wrong receiver types signal Lisp dispatch conditions; native handle/state failures signal NATIVE-ERROR.",
+    "scope": "Requires an active GUI session on the process main thread. Invalid/destroyed handles or unsupported native arguments signal NATIVE-ERROR; Lisp argument/type errors remain Lisp conditions. One GUI session per process. Widget behavior uses CLOS generic dispatch. Wrong receiver types signal Lisp dispatch conditions; native handle/state failures signal NATIVE-ERROR. Supported dialogs are modal-only: SHOW-WINDOW and SHOWN-P SETF reject them; use SHOW-MODAL. SHOWN-P reader remains available.",
     "wxwidgets": "wxWindow::IsShown (wxWidgets 3.2).",
     "setf": {
       "syntax": "(setf (wxlambda:shown-p window) new-value)",
@@ -714,7 +714,7 @@
     "arguments": "No arguments.",
     "returns": "NIL after successful dispatch.",
     "description": "Dispatch queued wx events for all pending handlers of the bridge application via ProcessPendingEvents. Does not yield to OS input or run ProcessIdle. Does not wait for new events; callback duration and continuously requeued work may delay return. Callback conditions are contained at the native boundary and re-signaled afterwards.",
-    "scope": "Requires an active main-thread GUI session; use before startup or after cleanup signals NATIVE-ERROR. This API is scoped to the bridge application, not arbitrary wxApp instances. Forbidden inside RUN, either pump or any native-to-Lisp callback (NATIVE-ERROR), and inside the application REPL debugger (Lisp error). Dispatch guards recover on callback failure. Synchronous notifying setters remain supported.",
+    "scope": "Requires an active main-thread GUI session; use before startup or after cleanup signals NATIVE-ERROR. This API is scoped to the bridge application, not arbitrary wxApp instances. Forbidden inside RUN, either pump or any native-to-Lisp callback (NATIVE-ERROR), and inside the application REPL debugger (Lisp error). Dispatch guards recover on callback failure. Synchronous notifying setters remain supported. Explicit manual dispatch/pumping is rejected while a managed modal call is active; the native modal loop owns dispatch.",
     "wxwidgets": "wxAppConsole::ProcessPendingEvents (wxWidgets 3.2.12 baseline)."
   },
   {
@@ -755,7 +755,7 @@
     "arguments": "HANDLER is an EVENT-HANDLER or a WINDOW subclass.",
     "returns": "T if native identity exists and is not being deleted; NIL for stale/destroyed identity during an active session.",
     "description": "Observe native lifetime without dereferencing dead windows. Native weak tracking makes window destruction safe even with event processing disabled. A failed/uninitialized Lisp wrapper has no handle and signals NATIVE-ERROR. Session cleanup invalidates every identity; outside a session this query signals NATIVE-ERROR.",
-    "scope": "Active main-thread GUI session required; otherwise NATIVE-ERROR, including after cleanup. Invalid/stale native handles signal NATIVE-ERROR except HANDLER-ALIVE-P, which returns NIL for destroyed/unknown IDs during an active session. Unsupported Lisp receivers use CLOS dispatch errors. Generic observer/contextual bindings cover built-ins and registered command/notify names, including on the borrowed application view. Arbitrary native classes, validated OS session delivery, pushed handler chains and native virtual overrides remain unbound.",
+    "scope": "Active main-thread GUI session required; otherwise NATIVE-ERROR, including after cleanup. Invalid/stale native handles signal NATIVE-ERROR except HANDLER-ALIVE-P, which returns NIL for destroyed/unknown IDs during an active session. Unsupported Lisp receivers use CLOS dispatch errors. Generic observer/contextual bindings cover built-ins and registered command/notify names, including on the borrowed application view. Arbitrary native classes, validated OS session delivery, pushed handler chains and native virtual overrides remain unbound. Pending/scheduled native deletion of a window receiver/owning frame or any native ancestor makes that resource unavailable; IsBeingDeleted alone is not the liveness test.",
     "wxwidgets": "Bridge lifetime predicate using native registries and wxWeakRef<wxWindow>/IsBeingDeleted; no standalone public wxWeakRef wrapper."
   },
   {
@@ -977,7 +977,7 @@
     "arguments": "FRAME is a live FRAME. Optional FORCE defaults NIL; true initializes native CanVeto false.",
     "returns": "Native close acceptance as T/NIL; not a destruction/liveness guarantee.",
     "description": "Synchronously generate the frame close request via wxWindow::Close(force). A vetoed request returns NIL. A consuming contextual callback may return acceptance T without deleting anything, even for FORCE. Set Skip true to delegate to native default closing when appropriate. Callback conditions re-signal at this Lisp boundary; a handled nested condition does not stop RUN. Use DESTROY-WINDOW for explicit destruction. A callback can explicitly mutate CanVeto through SETF EVENT-CAN-VETO-P; FORCE is not an immutable capability limit.",
-    "scope": "Active main-thread session required for native context or frame operations. Expired/suspended contexts and invalid/deleting frames signal NATIVE-ERROR. Saved snapshots need no session. Close and registered notify families permit checked veto. Native control-specific notify subclasses, validated OS session delivery and arbitrary event classes remain open.",
+    "scope": "Active main-thread session required for native context or frame operations. Expired/suspended contexts and invalid/deleting frames signal NATIVE-ERROR. Saved snapshots need no session. Close and registered notify families permit checked veto. Native control-specific notify subclasses, validated OS session delivery and arbitrary event classes remain open. Closing a protected active-modal ancestor rejects until SHOW-MODAL returns; modal dialog close itself uses cancellation.",
     "wxwidgets": "wxWindow::Close(bool), wxFrame receivers only (wxWidgets 3.2.12 baseline)."
   },
   {
@@ -1540,7 +1540,7 @@
     "arguments": "RESOURCE is a menu resource.",
     "returns": "T/NIL.",
     "description": "Query managed native liveness. Parent destruction invalidates all descendants. Requires an active session; no pointer adoption.",
-    "scope": "Requires an active main-thread GUI session and a completed managed wrapper. Expired/destroyed native resources return NIL rather than requiring native liveness. Invalid Lisp receivers signal CLOS conditions; no raw native adoption or GC finalizer.",
+    "scope": "Requires an active main-thread GUI session and a completed managed wrapper. Expired/destroyed native resources return NIL rather than requiring native liveness. Invalid Lisp receivers signal CLOS conditions; no raw native adoption or GC finalizer. Pending/scheduled native deletion of a window receiver/owning frame or any native ancestor makes that resource unavailable; IsBeingDeleted alone is not the liveness test.",
     "wxwidgets": "Bridge registry identity and native ownership"
   },
   {
@@ -1560,5 +1560,147 @@
     "description": "Programmatically route the native command through its frame. Separators reject. This is not a claim that graphical OS menu selection or accelerators were exercised. Event metadata and resource state remain distinct; see MENUS guide for checked-command behavior. Native check-item activation toggles the resource before callbacks. A normal item can carry native command integer -1, so EVENT-CHECKED-P may be true even for a normal item; use CHECKED-P on a known check resource for actual state.",
     "scope": "Requires an active main-thread GUI session and a live managed resource. Native resource/type/state failures signal NATIVE-ERROR; invalid Lisp types and CLOS receivers signal Lisp conditions. Structural operations reject during callbacks, pumps and RUN. Ownership stays in the frame/bar/menu native hierarchy; no raw pointer adoption or GC finalizer.",
     "wxwidgets": "wxFrame::ProcessCommand"
+  },
+  {
+    "name": "dialog",
+    "kind": "class",
+    "arguments": "Abstract WINDOW subclass, base of TEXT-ENTRY-DIALOG and SINGLE-CHOICE-DIALOG.",
+    "returns": "No direct construction.",
+    "description": "Shared bounded modal protocol and ordinary managed window lifetime.",
+    "scope": "Requires an active main-thread GUI session and a live managed dialog. Invalid native handles/state signal NATIVE-ERROR; invalid Lisp types/receivers signal Lisp conditions. Modal-only text-entry/single-choice scope; no arbitrary native adoption, GC finalizer or native virtual Lisp overrides. Native validity includes the receiver and all native ancestors: bridge pending-destruction markers and the public wxApp scheduled-deletion list reject use even before IsBeingDeleted becomes true. SHOW-MODAL preflight must not enter a loop beneath an ancestor already queued for deletion.",
+    "wxwidgets": "wxDialog modal base; no general wxDialog constructor.",
+    "syntax": "wxlambda:dialog",
+    "construction": {
+      "syntax": "(make-instance 'wxlambda:dialog) ; signals an error",
+      "description": "Abstract class; direct construction rejects before native allocation. Use exactly one supported concrete dialog family; unsupported/mixed managed ancestry rejects."
+    }
+  },
+  {
+    "name": "text-entry-dialog",
+    "kind": "class",
+    "arguments": "Optional :PARENT window(default NIL), :MESSAGE(default \"Enter a value:\"), :TITLE(default \"Text entry\"), :VALUE(default empty string).",
+    "returns": "New native-backed dialog.",
+    "description": "Construct a modal-only native text-entry dialog. Dialog value is native stored value, not a promise of live edit-buffer contents. Strings are Unicode without NUL; empty strings are accepted. Defaults/subclass slot initargs and AFTER hooks use the native-backed CLOS protocol. Failed managed initialization destroys newly created resources; it does not reverse arbitrary external mutations.",
+    "scope": "Requires an active main-thread GUI session and a live managed dialog. Invalid native handles/state signal NATIVE-ERROR; invalid Lisp types/receivers signal Lisp conditions. Modal-only text-entry/single-choice scope; no arbitrary native adoption, GC finalizer or native virtual Lisp overrides. Native validity includes the receiver and all native ancestors: bridge pending-destruction markers and the public wxApp scheduled-deletion list reject use even before IsBeingDeleted becomes true. SHOW-MODAL preflight must not enter a loop beneath an ancestor already queued for deletion.",
+    "wxwidgets": "wxTextEntryDialog constructor (wxWidgets 3.2.12 baseline).",
+    "syntax": "wxlambda:text-entry-dialog",
+    "construction": {
+      "syntax": "(make-instance 'wxlambda:text-entry-dialog :parent frame :message \"Name\" :title \"Edit\" :value \"Ada\")",
+      "description": "Direct subclass construction is supported with DEFAULT-INITARGS and inherited native initialization. Native properties exist in subclass AFTER hooks. Standard DESTROY-WINDOW/native parent ownership governs cleanup. Construction is permitted on the GUI thread inside callbacks/RUN/pumps, so menu actions can create dialogs; menu structural-edit guards do not apply to dialog construction. The bridge normalizes the actual native parent to the explicitly requested window or NIL, retaining even a hidden requested parent. NIL means truly parentless rather than native automatic parent selection."
+    }
+  },
+  {
+    "name": "make-text-entry-dialog",
+    "kind": "function",
+    "arguments": "Keyword-only constructor initargs; :CLASS defaults to TEXT-ENTRY-DIALOG. Remaining subclass initargs are forwarded.",
+    "returns": "New instance of the validated concrete subclass.",
+    "description": "Thin MAKE-INSTANCE factory with the same defaults, validation, ownership and rollback as TEXT-ENTRY-DIALOG.",
+    "scope": "Requires an active main-thread GUI session and a live managed dialog. Invalid native handles/state signal NATIVE-ERROR; invalid Lisp types/receivers signal Lisp conditions. Modal-only text-entry/single-choice scope; no arbitrary native adoption, GC finalizer or native virtual Lisp overrides.",
+    "wxwidgets": "wxTextEntryDialog constructor."
+  },
+  {
+    "name": "single-choice-dialog",
+    "kind": "class",
+    "arguments": "Optional :PARENT window(default NIL), :MESSAGE(default \"Choose an item:\"), :TITLE(default \"Choose\"); required nonempty :ITEMS list/vector of strings and :SELECTION(default0) valid index.",
+    "returns": "New native-backed dialog.",
+    "description": "Construct a modal-only native single-choice dialog. Selection is always an in-range nonnegative index; NIL is not a choice. Strings are Unicode without NUL; empty strings are accepted. Defaults/subclass slot initargs and AFTER hooks use the native-backed CLOS protocol. Failed managed initialization destroys newly created resources; it does not reverse arbitrary external mutations.",
+    "scope": "Requires an active main-thread GUI session and a live managed dialog. Invalid native handles/state signal NATIVE-ERROR; invalid Lisp types/receivers signal Lisp conditions. Modal-only text-entry/single-choice scope; no arbitrary native adoption, GC finalizer or native virtual Lisp overrides. Native validity includes the receiver and all native ancestors: bridge pending-destruction markers and the public wxApp scheduled-deletion list reject use even before IsBeingDeleted becomes true. SHOW-MODAL preflight must not enter a loop beneath an ancestor already queued for deletion.",
+    "wxwidgets": "wxSingleChoiceDialog constructor (wxWidgets 3.2.12 baseline).",
+    "syntax": "wxlambda:single-choice-dialog",
+    "construction": {
+      "syntax": "(make-instance 'wxlambda:single-choice-dialog :items '(\"One\" \"Two\") :selection 0)",
+      "description": "Direct subclass construction is supported with DEFAULT-INITARGS and inherited native initialization. Native properties exist in subclass AFTER hooks. Standard DESTROY-WINDOW/native parent ownership governs cleanup. Construction is permitted on the GUI thread inside callbacks/RUN/pumps, so menu actions can create dialogs; menu structural-edit guards do not apply to dialog construction. The bridge normalizes the actual native parent to the explicitly requested window or NIL, retaining even a hidden requested parent. NIL means truly parentless rather than native automatic parent selection."
+    }
+  },
+  {
+    "name": "make-single-choice-dialog",
+    "kind": "function",
+    "arguments": "Keyword-only constructor initargs; :CLASS defaults to SINGLE-CHOICE-DIALOG. Remaining subclass initargs are forwarded.",
+    "returns": "New instance of the validated concrete subclass.",
+    "description": "Thin MAKE-INSTANCE factory with the same defaults, validation, ownership and rollback as SINGLE-CHOICE-DIALOG.",
+    "scope": "Requires an active main-thread GUI session and a live managed dialog. Invalid native handles/state signal NATIVE-ERROR; invalid Lisp types/receivers signal Lisp conditions. Modal-only text-entry/single-choice scope; no arbitrary native adoption, GC finalizer or native virtual Lisp overrides.",
+    "wxwidgets": "wxSingleChoiceDialog constructor."
+  },
+  {
+    "name": "show-modal",
+    "kind": "generic-function",
+    "arguments": "DIALOG is a live supported dialog, not already shown.",
+    "returns": "Result keyword :OK or :CANCEL.",
+    "description": "Run the native modal loop. Supported from menu/event callbacks, RUN or a pump; nested modal dialogs reject. Outer event contexts suspend during the modal call and become usable again after it returns; callbacks entered by the modal loop have their own valid innermost contexts. Bare callback errors cancel the modal operation and re-signal the primary condition after unwind. A nested notifying operation whose condition is handled locally can recover without cancelling. Manual RUN/pump/finish and structural menu edits remain guarded. Native close of the current dialog is consumed and cancels it; ancestor close events are consumed while modal. Public CLOSE-WINDOW on a protected ancestor rejects.",
+    "scope": "Requires an active main-thread GUI session and a live managed dialog. Invalid native handles/state signal NATIVE-ERROR; invalid Lisp types/receivers signal Lisp conditions. Modal-only text-entry/single-choice scope; no arbitrary native adoption, GC finalizer or native virtual Lisp overrides. Native validity includes the receiver and all native ancestors: bridge pending-destruction markers and the public wxApp scheduled-deletion list reject use even before IsBeingDeleted becomes true. SHOW-MODAL preflight must not enter a loop beneath an ancestor already queued for deletion.",
+    "wxwidgets": "wxDialog::ShowModal with bounded callback/lifetime bridge.",
+    "syntax": "(wxlambda:show-modal dialog)"
+  },
+  {
+    "name": "end-modal",
+    "kind": "generic-function",
+    "arguments": "DIALOG is the active managed modal dialog; RESULT is :OK or :CANCEL.",
+    "returns": "DIALOG after a successful native completion request.",
+    "description": "Call raw native EndModal with the selected result. This is not an OK-button click: it does not invoke button validation or native data transfer. Native IsModal can become false before SHOW-MODAL returns; the active modal lifetime guard remains until that call unwinds.",
+    "scope": "Requires an active main-thread GUI session and a live managed dialog. Invalid native handles/state signal NATIVE-ERROR; invalid Lisp types/receivers signal Lisp conditions. Modal-only text-entry/single-choice scope; no arbitrary native adoption, GC finalizer or native virtual Lisp overrides.",
+    "wxwidgets": "wxDialog::EndModal (wxWidgets 3.2.12 baseline).",
+    "syntax": "(wxlambda:end-modal dialog :cancel)"
+  },
+  {
+    "name": "dialog-modal-p",
+    "kind": "generic-function",
+    "arguments": "DIALOG is live.",
+    "returns": "Native IsModal as T/NIL.",
+    "description": "Read native modal state. False after END-MODAL is not permission to destroy the dialog/ancestor before SHOW-MODAL returns.",
+    "scope": "Requires an active main-thread GUI session and a live managed dialog. Invalid native handles/state signal NATIVE-ERROR; invalid Lisp types/receivers signal Lisp conditions. Modal-only text-entry/single-choice scope; no arbitrary native adoption, GC finalizer or native virtual Lisp overrides.",
+    "wxwidgets": "wxDialog::IsModal",
+    "syntax": "(wxlambda:dialog-modal-p dialog)"
+  },
+  {
+    "name": "dialog-title",
+    "kind": "generic-function",
+    "arguments": "DIALOG is live. VALUE is a Unicode string without NUL, possibly empty.",
+    "returns": "Native title string.",
+    "description": "Read/write native dialog title; scalar callback updates are allowed.",
+    "scope": "Requires an active main-thread GUI session and a live managed dialog. Invalid native handles/state signal NATIVE-ERROR; invalid Lisp types/receivers signal Lisp conditions. Modal-only text-entry/single-choice scope; no arbitrary native adoption, GC finalizer or native virtual Lisp overrides.",
+    "wxwidgets": "wxTopLevelWindow::GetTitle / SetTitle",
+    "syntax": "(wxlambda:dialog-title dialog)",
+    "setf": {
+      "syntax": "(setf (wxlambda:dialog-title dialog) value)",
+      "description": "Assign native title and return VALUE."
+    }
+  },
+  {
+    "name": "dialog-value",
+    "kind": "generic-function",
+    "arguments": "DIALOG is live. Receiver is TEXT-ENTRY-DIALOG; VALUE is a Unicode string without NUL, possibly empty.",
+    "returns": "Native stored value string.",
+    "description": "Read/write native text-entry dialog value. Native GetValue is stored dialog data and need not expose live edit-buffer changes. SETF crosses the notifying callback boundary; callback conditions follow the existing Lisp condition protocol.",
+    "scope": "Requires an active main-thread GUI session and a live managed dialog. Invalid native handles/state signal NATIVE-ERROR; invalid Lisp types/receivers signal Lisp conditions. Modal-only text-entry/single-choice scope; no arbitrary native adoption, GC finalizer or native virtual Lisp overrides.",
+    "wxwidgets": "wxTextEntryDialog::GetValue / SetValue",
+    "syntax": "(wxlambda:dialog-value dialog)",
+    "setf": {
+      "syntax": "(setf (wxlambda:dialog-value dialog) value)",
+      "description": "Assign native stored value and return VALUE; no promise of OK-button validation/data transfer."
+    }
+  },
+  {
+    "name": "dialog-selection",
+    "kind": "generic-function",
+    "arguments": "DIALOG is live. Receiver is SINGLE-CHOICE-DIALOG; VALUE is an integer from 0 through item count minus one.",
+    "returns": "Native selected integer index.",
+    "description": "Read/write the single-choice selection index; NIL and out-of-range values reject. No item-list replacement API is added.",
+    "scope": "Requires an active main-thread GUI session and a live managed dialog. Invalid native handles/state signal NATIVE-ERROR; invalid Lisp types/receivers signal Lisp conditions. Modal-only text-entry/single-choice scope; no arbitrary native adoption, GC finalizer or native virtual Lisp overrides.",
+    "wxwidgets": "wxSingleChoiceDialog::GetSelection / SetSelection",
+    "syntax": "(wxlambda:dialog-selection dialog)",
+    "setf": {
+      "syntax": "(setf (wxlambda:dialog-selection dialog) value)",
+      "description": "Select an existing index and return VALUE."
+    }
+  },
+  {
+    "name": "dialog-selection-text",
+    "kind": "generic-function",
+    "arguments": "DIALOG is a live SINGLE-CHOICE-DIALOG.",
+    "returns": "Native GetStringSelection string.",
+    "description": "Read the last accepted native selection-string cache, not a string derived from the current selected index. SetSelection changes the index but GetStringSelection can remain empty until an actual OK-button transfer; a previous accepted cache can remain after index changes or raw END-MODAL. No cache synchronization is promised.",
+    "scope": "Requires an active main-thread GUI session and a live managed dialog. Invalid native handles/state signal NATIVE-ERROR; invalid Lisp types/receivers signal Lisp conditions. Modal-only text-entry/single-choice scope; no arbitrary native adoption, GC finalizer or native virtual Lisp overrides.",
+    "wxwidgets": "wxSingleChoiceDialog::GetStringSelection",
+    "syntax": "(wxlambda:dialog-selection-text dialog)"
   }
 ]

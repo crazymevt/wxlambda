@@ -18,7 +18,7 @@ Class/struct definitions: 0 complete; 10 partial; 292 pending. Partial and pendi
 - [ ] `wxAny` — [`wx/any.h`](phase-c1.md), upstream line 60.
 - [ ] `wxAnyValueType` — [`wx/any.h`](phase-c1.md), upstream line 382.
 - [~] `wxAppConsole` — [`wx/app.h`](phase-c1.md), upstream line 39. — **Partial**: `call-with-application`, `run`, `stop`, `process-events`, `main-loop-running-p`, `pending-events-p`, `process-pending-events`, `application-handler`, `current-application-handler`; ABI: `wxl_start`, `wxl_run`, `wxl_stop`, `wxl_poll`, `wxl_main_loop_running`, `wxl_pending_events`, `wxl_process_pending_events`, `wxl_application_handler`. Managed bridge application only: session lifetime, native main loop/polling, pending queues, callback/pump guards, borrowed handler view and supported command/notify/close/idle dispatch. Contextual Skip/propagation, owned events and bounded idle mode/wake are supported by the shared event layer. No constructible application wrapper, application traits, arbitrary event loops, command-line hooks, filters, native virtual overrides, timer/worker API or arbitrary event-class adoption. Window pushed stacks remain bridge-owned and cannot include the borrowed application. Query/end-session binding is available on the managed app and isolated owned handlers; synthetic app/window session emission rejects. Native OS-session delivery remains unverified.
-- [~] `wxApp` — [`wx/app.h`](phase-c1.md), upstream line 845. — **Partial**: `call-with-application`, `with-application`, `application-handler`, `current-application-handler`; ABI: `wxl_start`, `wxl_finish`, `wxl_application_handler`. One managed GUI application per process on its main thread. Native initialization/cleanup only; application subclass hooks, traits, top-window APIs and remaining GUI-application interfaces are unbound. The CLOS APPLICATION-HANDLER is a borrowed event-handler view only. Borrowed managed application handler view supports inherited binding/dispatch/state; construction and explicit deletion reject. OS session delivery and native application subclass hooks remain unverified/unbound. Query/end-session binding is available on the managed app and isolated owned handlers; synthetic app/window session emission rejects; OS delivery remains unverified.
+- [~] `wxApp` — [`wx/app.h`](phase-c1.md), upstream line 845. — **Partial**: `call-with-application`, `with-application`, `application-handler`, `current-application-handler`; ABI: `wxl_start`, `wxl_finish`, `wxl_application_handler`. One managed GUI application per process on its main thread. Native initialization/cleanup only; application subclass hooks, traits, top-window APIs and remaining GUI-application interfaces are unbound. The CLOS APPLICATION-HANDLER is a borrowed event-handler view only. Borrowed managed application handler view supports inherited binding/dispatch/state; construction and explicit deletion reject. OS session delivery and native application subclass hooks remain unverified/unbound. Query/end-session binding is available on the managed app and isolated owned handlers; synthetic app/window session emission rejects; OS delivery remains unverified. Native availability rejects pending/scheduled receiver or ancestor deletion through public wxApp::IsScheduledForDestruction plus bridge markers; no dedicated general deletion-query API.
 - [ ] `wxAppProgressIndicator` — [`wx/appprogress.h`](phase-c1.md), upstream line 22.
 - [ ] `wxAppTraits` — [`wx/apptrait.h`](phase-c1.md), upstream line 29.
 - [ ] `wxArchiveInputStream` — [`wx/archive.h`](phase-c1.md), upstream line 28.
@@ -434,7 +434,7 @@ Class/struct definitions: 0 complete; 11 partial; 121 pending. Partial and pendi
 - [ ] `wxTimePickerCtrl` — [`wx/timectrl.h`](phase-c2.md), upstream line 53.
 - [ ] `wxTipWindow` — [`wx/tipwin.h`](phase-c2.md), upstream line 24.
 - [ ] `wxToolTip` — [`wx/tooltip.h`](phase-c2.md), upstream line 21.
-- [~] `wxTopLevelWindow` — [`wx/toplevel.h`](phase-c2.md), upstream line 87. — **Partial**: `frame-title`, `(setf frame-title)`; ABI: `wxl_title`, `wxl_set_title`. Canonical SETF writer. Title get/set is exposed for wxFrame only; other top-level types and the remaining top-level API stay open.
+- [~] `wxTopLevelWindow` — [`wx/toplevel.h`](phase-c2.md), upstream line 87. — **Partial**: `frame-title`, `(setf frame-title)`, `dialog-title`; ABI: `wxl_title`, `wxl_set_title`, `wxl_dialog_title`, `wxl_set_dialog_title`. Title get/set is exposed for managed frames and text-entry/single-choice dialogs through canonical SETF. Dialogs are modal-only; other top-level families and remaining top-level API stay open.
 - [ ] `wxGenericValidator` — [`wx/valgen.h`](phase-c2.md), upstream line 32.
 - [ ] `wxValidator` — [`wx/validate.h`](phase-c2.md), upstream line 37.
 - [ ] `wxNumValidator` — [`wx/valnum.h`](phase-c2.md), upstream line 78.
@@ -450,7 +450,7 @@ Class/struct definitions: 0 complete; 11 partial; 121 pending. Partial and pendi
 - [ ] `wxHScrolledWindow` — [`wx/vscroll.h`](phase-c2.md), upstream line 759.
 - [ ] `wxHVScrolledWindow` — [`wx/vscroll.h`](phase-c2.md), upstream line 836.
 - [ ] `wxVisualAttributes` — [`wx/window.h`](phase-c2.md), upstream line 131.
-- [~] `wxWindow` — [`wx/window.h`](phase-c2.md), upstream line 345. — **Partial**: `show-window`, `shown-p`, `enable-window`, `enabled-p`, `window-event-handler`, `push-event-handler`, `pop-event-handler`, `remove-event-handler`, `process-window-event`, `process-window-event-locally`; ABI: `wxl_show_state`, `wxl_shown`, `wxl_enable`, `wxl_enabled`, `wxl_window_handler`, `wxl_push_handler`, `wxl_pop_handler`, `wxl_remove_handler`, `wxl_dispatch_owned`. Logical names, visibility and effective enabled state, layout, geometry and destruction are exposed; the remaining wxWindow API stays open. Managed handler stacks and explicit stack-aware copied routing are now supported. Push preserves bridge ownership; default pop/remove detach alive, deleting pop consumes native resource. All eight managed native widget destructors pop(false) before base teardown, independent of destroy observers/enabled flags. No external adoption/SetEventHandler or retained origins.
+- [~] `wxWindow` — [`wx/window.h`](phase-c2.md), upstream line 345. — **Partial**: `show-window`, `shown-p`, `enable-window`, `enabled-p`, `window-event-handler`, `push-event-handler`, `pop-event-handler`, `remove-event-handler`, `process-window-event`, `process-window-event-locally`; ABI: `wxl_show_state`, `wxl_shown`, `wxl_enable`, `wxl_enabled`, `wxl_window_handler`, `wxl_push_handler`, `wxl_pop_handler`, `wxl_remove_handler`, `wxl_dispatch_owned`. Logical names, visibility and effective enabled state, layout, geometry and destruction are exposed; the remaining wxWindow API stays open. Managed handler stacks and explicit stack-aware copied routing are now supported. Push preserves bridge ownership; default pop/remove detach alive, deleting pop consumes native resource. All supported concrete native window destructors (including text/choice dialogs) pop(false) before base teardown, independent of destroy observers/enabled flags. No external adoption/SetEventHandler or retained origins. Modal-only dialog show writers reject; active modal/ancestor close/destroy guards preserve native modal lifetime. Native availability rejects pending/scheduled receiver or ancestor deletion through public wxApp::IsScheduledForDestruction plus bridge markers; no dedicated general deletion-query API.
 - [ ] `wxIdManager` — [`wx/windowid.h`](phase-c2.md), upstream line 26.
 - [ ] `wxWindowPtr` — [`wx/windowptr.h`](phase-c2.md), upstream line 27.
 - [ ] `wxWithImages` — [`wx/withimages.h`](phase-c2.md), upstream line 42.
@@ -459,7 +459,7 @@ Class/struct definitions: 0 complete; 11 partial; 121 pending. Partial and pendi
 
 ## C3: Dialogs, navigation, menus, and application services
 
-Class/struct definitions: 0 complete; 3 partial; 108 pending. Partial and pending classes remain open.
+Class/struct definitions: 0 complete; 6 partial; 105 pending. Partial and pending classes remain open.
 
 [Declaration counts and remaining work](README.md).
 
@@ -471,7 +471,7 @@ Class/struct definitions: 0 complete; 3 partial; 108 pending. Partial and pendin
 - [ ] `wxBusyInfo` — [`wx/busyinfo.h`](phase-c3.md), upstream line 85.
 - [ ] `wxBusyInfoFlags` — [`wx/busyinfo.h`](phase-c3.md), upstream line 163.
 - [ ] `wxMultiChoiceDialog` — [`wx/choicdlg.h`](phase-c3.md), upstream line 44.
-- [ ] `wxSingleChoiceDialog` — [`wx/choicdlg.h`](phase-c3.md), upstream line 152.
+- [~] `wxSingleChoiceDialog` — [`wx/choicdlg.h`](phase-c3.md), upstream line 152. — **Partial**: `single-choice-dialog`, `make-single-choice-dialog`, `show-modal`, `dialog-selection`, `dialog-selection-text`; ABI: `wxl_single_choice_dialog`, `wxl_dialog_show`, `wxl_dialog_selection`, `wxl_set_dialog_selection`, `wxl_dialog_selection_text`. Managed modal-only nonempty fixed choices, valid selection and native stored string; no multiselect/clientData/item mutation/custom style or generic choice control adoption. Message/file dialogs deferred after macOS cancellation probe hang; no exposure claimed.
 - [ ] `wxChoicebook` — [`wx/choicebk.h`](phase-c3.md), upstream line 65.
 - [ ] `wxClipboard` — [`wx/clipbrd.h`](phase-c3.md), upstream line 68.
 - [ ] `wxColourDialog` — [`wx/colordlg.h`](phase-c3.md), upstream line 54.
@@ -494,7 +494,7 @@ Class/struct definitions: 0 complete; 3 partial; 108 pending. Partial and pendin
 - [ ] `wxTextDataObject` — [`wx/dataobj.h`](phase-c3.md), upstream line 728.
 - [ ] `wxFileDataObject` — [`wx/dataobj.h`](phase-c3.md), upstream line 806.
 - [ ] `wxHTMLDataObject` — [`wx/dataobj.h`](phase-c3.md), upstream line 835.
-- [ ] `wxDialog` — [`wx/dialog.h`](phase-c3.md), upstream line 153.
+- [~] `wxDialog` — [`wx/dialog.h`](phase-c3.md), upstream line 153. — **Partial**: `dialog`, `show-modal`, `end-modal`, `dialog-modal-p`, `dialog-title`, `destroy-window`; ABI: `wxl_dialog_show`, `wxl_dialog_end`, `wxl_dialog_abort`, `wxl_dialog_modal`, `wxl_dialog_title`, `wxl_set_dialog_title`, `wxl_destroy`. Abstract modal protocol only; no direct native wxDialog construction/modeless/custom validation/window-modal hooks. Active modal/ancestor destruction guarded until unwind. Message/file dialogs deferred after macOS cancellation probe hang; no exposure claimed. Native availability rejects pending/scheduled receiver or ancestor deletion through public wxApp::IsScheduledForDestruction plus bridge markers; no dedicated general deletion-query API.
 - [ ] `wxDialogLayoutAdapter` — [`wx/dialog.h`](phase-c3.md), upstream line 692.
 - [ ] `wxWindowModalDialogEvent` — [`wx/dialog.h`](phase-c3.md), upstream line 719.
 - [ ] `wxGenericDirCtrl` — [`wx/dirctrl.h`](phase-c3.md), upstream line 68.
@@ -562,7 +562,7 @@ Class/struct definitions: 0 complete; 3 partial; 108 pending. Partial and pendin
 - [ ] `wxTaskBarJumpListCategory` — [`wx/taskbarbutton.h`](phase-c3.md), upstream line 504.
 - [ ] `wxTaskBarJumpList` — [`wx/taskbarbutton.h`](phase-c3.md), upstream line 612.
 - [ ] `wxPasswordEntryDialog` — [`wx/textdlg.h`](phase-c3.md), upstream line 33.
-- [ ] `wxTextEntryDialog` — [`wx/textdlg.h`](phase-c3.md), upstream line 76.
+- [~] `wxTextEntryDialog` — [`wx/textdlg.h`](phase-c3.md), upstream line 76. — **Partial**: `text-entry-dialog`, `make-text-entry-dialog`, `show-modal`, `dialog-value`; ABI: `wxl_text_entry_dialog`, `wxl_dialog_show`, `wxl_dialog_value`, `wxl_set_dialog_value`. Managed modal-only text entry with fixed defaults, native stored value and CLOS lifetime/rollback. Password/styles/validators/custom buttons and live internal text control unbound. Message/file dialogs deferred after macOS cancellation probe hang; no exposure claimed.
 - [ ] `wxTipProvider` — [`wx/tipdlg.h`](phase-c3.md), upstream line 25.
 - [ ] `wxToolBarToolBase` — [`wx/toolbar.h`](phase-c3.md), upstream line 80.
 - [ ] `wxToolBar` — [`wx/toolbar.h`](phase-c3.md), upstream line 292.

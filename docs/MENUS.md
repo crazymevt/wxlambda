@@ -3,7 +3,8 @@
 ABI 32 adds a bounded native menu hierarchy: MENU-RESOURCE is abstract, with
 MENU-BAR, MENU and MENU-ITEM concrete classes. A frame owns one managed menu bar,
 which owns its menus and items. This delivers the menus/actions part of the
-selected GUI slice; **standard dialogs are next**, and are not included here.
+selected GUI slice. [Modal text/single-choice dialogs](STANDARD-DIALOGS.md)
+extend the workflow in a separate bounded interface; they are not menu resources.
 The baseline is wxWidgets 3.2.12.
 
 ## Construct and route an action
@@ -113,5 +114,6 @@ review, packaging and docset evidence is recorded in the current
 [handoff](../IMPLEMENTATION.md). Graphical menu selection, keyboard accelerators,
 platform menu conventions and hosted Linux/Windows GUI behavior require their
 own evidence. The native inventory remains partial and records additional menu
-APIs without making all of them release prerequisites. Continue next with
-standard dialogs for the representative form/editor workflow.
+APIs without making all of them release prerequisites. Continue the representative form/editor workflow through the bounded
+[standard-dialog interface](STANDARD-DIALOGS.md); message/file families still
+need safe platform cancellation.
