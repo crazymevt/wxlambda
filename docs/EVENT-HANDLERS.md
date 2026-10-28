@@ -3,7 +3,8 @@
 This C1 foundation slice introduces `event-handler`, a native-backed CLOS wrapper
 for `wxEvtHandler` and the superclass of `window`. It establishes ownership and
 state before generic binding/unbinding, timers and broader event routing.
-The coverage baseline is wxWidgets 3.2.12; current native ABI is 12.
+The coverage baseline is wxWidgets 3.2.12; current native ABI is 13.
+Four command-event observer kinds now have [independent bindings](EVENT-BINDINGS.md).
 
 ## Owned standalone handlers
 
@@ -27,7 +28,8 @@ standalone base. The thin keyword-only factory forwards subclass initargs and
 accepts a class symbol or class object, rejecting window and non-handler classes.
 
 The session owns each standalone native handler. Explicit destruction deletes it
-immediately; any remaining standalone handlers are deleted during session cleanup,
+immediately outside callbacks. During callbacks the target is invalidated and
+native deletion is deferred until its dispatch/setter stack returns; any remaining standalone handlers are deleted during session cleanup,
 before native application exit. Dropping a Lisp wrapper does not delete its native
 object: no GC finalizer is installed. Failed managed initialization rolls back
 native handlers/windows allocated in that initialization and releases callback
@@ -79,10 +81,11 @@ cleanup but cannot be dereferenced. This is internal tracking, not a public
 All operations are restricted to the main-thread GUI session. Callback roots
 for the existing control-specific handlers still require explicit unbinding
 before window destruction, or they remain rooted until session cleanup.
-Standalone handlers do not have public event registration or dispatch in this
-slice. Generic multi-event/ID binding, standalone queues, safe generic unbinding,
-pushed/linked handler ownership, event filters, skip/veto/propagation, timer/idle
-handlers, worker dispatch and native virtual overrides remain open C1 work.
+Standalone handlers and windows now support four command-event observer kinds,
+ID filters, safe generic unbinding and copied synthetic queues; see
+[command-event bindings](EVENT-BINDINGS.md). Arbitrary event types, pushed/linked
+handler ownership, filters, mutable skip/veto/propagation, timer/idle handlers,
+worker dispatch and native virtual overrides remain open C1 work.
 Immutable event snapshots retain their existing contract.
 
 ## Example and verification
@@ -112,7 +115,7 @@ python3 tools/docset.py build
 python3 tools/docset.py check
 ```
 
-Use the project quiet-command wrapper in agent sessions. Rebuild the ABI 12
+Use the project quiet-command wrapper in agent sessions. Rebuild the ABI 13
 bridge alongside the bindings. The GUI runner includes this scenario; broader
 platform and graphical Cadre verification remain separate. The API, this guide
 and example are included in the [Cadre docset](DOCSET.md), installable under

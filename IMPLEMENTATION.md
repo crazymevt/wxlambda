@@ -28,14 +28,18 @@ must reconcile additional documented public interfaces beyond those headers.
 - Event-handler ownership milestone: native-backed standalone handlers, borrowed
   window base identities, liveness and handler-enabled SETF state, plus weak native
   window invalidation. See the latest commit and the C1 handler section below.
-- Current bridge ABI: 12. Public API: 73 exports, nine window wrapper classes
-  (eight concrete widget kinds) plus the event-handler base, 42 named generics and
-  eleven generic SETF writers. No public application wrapper or generic
-  multi-event handler binding exists yet.
-- Latest implementation verification: 29 GUI scenarios and native preflight
+- Command-observer binding milestone: independent registrations, ID/range filters,
+  copied standalone queues, self/peer unbinding and deferred callback-time disposal.
+  Four command kinds only; see the latest commit and the binding section below.
+- Current bridge ABI: 13. Public API: 80 exports, nine window wrapper classes
+  (eight concrete widget kinds) plus the event-handler base, 46 named generics and
+  eleven generic SETF writers. No public application wrapper, arbitrary-event
+  binding or mutable event context exists yet; four command observer
+  kinds have independent generic bindings.
+- Latest implementation verification: 30 GUI scenarios and native preflight
   pass on local Apple Silicon macOS SBCL 2.6.9 and CCL 1.13. Final reports:
-  `evidence/event-handlers/{sbcl,ccl}-20261028/`. Five package checks
-  pass in `evidence/packaging/event-handlers-20261028/`.
+  `evidence/event-bindings/{sbcl,ccl}-observers-20261028/`. Five package checks
+  pass in `evidence/packaging/event-bindings-reviewed-20261028/`.
   Hosted Linux/Windows GUI behavior and the graphical Cadre viewer remain open.
 
 ### Next dependency and working order
@@ -45,12 +49,15 @@ must reconcile additional documented public interfaces beyond those headers.
 2. Reuse the implemented event-handler ownership/state base: standalone objects
    are session-owned; windows borrow their existing native identity, with weak
    tracking independent of destroy-event delivery. There is no pushed-handler
-   ownership or standalone event dispatch yet. Preserve native-backed subclass
+   ownership; standalone dispatch supports four command-event observer kinds.
+   Preserve native-backed subclass
    initargs, defaults, AFTER hooks and mixed-resource rollback.
-3. Next implement generic binding/unbinding with
-   positive, error, lifetime and callback tests. Account for multiple bindings,
-   event/source/ID identity and safe unbinding during dispatch; the current
-   control-specific single-handler slots are not full generic binding support.
+3. Generic binding/unbinding now supports four command observer kinds and ID
+   filters. Next establish native event class/type representation and a separate
+   scoped, borrowed mutable event context for Skip/propagation/veto before adding
+   dependent event families. Preserve immutable snapshots and opaque binding
+   identities; do not expose a native event pointer after callback return.
+   Arbitrary native event types/userData and linked/pushed handlers remain gaps.
 4. Build timer/idle, event propagation/skip/veto and worker-to-GUI dispatch on
    those contracts, adding prerequisite value types before their consumers.
    Existing immutable event snapshots do not provide mutable native event access
@@ -651,6 +658,56 @@ isolation, relocation, REPL and missing-library checks, recorded in
 `evidence/packaging/event-handlers-20261028/`. The next C1 slice is generic
 multi-event/ID binding and safe unbinding, using the ownership base established
 here. Full event-handler and C1 coverage remain open.
+
+## C1 foundation: independent command-event bindings
+
+- [x] Add immutable `event-binding` identities with `bind-event`, `unbind-event`
+  and `binding-active-p`, using native Bind/Unbind with exact registration identity.
+- [x] Support independent observers for four existing command-event kinds on
+  standalone/window handlers, including signed command IDs and inclusive ranges.
+- [x] Add copied synthetic `queue-event` payloads, immutable `event-id` snapshots
+  and explicit UTF-8 payload lengths preserving embedded NUL text.
+- [x] Keep active native callbacks alive across self/peer unbinding; defer
+  callback-time receiver deletion through application CallAfter, with immediate
+  target invalidation and root pruning at Lisp boundaries.
+- [x] Make control-specific hooks observers too, preserving ordinary command
+  routing to parent observers; add examples, API/guide and coverage/docset updates.
+
+Native ABI 13 extends snapshots with command IDs and text byte lengths. Snapshot
+`event-source` is the binding receiver, not necessarily the native originating
+child; origin-object lookup remains unbound. All command callbacks automatically
+Skip; mutable Skip/veto/propagation contexts, arbitrary native event types and
+userData, pushed chains and worker dispatch remain open. Generic roots can remain
+until a Lisp boundary during a blocking RUN; the control-specific explicit-unbind
+root contract remains unchanged. Initializer rollback removes generic registrations
+across nested resources. Owned/borrowed lifetime restrictions remain in force.
+
+Initial full suites pass native preflight and all 30 scenarios on local macOS
+SBCL 2.6.9 and CCL 1.13, in `evidence/event-bindings/{sbcl,ccl}-20261028/`.
+Independent review confirmed a propagation issue: dormant control-specific hooks
+consumed commands before parent generic observers. All four hooks now Skip,
+including after convenience callback delivery. Final full reruns pass all 30
+scenarios in `evidence/event-bindings/{sbcl,ccl}-observers-20261028/`, including
+parent/child receiver/ID checks and self-disposal in synchronous notifying text,
+checkbox and choice setters. Additional focused checks cover disabled-receiver
+expiration and active-registration state while event processing is disabled.
+
+Review verified exact binding lifetime, self/peer unbinding, deferred receiver
+disposal, snapshot copying, rollback and the final documentation; no actionable
+findings remain. An initial Lisp compile caught an extra parenthesis, which was
+corrected; the first pre-session test incorrectly supplied a symbol to
+ALLOCATE-INSTANCE instead of a class object, also corrected before passing reruns.
+Python and pinned-upstream inventory regressions pass. The docset has 103 entries
+covering all 80 exports, project guides and eleven example sources, with zero
+checker problems. Actual-package/SETF lookup and isolated install checks verify
+shared-reader discovery and guide/example access. Graphical Cadre and hosted
+Linux/Windows GUI behavior remain unverified.
+
+The final `dist/wxlambda-form-event-bindings-reviewed` passes all five package
+isolation, relocation, REPL and missing-library checks, recorded in
+`evidence/packaging/event-bindings-reviewed-20261028/`. Next establish native
+event class/type representation and separate scoped mutable event contexts before
+dependent event families. This does not complete wxEvtHandler or C1 coverage.
 
 ## Decisions
 

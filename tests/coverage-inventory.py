@@ -147,6 +147,7 @@ class CoverageInventoryChecks(unittest.TestCase):
             'wxAppConsole::IsMainLoopRunning',
             'wxEvtHandler::wxEvtHandler', 'wxEvtHandler::~wxEvtHandler',
             'wxEvtHandler::GetEvtHandlerEnabled', 'wxEvtHandler::SetEvtHandlerEnabled',
+            'wxEvtHandler::Bind', 'wxEvtHandler::Unbind', 'wxEvtHandler::QueueEvent', 'wxEvent::GetId',
             'wxTextCtrl::wxTextCtrl', 'wxStaticText::wxStaticText',
             'wxCheckBox::wxCheckBox', 'wxChoice::wxChoice',
             'wxGauge::wxGauge', 'wxGauge::GetValue', 'wxGauge::SetValue',

@@ -80,7 +80,9 @@ classes. The project is being built from the ground up; backward compatibility
 is not required. Do not add setter aliases or receiver fallbacks solely for
 compatibility. Keep native handle/type checks and callback/lifetime protections.
 Application lifecycle functions, keyword-only factories, macros and the FFI can
-remain ordinary functions/macros. Event snapshots remain immutable structures.
+remain ordinary functions/macros. Event snapshots and binding identities remain
+immutable structures. Command callbacks currently observe and automatically Skip;
+mutable event access needs a separate scoped-lifetime design, not mutable snapshots.
 
 The native-backed `event-handler` base supports standalone session-owned handlers;
 windows borrow their existing native widget identity. Public window wrapper

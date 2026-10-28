@@ -9,7 +9,9 @@
   (kind :int)
   (text :pointer)
   (checked :int)
-  (selection :int))
+  (selection :int)
+  (id :int)
+  (text-length :size))
 
 (cffi:defcfun ("wxl_abi_version" %abi-version) :int)
 (cffi:defcfun ("wxl_last_error" %last-error) :string)
@@ -76,7 +78,7 @@
           (if (probe-file local)
               (cffi:load-foreign-library local)
               (cffi:use-foreign-library wxlambda-native))))
-    (unless (= 12 (%abi-version)) (error "Unsupported wxlambda native ABI"))
+    (unless (= 13 (%abi-version)) (error "Unsupported wxlambda native ABI"))
     (setf *native-loaded* t))
   t)
 
@@ -99,3 +101,8 @@
 (cffi:defcfun ("wxl_handler_enabled" %handler-enabled) :int (handler :uint64))
 (cffi:defcfun ("wxl_set_handler_enabled" %set-handler-enabled) :int (handler :uint64) (enabled :int))
 (cffi:defcfun ("wxl_handler_destroy" %handler-destroy) :int (handler :uint64))
+
+(cffi:defcfun ("wxl_bind" %bind) :int (handler :uint64) (kind :int) (token :uint64) (id :int) (last-id :int))
+(cffi:defcfun ("wxl_unbind" %unbind) :int (token :uint64))
+(cffi:defcfun ("wxl_binding_active" %binding-active) :int (token :uint64))
+(cffi:defcfun ("wxl_queue_event" %queue-event) :int (handler :uint64) (kind :int) (id :int) (text :pointer) (length :size) (value :int))

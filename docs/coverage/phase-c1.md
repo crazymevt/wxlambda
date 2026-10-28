@@ -16,7 +16,7 @@ class or constructor does not imply full upstream coverage.
 
 ## Current coverage and remaining work
 
-3 implemented; 10 partial; 5279 pending; 26 context entries. Partial and pending entries remain open.
+3 implemented; 14 partial; 5275 pending; 26 context entries. Partial and pending entries remain open.
 
 Counts describe inventory entries, not distinct APIs or percent completion.
 See the [coverage summary](README.md) for phase/header comparisons.
@@ -96,7 +96,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 
 0 implemented; 8 partial; 96 pending; 0 context entries. Partial and pending entries remain open.
 
-- [~] [L39](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L39) `class wxAppConsole : public wxEvtHandler, public wxEventFilter {` — **Partial**: `call-with-application`, `run`, `stop`, `process-events`, `main-loop-running-p`, `pending-events-p`, `process-pending-events`; ABI: `wxl_start`, `wxl_run`, `wxl_stop`, `wxl_poll`, `wxl_main_loop_running`, `wxl_pending_events`, `wxl_process_pending_events`. Managed bridge application only: session lifetime, native main loop, polling, queued-event status/dispatch and callback/pump guards. No public application wrapper, application traits, arbitrary event loops, command-line hooks or native virtual overrides. Generic event-handler binding, pushed-handler ownership, filters, propagation, idle handlers, timers and worker dispatch remain open.
+- [~] [L39](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L39) `class wxAppConsole : public wxEvtHandler, public wxEventFilter {` — **Partial**: `call-with-application`, `run`, `stop`, `process-events`, `main-loop-running-p`, `pending-events-p`, `process-pending-events`; ABI: `wxl_start`, `wxl_run`, `wxl_stop`, `wxl_poll`, `wxl_main_loop_running`, `wxl_pending_events`, `wxl_process_pending_events`. Managed bridge application only: session lifetime, native main loop, polling, queued-event status/dispatch and callback/pump guards. No public application wrapper, application traits, arbitrary event loops, command-line hooks or native virtual overrides. Arbitrary event-handler binding and mutable events, pushed-handler ownership, filters, propagation, idle handlers, timers and worker dispatch remain open.
 - [ ] [L48](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L48) `virtual wxAppTraits* CreateTraits();`
 - [ ] [L55](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L55) `virtual ~wxAppConsole();`
 - [ ] [L72](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L72) `virtual int MainLoop();`
@@ -1475,7 +1475,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h)
 
-3 implemented; 2 partial; 655 pending; 16 context entries. Partial and pending entries remain open.
+3 implemented; 6 partial; 651 pending; 16 context entries. Partial and pending entries remain open.
 
 - **Context**: [L9](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L9) `#if wxUSE_BASE`
 - [ ] [L15](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L15) `enum wxEventPropagation {`
@@ -1488,7 +1488,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [ ] [L143](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L143) `wxObject* GetEventObject() const;`
 - [ ] [L148](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L148) `wxEventType GetEventType() const;`
 - [ ] [L156](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L156) `virtual wxEventCategory GetEventCategory() const;`
-- [ ] [L161](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L161) `int GetId() const;`
+- [~] [L161](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L161) `int GetId() const;` — **Partial**: `event-id`; ABI: `wxl_bind`, `wxl_queue_event`. Copied ID in immutable snapshots for the four exposed command-event kinds and control-specific callbacks. No general wxEvent wrapper or arbitrary event classes.
 - [ ] [L174](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L174) `wxObject *GetEventUserData() const;`
 - [ ] [L179](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L179) `bool GetSkipped() const;`
 - [ ] [L190](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L190) `long GetTimestamp() const;`
@@ -1516,10 +1516,10 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [ ] [L357](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L357) `~wxPropagateOnce();`
 - **Context**: [L360](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L360) `#endif`
 - **Context**: [L362](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L362) `#if wxUSE_BASE`
-- [~] [L381](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L381) `class wxEvtHandler : public wxObject, public wxTrackable {` — **Partial**: `event-handler`, `make-event-handler`, `destroy-event-handler`, `handler-alive-p`, `handler-enabled-p`, `(setf handler-enabled-p)`; ABI: `wxl_event_handler`, `wxl_handler_destroy`, `wxl_handler_alive`, `wxl_handler_enabled`, `wxl_set_handler_enabled`. Session-owned standalone handlers and borrowed wxWindow base identities, native-backed CLOS construction/rollback, own enabled flag and weak window invalidation. No generic Bind/Unbind, event queues on standalone handlers, pushed/linked handler chains, filters, propagation/skip/veto or native virtual callbacks. See docs/EVENT-HANDLERS.md.
+- [~] [L381](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L381) `class wxEvtHandler : public wxObject, public wxTrackable {` — **Partial**: `event-handler`, `make-event-handler`, `destroy-event-handler`, `handler-alive-p`, `handler-enabled-p`, `(setf handler-enabled-p)`, `bind-event`, `unbind-event`, `binding-active-p`, `queue-event`; ABI: `wxl_event_handler`, `wxl_handler_destroy`, `wxl_handler_alive`, `wxl_handler_enabled`, `wxl_set_handler_enabled`, `wxl_bind`, `wxl_unbind`, `wxl_binding_active`, `wxl_queue_event`. Owned/borrowed handler identities and four-kind command observer bindings with exact IDs/ranges, safe unbinding, copied queue payloads and weak invalidation. Callback-time receiver disposal is deferred; generic roots are reaped at Lisp boundaries. Arbitrary event types/userData, mutable Skip/veto/propagation, pushed chains and worker dispatch remain open. See docs/EVENT-BINDINGS.md.
 - [x] [L387](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L387) `wxEvtHandler();` — **Implemented**: `event-handler`, `make-event-handler`; ABI: `wxl_event_handler`. Native-backed standalone CLOS construction. Session-owned native object, explicit destruction or session cleanup; subclass initargs/defaults/AFTER hooks and rollback supported.
 - [~] [L395](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L395) `virtual ~wxEvtHandler();` — **Partial**: `destroy-event-handler`; ABI: `wxl_handler_destroy`. Owned standalone handlers only. Borrowed window identities must use window/parent destruction. Generic binding teardown and pushed-handler ownership remain open.
-- [ ] [L463](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L463) `virtual void QueueEvent(wxEvent *event);`
+- [~] [L463](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L463) `virtual void QueueEvent(wxEvent *event);` — **Partial**: `queue-event`; ABI: `wxl_queue_event`. Copied synthetic four-kind command events on exposed handlers/windows, main-thread only; ID and kind-specific text/boolean/selection payload. Does not mutate controls. Arbitrary events, native-origin override and worker dispatch remain open.
 - [ ] [L485](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L485) `virtual void AddPendingEvent(const wxEvent& event);`
 - [ ] [L535](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L535) `template<typename T, typename T1, ...> void CallAfter(void (T::*method)(T1, ...), T1 x1, ...);`
 - [ ] [L568](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L568) `template<typename T> void CallAfter(const T& functor);`
@@ -1535,9 +1535,9 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [ ] [L852](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L852) `bool Disconnect(int id = wxID_ANY, wxEventType eventType = wxEVT_NULL, wxObjectEventFunction function = NULL, wxObject* userData = NULL, wxEvtHandler* eventSink = NULL);`
 - [ ] [L869](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L869) `bool Disconnect(int id, int lastId, wxEventType eventType, wxObjectEventFunction function = NULL, wxObject* userData = NULL, wxEvtHandler* eventSink = NULL);`
 - [ ] [L917](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L917) `template <typename EventTag, typename Functor> void Bind(const EventTag& eventType, Functor functor, int id = wxID_ANY, int lastId = wxID_ANY, wxObject *userData = NULL);`
-- [ ] [L956](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L956) `template <typename EventTag, typename Class, typename EventArg, typename EventHandler> void Bind(const EventTag &eventType, void (Class::*method)(EventArg &), EventHandler *handler, int id = wxID_ANY, int lastId = wxID_ANY, wxObject *userData = NULL);`
+- [~] [L956](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L956) `template <typename EventTag, typename Class, typename EventArg, typename EventHandler> void Bind(const EventTag &eventType, void (Class::*method)(EventArg &), EventHandler *handler, int id = wxID_ANY, int lastId = wxID_ANY, wxObject *userData = NULL);` — **Partial**: `bind-event`; ABI: `wxl_bind`. Independent observer bindings for four wxCommandEvent kinds, exact IDs/ranges and one immutable Lisp snapshot per matching binding. Automatic Skip, no userData. Arbitrary types, mutable event contexts and native-origin objects remain open.
 - [ ] [L996](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L996) `template <typename EventTag, typename Functor> bool Unbind(const EventTag& eventType, Functor functor, int id = wxID_ANY, int lastId = wxID_ANY, wxObject *userData = NULL);`
-- [ ] [L1028](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L1028) `template <typename EventTag, typename Class, typename EventArg, typename EventHandler> bool Unbind(const EventTag &eventType, void (Class::*method)(EventArg&), EventHandler *handler, int id = wxID_ANY, int lastId = wxID_ANY, wxObject *userData = NULL );`
+- [~] [L1028](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L1028) `template <typename EventTag, typename Class, typename EventArg, typename EventHandler> bool Unbind(const EventTag &eventType, void (Class::*method)(EventArg&), EventHandler *handler, int id = wxID_ANY, int lastId = wxID_ANY, wxObject *userData = NULL );` — **Partial**: `unbind-event`; ABI: `wxl_unbind`. Exact binding identity for the supported four command kinds. Self/peer unbinding is safe; active native callback object is kept alive until return. No arbitrary functor/handler signatures or userData.
 - [ ] [L1050](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L1050) `void* GetClientData() const;`
 - [ ] [L1057](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L1057) `wxClientData* GetClientObject() const;`
 - [ ] [L1072](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L1072) `void SetClientData(void* data);`

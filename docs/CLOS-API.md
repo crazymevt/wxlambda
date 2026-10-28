@@ -147,4 +147,9 @@ construction instructions on class pages and indexed SETF forms on property page
 
 The gauge scenario additionally verifies direct and factory subclass construction,
 subclass AFTER access, rollback, and the two gauge SETF writers. Across the public
-API there are now 42 named generic functions and eleven generic SETF functions.
+API there are now 46 named generic functions and eleven generic SETF functions.
+
+Independent `event-binding` values are immutable registration identities rather
+than native-backed CLOS resources. The generic `bind-event`, `unbind-event`,
+`binding-active-p` and `queue-event` operations cover the four current command
+kinds; see [binding scope and lifecycle](EVENT-BINDINGS.md).

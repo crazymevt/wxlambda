@@ -38,5 +38,9 @@
   "event-handlers.lisp": {
     "description": "A standalone EVENT-HANDLER subclass reads native state in an AFTER hook. Separate window callbacks toggle event-handler processing without disabling window input. The exercise verifies queued callback gating and explicit owned-handler cleanup.",
     "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/event-handlers.lisp --eval '(wxlambda-event-handlers:start)'"
+  },
+  "event-bindings.lisp": {
+    "description": "Two independent ID-filtered command observers receive queued notifications on a standalone handler. A window button queues notifications; the exercise removes one observer without affecting the other and verifies cleanup.",
+    "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/event-bindings.lisp --eval '(wxlambda-event-bindings:start)'"
   }
 }

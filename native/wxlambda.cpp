@@ -5,6 +5,7 @@
 #include <wx/gauge.h>
 #include <wx/weakref.h>
 #include <memory>
+#include <unordered_set>
 #include <algorithm>
 #include <stdexcept>
 #include <string>
@@ -25,6 +26,9 @@ thread_local std::string metadata_result;
 std::unordered_map<wxl_handle, wxWeakRef<wxWindow>> windows;
 std::unordered_map<wxl_handle, std::unique_ptr<wxEvtHandler>> owned_handlers;
 std::unordered_map<wxl_handle, uint64_t> handlers;
+struct Binding;
+std::unordered_map<uint64_t, std::shared_ptr<Binding>> bindings;
+std::unordered_set<wxl_handle> pending_destruction;
 wxl_handle next_handle = 1;
 wxl_callback dispatch = nullptr;
 bool started = false, used = false, running = false, pumping = false;
@@ -52,6 +56,7 @@ wxWindow* window(wxl_handle id) {
     ready();
     const auto it = windows.find(id);
     require(it != windows.end(), "Invalid or destroyed window handle");
+    require(!pending_destruction.count(id), "Window destruction is pending");
     auto* object = it->second.get();
     require(object != nullptr, "Invalid or destroyed window handle");
     require(!object->IsBeingDeleted(), "Window is being destroyed");
@@ -59,6 +64,7 @@ wxWindow* window(wxl_handle id) {
 }
 wxEvtHandler* event_handler(wxl_handle id) {
     ready();
+    require(!pending_destruction.count(id), "Handler destruction is pending");
     if (windows.find(id) != windows.end()) return window(id);
     const auto it = owned_handlers.find(id);
     require(it != owned_handlers.end(), "Invalid or destroyed event-handler handle");
@@ -89,10 +95,58 @@ void require_dispatch_entry() {
 }
 void emit_event(wxl_handle id, const wxl_event& event) {
     const auto it = handlers.find(id);
-    if (it != handlers.end() && dispatch) {
+    if (it != handlers.end() && dispatch && !pending_destruction.count(id)) {
         const auto token = it->second;
         invoke_callback(token, event);
     }
+}
+wxEventTypeTag<wxCommandEvent> command_type(int kind) {
+    switch (kind) {
+        case WXL_EVENT_CLICK: return wxEventTypeTag<wxCommandEvent>(wxEVT_BUTTON);
+        case WXL_EVENT_TEXT_CHANGE: return wxEventTypeTag<wxCommandEvent>(wxEVT_TEXT);
+        case WXL_EVENT_TOGGLE: return wxEventTypeTag<wxCommandEvent>(wxEVT_CHECKBOX);
+        case WXL_EVENT_SELECTION: return wxEventTypeTag<wxCommandEvent>(wxEVT_CHOICE);
+        default: throw std::runtime_error("Unsupported command-event kind");
+    }
+}
+struct Binding {
+    wxWeakRef<wxEvtHandler> receiver;
+    wxl_handle source;
+    uint64_t token;
+    int kind, id, last_id;
+    bool live() const {
+        auto* object = receiver.get();
+        auto* widget = dynamic_cast<wxWindow*>(object);
+        return object && !pending_destruction.count(source) && (!widget || !widget->IsBeingDeleted());
+    }
+    void on_event(wxCommandEvent& event) {
+        const auto found = bindings.find(token);
+        if (found == bindings.end()) { event.Skip(); return; }
+        // Keep the method receiver alive if this or another binding is removed.
+        auto keep = found->second;
+        if (live() && dispatch) {
+            const auto text = event.GetString();
+            const auto bytes = text.ToUTF8();
+            const wxl_event snapshot{kind, kind == WXL_EVENT_TEXT_CHANGE ? (bytes.data() ? bytes.data() : "") : nullptr,
+                                     kind == WXL_EVENT_TOGGLE && event.IsChecked() ? 1 : 0,
+                                     kind == WXL_EVENT_SELECTION ? event.GetSelection() : -1,
+                                     event.GetId(), kind == WXL_EVENT_TEXT_CHANGE ? bytes.length() : 0};
+            invoke_callback(token, snapshot);
+        }
+        // These bindings are observers; mutable Skip/veto contexts are future work.
+        event.Skip();
+    }
+};
+bool remove_binding(uint64_t token) {
+    const auto found = bindings.find(token);
+    if (found == bindings.end()) return false;
+    auto binding = found->second;
+    if (auto* receiver = binding->receiver.get()) {
+        require(receiver->Unbind(command_type(binding->kind), &Binding::on_event, binding.get(),
+                                 binding->id, binding->last_id), "Native event binding not found");
+    }
+    bindings.erase(token);
+    return true;
 }
 wxl_handle track(wxWindow* object) {
     const auto id = next_handle++;
@@ -143,7 +197,7 @@ wxString utf8(const char* value) {
 }
 }
 extern "C" {
-int wxl_abi_version() { return 12; }
+int wxl_abi_version() { return 13; }
 const char* wxl_last_error() { return error.c_str(); }
 int wxl_start(wxl_callback callback) {
     return status([&] {
@@ -206,13 +260,14 @@ int wxl_finish() {
     return status([] {
         ready();
         require_dispatch_entry();
+        while (!bindings.empty()) remove_binding(bindings.begin()->first);
         // Destroy remaining top-level windows before OnExit (also on setup failure).
         while (!wxTopLevelWindows.empty())
             delete wxTopLevelWindows.GetFirst()->GetData();
         owned_handlers.clear();
         wxTheApp->OnExit();
         wxEntryCleanup();
-        windows.clear(); handlers.clear(); dispatch = nullptr; started = false;
+        windows.clear(); handlers.clear(); pending_destruction.clear(); dispatch = nullptr; started = false;
     });
 }
 wxl_handle wxl_event_handler() {
@@ -226,6 +281,7 @@ wxl_handle wxl_event_handler() {
 int wxl_handler_alive(wxl_handle id) {
     return boolean_result([&] {
         ready();
+        if (pending_destruction.count(id)) return false;
         const auto it = windows.find(id);
         if (it != windows.end()) {
             auto* object = it->second.get();
@@ -246,7 +302,60 @@ int wxl_handler_destroy(wxl_handle id) {
         require(windows.find(id) == windows.end(), "Window event handlers are borrowed; use destroy-window");
         const auto it = owned_handlers.find(id);
         require(it != owned_handlers.end(), "Invalid or destroyed event-handler handle");
-        owned_handlers.erase(it);
+        require(!pending_destruction.count(id), "Handler destruction is pending");
+        if (callback_depth) {
+            pending_destruction.insert(id);
+            try {
+                wxTheApp->CallAfter([id] { owned_handlers.erase(id); pending_destruction.erase(id); });
+            } catch (...) { pending_destruction.erase(id); throw; }
+        } else owned_handlers.erase(it);
+    });
+}
+int wxl_bind(wxl_handle id, int kind, uint64_t token, int first, int last) {
+    return status([&] {
+        auto* receiver = event_handler(id);
+        const auto type = command_type(kind);
+        require(token && !bindings.count(token), "Invalid or duplicate binding token");
+        require(last == wxID_ANY || (first != wxID_ANY && first <= last), "Invalid event ID range");
+        auto binding = std::make_shared<Binding>();
+        binding->receiver = receiver;
+        binding->source = id; binding->token = token;
+        binding->kind = kind; binding->id = first; binding->last_id = last;
+        bindings.emplace(token, binding);
+        try { receiver->Bind(type, &Binding::on_event, binding.get(), first, last); }
+        catch (...) { bindings.erase(token); throw; }
+    });
+}
+int wxl_unbind(uint64_t token) {
+    return boolean_result([&] {
+        ready();
+        const auto it = bindings.find(token);
+        const bool active = it != bindings.end() && it->second->live();
+        remove_binding(token);
+        return active;
+    });
+}
+int wxl_binding_active(uint64_t token) {
+    return boolean_result([&] {
+        ready();
+        const auto it = bindings.find(token);
+        if (it == bindings.end()) return false;
+        if (it->second->live()) return true;
+        remove_binding(token);
+        return false;
+    });
+}
+int wxl_queue_event(wxl_handle id, int kind, int event_id, const char* text, size_t length, int value) {
+    return status([&] {
+        auto* receiver = event_handler(id);
+        const auto type = command_type(kind);
+        require(text || length == 0, "Null event text");
+        require(kind != WXL_EVENT_SELECTION || value >= -1, "Invalid selection event index");
+        auto event = std::make_unique<wxCommandEvent>(type, event_id);
+        event->SetEventObject(receiver);
+        if (kind == WXL_EVENT_TEXT_CHANGE) event->SetString(wxString::FromUTF8(text ? text : "", length));
+        if (kind == WXL_EVENT_TOGGLE || kind == WXL_EVENT_SELECTION) event->SetInt(value);
+        receiver->QueueEvent(event.release());
     });
 }
 wxl_handle wxl_frame(const char* title, int width, int height) {
@@ -260,8 +369,9 @@ wxl_handle wxl_button(wxl_handle parent, const char* label) {
     return create([&] {
         auto* control = new wxButton(window(parent), wxID_ANY, utf8(label));
         auto id = track(control);
-        control->Bind(wxEVT_BUTTON, [id](wxCommandEvent&) {
-            emit_event(id, {WXL_EVENT_CLICK, nullptr, 0});
+        control->Bind(wxEVT_BUTTON, [id](wxCommandEvent& event) {
+            emit_event(id, {WXL_EVENT_CLICK, nullptr, 0, -1, event.GetId(), 0});
+            event.Skip();
         });
         return id;
     });
@@ -272,14 +382,15 @@ wxl_handle wxl_text(wxl_handle parent, const char* value) {
         const auto id = track(control);
         control->Bind(wxEVT_TEXT, [id](wxCommandEvent& event) {
             const auto it = handlers.find(id);
-            if (it != handlers.end() && dispatch) {
+            if (it != handlers.end() && dispatch && !pending_destruction.count(id)) {
                 const auto token = it->second;
                 // Both objects must survive reentrant callbacks and conversion.
                 const auto text = event.GetString();
                 const auto bytes = text.ToUTF8();
-                const wxl_event payload{WXL_EVENT_TEXT_CHANGE, bytes.data() ? bytes.data() : "", 0};
+                const wxl_event payload{WXL_EVENT_TEXT_CHANGE, bytes.data() ? bytes.data() : "", 0, -1, event.GetId(), bytes.length()};
                 invoke_callback(token, payload);
             }
+            event.Skip();
         });
         return id;
     });
@@ -348,7 +459,8 @@ wxl_handle wxl_checkbox(wxl_handle parent, const char* label, int checked) {
         control->SetValue(checked != 0);
         const auto id = track(control);
         control->Bind(wxEVT_CHECKBOX, [id](wxCommandEvent& event) {
-            emit_event(id, {WXL_EVENT_TOGGLE, nullptr, event.IsChecked() ? 1 : 0});
+            emit_event(id, {WXL_EVENT_TOGGLE, nullptr, event.IsChecked() ? 1 : 0, -1, event.GetId(), 0});
+            event.Skip();
         });
         return id;
     });
@@ -387,7 +499,8 @@ wxl_handle wxl_choice(wxl_handle parent, const char** items, int count, int sele
         control->SetSelection(selection);
         const auto id = track(control);
         control->Bind(wxEVT_CHOICE, [id](wxCommandEvent& event) {
-            emit_event(id, {WXL_EVENT_SELECTION, nullptr, 0, event.GetSelection()});
+            emit_event(id, {WXL_EVENT_SELECTION, nullptr, 0, event.GetSelection(), event.GetId(), 0});
+            event.Skip();
         });
         return id;
     });
@@ -503,7 +616,21 @@ int wxl_enable(wxl_handle id, int enable) {
 int wxl_enabled(wxl_handle id) {
     return boolean_result([&] { return window(id)->IsEnabled(); });
 }
-int wxl_destroy(wxl_handle id) { return status([&] { window(id)->Destroy(); }); }
+int wxl_destroy(wxl_handle id) {
+    return status([&] {
+        auto* object = window(id);
+        if (callback_depth) {
+            wxWeakRef<wxWindow> weak(object);
+            pending_destruction.insert(id);
+            try {
+                wxTheApp->CallAfter([weak, id] {
+                    pending_destruction.erase(id);
+                    if (auto* live = weak.get()) live->Destroy();
+                });
+            } catch (...) { pending_destruction.erase(id); throw; }
+        } else object->Destroy();
+    });
+}
 int wxl_set_text(wxl_handle id, const char* value, int notify) {
     return status([&] {
         auto* control = as<wxTextCtrl>(id);

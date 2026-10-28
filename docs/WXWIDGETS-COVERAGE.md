@@ -83,21 +83,23 @@ works. Context, class-definition and declaration counts must not be interpreted
 as percentages of distinct wxWidgets APIs.
 
 Current implementation is limited to managed application/event-dispatch APIs,
-standalone event-handler ownership/state, and eight concrete widget kinds with a
+standalone event-handler ownership/state, four-kind observer binding/queuing,
+and eight concrete widget kinds with a
 subset of inherited/layout/control APIs.
 C1 remains the active priority: event-handler ownership/state now has bounded
-support; generic multi-event binding/unbinding remains next,
-then timer/idle/propagation and worker dispatch, with required value and lifetime
+support; generic observers now cover four command kinds. Arbitrary event types
+and scoped mutable event contexts remain next, then timer/idle/propagation and
+worker dispatch, with required value and lifetime
 contracts first. C2 remains partial; C3–C7 have no public bindings recorded.
 See the [C1 details](coverage/phase-c1.md), [C2 details](coverage/phase-c2.md) and
 [class index](coverage/classes.md) for the remaining work within bound families.
 
-The current bridge is ABI 12, with 73 public Lisp exports. The latest code passes
-29 GUI scenarios on both local Apple Silicon macOS SBCL/CCL configurations and
+The current bridge is ABI 13, with 80 public Lisp exports. The latest code passes
+30 GUI scenarios on both local Apple Silicon macOS SBCL/CCL configurations and
 five packaging checks. These are local results retained under
-`evidence/event-handlers/` and `evidence/packaging/event-handlers-20261028/`;
-they do not validate Linux/Windows or the graphical Cadre viewer. The handler
-ownership implementation reruns the GUI suites; documentation-only
+`evidence/event-bindings/` and `evidence/packaging/event-bindings-reviewed-20261028/`;
+they do not validate Linux/Windows or the graphical Cadre viewer. The command-binding
+implementation reruns the GUI suites; documentation-only
 updates must distinguish retained results from newly run checks.
 
 Full coverage is finished only when:
@@ -136,8 +138,14 @@ widget classes has complete wxWidgets coverage yet.
   identities, `handler-alive-p`, `handler-enabled-p` and its generic SETF writer,
   plus `destroy-event-handler` for standalone objects. Weak window tracking
   prevents stale pointer access when destroy-event delivery is disabled.
-  Generic Bind/Unbind and pushed-handler ownership remain open; see
+  Arbitrary event types and pushed-handler ownership remain open; see
   [event-handler scope](EVENT-HANDLERS.md).
+- [x] Independent `bind-event`/`unbind-event` and `binding-active-p`, with
+  four-kind command observers, exact IDs/ranges, safe self/peer removal, and
+  `queue-event` on standalone/window handlers. `event-id` is a copied native ID;
+  `event-source` is the registered receiver, including on parent observers.
+  Automatic Skip is not mutable event/propagation control; see
+  [supported binding scope](EVENT-BINDINGS.md).
 - [x] Native errors translated to Lisp `native-error` conditions.
 - [x] Event snapshots: `event`, `event-p`, `event-kind`, `event-source`,
   `event-text`, `event-checked-p`, `event-selection` for the four bound event kinds.
@@ -179,13 +187,14 @@ widget classes has complete wxWidgets coverage yet.
 - [x] Checkbox toggle bind/unbind: `on-toggle`, `off-toggle`.
 - [x] Choice selection bind/unbind: `on-selection`, `off-selection`.
 - [x] Handler replacement and callback condition containment for those events;
-  handler unbinding before window destruction is still required.
+  explicit unbinding of control-specific callbacks before window destruction is
+  still required; generic registrations use weak invalidation and boundary pruning.
 
 No APIs in C3–C7 currently have public bindings. Using wxWidgets types internally
 for conversions or implementation is not public API coverage.
 
 The widget-facing Lisp API has nine window wrapper classes plus the public event-handler base, direct native
-construction, 42 named generic functions and eleven SETF generic functions; see [CLOS API](CLOS-API.md). This establishes Lisp dispatch
+construction, 46 named generic functions and eleven SETF generic functions; see [CLOS API](CLOS-API.md). This establishes Lisp dispatch
 and method combination, not native C++ subclass/virtual-callback coverage.
 
 ## Coverage implementation phases
@@ -202,7 +211,7 @@ entire dependent phase complete.
 
 The next dependency chain starts with application dispatch boundaries (now
 implemented for the bridge session), then event-handler ownership/state (bounded support implemented) and generic
-binding (still pending), then timer/idle/propagation support and worker-to-GUI dispatch.
+binding (four-kind observer support implemented), then timer/idle/propagation support and worker-to-GUI dispatch.
 Prerequisite value and ownership contracts must precede each consumer.
 Application dispatch does not close the broader application or event checklist.
 

@@ -22,6 +22,8 @@ typedef struct wxl_event {
     const char *text; /* UTF-8 for text changes; NULL otherwise. */
     int checked;      /* Boolean snapshot for toggles; zero otherwise. */
     int selection;    /* Zero-based index, -1 for none; kind 4 only. */
+    int id;
+    size_t text_length; /* Explicit UTF-8 bytes, kind 2 only. */
 } wxl_event;
 /* The record and its text are borrowed only until this callback returns.
    Callbacks must never unwind across this boundary. */
@@ -48,6 +50,13 @@ WXL_API int wxl_handler_enabled(wxl_handle handler);
 WXL_API int wxl_set_handler_enabled(wxl_handle handler, int enabled);
 /* Only standalone handlers may be destroyed here. */
 WXL_API int wxl_handler_destroy(wxl_handle handler);
+/* Independent observer bindings for the four command-event kinds. Bind/queue
+   return 0 or -1. Unbind/active return 0/1 or -1. Filters use -1 for wxID_ANY.
+   All observer callbacks Skip; native callback order is not guaranteed here. */
+WXL_API int wxl_bind(wxl_handle handler, int kind, uint64_t token, int first_id, int last_id);
+WXL_API int wxl_unbind(uint64_t token);
+WXL_API int wxl_binding_active(uint64_t token);
+WXL_API int wxl_queue_event(wxl_handle handler, int kind, int id, const char *text, size_t length, int value);
 WXL_API wxl_handle wxl_frame(const char *title, int width, int height);
 WXL_API wxl_handle wxl_panel(wxl_handle parent);
 WXL_API wxl_handle wxl_button(wxl_handle parent, const char *label);
