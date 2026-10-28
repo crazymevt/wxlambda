@@ -148,3 +148,9 @@ context suspension and active-dialog/ancestor lifetime guards. See
 `docs/STANDARD-DIALOGS.md` and `docs/MESSAGE-FILE-DIALOGS.md`. Preserve guarded
 internal prompt depth/sequential cancellation; raw modal results do not imply
 file validation or accepted selection.
+
+The persistent form workflow in `examples/document-form.lisp` composes existing
+menus/dialogs with Lisp-native UTF-8 document IO; it adds no native bindings.
+Preserve cancellation/failed-save close veto, dirty baselines and native filename
+conversion. See `docs/DOCUMENT-FORM.md`. The next selected slice is bounded text
+clipboard support for the form/editor; do not drain wxDocument/native stream APIs.

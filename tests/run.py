@@ -30,6 +30,7 @@ def scenarios():
     yield "message-file-dialogs", "message-file-dialogs.lisp", {}
     yield "standard-dialogs", "standard-dialogs.lisp", {}
     yield "menus", "menus.lisp", {}
+    yield "document-form", "document-form.lisp", {}
     yield "idle-events", "idle-events.lisp", {}
     yield "binding-user-data", "binding-user-data.lisp", {}
     yield "handler-client-data", "handler-client-data.lisp", {}

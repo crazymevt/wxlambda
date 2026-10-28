@@ -1,0 +1,158 @@
+(load (merge-pathnames "../examples/document-form.lisp" *load-truename*))
+(in-package #:wxlambda-document-form)
+
+(defun test-document-workflow ()
+  (let* ((directory (merge-pathnames (format nil "wxlambda-form-~36R/" (random (expt 36 12)))
+                                    (uiop:temporary-directory)))
+         (path (merge-pathnames "form-λ.wxform" directory))
+         (other (merge-pathnames "other.wxform" directory))
+         (bad (merge-pathnames "invalid.wxform" directory))
+         (choices nil) (answers nil) (errors nil) (modes nil) (form nil))
+    (ensure-directories-exist path)
+    (unwind-protect
+         (progn
+           (let* ((native (concatenate 'string (uiop:native-namestring directory) (if (uiop:os-windows-p) "literal [q].wxform"
+                                             (concatenate 'string "literal-" (string (code-char 92)) "x*[q].wxform"))))
+                  (special (uiop:parse-native-namestring native)))
+             (assert (string= native (uiop:native-namestring special)))
+             (write-document special '("Literal filename" t 0))
+             (assert (equal '("Literal filename" t 0) (read-document special)))
+             (assert (string= (subseq native (length (uiop:native-namestring directory)))
+                              (native-basename special))))
+           (write-document other '("日本語 😀" nil 1))
+           (assert (equal '("日本語 😀" nil 1) (read-document other)))
+           (with-open-file (s bad :direction :output :external-format :utf-8)
+             (write-line "#.(error \"never evaluate\")" s))
+           (setf form (open-form
+                        :choose-path (lambda (form mode) (declare (ignore form))
+                                       (push mode modes) (pop choices))
+                        :confirm-changes (lambda (form) (declare (ignore form)) (pop answers))
+                        :report-error (lambda (form error) (declare (ignore form)) (push error errors))))
+           (assert (not (dirty-p form)))
+           (setf (wxlambda:text (document-form-name form) :notify t) "Grace λ")
+           (assert (dirty-p form))
+           ;; Cancel Save As cannot assign a path or clear the dirty baseline.
+           (assert (not (perform-command form :save)))
+           (assert (null (document-form-path form)))
+           (assert (dirty-p form))
+           (setf choices (list path))
+           (assert (wxlambda:activate-menu-item (second (document-form-items form))))
+           (assert (equal '("Grace λ" t 0) (read-document path)))
+           (assert (not (dirty-p form)))
+           ;; Ordinary Save reuses its path; Save As cancellation preserves it.
+           (setf (wxlambda:text (document-form-name form) :notify t) "Changed")
+           (assert (perform-command form :save))
+           (assert (equal '("Changed" t 0) (read-document path)))
+           (assert (not (perform-command form :save-as)))
+           (assert (equal path (document-form-path form)))
+           ;; Invalid and missing inputs preserve all current state.
+           (dolist (input (list bad (merge-pathnames "missing" directory)))
+             (setf choices (list input))
+             (assert (not (perform-command form :open)))
+             (assert (equal '("Changed" t 0) (form-values form)))
+             (assert (equal path (document-form-path form))))
+           (assert (= 2 (length errors)))
+           ;; Reject a name the writer cannot round-trip, before touching controls.
+           (with-open-file (s bad :direction :output :if-exists :supersede :external-format :utf-8)
+             (format s "WXLAMBDA-FORM-1~%Invalid~Cname~%yes~%friendly~%" #\Return))
+           (setf choices (list bad))
+           (assert (not (perform-command form :open)))
+           (assert (equal '("Changed" t 0) (form-values form)))
+           (assert (equal path (document-form-path form)))
+           (assert (= 3 (length errors)))
+           ;; Failed staged replacement preserves the original file and baseline.
+           (setf (wxlambda:text (document-form-name form) :notify t) "Unsaved"
+                 choices (list directory))
+           (assert (not (perform-command form :save-as)))
+           (assert (= 4 (length errors)))
+           (assert (dirty-p form))
+           (assert (equal '("Changed" t 0) (read-document path)))
+           (assert (null (uiop:directory-files directory ".wxlambda-*.tmp")))
+           ;; Cancel unsaved prompt keeps data, without opening a picker.
+           (setf answers (list :cancel) choices (list other))
+           (let ((old modes))
+             (assert (not (perform-command form :open)))
+             (assert (eq old modes)))
+           ;; Yes followed by canceled Save As also blocks destructive Open.
+           (setf (document-form-path form) nil answers (list :yes) choices (list nil other))
+           (assert (not (perform-command form :open)))
+           (assert (equal '("Unsaved" t 0) (form-values form)))
+           ;; Save first, then Open; persisted old document remains separately.
+           (setf answers (list :yes) choices (list path other))
+           (assert (perform-command form :open))
+           (assert (equal '("Unsaved" t 0) (read-document path)))
+           (assert (equal '("日本語 😀" nil 1) (form-values form)))
+           (assert (not (dirty-p form)))
+           ;; Compare against baseline, including returning edits to saved values.
+           (setf (wxlambda:checked-p (document-form-greeting form) :notify t) t)
+           (assert (dirty-p form))
+           (setf (wxlambda:checked-p (document-form-greeting form) :notify t) nil)
+           (assert (not (dirty-p form)))
+           ;; Reentrant commands and vetoable close are blocked while busy.
+           (setf (document-form-busy form) t)
+           (assert (not (perform-command form :save)))
+           (assert (not (wxlambda:close-window (document-form-frame form))))
+           (setf (document-form-busy form) nil)
+           (setf (wxlambda:text (document-form-name form) :notify t) "Close test"
+                 answers (list :cancel))
+           (assert (not (wxlambda:close-window (document-form-frame form))))
+           (assert (wxlambda:handler-alive-p (document-form-frame form)))
+           ;; Failed save also vetoes close; No explicitly discards.
+           (setf (document-form-path form) nil answers (list :yes) choices (list directory))
+           (assert (not (wxlambda:close-window (document-form-frame form))))
+           (setf answers (list :no))
+           (assert (wxlambda:close-window (document-form-frame form)))
+           (wxlambda:process-events)
+           (assert (not (wxlambda:handler-alive-p (document-form-frame form))))
+           ;; A successful Yes on close saves before delegating destruction.
+           (setf form (open-form
+                        :choose-path (lambda (form mode) (declare (ignore form mode)) path)
+                        :confirm-changes (lambda (form) (declare (ignore form)) :yes)
+                        :report-error (lambda (form condition) (declare (ignore form)) (error condition))))
+           (setf (wxlambda:text (document-form-name form) :notify t) "Saved before close")
+           (assert (wxlambda:close-window (document-form-frame form)))
+           (wxlambda:process-events)
+           (assert (equal '("Saved before close" t 0) (read-document path)))
+           (assert (not (wxlambda:handler-alive-p (document-form-frame form))))
+           ;; Forced closure does not attempt a prompt it cannot promise to veto.
+           (setf form (open-form :confirm-changes
+                        (lambda (form) (declare (ignore form)) (error "Unexpected forced-close prompt"))))
+           (setf (wxlambda:text (document-form-name form) :notify t) "Forced close")
+           (assert (wxlambda:close-window (document-form-frame form) :force t))
+           (wxlambda:process-events)
+           (assert (not (wxlambda:handler-alive-p (document-form-frame form)))))
+      (when form (dispose-form form))
+      (uiop:delete-directory-tree directory :validate t :if-does-not-exist :ignore))))
+
+;; Exercise the real default dialog adapters, with bounded native idle cancellation.
+(defmethod wxlambda:show-modal :around ((dialog wxlambda:dialog))
+  (let ((binding nil) (cancelled nil))
+    (unwind-protect
+         (progn
+           (setf binding
+                 (wxlambda:bind-event (wxlambda:current-application-handler) :idle
+                   (lambda (event)
+                     (declare (ignore event))
+                     (when (and (not cancelled) (wxlambda:dialog-modal-p dialog))
+                       (setf cancelled t)
+                       (wxlambda:end-modal dialog :cancel)))))
+           (prog1 (call-next-method) (assert cancelled)))
+      (when binding (wxlambda:unbind-event binding)))))
+
+(defun test-native-dialog-adapters ()
+  (let ((form (open-form)))
+    (unwind-protect
+         (progn
+           (assert (not (perform-command form :save)))
+           (setf (wxlambda:text (document-form-name form) :notify t) "Native Cancel")
+           (assert (not (wxlambda:close-window (document-form-frame form))))
+           (assert (dirty-p form))
+           (assert (wxlambda:handler-alive-p (document-form-frame form)))
+           (report-error form (make-condition 'simple-error :format-control "Example failure")))
+      (dispose-form form))))
+
+(wxlambda:with-application ()
+  (assert (exercise))
+  (test-document-workflow)
+  (test-native-dialog-adapters))
+(format t "PASS: document form round trips, cancellations, failed IO, dirty state and close veto~%")

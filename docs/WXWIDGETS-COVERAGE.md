@@ -104,10 +104,12 @@ scheduled-deletion state plus its pending markers. Native regressions, independe
 review and the full GUI/package checks below validate the corrected behavior.
 
 The current bridge is ABI 34, with 167 public Lisp exports. Generic message/file
-verification passes all 51 GUI scenarios on local Apple Silicon macOS SBCL and CCL,
-five package checks, independent reviews and the zero-assert native regression.
-Reports: `evidence/message-file-dialogs/{sbcl,ccl}-20261028-final/` and
-`evidence/packaging/message-file-dialogs-20261028/`. Docset checks pass with 232 entries
+and persistent-form workflows pass the 52-scenario suite on local Apple Silicon
+macOS SBCL and CCL, with five package checks and independent reviews. The final
+form input-validation fix also passes a separate post-review focused run on both
+Lisps. Native regression evidence remains from ABI34 (unchanged by the form).
+Reports: `evidence/document-form/{sbcl,ccl}-20261028-final/` and
+`evidence/packaging/document-form-20261028/`. Docset checks pass with 234 entries
 and zero problems, including actual public-export/class/SETF coverage and isolated
 discovery/lookup. These checks do not validate hosted Windows/Linux, physical
 interactive input, real OS session delivery or the graphical Cadre viewer.
@@ -130,9 +132,9 @@ status.json to represent deferral or assume a Lisp equivalent without checking
 its required semantics. A class can stay native-partial while its selected GUI
 feature scope is accepted. Native missing APIs are not automatic release blockers.
 
-**Current vertical slice:** menus/actions and bounded modal text/choice dialogs for an
-everyday form/editor, adding only timer/value/lifetime prerequisites actually
-needed by that slice. Do not drain native ownership/utilities first.
+**Current vertical slice:** the persistent form composes menus/actions and generic
+modal dialogs with Lisp-native open/save IO. Next add bounded text clipboard
+support for the form/editor, adding only prerequisites actually needed by that slice. Do not drain native ownership/utilities first.
 
 ### Representative application acceptance
 
@@ -409,5 +411,12 @@ ABI34 generic message/file support passes final verification.
 internal prompt cancellation and current-versus-accepted file state. Native OS
 backends remain unbound. Generic implementation headers/eager message creation,
 modal-hook overrides and file style-bit restoration are bounded C7 reconciliation
-dependencies, not public native class/virtual coverage. Next compose the form/editor
-open/save workflow with Lisp-native file content IO.
+dependencies, not public native class/virtual coverage.
+
+The [persistent document form](DOCUMENT-FORM.md) now composes those operations with
+Lisp-native UTF-8 IO, dirty baselines, canceled/failed-save protection and close veto.
+This adds no bindings: wxDocument/wxDocManager/native streams stay unbound. Its
+52-scenario suite and 234-entry docset verification pass; see
+IMPLEMENTATION.md for evidence. The example is a form, not a multiline editor, and
+does not provide locking, crash durability or external-change detection. Next add
+bounded text clipboard support for the form/editor.

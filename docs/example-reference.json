@@ -120,11 +120,15 @@
     "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/menus.lisp --eval '(wxlambda-menus:start)'"
   },
   "standard-dialogs.lisp": {
-    "description": "Interactive START opens a native text prompt; EXERCISE within an active session deterministically cancels a real modal loop from native idle. Message/file dialogs remain deferred pending safe platform cancellation.",
+    "description": "Interactive START opens a native text prompt; EXERCISE within an active session deterministically cancels a real modal loop from native idle. Generic message/file dialogs are demonstrated separately; platform-native backends remain deferred.",
     "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/standard-dialogs.lisp --eval '(wxlambda-standard-dialogs:start)'"
   },
   "message-file-dialogs.lisp": {
     "description": "Interactive START asks whether to choose a file and prints accepted selection without reading content. Active-session EXERCISE checks message buttons/file mode and cancels actual generic message/file loops from native idle, including a message without visible Cancel. Native OS alerts/panels remain unbound.",
     "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/message-file-dialogs.lisp --eval '(wxlambda:with-application () (wxlambda-message-file-dialogs:exercise))'"
+  },
+  "document-form.lisp": {
+    "description": "Interactive persistent form with File Open/Save/Save As/Close, dirty baseline, save/discard/cancel prompts and staged UTF-8 Lisp file IO. Bounded active-session EXERCISE cancels a scripted save. Native OS panels and multiline editing remain outside this example.",
+    "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/document-form.lisp --eval '(wxlambda:with-application () (wxlambda-document-form:exercise))'"
   }
 }

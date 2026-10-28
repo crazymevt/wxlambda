@@ -84,10 +84,11 @@ as if later features or platform checks already passed.
   thirty-six generic SETF writers. The application-handler is a borrowed view; no
   native application construction or arbitrary-event class binding exists yet; built-ins plus registered command/notify names have
   observer/contextual bindings.
-- Latest implementation verification: all 51 GUI scenarios and native preflight
+- Latest implementation verification: all 52 GUI scenarios and native preflight
   pass on local Apple Silicon macOS SBCL 2.6.9 and CCL 1.13. Final reports:
-  `evidence/message-file-dialogs/{sbcl,ccl}-20261028-final/`. Five package checks
-  pass in `evidence/packaging/message-file-dialogs-20261028/`.
+  `evidence/document-form/{sbcl,ccl}-20261028-final/`. Final form-only review fix
+  passes both Lisps separately (quiet-run.ex5y1flw). Five package checks
+  pass in `evidence/packaging/document-form-20261028/`.
   Hosted Linux/Windows GUI behavior and the graphical Cadre viewer remain open.
 
 ### Feature priorities and working order
@@ -95,8 +96,9 @@ as if later features or platform checks already passed.
 1. Preserve core ownership/invalidation, callbacks/main-thread rules, CLOS APIs
    and required documentation/examples/docset/testing for every delivered feature.
 2. Menus/actions and bounded text/single-choice dialogs extend the form/editor
-   slice. Next compose **form/editor open/save workflows** through generic message/file
-   dialogs and Lisp-native document IO; retain native OS backends as unbound.
+   slice. A persistent form now composes open/save workflows through generic
+   message/file dialogs and Lisp-native document IO. Next add bounded text clipboard
+   support for the form/editor; retain native OS backends as unbound.
    Add only necessary
    timer/value/lifetime prerequisites; do not drain native ownership/utilities.
 3. Expand controls/layout, navigation/notebooks, list/tree, clipboard and drawing
@@ -1712,3 +1714,46 @@ native event depth is not a prerequisite.
 Implement these as separate reviewable changes, beginning with baseline
 corrections and REPL regression tests. Platform work can proceed alongside local
 development when runners become available.
+
+## Persistent document form (2026-10-28, verified)
+
+examples/document-form.lisp composes the existing controls/menus/generic dialogs
+into a persistent form. No native binding or public library export changes; ABI34,
+167 exports, 115 named generics and 36 SETF generics remain. The new guide and example
+bring the docset to 234 entries and 33 examples; full GUI runner now has 52 scenarios.
+The UTF-8 four-line format is parsed without the Lisp reader. Complete reads precede
+UI installation; writes stage a unique sibling before replacement. Dirty state
+compares fields to their loaded/saved baseline. Open/vetoable Close offer Save,
+Discard or Cancel; failed/canceled Save blocks replacement/close. Busy guards
+reject reentrant commands; forced closing follows native defaults without prompts.
+No durability, metadata preservation, external-change detection, undo/autosave or
+cross-platform atomic replacement is claimed. This is a form, not a multiline editor.
+
+Independent review found native chooser strings parsed as Lisp pathname syntax,
+which could reinterpret literal backslashes/wildcards and select a different file.
+Fixed with UIOP:PARSE-NATIVE-NAMESTRING and native basename formatting/preselection;
+literal native filename tests cover the original risk. Re-review has no outstanding
+actionable findings. Focused both-Lisp checks pass (quiet-run.GDQdEPGc), including
+real idle-canceled save, unsaved-close and error dialogs, resumed outer close veto,
+scripted save-before-open, failed IO/state preservation and temporary cleanup.
+One initial menu test exposed observer Skip semantics; example menu bindings now
+consume their routed commands contextually. A CCL test-only nonstandard character
+name was replaced by CODE-CHAR. Runner unit result count was corrected for the new
+scenario plus native preflight. Final review also aligned reader CR/LF rejection
+with writer validation; the malformed-name regression preserves controls/path.
+Re-review is clear. All 52 GUI scenarios plus native preflight pass both Lisps
+(evidence/document-form/{sbcl,ccl}-20261028-final/, quiet-run.Nt0AVng9). The final
+CR/LF fix landed during that suite; a separate post-fix focused run passes both
+(quiet-run.ex5y1flw), including example EXERCISE and actual dialog adapter loops.
+Five package checks pass (evidence/packaging/document-form-20261028/,
+quiet-run.icnlYsqk); package: dist/wxlambda-form-document-workflow. This packages
+the existing form executable, not the new standalone example/docs. Docset build,
+zero-problem check, isolated install/discovery/lookup and actual 167-export/class/
+SETF coverage pass with 234 entries on both Lisps; 16 Python unit checks pass
+(quiet-run.j9tqt7YB). Generated docset rebuilt after final source/note edits.
+
+Native inventory statuses stay unchanged: this Lisp composition does not bind
+wxDocument/wxDocManager or native streams. Hosted Windows/Linux, physical interactive
+input, graphical Cadre, allocation/IO-race injection and real OS session delivery
+remain unverified. Next selected slice: bounded text clipboard support, preserving
+Lisp-native document/model semantics rather than draining native document APIs.

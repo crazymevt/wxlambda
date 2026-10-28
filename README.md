@@ -761,3 +761,7 @@ modeless and custom validation interfaces remain open.
 results and single-file current paths/filters with guarded internal prompts.
 Raw END-MODAL does not validate a file choice; native browser actions can change
 the filesystem. Next compose the form/editor open/save workflow.
+
+The [persistent document form](docs/DOCUMENT-FORM.md) combines File menu actions,
+save/discard/cancel prompts, safe modal cancellation and Lisp-native UTF-8 form
+files. Run its interactive START or bounded EXERCISE as documented there.
