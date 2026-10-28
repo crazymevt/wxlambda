@@ -3618,6 +3618,461 @@
         "wxl_text_multiline"
       ],
       "scope": "TEXT-CONTROL only. Boolean construction styles/user editability; native offset selection/insertion/end and notifying Replace. Ordered nonnegative in-bounds positions, no -1 sentinels or Lisp-index interpretation. Other text-entry receivers, styles and full native API remain unbound."
+    },
+    {
+      "header": "wx/notebook.h",
+      "line": 27,
+      "declaration": "wxEventType wxEVT_NOTEBOOK_PAGE_CHANGED;",
+      "status": "~",
+      "symbol": "wxEVT_NOTEBOOK_PAGE_CHANGED",
+      "lisp": [
+        "bind-event",
+        "event-selection",
+        "event-vetoed-p"
+      ],
+      "native": [
+        "wxl_bind",
+        "wxl_event_field"
+      ],
+      "scope": "NOTEBOOK only, fixed setup-time PANEL pages with canonical wrapper roots/native parent ownership. Silent or native notifying/vetoable selection and native captions; operation/callback ancestor/reentry/modal/clipboard guards. No other books, page removal/reorder/reparent/icons or full native class coverage."
+    },
+    {
+      "header": "wx/notebook.h",
+      "line": 28,
+      "declaration": "wxEventType wxEVT_NOTEBOOK_PAGE_CHANGING;",
+      "status": "~",
+      "symbol": "wxEVT_NOTEBOOK_PAGE_CHANGING",
+      "lisp": [
+        "bind-event",
+        "event-selection",
+        "event-vetoed-p"
+      ],
+      "native": [
+        "wxl_bind",
+        "wxl_event_field"
+      ],
+      "scope": "NOTEBOOK only, fixed setup-time PANEL pages with canonical wrapper roots/native parent ownership. Silent or native notifying/vetoable selection and native captions; operation/callback ancestor/reentry/modal/clipboard guards. No other books, page removal/reorder/reparent/icons or full native class coverage."
+    },
+    {
+      "header": "wx/notebook.h",
+      "line": 140,
+      "declaration": "wxNotebook(wxWindow* parent, wxWindowID id, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = 0, const wxString& name = wxNotebookNameStr);",
+      "status": "~",
+      "symbol": "wxNotebook::wxNotebook",
+      "lisp": [
+        "notebook",
+        "make-notebook",
+        "add-notebook-page",
+        "notebook-page-count",
+        "notebook-page",
+        "notebook-page-label",
+        "selection"
+      ],
+      "native": [
+        "wxl_notebook",
+        "wxl_notebook_add",
+        "wxl_notebook_count",
+        "wxl_notebook_page",
+        "wxl_notebook_label",
+        "wxl_set_notebook_label",
+        "wxl_notebook_selection",
+        "wxl_set_notebook_selection"
+      ],
+      "scope": "NOTEBOOK only, fixed setup-time PANEL pages with canonical wrapper roots/native parent ownership. Silent or native notifying/vetoable selection and native captions; operation/callback ancestor/reentry/modal/clipboard guards. No other books, page removal/reorder/reparent/icons or full native class coverage."
+    },
+    {
+      "header": "wx/notebook.h",
+      "line": 197,
+      "declaration": "virtual wxString GetPageText(size_t nPage) const;",
+      "status": "~",
+      "symbol": "wxNotebook::GetPageText",
+      "lisp": [
+        "notebook",
+        "make-notebook",
+        "add-notebook-page",
+        "notebook-page-count",
+        "notebook-page",
+        "notebook-page-label",
+        "selection"
+      ],
+      "native": [
+        "wxl_notebook",
+        "wxl_notebook_add",
+        "wxl_notebook_count",
+        "wxl_notebook_page",
+        "wxl_notebook_label",
+        "wxl_set_notebook_label",
+        "wxl_notebook_selection",
+        "wxl_set_notebook_selection"
+      ],
+      "scope": "NOTEBOOK only, fixed setup-time PANEL pages with canonical wrapper roots/native parent ownership. Silent or native notifying/vetoable selection and native captions; operation/callback ancestor/reentry/modal/clipboard guards. No other books, page removal/reorder/reparent/icons or full native class coverage."
+    },
+    {
+      "header": "wx/notebook.h",
+      "line": 198,
+      "declaration": "virtual bool SetPageText(size_t page, const wxString& text);",
+      "status": "~",
+      "symbol": "wxNotebook::SetPageText",
+      "lisp": [
+        "notebook",
+        "make-notebook",
+        "add-notebook-page",
+        "notebook-page-count",
+        "notebook-page",
+        "notebook-page-label",
+        "selection"
+      ],
+      "native": [
+        "wxl_notebook",
+        "wxl_notebook_add",
+        "wxl_notebook_count",
+        "wxl_notebook_page",
+        "wxl_notebook_label",
+        "wxl_set_notebook_label",
+        "wxl_notebook_selection",
+        "wxl_set_notebook_selection"
+      ],
+      "scope": "NOTEBOOK only, fixed setup-time PANEL pages with canonical wrapper roots/native parent ownership. Silent or native notifying/vetoable selection and native captions; operation/callback ancestor/reentry/modal/clipboard guards. No other books, page removal/reorder/reparent/icons or full native class coverage."
+    },
+    {
+      "header": "wx/notebook.h",
+      "line": 199,
+      "declaration": "virtual int GetSelection() const;",
+      "status": "~",
+      "symbol": "wxNotebook::GetSelection",
+      "lisp": [
+        "notebook",
+        "make-notebook",
+        "add-notebook-page",
+        "notebook-page-count",
+        "notebook-page",
+        "notebook-page-label",
+        "selection"
+      ],
+      "native": [
+        "wxl_notebook",
+        "wxl_notebook_add",
+        "wxl_notebook_count",
+        "wxl_notebook_page",
+        "wxl_notebook_label",
+        "wxl_set_notebook_label",
+        "wxl_notebook_selection",
+        "wxl_set_notebook_selection"
+      ],
+      "scope": "NOTEBOOK only, fixed setup-time PANEL pages with canonical wrapper roots/native parent ownership. Silent or native notifying/vetoable selection and native captions; operation/callback ancestor/reentry/modal/clipboard guards. No other books, page removal/reorder/reparent/icons or full native class coverage."
+    },
+    {
+      "header": "wx/notebook.h",
+      "line": 200,
+      "declaration": "virtual int SetSelection(size_t page);",
+      "status": "~",
+      "symbol": "wxNotebook::SetSelection",
+      "lisp": [
+        "notebook",
+        "make-notebook",
+        "add-notebook-page",
+        "notebook-page-count",
+        "notebook-page",
+        "notebook-page-label",
+        "selection"
+      ],
+      "native": [
+        "wxl_notebook",
+        "wxl_notebook_add",
+        "wxl_notebook_count",
+        "wxl_notebook_page",
+        "wxl_notebook_label",
+        "wxl_set_notebook_label",
+        "wxl_notebook_selection",
+        "wxl_set_notebook_selection"
+      ],
+      "scope": "NOTEBOOK only, fixed setup-time PANEL pages with canonical wrapper roots/native parent ownership. Silent or native notifying/vetoable selection and native captions; operation/callback ancestor/reentry/modal/clipboard guards. No other books, page removal/reorder/reparent/icons or full native class coverage."
+    },
+    {
+      "header": "wx/notebook.h",
+      "line": 201,
+      "declaration": "virtual int ChangeSelection(size_t page);",
+      "status": "~",
+      "symbol": "wxNotebook::ChangeSelection",
+      "lisp": [
+        "notebook",
+        "make-notebook",
+        "add-notebook-page",
+        "notebook-page-count",
+        "notebook-page",
+        "notebook-page-label",
+        "selection"
+      ],
+      "native": [
+        "wxl_notebook",
+        "wxl_notebook_add",
+        "wxl_notebook_count",
+        "wxl_notebook_page",
+        "wxl_notebook_label",
+        "wxl_set_notebook_label",
+        "wxl_notebook_selection",
+        "wxl_set_notebook_selection"
+      ],
+      "scope": "NOTEBOOK only, fixed setup-time PANEL pages with canonical wrapper roots/native parent ownership. Silent or native notifying/vetoable selection and native captions; operation/callback ancestor/reentry/modal/clipboard guards. No other books, page removal/reorder/reparent/icons or full native class coverage."
+    },
+    {
+      "header": "wx/bookctrl.h",
+      "line": 138,
+      "declaration": "virtual wxString GetPageText(size_t nPage) const = 0;",
+      "status": "~",
+      "symbol": "wxBookCtrlBase::GetPageText",
+      "lisp": [
+        "notebook",
+        "make-notebook",
+        "add-notebook-page",
+        "notebook-page-count",
+        "notebook-page",
+        "notebook-page-label",
+        "selection"
+      ],
+      "native": [
+        "wxl_notebook",
+        "wxl_notebook_add",
+        "wxl_notebook_count",
+        "wxl_notebook_page",
+        "wxl_notebook_label",
+        "wxl_set_notebook_label",
+        "wxl_notebook_selection",
+        "wxl_set_notebook_selection"
+      ],
+      "scope": "NOTEBOOK only, fixed setup-time PANEL pages with canonical wrapper roots/native parent ownership. Silent or native notifying/vetoable selection and native captions; operation/callback ancestor/reentry/modal/clipboard guards. No other books, page removal/reorder/reparent/icons or full native class coverage."
+    },
+    {
+      "header": "wx/bookctrl.h",
+      "line": 143,
+      "declaration": "virtual bool SetPageText(size_t page, const wxString& text) = 0;",
+      "status": "~",
+      "symbol": "wxBookCtrlBase::SetPageText",
+      "lisp": [
+        "notebook",
+        "make-notebook",
+        "add-notebook-page",
+        "notebook-page-count",
+        "notebook-page",
+        "notebook-page-label",
+        "selection"
+      ],
+      "native": [
+        "wxl_notebook",
+        "wxl_notebook_add",
+        "wxl_notebook_count",
+        "wxl_notebook_page",
+        "wxl_notebook_label",
+        "wxl_set_notebook_label",
+        "wxl_notebook_selection",
+        "wxl_set_notebook_selection"
+      ],
+      "scope": "NOTEBOOK only, fixed setup-time PANEL pages with canonical wrapper roots/native parent ownership. Silent or native notifying/vetoable selection and native captions; operation/callback ancestor/reentry/modal/clipboard guards. No other books, page removal/reorder/reparent/icons or full native class coverage."
+    },
+    {
+      "header": "wx/bookctrl.h",
+      "line": 163,
+      "declaration": "virtual int GetSelection() const = 0;",
+      "status": "~",
+      "symbol": "wxBookCtrlBase::GetSelection",
+      "lisp": [
+        "notebook",
+        "make-notebook",
+        "add-notebook-page",
+        "notebook-page-count",
+        "notebook-page",
+        "notebook-page-label",
+        "selection"
+      ],
+      "native": [
+        "wxl_notebook",
+        "wxl_notebook_add",
+        "wxl_notebook_count",
+        "wxl_notebook_page",
+        "wxl_notebook_label",
+        "wxl_set_notebook_label",
+        "wxl_notebook_selection",
+        "wxl_set_notebook_selection"
+      ],
+      "scope": "NOTEBOOK only, fixed setup-time PANEL pages with canonical wrapper roots/native parent ownership. Silent or native notifying/vetoable selection and native captions; operation/callback ancestor/reentry/modal/clipboard guards. No other books, page removal/reorder/reparent/icons or full native class coverage."
+    },
+    {
+      "header": "wx/bookctrl.h",
+      "line": 179,
+      "declaration": "virtual int SetSelection(size_t page) = 0;",
+      "status": "~",
+      "symbol": "wxBookCtrlBase::SetSelection",
+      "lisp": [
+        "notebook",
+        "make-notebook",
+        "add-notebook-page",
+        "notebook-page-count",
+        "notebook-page",
+        "notebook-page-label",
+        "selection"
+      ],
+      "native": [
+        "wxl_notebook",
+        "wxl_notebook_add",
+        "wxl_notebook_count",
+        "wxl_notebook_page",
+        "wxl_notebook_label",
+        "wxl_set_notebook_label",
+        "wxl_notebook_selection",
+        "wxl_set_notebook_selection"
+      ],
+      "scope": "NOTEBOOK only, fixed setup-time PANEL pages with canonical wrapper roots/native parent ownership. Silent or native notifying/vetoable selection and native captions; operation/callback ancestor/reentry/modal/clipboard guards. No other books, page removal/reorder/reparent/icons or full native class coverage."
+    },
+    {
+      "header": "wx/bookctrl.h",
+      "line": 195,
+      "declaration": "virtual int ChangeSelection(size_t page) = 0;",
+      "status": "~",
+      "symbol": "wxBookCtrlBase::ChangeSelection",
+      "lisp": [
+        "notebook",
+        "make-notebook",
+        "add-notebook-page",
+        "notebook-page-count",
+        "notebook-page",
+        "notebook-page-label",
+        "selection"
+      ],
+      "native": [
+        "wxl_notebook",
+        "wxl_notebook_add",
+        "wxl_notebook_count",
+        "wxl_notebook_page",
+        "wxl_notebook_label",
+        "wxl_set_notebook_label",
+        "wxl_notebook_selection",
+        "wxl_set_notebook_selection"
+      ],
+      "scope": "NOTEBOOK only, fixed setup-time PANEL pages with canonical wrapper roots/native parent ownership. Silent or native notifying/vetoable selection and native captions; operation/callback ancestor/reentry/modal/clipboard guards. No other books, page removal/reorder/reparent/icons or full native class coverage."
+    },
+    {
+      "header": "wx/bookctrl.h",
+      "line": 206,
+      "declaration": "int FindPage(const wxWindow* page) const;",
+      "status": "~",
+      "symbol": "wxBookCtrlBase::FindPage",
+      "lisp": [
+        "notebook",
+        "make-notebook",
+        "add-notebook-page",
+        "notebook-page-count",
+        "notebook-page",
+        "notebook-page-label",
+        "selection"
+      ],
+      "native": [
+        "wxl_notebook",
+        "wxl_notebook_add",
+        "wxl_notebook_count",
+        "wxl_notebook_page",
+        "wxl_notebook_label",
+        "wxl_set_notebook_label",
+        "wxl_notebook_selection",
+        "wxl_set_notebook_selection"
+      ],
+      "scope": "NOTEBOOK only, fixed setup-time PANEL pages with canonical wrapper roots/native parent ownership. Silent or native notifying/vetoable selection and native captions; operation/callback ancestor/reentry/modal/clipboard guards. No other books, page removal/reorder/reparent/icons or full native class coverage."
+    },
+    {
+      "header": "wx/bookctrl.h",
+      "line": 272,
+      "declaration": "virtual bool AddPage(wxWindow* page, const wxString& text, bool select = false, int imageId = NO_IMAGE);",
+      "status": "~",
+      "symbol": "wxBookCtrlBase::AddPage",
+      "lisp": [
+        "notebook",
+        "make-notebook",
+        "add-notebook-page",
+        "notebook-page-count",
+        "notebook-page",
+        "notebook-page-label",
+        "selection"
+      ],
+      "native": [
+        "wxl_notebook",
+        "wxl_notebook_add",
+        "wxl_notebook_count",
+        "wxl_notebook_page",
+        "wxl_notebook_label",
+        "wxl_set_notebook_label",
+        "wxl_notebook_selection",
+        "wxl_set_notebook_selection"
+      ],
+      "scope": "NOTEBOOK only, fixed setup-time PANEL pages with canonical wrapper roots/native parent ownership. Silent or native notifying/vetoable selection and native captions; operation/callback ancestor/reentry/modal/clipboard guards. No other books, page removal/reorder/reparent/icons or full native class coverage."
+    },
+    {
+      "header": "wx/bookctrl.h",
+      "line": 329,
+      "declaration": "virtual size_t GetPageCount() const;",
+      "status": "~",
+      "symbol": "wxBookCtrlBase::GetPageCount",
+      "lisp": [
+        "notebook",
+        "make-notebook",
+        "add-notebook-page",
+        "notebook-page-count",
+        "notebook-page",
+        "notebook-page-label",
+        "selection"
+      ],
+      "native": [
+        "wxl_notebook",
+        "wxl_notebook_add",
+        "wxl_notebook_count",
+        "wxl_notebook_page",
+        "wxl_notebook_label",
+        "wxl_set_notebook_label",
+        "wxl_notebook_selection",
+        "wxl_set_notebook_selection"
+      ],
+      "scope": "NOTEBOOK only, fixed setup-time PANEL pages with canonical wrapper roots/native parent ownership. Silent or native notifying/vetoable selection and native captions; operation/callback ancestor/reentry/modal/clipboard guards. No other books, page removal/reorder/reparent/icons or full native class coverage."
+    },
+    {
+      "header": "wx/bookctrl.h",
+      "line": 334,
+      "declaration": "wxWindow* GetPage(size_t page) const;",
+      "status": "~",
+      "symbol": "wxBookCtrlBase::GetPage",
+      "lisp": [
+        "notebook",
+        "make-notebook",
+        "add-notebook-page",
+        "notebook-page-count",
+        "notebook-page",
+        "notebook-page-label",
+        "selection"
+      ],
+      "native": [
+        "wxl_notebook",
+        "wxl_notebook_add",
+        "wxl_notebook_count",
+        "wxl_notebook_page",
+        "wxl_notebook_label",
+        "wxl_set_notebook_label",
+        "wxl_notebook_selection",
+        "wxl_set_notebook_selection"
+      ],
+      "scope": "NOTEBOOK only, fixed setup-time PANEL pages with canonical wrapper roots/native parent ownership. Silent or native notifying/vetoable selection and native captions; operation/callback ancestor/reentry/modal/clipboard guards. No other books, page removal/reorder/reparent/icons or full native class coverage."
+    },
+    {
+      "header": "wx/bookctrl.h",
+      "line": 445,
+      "declaration": "int GetSelection() const;",
+      "status": "~",
+      "symbol": "wxBookCtrlEvent::GetSelection",
+      "lisp": [
+        "event-selection",
+        "bind-event"
+      ],
+      "native": [
+        "wxl_bind",
+        "wxl_event_field"
+      ],
+      "scope": "Native notebook events only; snapshots/borrowed contexts read native selection metadata, CHANGING semantics port-dependent. No metadata writer, old-selection, synthetic construction, detached clone or other book family support."
     }
   ],
   "classes": {
@@ -4341,6 +4796,65 @@
         "wxl_set_clipboard_text"
       ],
       "scope": "Standard singleton clipboard text only; scoped internal Open/Close and PRIMARY restoration, no public clipboard/data-object wrapper or raw ownership. Unicode/legacy text, empty-vs-absent, NUL rejection and error containment. Native write replaces all formats; persistence is separate best effort. Other payloads, PRIMARY access and async clipboard services remain unbound."
+    },
+    "wxNotebook": {
+      "status": "~",
+      "lisp": [
+        "notebook",
+        "make-notebook",
+        "add-notebook-page",
+        "notebook-page-count",
+        "notebook-page",
+        "notebook-page-label",
+        "selection"
+      ],
+      "native": [
+        "wxl_notebook",
+        "wxl_notebook_add",
+        "wxl_notebook_count",
+        "wxl_notebook_page",
+        "wxl_notebook_label",
+        "wxl_set_notebook_label",
+        "wxl_notebook_selection",
+        "wxl_set_notebook_selection"
+      ],
+      "scope": "NOTEBOOK only, fixed setup-time PANEL pages with canonical wrapper roots/native parent ownership. Silent or native notifying/vetoable selection and native captions; operation/callback ancestor/reentry/modal/clipboard guards. No other books, page removal/reorder/reparent/icons or full native class coverage."
+    },
+    "wxBookCtrlBase": {
+      "status": "~",
+      "lisp": [
+        "notebook",
+        "make-notebook",
+        "add-notebook-page",
+        "notebook-page-count",
+        "notebook-page",
+        "notebook-page-label",
+        "selection"
+      ],
+      "native": [
+        "wxl_notebook",
+        "wxl_notebook_add",
+        "wxl_notebook_count",
+        "wxl_notebook_page",
+        "wxl_notebook_label",
+        "wxl_set_notebook_label",
+        "wxl_notebook_selection",
+        "wxl_set_notebook_selection"
+      ],
+      "scope": "NOTEBOOK only, fixed setup-time PANEL pages with canonical wrapper roots/native parent ownership. Silent or native notifying/vetoable selection and native captions; operation/callback ancestor/reentry/modal/clipboard guards. No other books, page removal/reorder/reparent/icons or full native class coverage."
+    },
+    "wxBookCtrlEvent": {
+      "status": "~",
+      "lisp": [
+        "bind-event",
+        "event-selection",
+        "event-vetoed-p"
+      ],
+      "native": [
+        "wxl_bind",
+        "wxl_event_field"
+      ],
+      "scope": "Notebook changing/changed immutable snapshots and borrowed contexts only; notify veto on CHANGING, native selection metadata read-only. No public event class, old-selection, owned/synthetic/cloning support or other book events."
     }
   }
 }

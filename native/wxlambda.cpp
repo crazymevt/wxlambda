@@ -4,6 +4,7 @@
 #include <wx/choice.h>
 #include <wx/gauge.h>
 #include <wx/menu.h>
+#include <wx/notebook.h>
 #include <wx/textdlg.h>
 #include <wx/choicdlg.h>
 #include <wx/generic/msgdlgg.h>
@@ -101,7 +102,7 @@ public: using wxMenuItem::wxMenuItem; wxl_handle identity = 0;
 };
 struct RegisteredEvent { wxEventType type; int family; };
 std::unordered_map<int, RegisteredEvent> registered_events;
-constexpr int first_registered_event_kind = WXL_EVENT_MENU + 1;
+constexpr int first_registered_event_kind = WXL_EVENT_NOTEBOOK_CHANGED + 1;
 int next_event_kind = first_registered_event_kind;
 wxWeakRef<wxDialog> active_modal;
 std::unordered_map<wxWindow*, size_t> dialog_choice_counts;
@@ -319,8 +320,44 @@ wxBoxSizer* box(wxWindow* parent) {
     require(sizer != nullptr, "Create a row or column before adding layout items");
     return sizer;
 }
+std::vector<wxWeakRef<wxNotebook>> notebook_operations;
+bool protected_notebook_ancestor(wxWindow* object) {
+    for (const auto& book : notebook_operations)
+        for (auto* node = static_cast<wxWindow*>(book.get()); node; node = node->GetParent())
+            if (node == object) return true;
+    return false;
+}
+bool attached_notebook_page(wxWindow* object) {
+    auto* book = dynamic_cast<wxNotebook*>(object->GetParent());
+    return book && book->FindPage(object) != wxNOT_FOUND;
+}
+struct NotebookOperation {
+    explicit NotebookOperation(wxNotebook* book) {
+        for (const auto& active : notebook_operations)
+            require(active.get() != book, "Notebook operation is already in progress");
+        notebook_operations.emplace_back(book);
+    }
+    ~NotebookOperation() { notebook_operations.pop_back(); }
+};
+struct NotebookCallbackOperation {
+    bool added = false, allow = true;
+    explicit NotebookCallbackOperation(wxEvent& event) {
+        if (event.GetEventType() != wxEVT_NOTEBOOK_PAGE_CHANGING && event.GetEventType() != wxEVT_NOTEBOOK_PAGE_CHANGED) return;
+        auto* book = dynamic_cast<wxNotebook*>(event.GetEventObject());
+        if (!book || window_destruction_pending(book)) { allow = false; return; }
+        for (const auto& active : notebook_operations) if (active.get() == book) return;
+        notebook_operations.emplace_back(book); added = true;
+    }
+    ~NotebookCallbackOperation() { if (added) notebook_operations.pop_back(); }
+};
+int selected_event_index(wxEvent& event) {
+    if (auto* book = dynamic_cast<wxBookCtrlEvent*>(&event)) return book->GetSelection();
+    auto* command = dynamic_cast<wxCommandEvent*>(&event);
+    return command && event.GetEventType() == wxEVT_CHOICE ? command->GetSelection() : -1;
+}
 void make_box(wxl_handle id, int orientation) {
     auto* parent = window(id);
+    require(!dynamic_cast<wxNotebook*>(parent), "Lay out notebook page panels, not the notebook itself");
     require(parent->GetSizer() == nullptr, "Window already has a sizer");
     parent->SetSizer(new wxBoxSizer(orientation));
 }
@@ -330,6 +367,7 @@ void invoke_callback(uint64_t token, const wxl_event& event) {
 }
 void require_dispatch_entry() {
     require(!active_modal.get() && actual_modals.empty(), "Cannot enter structural dispatch during a modal dialog");
+    require(notebook_operations.empty(), "Cannot enter structural dispatch during notebook navigation");
     require(!running, "Event loop is already running");
     require(!pumping && callback_depth == 0, "Cannot enter event dispatch from a pump or callback");
 }
@@ -351,6 +389,8 @@ wxEventTypeTag<wxEvent> native_event_type(int kind) {
         case WXL_EVENT_END_SESSION: return wxEventTypeTag<wxEvent>(wxEVT_END_SESSION);
         case WXL_EVENT_IDLE: return wxEventTypeTag<wxEvent>(wxEVT_IDLE);
         case WXL_EVENT_MENU: return wxEventTypeTag<wxEvent>(wxEVT_MENU);
+        case WXL_EVENT_NOTEBOOK_CHANGING: return wxEventTypeTag<wxEvent>(wxEVT_NOTEBOOK_PAGE_CHANGING);
+        case WXL_EVENT_NOTEBOOK_CHANGED: return wxEventTypeTag<wxEvent>(wxEVT_NOTEBOOK_PAGE_CHANGED);
         default: {
             const auto it = registered_events.find(kind);
             require(it != registered_events.end(), "Unsupported event kind");
@@ -363,6 +403,7 @@ int native_event_family(int kind) {
     if (kind >= WXL_EVENT_CLOSE && kind <= WXL_EVENT_END_SESSION) return WXL_FAMILY_CLOSE;
     if (kind == WXL_EVENT_IDLE) return WXL_FAMILY_IDLE;
     if (kind == WXL_EVENT_MENU) return WXL_FAMILY_COMMAND;
+    if (kind == WXL_EVENT_NOTEBOOK_CHANGING || kind == WXL_EVENT_NOTEBOOK_CHANGED) return WXL_FAMILY_NOTIFY;
     const auto it = registered_events.find(kind);
     require(it != registered_events.end(), "Unsupported event kind");
     return it->second.family;
@@ -379,6 +420,8 @@ bool event_vetoed(wxEvent& event) {
 std::unique_ptr<wxEvent> synthetic_event(wxEvtHandler* receiver, int kind, int event_id,
                                        const char* text, size_t length, int value,
                                        int can_veto, int vetoed, int logging_off) {
+    require(kind != WXL_EVENT_NOTEBOOK_CHANGING && kind != WXL_EVENT_NOTEBOOK_CHANGED,
+            "Notebook events require native navigation; synthetic construction is unsupported");
     const auto type = native_event_type(kind);
     const int family = native_event_family(kind);
     require(text || length == 0, "Null event text");
@@ -414,7 +457,7 @@ std::unique_ptr<wxEvent> synthetic_event(wxEvtHandler* receiver, int kind, int e
     return event;
 }
 int kind_of(wxEvent& event) {
-    for (int kind = WXL_EVENT_CLICK; kind <= WXL_EVENT_MENU; ++kind)
+    for (int kind = WXL_EVENT_CLICK; kind <= WXL_EVENT_NOTEBOOK_CHANGED; ++kind)
         if (native_event_type(kind) == event.GetEventType()) return kind;
     for (const auto& item : registered_events)
         if (item.second.type == event.GetEventType()) return item.first;
@@ -462,7 +505,7 @@ int64_t read_event_field(wxEvent& event, int field) {
         case 12: return native_event_family(kind_of(event));
         case 14: return command ? command->GetExtraLong() : 0;
         case 15: return command && (event.GetEventType() == wxEVT_CHECKBOX || event.GetEventType() == wxEVT_MENU) && command->IsChecked();
-        case 16: return command && event.GetEventType() == wxEVT_CHOICE ? command->GetSelection() : -1;
+        case 16: return selected_event_index(event);
         case 17: return command && command->IsSelection();
         case 18: { auto* idle = dynamic_cast<wxIdleEvent*>(&event); return idle && idle->MoreRequested(); }
         default: throw std::runtime_error("Unknown event field");
@@ -541,6 +584,8 @@ struct Binding {
         return object && !pending_destruction.count(source) && (!widget || !widget->IsBeingDeleted());
     }
     void on_event(wxEvent& event) {
+        NotebookCallbackOperation notebook_guard(event);
+        if (!notebook_guard.allow) { event.Skip(); return; }
         const auto found = bindings.find(token);
         if (found == bindings.end()) { event.Skip(); return; }
         // Keep the method receiver alive if this or another binding is removed.
@@ -556,7 +601,7 @@ struct Binding {
             const auto bytes = text.ToUTF8();
             wxl_event snapshot{snapshot_kind, carries_text ? (bytes.data() ? bytes.data() : "") : nullptr,
                                      (snapshot_kind == WXL_EVENT_TOGGLE || snapshot_kind == WXL_EVENT_MENU) && command && command->IsChecked() ? 1 : 0,
-                                     snapshot_kind == WXL_EVENT_SELECTION && command ? command->GetSelection() : -1,
+                                     selected_event_index(event),
                                      event.GetId(), carries_text ? bytes.length() : 0,
                                      0, event.GetEventType(), event_can_veto(event) ? 1 : 0, event_vetoed(event) ? 1 : 0,
                                      family, command ? command->GetInt() : 0,
@@ -714,7 +759,7 @@ protected:
     int Enter(wxDialog* object) override {
         // Lisp may defer rethrow until its nearest notifying operation returns.
         // Do not open a new native prompt while its callback error is pending.
-        if (pending_callback_error) return wxID_CANCEL;
+        if (pending_callback_error || !notebook_operations.empty()) return wxID_CANCEL;
         if (modal_cancel_requested && (active_modal.get() || !actual_modals.empty())) return wxID_CANCEL;
         // Native NSAlert modal loops cannot be aborted using wxDialog::EndModal.
         // Replace them before their platform ShowModal implementation is entered.
@@ -819,6 +864,7 @@ class ClipboardSession {
 public:
     ClipboardSession() {
         ready();
+        require(notebook_operations.empty(), "Defer clipboard operations until notebook navigation returns");
         require(!clipboard_busy, "Clipboard operation is already in progress");
 #ifdef WXLAMBDA_NATIVE_TESTS
         clipboard = test_clipboard ? test_clipboard : wxTheClipboard;
@@ -849,7 +895,7 @@ public:
 
 }
 extern "C" {
-int wxl_abi_version() { return 36; }
+int wxl_abi_version() { return 37; }
 const char* wxl_last_error() { return error.c_str(); }
 int wxl_clipboard_text_available() {
     return boolean_result([&] {
@@ -1105,6 +1151,7 @@ int wxl_dialog_show(wxl_handle id, int* code) {
     return status([&] {
         auto* object = as<wxDialog>(id);
         require(code, "Missing modal result output");
+        require(notebook_operations.empty(), "Defer dialogs until notebook navigation returns");
         require(!active_modal.get() && actual_modals.empty(), "Nested modal dialogs are not supported");
         require(!object->IsShown() && !object->IsModal(), "Dialog is already shown");
         struct ModalScope {
@@ -1576,7 +1623,7 @@ int wxl_context_set_logging_off(uint64_t token, int value) {
     });
 }
 int wxl_close(wxl_handle id, int force) {
-    return boolean_result([&] { auto* object = as<wxFrame>(id); require(!protected_modal_ancestor(object), "Cannot close an active modal dialog ancestor"); return object->Close(force != 0); });
+    return boolean_result([&] { auto* object = as<wxFrame>(id); require(!protected_modal_ancestor(object), "Cannot close an active modal dialog ancestor"); require(!protected_notebook_ancestor(object), "Cannot close a notebook operation ancestor"); return object->Close(force != 0); });
 }
 int wxl_context_resume_propagation(uint64_t token, int level) {
     return status([&] {
@@ -1851,6 +1898,70 @@ wxl_handle wxl_button(wxl_handle parent, const char* label) {
         return id;
     });
 }
+wxl_handle wxl_notebook(wxl_handle parent) {
+    return create([&] { return track(new ManagedWindow<wxNotebook>(window(parent), wxID_ANY)); });
+}
+int wxl_notebook_add(wxl_handle id, wxl_handle page_id, const char* label, size_t length, int select) {
+    return status([&] {
+        ready();
+        require(!running && !pumping && callback_depth == 0, "Add notebook pages outside RUN, pumps and callbacks");
+        auto* book = as<wxNotebook>(id);
+        auto* page = as<wxPanel>(page_id);
+        require(select == 0 || select == 1, "Invalid notebook select flag");
+        require(page->GetParent() == book && page->GetContainingSizer() == nullptr, "Page must be a direct unsizered panel child of the notebook");
+        require(book->FindPage(page) == wxNOT_FOUND, "Page is already attached");
+        require(book->GetPageCount() < static_cast<size_t>(std::numeric_limits<int>::max()), "Too many notebook pages");
+        const auto caption = menu_string(label, length, true);
+        NotebookOperation operation(book);
+        require(book->AddPage(page, caption, select != 0), "Unable to add notebook page");
+    });
+}
+int wxl_notebook_count(wxl_handle id) {
+    int count = -1;
+    status([&] { const auto n = as<wxNotebook>(id)->GetPageCount(); require(n <= static_cast<size_t>(std::numeric_limits<int>::max()), "Too many notebook pages"); count = static_cast<int>(n); });
+    return count;
+}
+wxl_handle wxl_notebook_page(wxl_handle id, int index) {
+    wxl_handle result = 0;
+    status([&] {
+        auto* book = as<wxNotebook>(id);
+        require(index >= 0 && static_cast<size_t>(index) < book->GetPageCount(), "Notebook page index out of bounds");
+        auto* page = book->GetPage(static_cast<size_t>(index));
+        require(!window_destruction_pending(page), "Page destruction is pending");
+        for (const auto& item : windows) if (item.second.get() == page) { result = item.first; break; }
+        require(result != 0, "Unmanaged notebook page");
+    });
+    return result;
+}
+const char* wxl_notebook_label(wxl_handle id, int index, size_t* length) {
+    return metadata_string([&] {
+        auto* book = as<wxNotebook>(id);
+        require(index >= 0 && static_cast<size_t>(index) < book->GetPageCount(), "Notebook page index out of bounds");
+        return book->GetPageText(static_cast<size_t>(index));
+    }, length);
+}
+int wxl_set_notebook_label(wxl_handle id, int index, const char* label, size_t length) {
+    return status([&] {
+        auto* book = as<wxNotebook>(id);
+        require(index >= 0 && static_cast<size_t>(index) < book->GetPageCount(), "Notebook page index out of bounds");
+        require(book->SetPageText(static_cast<size_t>(index), menu_string(label, length, true)), "Unable to set notebook page label");
+    });
+}
+int wxl_notebook_selection(wxl_handle id) {
+    int result = -2;
+    status([&] { result = as<wxNotebook>(id)->GetSelection(); });
+    return result;
+}
+int wxl_set_notebook_selection(wxl_handle id, int index, int notify) {
+    return status([&] {
+        auto* book = as<wxNotebook>(id);
+        require(notify == 0 || notify == 1, "Invalid notebook notification flag");
+        require(index >= 0 && static_cast<size_t>(index) < book->GetPageCount(), "Notebook selection out of bounds");
+        NotebookOperation operation(book);
+        if (notify) book->SetSelection(static_cast<size_t>(index));
+        else book->ChangeSelection(static_cast<size_t>(index));
+    });
+}
 wxl_handle wxl_text(wxl_handle parent, const char* value, size_t length, int multiline, int editable) {
     return create([&] {
         require((multiline == 0 || multiline == 1) && (editable == 0 || editable == 1), "Invalid text control flags");
@@ -2099,6 +2210,8 @@ int wxl_destroy(wxl_handle id) {
     return status([&] {
         auto* object = window(id);
         require(!protected_modal_ancestor(object), "Cannot destroy an active modal dialog or its ancestor");
+        require(!protected_notebook_ancestor(object), "Cannot destroy a notebook operation receiver or its ancestor");
+        require(!attached_notebook_page(object), "Attached notebook pages are owned by the notebook");
         if (callback_depth) {
             wxWeakRef<wxWindow> weak(object);
             pending_destruction.insert(id);

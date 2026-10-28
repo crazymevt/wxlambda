@@ -459,15 +459,15 @@ Class/struct definitions: 0 complete; 11 partial; 121 pending. Partial and pendi
 
 ## C3: Dialogs, navigation, menus, and application services
 
-Class/struct definitions: 0 complete; 11 partial; 100 pending. Partial and pending classes remain open.
+Class/struct definitions: 0 complete; 14 partial; 97 pending. Partial and pending classes remain open.
 
 [Declaration counts and remaining work](README.md).
 
 - [ ] `wxAboutDialogInfo` — [`wx/aboutdlg.h`](phase-c3.md), upstream line 53.
 - [ ] `wxAccessible` — [`wx/access.h`](phase-c3.md), upstream line 354.
 - [ ] `wxArtProvider` — [`wx/artprov.h`](phase-c3.md), upstream line 269.
-- [ ] `wxBookCtrlBase` — [`wx/bookctrl.h`](phase-c3.md), upstream line 67.
-- [ ] `wxBookCtrlEvent` — [`wx/bookctrl.h`](phase-c3.md), upstream line 422.
+- [~] `wxBookCtrlBase` — [`wx/bookctrl.h`](phase-c3.md), upstream line 67. — **Partial**: `notebook`, `make-notebook`, `add-notebook-page`, `notebook-page-count`, `notebook-page`, `notebook-page-label`, `selection`; ABI: `wxl_notebook`, `wxl_notebook_add`, `wxl_notebook_count`, `wxl_notebook_page`, `wxl_notebook_label`, `wxl_set_notebook_label`, `wxl_notebook_selection`, `wxl_set_notebook_selection`. NOTEBOOK only, fixed setup-time PANEL pages with canonical wrapper roots/native parent ownership. Silent or native notifying/vetoable selection and native captions; operation/callback ancestor/reentry/modal/clipboard guards. No other books, page removal/reorder/reparent/icons or full native class coverage.
+- [~] `wxBookCtrlEvent` — [`wx/bookctrl.h`](phase-c3.md), upstream line 422. — **Partial**: `bind-event`, `event-selection`, `event-vetoed-p`; ABI: `wxl_bind`, `wxl_event_field`. Notebook changing/changed immutable snapshots and borrowed contexts only; notify veto on CHANGING, native selection metadata read-only. No public event class, old-selection, owned/synthetic/cloning support or other book events.
 - [ ] `wxBusyInfo` — [`wx/busyinfo.h`](phase-c3.md), upstream line 85.
 - [ ] `wxBusyInfoFlags` — [`wx/busyinfo.h`](phase-c3.md), upstream line 163.
 - [ ] `wxMultiChoiceDialog` — [`wx/choicdlg.h`](phase-c3.md), upstream line 44.
@@ -536,7 +536,7 @@ Class/struct definitions: 0 complete; 11 partial; 100 pending. Partial and pendi
 - [ ] `wxMiniFrame` — [`wx/minifram.h`](phase-c3.md), upstream line 50.
 - [~] `wxModalDialogHook` — [`wx/modalhook.h`](phase-c3.md), upstream line 78. — **Partial**: `show-modal`, `end-modal`; ABI: `wxl_dialog_show`, `wxl_dialog_end`, `wxl_dialog_abort`, `wxl_dialog_depth`. Prerequisite native workflow hook only: prompt substitution/depth/context/cancellation. No public hook class/factory, arbitrary replacement or Lisp virtual callbacks. Explicit wxGeneric GUI implementation only; native OS NSAlert/NSPanel variants unbound, no backend selector. Modal/context/lifetime/ancestor guards apply; no raw adoption or full native class parity. Private modal-depth ABI supports depth-aware Lisp notifier containment; same-depth handled errors can recover, newly entered modal-boundary errors cancel workflow.
 - [~] `wxMessageDialog` — [`wx/msgdlg.h`](phase-c3.md), upstream line 101. — **Partial**: `message-dialog`, `make-message-dialog`, `dialog-message`, `message-dialog-buttons`, `show-modal`; ABI: `wxl_message_dialog`, `wxl_dialog_message`, `wxl_message_dialog_buttons`, `wxl_dialog_show`. Equivalent inherited public surface through prepared wxGenericMessageDialog; actual OS wxMessageDialog backend unbound. Eager protected generic control creation prerequisite gives native properties in AFTER hooks. Body/buttons/icon fixed; no extended/custom-label public API. Explicit wxGeneric GUI implementation only; native OS NSAlert/NSPanel variants unbound, no backend selector. Modal/context/lifetime/ancestor guards apply; no raw adoption or full native class parity.
-- [ ] `wxNotebook` — [`wx/notebook.h`](phase-c3.md), upstream line 113.
+- [~] `wxNotebook` — [`wx/notebook.h`](phase-c3.md), upstream line 113. — **Partial**: `notebook`, `make-notebook`, `add-notebook-page`, `notebook-page-count`, `notebook-page`, `notebook-page-label`, `selection`; ABI: `wxl_notebook`, `wxl_notebook_add`, `wxl_notebook_count`, `wxl_notebook_page`, `wxl_notebook_label`, `wxl_set_notebook_label`, `wxl_notebook_selection`, `wxl_set_notebook_selection`. NOTEBOOK only, fixed setup-time PANEL pages with canonical wrapper roots/native parent ownership. Silent or native notifying/vetoable selection and native captions; operation/callback ancestor/reentry/modal/clipboard guards. No other books, page removal/reorder/reparent/icons or full native class coverage.
 - [ ] `wxNotificationMessage` — [`wx/notifmsg.h`](phase-c3.md), upstream line 57.
 - [ ] `wxNumberEntryDialog` — [`wx/numdlg.h`](phase-c3.md), upstream line 24.
 - [ ] `wxPopupWindow` — [`wx/popupwin.h`](phase-c3.md), upstream line 35.

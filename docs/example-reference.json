@@ -138,5 +138,9 @@
   "text-editor.lisp": {
     "description": "Multiline text controls with native selection/replacement/end offsets, append-at-end and user-editability toggle. Bounded EXERCISE replaces Unicode multiline text and checks notifications/read-only state; no document IO or selection clipboard APIs.",
     "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/text-editor.lisp --eval '(wxlambda:with-application () (wxlambda-text-editor:exercise))'"
+  },
+  "notebook.lisp": {
+    "description": "Editor/settings notebook with fixed panel pages, canonical lookup, native silent/notifying selection and contextual navigation veto. Bounded EXERCISE drives selection/veto; physical tab/keyboard interaction remains separate.",
+    "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/notebook.lisp --eval '(wxlambda:with-application () (wxlambda-notebook:exercise))'"
   }
 }

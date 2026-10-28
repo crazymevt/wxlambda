@@ -24,7 +24,7 @@ allocation. These wrappers do not install native C++ virtual overrides.
       (wxlambda:destroy-event event))))
 ```
 
-`:kind` defaults to :CLICK and accepts the nine built-in kinds or a registered
+`:kind` defaults to :CLICK and accepts the nine constructible built-in kinds (not notebook page events) or a registered
 command/notify name. The other base construction initargs match synthetic event
 payloads: `:id` defaults to 0, `:text` to an empty string, `:integer` to 0,
 `:checked-p` and `:selection` apply only to their built-in kinds, `:can-veto-p`

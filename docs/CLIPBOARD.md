@@ -16,7 +16,8 @@ ordinary functions. Each operation briefly opens the native clipboard, closes it
 on completion/failure and restores any preexisting primary-selection preference.
 The API always selects the standard clipboard, not X11 PRIMARY. It rejects an
 already-open clipboard rather than closing a lock owned by other native code.
-Reentrant clipboard access is rejected; outer borrowed event contexts are suspended
+ABI37 also rejects clipboard entry during notebook navigation/page callbacks;
+defer transfers until navigation returns. Reentrant clipboard access is rejected; outer borrowed event contexts are suspended
 across a native transfer and resume afterward. Callback conditions remain contained
 at the C boundary and re-signal after lock cleanup, taking precedence over native
 transfer errors. As with other native operations, earlier side effects are not

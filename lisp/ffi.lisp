@@ -93,7 +93,7 @@
           (if (probe-file local)
               (cffi:load-foreign-library local)
               (cffi:use-foreign-library wxlambda-native))))
-    (unless (= 36 (%abi-version)) (error "Unsupported wxlambda native ABI"))
+    (unless (= 37 (%abi-version)) (error "Unsupported wxlambda native ABI"))
     (setf *native-loaded* t))
   t)
 
@@ -251,3 +251,12 @@
 (cffi:defcfun ("wxl_text_position" %text-position) :int (control :uint64) (field :int) (position :pointer))
 (cffi:defcfun ("wxl_set_text_insertion" %set-text-insertion) :int (control :uint64) (position :int64))
 (cffi:defcfun ("wxl_replace_text" %replace-text) :int (control :uint64) (from :int64) (to :int64) (value :pointer) (length :size))
+
+(cffi:defcfun ("wxl_notebook" %notebook) :uint64 (parent :uint64))
+(cffi:defcfun ("wxl_notebook_add" %notebook-add) :int (book :uint64) (page :uint64) (label :pointer) (length :size) (select :int))
+(cffi:defcfun ("wxl_notebook_count" %notebook-count) :int (book :uint64))
+(cffi:defcfun ("wxl_notebook_page" %notebook-page) :uint64 (book :uint64) (index :int))
+(cffi:defcfun ("wxl_notebook_label" %notebook-label) :pointer (book :uint64) (index :int) (length :pointer))
+(cffi:defcfun ("wxl_set_notebook_label" %set-notebook-label) :int (book :uint64) (index :int) (label :pointer) (length :size))
+(cffi:defcfun ("wxl_notebook_selection" %notebook-selection) :int (book :uint64))
+(cffi:defcfun ("wxl_set_notebook_selection" %set-notebook-selection) :int (book :uint64) (index :int) (notify :int))

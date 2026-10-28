@@ -1,7 +1,9 @@
 # CLOS widget API
 
 Widgets are native-backed CLOS instances. The public classes are `window`,
-`frame`, `panel`, `button`, `text-control`, `label`, `checkbox`, `choice` and `gauge`.
+`frame`, `panel`, `notebook`, `button`, `text-control`, `label`, `checkbox`, `choice`,
+`gauge`, abstract `dialog`, and its `text-entry-dialog`, `single-choice-dialog`,
+`message-dialog` and `file-dialog` concrete families.
 `window` inherits from `event-handler` and is abstract. Standalone `event-handler`
 instances are native-backed session-owned resources; window instances reuse their
 existing native widget as a borrowed handler identity. See [ownership and
@@ -233,3 +235,7 @@ Text controls accept `:multiline` (default NIL) and `:editable-p` (default T).
 Native properties are available in subclass AFTER hooks; editable/selection/caret
 properties have generic SETF. See [text editing](TEXT-EDITING.md) for native offset
 semantics, notifying replacements, read-only policy and limits.
+
+The concrete `notebook` window uses native-backed CLOS construction and fixed
+fully initialized `panel` pages. Page identity is rooted before native publication;
+page self-attachment during initialization rejects. See [notebook navigation](NOTEBOOK.md).

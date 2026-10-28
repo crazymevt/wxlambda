@@ -2,11 +2,11 @@
 
 This C1 slice adds borrowed `event-context` values for native Skip and propagation
 control. Existing `event` snapshots remain immutable Lisp-owned data. The bridge
-is ABI 31, using the wxWidgets 3.2.12 inventory baseline. Supported events now include
+is ABI 37, using the wxWidgets 3.2.12 inventory baseline. Supported events now include
 five command kinds (including :MENU), the [close family](CLOSE-EVENTS.md), registered command/notify
-types and [idle events](IDLE-EVENTS.md). Registered
+types, [idle events](IDLE-EVENTS.md) and native [notebook page events](NOTEBOOK.md). Registered
 [notify types](NOTIFY-EVENTS.md) support scoped Veto/Allow. Arbitrary native
-classes and native notify subclasses remain outside the bounded bridge;
+classes and other native notify subclasses remain outside the bounded bridge;
 platform session routing still needs target-specific verification.
 
 ## Opt into contextual callbacks

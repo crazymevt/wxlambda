@@ -35,7 +35,9 @@ void inspect_binding(uint64_t token, const wxl_event* event) {
     saved_context = event->context;
     binding_called = true;
 }
+std::function<void(uint64_t, const wxl_event*)> notebook_probe;
 void ignore_event(uint64_t token, const wxl_event* event) {
+    if ((token == 904 || token == 905) && notebook_probe) notebook_probe(token, event);
     if (token == 901) inspect_binding(token, event);
     if (token == 903) { ++menu_calls; menu_checked_payload = event->checked; menu_integer_payload = event->integer; menu_origin = event->origin_id; }
 }
@@ -602,6 +604,55 @@ void exercise_text_editing() {
     expect(wxl_text_multiline(text) == -1 && wxl_replace_text(text, 0, 0, "", 0) == -1, "Stale text handle must reject");
 }
 
+
+void exercise_notebook() {
+    const auto frame = wxl_frame("Notebook", 320, 240);
+    const auto book = wxl_notebook(frame);
+    const auto one = wxl_panel(book), two = wxl_panel(book), other = wxl_panel(frame);
+    expect(book && wxl_notebook_count(book) == 0 && wxl_notebook_selection(book) == -1, "Empty notebook state failed");
+    expect(wxl_notebook_add(book, one, "Editor λ", std::strlen("Editor λ"), 0) == 0 &&
+           wxl_notebook_add(book, two, "Settings", 8, 0) == 0, "Notebook page addition failed");
+    expect(wxl_notebook_page(book, 0) == one && wxl_notebook_count(book) == 2, "Notebook page identity/count failed");
+    expect(wxl_notebook_add(book, one, "duplicate", 9, 0) == -1 && wxl_notebook_add(book, other, "wrong", 5, 0) == -1 &&
+           wxl_notebook_add(book, other, "invalid", 7, 2) == -1, "Invalid page ownership/flags must reject");
+    expect(wxl_destroy(one) == -1 && wxl_column(book) == -1, "Attached pages/custom notebook layout must reject");
+    expect(wxl_set_notebook_selection(book, -1, 0) == -1 && wxl_set_notebook_selection(book, 2, 0) == -1 &&
+           wxl_set_notebook_selection(book, 0, 2) == -1 && !wxl_notebook_page(book, 2), "Notebook index/flag checks failed");
+    size_t length = 0;
+    expect(!wxl_notebook_label(book, -1, &length) && !wxl_notebook_label(book, 0, nullptr) &&
+           wxl_set_notebook_label(book, 0, "x\0y", 3) == -1, "Notebook label validation failed");
+    const auto dialog = wxl_message_dialog(frame, "Must reject modal entry", 23, "Guard", 5, 0, 0);
+    expect(dialog != 0, "Notebook guard probe dialog construction failed");
+    unsigned book_calls = 0, parent_calls = 0;
+    notebook_probe = [&](uint64_t token, const wxl_event* event) {
+        token == 904 ? ++book_calls : ++parent_calls;
+        expect(event->kind == WXL_EVENT_NOTEBOOK_CHANGING && event->selection == 1 && event->origin_id == book && event->family == WXL_FAMILY_NOTIFY,
+               "Typed notebook snapshot metadata lost");
+        int64_t index = -1;
+        expect(wxl_event_field(event->context, 1, 16, &index) == 0 && index == 1, "Live book selection metadata lost");
+        expect(wxl_set_event_field(event->context, 1, 16, 0) == -1 && !wxl_clone_event(event->context, 1),
+               "Notebook selection metadata writes/clones must reject");
+        int code = -1;
+        expect(wxl_set_notebook_selection(book, 0, 0) == -1 && wxl_destroy(book) == -1 &&
+               wxl_destroy(frame) == -1 && wxl_close(frame, 1) == -1 && wxl_dialog_show(dialog, &code) == -1 &&
+               wxl_clipboard_text_available() == -1, "Actual native page callback bypassed operation guards");
+        expect(wxl_context_set_skipped(event->context, 1) == 0, "Cannot propagate notebook event");
+    };
+    expect(wxl_bind(book, WXL_EVENT_NOTEBOOK_CHANGING, 904, wxID_ANY, wxID_ANY, 1, 0) == 0 &&
+           wxl_bind(frame, WXL_EVENT_NOTEBOOK_CHANGING, 905, wxID_ANY, wxID_ANY, 1, 0) == 0, "Notebook event bindings failed");
+    // Actual derived native event, outside bridge selection/AddPage guards.
+    wxBookCtrlEvent event(wxEVT_NOTEBOOK_PAGE_CHANGING, window(book)->GetId(), 1, 0);
+    event.SetEventObject(window(book));
+    window(book)->GetEventHandler()->ProcessEvent(event);
+    expect(book_calls == 1 && parent_calls == 1 && notebook_operations.empty(), "Native/propagated event guard did not unwind");
+    expect(wxl_unbind(904) == 1 && wxl_unbind(905) == 1, "Notebook binding cleanup failed");
+    notebook_probe = nullptr;
+    expect(!wxl_owned_event(WXL_EVENT_NOTEBOOK_CHANGED, 1, "", 0, 0, 0, 0, 0), "Synthetic book event must reject");
+    expect(wxl_set_notebook_selection(book, 1, 0) == 0 && wxl_notebook_selection(book) == 1, "Notebook navigation did not recover");
+    delete window(frame);
+    expect(wxl_notebook_count(book) == -1 && wxl_handler_alive(one) == 0 && wxl_handler_alive(two) == 0, "Notebook destruction did not invalidate pages");
+}
+
 int main() {
     std::thread([] { std::this_thread::sleep_for(std::chrono::seconds(10)); std::_Exit(124); }).detach();
     auto old_assert_handler = wxSetAssertHandler(capture_assert);
@@ -618,6 +669,7 @@ int main() {
         exercise_dialogs();
         exercise_generic_dialogs();
         exercise_text_editing();
+        exercise_notebook();
 #if wxUSE_CLIPBOARD
         exercise_clipboard();
 #endif

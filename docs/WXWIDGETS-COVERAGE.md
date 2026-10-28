@@ -103,16 +103,16 @@ The scheduled-deletion ancestor gap is repaired: the bridge uses public wxApp
 scheduled-deletion state plus its pending markers. Native regressions, independent
 review and the full GUI/package checks below validate the corrected behavior.
 
-The current bridge is ABI 36, with 176 public Lisp exports. Multiline/text workflows
-pass all 54 GUI scenarios on local Apple Silicon macOS SBCL and CCL, five package
-checks and independent reviews. Native raw text/clipboard regressions pass with
-zero wx assertions; automatic tests preserve system clipboard content.
-Reports: `evidence/text-editing/{sbcl,ccl}-20261028-final/` and
-`evidence/packaging/text-editing-20261028/`. Docset checks pass with 247 entries and
+The current bridge is ABI 37, with 182 public Lisp exports. Notebook workflows
+pass all 55 GUI scenarios on local Apple Silicon macOS SBCL and CCL, five package
+checks and independent reviews. Native actual/propagated notebook event, text and
+clipboard regressions pass with zero wx assertions; clipboard contents stay intact.
+Reports: `evidence/notebook/{sbcl,ccl}-20261028-final/` and
+`evidence/packaging/notebook-20261028/`. Docset checks pass with 255 entries and
 zero problems, including actual public-export/class/SETF coverage and isolated
-discovery/lookup. These checks do not validate physical typing/selection, IME/
-grapheme behavior, live clipboard writes/interoperability/exit persistence, hosted
-Windows/Linux, real OS session delivery or the graphical Cadre viewer.
+discovery/lookup. These checks do not validate physical tab/keyboard input, hosted
+Windows/Linux caption/CHANGING semantics, live clipboard interoperability/exit
+persistence, real OS session delivery or the graphical Cadre viewer.
 
 A milestone is accepted against its selected GUI scope and representative
 workflows, not declaration totals or completion of every pending native entry.
@@ -135,7 +135,8 @@ feature scope is accepted. Native missing APIs are not automatic release blocker
 **Current vertical slice:** the persistent form composes menus/actions and generic
 modal dialogs with Lisp-native open/save IO. Text clipboard Copy/Paste now extends
 the form/editor; multiline text primitives now support editor UI construction.
-Next add bounded notebook navigation, with only the prerequisites needed by that slice. Do not drain native ownership/utilities first.
+Notebook navigation now adds fixed editor/settings pages. Next add single-selection
+list boxes for the tree/list-manager slice, with only its necessary prerequisites. Do not drain native ownership/utilities first.
 
 ### Representative application acceptance
 
@@ -444,4 +445,17 @@ unbound. Offsets are native units, not Lisp string indices; GetRange, selection
 clipboard, undo/redo, rich text, arbitrary styles and native text file IO stay gaps.
 The example demonstrates primitives rather than claiming a full multiline document
 application. The 54-scenario/247-entry docset/package checks pass; evidence is recorded in
-IMPLEMENTATION.md. Next broaden everyday GUI coverage with bounded notebook navigation.
+IMPLEMENTATION.md. Notebook navigation is delivered below; selection/undo depth
+remains demand-driven.
+
+
+ABI37 adds [notebook navigation](NOTEBOOK.md): native-backed fixed panel pages,
+canonical identity, native captions and silent/notifying page selection. Two derived
+notify events support immutable snapshots/borrowed contexts with native selection
+metadata and CHANGING veto. Operation and actual native/propagated callback guards
+protect ownership/reentry, deferring modal/clipboard transfers. wxNotebook,
+wxBookCtrlBase and wxBookCtrlEvent remain partial in the C3 inventory. Other books,
+page removal/reorder/reparent/icons, old-selection, owned/synthetic/clone events and
+full native class parity remain gaps. The 55-scenario/255-entry docset/package checks pass;
+evidence is recorded in IMPLEMENTATION.md. Next broaden tree/list-manager controls
+with single-selection list boxes.

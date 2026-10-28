@@ -20,16 +20,16 @@ and verify platforms when selected features or completeness claims require it.
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | [C1: Foundation, values, application, events, and base utilities](phase-c1.md) | 119 | 5292 | 7 | 96 | 5189 | 26 |
 | [C2: Windows, layout, basic controls, and input](phase-c2.md) | 82 | 2862 | 23 | 66 | 2773 | 0 |
-| [C3: Dialogs, navigation, menus, and application services](phase-c3.md) | 57 | 1875 | 0 | 78 | 1797 | 0 |
+| [C3: Dialogs, navigation, menus, and application services](phase-c3.md) | 57 | 1875 | 0 | 99 | 1776 | 0 |
 | [C4: Models, complex controls, and document frameworks](phase-c4.md) | 20 | 2328 | 0 | 0 | 2328 | 4 |
 | [C5: Drawing, images, graphics, and printing](phase-c5.md) | 52 | 2245 | 0 | 0 | 2245 | 0 |
 | [C6: Optional libraries, rich content, and integration](phase-c6.md) | 57 | 8912 | 0 | 0 | 8912 | 380 |
 | [C7: Platform extensions and remaining portability APIs](phase-c7.md) | 11 | 279 | 0 | 0 | 279 | 3 |
-| Total | 398 | 23793 | 30 | 240 | 23523 | 413 |
+| Total | 398 | 23793 | 30 | 261 | 23502 | 413 |
 
 ## Classes and widgets
 
-1016 class/struct definitions: 0 complete; 32 partial; 984 pending.
+1016 class/struct definitions: 0 complete; 35 partial; 981 pending.
 
 See the [complete class/widget index](classes.md) for partial scopes and missing
 types. An implemented constructor does not complete a class or its inherited API.
@@ -258,7 +258,7 @@ unreviewed inherited/platform behavior.
 | [wx/aboutdlg.h](phase-c3.md#wxaboutdlgh) | 0 | 0 | 42 | 0 |
 | [wx/access.h](phase-c3.md#wxaccessh) | 0 | 0 | 103 | 0 |
 | [wx/artprov.h](phase-c3.md#wxartprovh) | 0 | 0 | 90 | 0 |
-| [wx/bookctrl.h](phase-c3.md#wxbookctrlh) | 0 | 0 | 41 | 0 |
+| [wx/bookctrl.h](phase-c3.md#wxbookctrlh) | 0 | 12 | 29 | 0 |
 | [wx/busyinfo.h](phase-c3.md#wxbusyinfoh) | 0 | 0 | 16 | 0 |
 | [wx/choicdlg.h](phase-c3.md#wxchoicdlgh) | 0 | 6 | 31 | 0 |
 | [wx/choicebk.h](phase-c3.md#wxchoicebkh) | 0 | 0 | 20 | 0 |
@@ -289,7 +289,7 @@ unreviewed inherited/platform behavior.
 | [wx/minifram.h](phase-c3.md#wxminiframh) | 0 | 0 | 15 | 0 |
 | [wx/modalhook.h](phase-c3.md#wxmodalhookh) | 0 | 6 | 1 | 0 |
 | [wx/msgdlg.h](phase-c3.md#wxmsgdlgh) | 0 | 5 | 41 | 0 |
-| [wx/notebook.h](phase-c3.md#wxnotebookh) | 0 | 0 | 38 | 0 |
+| [wx/notebook.h](phase-c3.md#wxnotebookh) | 0 | 9 | 29 | 0 |
 | [wx/notifmsg.h](phase-c3.md#wxnotifmsgh) | 0 | 0 | 22 | 0 |
 | [wx/numdlg.h](phase-c3.md#wxnumdlgh) | 0 | 0 | 6 | 0 |
 | [wx/popupwin.h](phase-c3.md#wxpopupwinh) | 0 | 0 | 14 | 0 |

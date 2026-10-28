@@ -269,12 +269,12 @@
     "kind": "generic-function",
     "arguments": "CHOICE is a live dropdown choice. Optional NOTIFY affects writes and is ignored by reads.",
     "returns": "Zero-based index or NIL.",
-    "description": "Read selected index; NIL represents native no selection.",
+    "description": "Read selected index; NIL represents native no selection. ABI37 also reads NOTEBOOK native page index, NIL only when empty. The NOTEBOOK setter requires an existing integer index; silent ChangeSelection is default, :NOTIFY T uses vetoable SetSelection. It returns the requested index even if vetoed; query actual selection afterward.",
     "scope": "Requires an active GUI session on the process main thread. Invalid/destroyed handles or unsupported native arguments signal NATIVE-ERROR; Lisp argument/type errors remain Lisp conditions. One GUI session per process. Widget behavior uses CLOS generic dispatch. Wrong receiver types signal Lisp dispatch conditions; native handle/state failures signal NATIVE-ERROR.",
     "wxwidgets": "wxChoice::GetSelection",
     "setf": {
       "syntax": "(setf (wxlambda:selection choice :notify notify) new-value)",
-      "description": "Store an in-range zero-based index or NIL. :NOTIFY T emits a synchronous selection event, including unchanged assignments. Writers are generic functions with VALUE first, followed by the receiver."
+      "description": "For CHOICE: index or NIL for none; silent by default. :NOTIFY T emits one synthetic native choice selection event, including unchanged assignments. For NOTEBOOK: existing integer index only (no NIL); ChangeSelection is silent by default, :NOTIFY T uses native vetoable SetSelection. Same-page notification counts are native/port-dependent. Returns the requested value even when vetoed; read actual selection afterward."
     }
   },
   {
@@ -441,13 +441,13 @@
     "kind": "generic-function",
     "arguments": "EVENT is an immutable snapshot, current context or live OWNED-EVENT. SETF requires native :SELECTION kind and VALUE NIL or a nonnegative signed32 index.",
     "returns": "Native :SELECTION integer, with -1 mapped to NIL; NIL for other kinds. SETF returns VALUE.",
-    "description": "Read a kind-limited native GetSelection value. SETF writes NIL as -1 or a nonnegative index without calling control setters or validating item lists. Raw EVENT-INTEGER can expose other negative values; the reader preserves them. This is independent of raw EVENT-SELECTION-P/EXTRA-LONG. Later handlers may react and change controls.",
+    "description": "Read a kind-limited native GetSelection value. SETF writes NIL as -1 or a nonnegative index without calling control setters or validating item lists. Raw EVENT-INTEGER can expose other negative values; the reader preserves them. This is independent of raw EVENT-SELECTION-P/EXTRA-LONG. Later handlers may react and change controls. ABI37 reads wxBookCtrlEvent metadata for :NOTEBOOK-PAGE-CHANGING/:NOTEBOOK-PAGE-CHANGED snapshots/contexts. CHANGING meaning is native/port-dependent (Windows may report old page). Not the inherited command integer; no old-selection accessor.",
     "scope": "Saved reads need no session. Live operations require active main-thread session and valid owned/innermost-context lifetime. Wrong-kind writes and malformed/range-invalid semantic indices reject; no snapshot writer or control-item validation.",
     "wxwidgets": "Bounded wxCommandEvent::GetSelection and SetInt, :SELECTION only (wxWidgets 3.2.12 baseline).",
     "syntax": "(wxlambda:event-selection event)",
     "setf": {
       "syntax": "(setf (wxlambda:event-selection event-or-context) value)",
-      "description": "Store NIL as-1 or a nonnegative signed32 index and return VALUE. Only live :SELECTION accepts writes; other negative values require raw EVENT-INTEGER access. Literal -1 is rejected by this semantic writer; use NIL. Raw EVENT-INTEGER still accepts -1."
+      "description": "Store NIL as-1 or a nonnegative signed32 index and return VALUE. Only live :SELECTION accepts writes; other negative values require raw EVENT-INTEGER access. Literal -1 is rejected by this semantic writer; use NIL. Raw EVENT-INTEGER still accepts -1. Notebook page metadata writes remain unsupported; this writer still applies only to choice selection events."
     }
   },
   {
@@ -796,7 +796,7 @@
     "kind": "generic-function",
     "arguments": "HANDLER is an EVENT-HANDLER/window; KIND is :CLICK, :TEXT-CHANGE, :TOGGLE, :SELECTION, :CLOSE, :QUERY-END-SESSION, :END-SESSION, :IDLE, :MENU or a registered command/notify name. FUNCTION takes one immutable EVENT. ID defaults NIL (any); LAST-ID defaults NIL (exact ID when ID is given). WITH-CONTEXT defaults NIL; when true FUNCTION takes (EVENT CONTEXT) instead of just EVENT. USER-DATA defaults NIL and associates any EQ-preserved Lisp value with this registration; callback arity is unchanged.",
     "returns": "A new independent EVENT-BINDING.",
-    "description": "Register an observer without replacing any existing generic or control-specific registration. Signed 32-bit IDs are supported except -1 (reserved as native wxID_ANY; use NIL). LAST-ID requires ID and an ordered inclusive range. Observer bindings automatically Skip; contextual bindings start unskipped and control native Skip explicitly; relative callback order follows wxWidgets and is not a Lisp API guarantee. Failed registration releases temporary roots. Contextual access is limited to the innermost callback and expires at return, including on errors. A native entry-owned wxObject token adapter represents non-NIL user data without a Lisp/native pointer. EVENT-USER-DATA reads the per-binding value in snapshots/current contexts; there is no public mutation API for an existing association.",
+    "description": "Register an observer without replacing any existing generic or control-specific registration. Signed 32-bit IDs are supported except -1 (reserved as native wxID_ANY; use NIL). LAST-ID requires ID and an ordered inclusive range. Observer bindings automatically Skip; contextual bindings start unskipped and control native Skip explicitly; relative callback order follows wxWidgets and is not a Lisp API guarantee. Failed registration releases temporary roots. Contextual access is limited to the innermost callback and expires at return, including on errors. A native entry-owned wxObject token adapter represents non-NIL user data without a Lisp/native pointer. EVENT-USER-DATA reads the per-binding value in snapshots/current contexts; there is no public mutation API for an existing association. ABI37 adds :NOTEBOOK-PAGE-CHANGING/:NOTEBOOK-PAGE-CHANGED notify-family observers/contexts. Only CHANGING veto affects navigation. Native page callbacks protect the originating book/ancestors and reject same-book recursive selection, modal and clipboard entry.",
     "scope": "Active main-thread GUI session required; otherwise NATIVE-ERROR. Stale/deleting receivers reject registration/queuing. Invalid event kinds, IDs and payload options signal Lisp errors; wrong receiver types use CLOS dispatch errors. Built-ins and registered command/notify types. Contexts support scoped Skip/propagation and checked close/notify veto. Arbitrary native events, native control-specific notify subclasses, arbitrary native userData pointers, external handler adoption and worker-thread dispatch remain unbound. Session bindings accept only the borrowed application view or an isolated owned handler; windows reject. Real OS delivery remains unverified. Skipped application END_SESSION callbacks can reach process-exiting defaults. Session bindings on attached pushed handlers reject so a window tail cannot route them to app defaults. Callback-local roots preserve current user data after self/peer unbind until return. Snapshots preserve the EQ reference after unbind/session end, not a deep copy of mutable contents.",
     "wxwidgets": "wxEvtHandler::Bind member-method overload with wxEvent receiver and optional entry-owned numeric wxObject userData adapter; built-ins and registered command/notify tags (wxWidgets 3.2.12 baseline).",
     "syntax": "(wxlambda:bind-event handler kind function &key id last-id with-context user-data)"
@@ -825,7 +825,7 @@
     "arguments": "HANDLER is live; KIND is a built-in keyword or registered name. ID defaults 0; TEXT defaults empty. CHECKED-P is toggle/menu-only; SELECTION is NIL/nonnegative index for selection. CAN-VETO-P is close-family-only (default T). Registered types accept signed INTEGER (default 0) and copied TEXT; registered notify types accept initial VETOED-P (default NIL). LOGGING-OFF-P defaults NIL and is accepted only for :QUERY-END-SESSION/:END-SESSION; CAN-VETO-P applies to all close-family kinds. The second positional argument may instead be a live OWNED-EVENT, with no payload keyword overrides.",
     "returns": "The supplied handler.",
     "description": "Queue a copied synthetic event: wxCommandEvent for five command kinds, wxCloseEvent for close/session kinds and wxIdleEvent for :IDLE. Ordinary control properties are not changed directly. A queued close on a frame may run its native default closing action; use CLOSE-WINDOW for a synchronous acceptance result. Explicit UTF-8 lengths preserve text. Close events take no command payload, may be vetoable or non-vetoable, and do not normally propagate to parents. Registry types create wxCommandEvent or wxNotifyEvent according to their declared family. Initial veto applies only to custom notify types. Queuing offers no final veto/handled result; use PROCESS-EVENT when a synchronous decision is required. Owned-event dispatch always clones, attaches the receiver as copy origin and never consumes or mutates the source. The original can be destroyed after queueing or inside callbacks. Processing returns final state from its copy; contextual CLONE-EVENT can retain changed state detached from origin.",
-    "scope": "Active main-thread GUI session required; otherwise NATIVE-ERROR. Stale/deleting receivers reject registration/queuing. Invalid event kinds, IDs and payload options signal Lisp errors; wrong receiver types use CLOS dispatch errors. Built-ins and registered command/notify types. Contexts support scoped Skip/propagation and checked close/notify veto. Arbitrary native events, native control-specific notify subclasses, arbitrary native userData pointers, external handler adoption and worker-thread dispatch remain unbound. Synthetic session kinds require isolated owned standalone handlers; application/window receivers reject before emission. Standalone session fallback to wxApp is suppressed even for skipped, disabled or unmatched delivery. Native application session bindings are distinct from synthetic probes. Owned session event copies retain isolated standalone-receiver guards. Copies carrying borrowed userdata/client pointers or unsupported exact native classes reject. Copied owned :TEXT-CHANGE delivery to text-entry receivers rejects before emission, preventing lazy GetString from shadowing the owned payload. Keyword synthetic behavior is unchanged. Managed standalone chains participate in native traversal; linking does not change pending queue ownership or introduce window/app pushed chains. Window receivers retain wxEvtHandler semantics and bypass pushed stacks; explicit PROCESS-WINDOW-EVENT/LOCALLY provide stack-aware synchronous routing. Synthetic session delivery to attached pushed handlers rejects before emission/transfer.",
+    "scope": "Active main-thread GUI session required; otherwise NATIVE-ERROR. Stale/deleting receivers reject registration/queuing. Invalid event kinds, IDs and payload options signal Lisp errors; wrong receiver types use CLOS dispatch errors. Built-ins and registered command/notify types. Contexts support scoped Skip/propagation and checked close/notify veto. Arbitrary native events, native control-specific notify subclasses, arbitrary native userData pointers, external handler adoption and worker-thread dispatch remain unbound. Synthetic session kinds require isolated owned standalone handlers; application/window receivers reject before emission. Standalone session fallback to wxApp is suppressed even for skipped, disabled or unmatched delivery. Native application session bindings are distinct from synthetic probes. Owned session event copies retain isolated standalone-receiver guards. Copies carrying borrowed userdata/client pointers or unsupported exact native classes reject. Copied owned :TEXT-CHANGE delivery to text-entry receivers rejects before emission, preventing lazy GetString from shadowing the owned payload. Keyword synthetic behavior is unchanged. Managed standalone chains participate in native traversal; linking does not change pending queue ownership or introduce window/app pushed chains. Window receivers retain wxEvtHandler semantics and bypass pushed stacks; explicit PROCESS-WINDOW-EVENT/LOCALLY provide stack-aware synchronous routing. Synthetic session delivery to attached pushed handlers rejects before emission/transfer. Notebook native page events cannot be synthesized, queued, processed as owned events or contextually cloned in ABI37.",
     "wxwidgets": "wxEvtHandler::QueueEvent; wxCommandEvent, wxCloseEvent or wxIdleEvent construction, SetCanVeto at close-event creation only.",
     "syntax": "(wxlambda:queue-event handler kind &key id text checked-p selection can-veto-p integer vetoed-p logging-off-p)\n(wxlambda:queue-event handler owned-event)"
   },
@@ -931,7 +931,7 @@
     "kind": "function",
     "arguments": "KIND is a built-in event keyword or a name registered in this active session.",
     "returns": "The corresponding process-local native wxEventType integer.",
-    "description": "Look up a process-local native type ID. Nine built-in kinds plus registered command/notify names are supported. Registry names are session-scoped; saved snapshot native IDs remain plain data after cleanup. Borrowed application handler access is supported; arbitrary native event-class binding and OS session delivery remains unverified.",
+    "description": "Look up a process-local native type ID. Eleven built-in kinds plus registered command/notify names are supported. Registry names are session-scoped; saved snapshot native IDs remain plain data after cleanup. Borrowed application handler access is supported; arbitrary native event-class binding and OS session delivery remains unverified.",
     "scope": "Active main-thread session required; inactive calls signal NATIVE-ERROR before native-library lookup. Native IDs are process-local and may change between runs.",
     "wxwidgets": "wxEVT_BUTTON / wxEVT_TEXT / wxEVT_CHECKBOX / wxEVT_CHOICE / wxEVT_CLOSE_WINDOW / wxEVT_QUERY_END_SESSION / wxEVT_END_SESSION / wxEVT_IDLE / wxEVT_MENU; wxNewEventType for registered command/notify names (wxWidgets 3.2.12 baseline)."
   },
@@ -995,7 +995,7 @@
     "arguments": "HANDLER is a live EVENT-HANDLER/window. KIND and keyword payloads match QUEUE-EVENT. LOGGING-OFF-P defaults NIL and is accepted only for :QUERY-END-SESSION/:END-SESSION; CAN-VETO-P applies to all close-family kinds. The second positional argument may instead be a live OWNED-EVENT, with no payload keyword overrides.",
     "returns": "Two values: native handled-p and final vetoed-p.",
     "description": "Synchronously dispatch a fresh owned synthetic event through ProcessEvent, copy final veto state and then delete the event. Observer callbacks may run while handled-p is NIL because they Skip; native consumption/default handling determines the first result. Final veto is independent of handled-p and may be true from initial VETOED-P even without a matching handler. Close dispatch can run frame defaults. Callback errors re-signal at the nearer Lisp boundary; handled nested errors do not stop RUN. No final values are returned when a condition escapes, and earlier callback mutations are not rolled back. Owned-event dispatch always clones, attaches the receiver as copy origin and never consumes or mutates the source. The original can be destroyed after queueing or inside callbacks. Processing returns final state from its copy; contextual CLONE-EVENT can retain changed state detached from origin.",
-    "scope": "Active main-thread session required for registration/dispatch and scoped native access; inactive calls signal NATIVE-ERROR before FFI. Wrong receiver types use CLOS dispatch errors. Registry metadata lasts until session cleanup; snapshot data is immutable. Borrowed application dispatch is supported; no worker dispatch, validated OS session delivery or arbitrary native class construction is provided. Synthetic session kinds require isolated owned standalone handlers; application/window receivers reject before emission. Standalone session fallback to wxApp is suppressed even for skipped, disabled or unmatched delivery. Native application session bindings are distinct from synthetic probes. Owned session event copies retain isolated standalone-receiver guards. Copies carrying borrowed userdata/client pointers or unsupported exact native classes reject. Copied owned :TEXT-CHANGE delivery to text-entry receivers rejects before emission, preventing lazy GetString from shadowing the owned payload. Keyword synthetic behavior is unchanged. Managed standalone chains participate in native traversal; linking does not change pending queue ownership or introduce window/app pushed chains. Window receivers retain wxEvtHandler semantics and bypass pushed stacks; explicit PROCESS-WINDOW-EVENT/LOCALLY provide stack-aware synchronous routing. Synthetic session delivery to attached pushed handlers rejects before emission/transfer.",
+    "scope": "Active main-thread session required for registration/dispatch and scoped native access; inactive calls signal NATIVE-ERROR before FFI. Wrong receiver types use CLOS dispatch errors. Registry metadata lasts until session cleanup; snapshot data is immutable. Borrowed application dispatch is supported; no worker dispatch, validated OS session delivery or arbitrary native class construction is provided. Synthetic session kinds require isolated owned standalone handlers; application/window receivers reject before emission. Standalone session fallback to wxApp is suppressed even for skipped, disabled or unmatched delivery. Native application session bindings are distinct from synthetic probes. Owned session event copies retain isolated standalone-receiver guards. Copies carrying borrowed userdata/client pointers or unsupported exact native classes reject. Copied owned :TEXT-CHANGE delivery to text-entry receivers rejects before emission, preventing lazy GetString from shadowing the owned payload. Keyword synthetic behavior is unchanged. Managed standalone chains participate in native traversal; linking does not change pending queue ownership or introduce window/app pushed chains. Window receivers retain wxEvtHandler semantics and bypass pushed stacks; explicit PROCESS-WINDOW-EVENT/LOCALLY provide stack-aware synchronous routing. Synthetic session delivery to attached pushed handlers rejects before emission/transfer. Notebook native page events cannot be synthesized, queued, processed as owned events or contextually cloned in ABI37.",
     "wxwidgets": "wxEvtHandler::ProcessEvent; wxCloseEvent::GetVeto or NOT wxNotifyEvent::IsAllowed after dispatch. (wxWidgets 3.2.12 baseline).",
     "syntax": "(wxlambda:process-event handler kind &key id text checked-p selection can-veto-p integer vetoed-p logging-off-p)\n(wxlambda:process-event handler owned-event)"
   },
@@ -1123,7 +1123,7 @@
     "arguments": "Keyword initargs: CLASS defaults OWNED-EVENT; KIND defaults :CLICK. ID/TEXT/INTEGER/CHECKED-P/SELECTION/CAN-VETO-P/VETOED-P/LOGGING-OFF-P match synthetic payload rules. Optional CLONE-FROM accepts a live owned event/current context. Optional EXTRA-LONG accepts signed native LONG only for command/notify construction; explicit clone overrides reject. Optional MORE-REQUESTED-P applies only to idle construction; explicitly supplied non-idle values (including NIL) reject/rollback. Keyword synthetic queue/process do not add this option.",
     "returns": "A new OWNED-EVENT or validated subclass.",
     "description": "Thin class-validating CLOS factory with forwarded subclass initargs. Initial ID -1 remains reserved. Clone construction detaches origin and preserves native source state; factories reject explicit payload overrides while inherited defaults do not replace cloned values.",
-    "scope": "Active main-thread session required. Unknown/wrong-family options and invalid class construction reject. No arbitrary native class or raw handle. Explicit DESTROY-EVENT or session cleanup owns native lifetime.",
+    "scope": "Active main-thread session required. Unknown/wrong-family options and invalid class construction reject. No arbitrary native class or raw handle. Explicit DESTROY-EVENT or session cleanup owns native lifetime. Notebook native page events cannot be synthesized, queued, processed as owned events or contextually cloned in ABI37.",
     "wxwidgets": "Bounded native event constructors / wxEvent::Clone (wxWidgets 3.2.12 baseline)."
   },
   {
@@ -1132,7 +1132,7 @@
     "arguments": "EVENT is a live OWNED-EVENT or current innermost EVENT-CONTEXT. CLASS and subclass slot initargs are forwarded; payload overrides reject.",
     "returns": "A new detached OWNED-EVENT or subclass.",
     "description": "Call native Clone for exact wxCommandEvent/wxNotifyEvent/wxCloseEvent/wxIdleEvent with supported tags, clear native origin, preserve supported values and reject borrowed userdata/client pointers. Source and clone are independently mutable/disposable. Capture effective command GetString before clearing origin, so lazy wxEVT_TEXT payload becomes detached value data.",
-    "scope": "Active main-thread session. Expired/suspended contexts and unsupported native classes reject. Snapshots have no method. No origin retention, arbitrary native ownership or source transfer. Non-NIL borrowed binding userData still rejects cloning, even after self-unbind; the presence guard does not dereference a freed native adapter.",
+    "scope": "Active main-thread session. Expired/suspended contexts and unsupported native classes reject. Snapshots have no method. No origin retention, arbitrary native ownership or source transfer. Non-NIL borrowed binding userData still rejects cloning, even after self-unbind; the presence guard does not dereference a freed native adapter. Notebook native page events cannot be synthesized, queued, processed as owned events or contextually cloned in ABI37.",
     "wxwidgets": "wxEvent::Clone with bounded detached ownership (wxWidgets 3.2.12 baseline)."
   },
   {
@@ -1627,7 +1627,7 @@
     "arguments": "DIALOG is a live supported dialog, not already shown.",
     "returns": ":OK or :CANCEL; MESSAGE-DIALOG can also return offered :YES/:NO.",
     "description": "Run the native modal loop. Supported from menu/event callbacks, RUN or a pump; nested public SHOW-MODAL calls reject. Outer event contexts suspend during the modal call and become usable again after it returns; callbacks entered by the modal loop have their own valid innermost contexts. Bare callback errors cancel the modal operation and re-signal the primary condition after unwind. A nested notifying operation whose condition is handled locally can recover without cancelling. Manual RUN/pump/finish and structural menu edits remain guarded. Native close of the current dialog is consumed and cancels it; ancestor close events are consumed while modal. Public CLOSE-WINDOW on a protected ancestor rejects. Generic file UI prompts are redirected to guarded generic message dialogs. Internal prompts suspend borrowed contexts; errors or public cancellation unwind internal-to-outer sequentially. Cancelling an inner prompt normally returns to the outer dialog. Nested public SHOW-MODAL remains forbidden.",
-    "scope": "Requires an active main-thread GUI session and a live managed dialog. Invalid native handles/state signal NATIVE-ERROR; invalid Lisp types/receivers signal Lisp conditions. Modal-only text-entry/single-choice/generic-message/generic-file scope; no arbitrary native adoption, GC finalizer or native virtual Lisp overrides. Native validity includes the receiver and all native ancestors: bridge pending-destruction markers and the public wxApp scheduled-deletion list reject use even before IsBeingDeleted becomes true. SHOW-MODAL preflight must not enter a loop beneath an ancestor already queued for deletion.",
+    "scope": "Requires an active main-thread GUI session and a live managed dialog. Invalid native handles/state signal NATIVE-ERROR; invalid Lisp types/receivers signal Lisp conditions. Modal-only text-entry/single-choice/generic-message/generic-file scope; no arbitrary native adoption, GC finalizer or native virtual Lisp overrides. Native validity includes the receiver and all native ancestors: bridge pending-destruction markers and the public wxApp scheduled-deletion list reject use even before IsBeingDeleted becomes true. SHOW-MODAL preflight must not enter a loop beneath an ancestor already queued for deletion. ABI37 rejects entry during notebook navigation/page callbacks; defer to later application work.",
     "wxwidgets": "wxDialog::ShowModal with bounded callback/lifetime bridge.",
     "syntax": "(wxlambda:show-modal dialog)"
   },
@@ -1813,7 +1813,7 @@
     "arguments": "No arguments; standard system clipboard only.",
     "returns": "An independent Lisp string, including empty, or NIL when no native text format is available.",
     "description": "Briefly opens the clipboard, reads wxTextDataObject with Unicode/legacy text support, closes and restores PRIMARY preference. Availability can change; a supported-text transfer failure signals rather than returning NIL. Explicit UTF-8 lengths copy native storage. NUL text rejects.",
-    "scope": "Active main-thread session. Already-open/reentrant access rejects. Native callback conditions re-signal after cleanup; no native clipboard/data object receiver, selection ranges or binary formats. Native port conversion/line endings apply.",
+    "scope": "Active main-thread session. Already-open/reentrant access rejects. Native callback conditions re-signal after cleanup; no native clipboard/data object receiver, selection ranges or binary formats. Native port conversion/line endings apply. ABI37 rejects entry during notebook navigation/page callbacks; defer to later application work.",
     "wxwidgets": "wxClipboard::Get/Open/Close/IsSupported/GetData, wxTextDataObject::GetText (wxWidgets 3.2.12).",
     "setf": {
       "syntax": "(setf (wxlambda:clipboard-text) value)",
@@ -1826,7 +1826,7 @@
     "arguments": "No arguments.",
     "returns": "T when Unicode or legacy text is supported, NIL otherwise.",
     "description": "Advisory query on the standard clipboard; opens/closes and restores native PRIMARY preference. Does not read clipboard contents. A later read can differ.",
-    "scope": "Active main-thread session; unavailable/open/busy failures signal NATIVE-ERROR. Callback conditions take precedence after cleanup. No async format query.",
+    "scope": "Active main-thread session; unavailable/open/busy failures signal NATIVE-ERROR. Callback conditions take precedence after cleanup. No async format query. ABI37 rejects entry during notebook navigation/page callbacks; defer to later application work.",
     "wxwidgets": "wxClipboard::Get/Open/Close/IsSupported (wxWidgets 3.2.12)."
   },
   {
@@ -1835,7 +1835,7 @@
     "arguments": "No arguments.",
     "returns": "T when native Flush succeeds, NIL for unsupported/unsuccessful persistence.",
     "description": "Best-effort persistence after exit, on the standard clipboard. Does not set clipboard contents. A false native Flush result is normal; open/session failures signal NATIVE-ERROR.",
-    "scope": "Active main-thread session; brief scoped open/close and restored PRIMARY preference. Port-specific support; live exit persistence remains unverified.",
+    "scope": "Active main-thread session; brief scoped open/close and restored PRIMARY preference. Port-specific support; live exit persistence remains unverified. ABI37 rejects entry during notebook navigation/page callbacks; defer to later application work.",
     "wxwidgets": "wxClipboard::Flush (wxWidgets 3.2.12; pinned documentation identifies MSW/GTK support)."
   },
   {
@@ -1903,5 +1903,68 @@
     "description": "Replace half-open native [FROM,TO) with VALUE using native Replace and text-change notification. Equal endpoints insert, empty VALUE removes. Mutation may precede a callback condition rethrow; handled conditions permit recovery. Exact no-op event counts, caret/selection and undo effects are port-specific.",
     "scope": "Active main-thread application; TEXT-CONTROL receivers only, including Lisp subclasses. Wrong receiver dispatch, stale/wrong native handles and invalid ranges/types signal. Native offsets are not portable Lisp string indices; no -1 sentinels, GetRange, undo/redo, rich text or native file IO.",
     "wxwidgets": "wxTextEntry::Replace (wxWidgets 3.2.12)."
+  },
+  {
+    "name": "notebook",
+    "kind": "class",
+    "syntax": "wxlambda:notebook",
+    "arguments": "Subclass of WINDOW; native wxNotebook.",
+    "returns": "Native-backed window wrapper.",
+    "description": "Fixed setup-time panel pages, native selection and tab captions. Lisp page wrappers retain canonical identity; native notebook/ancestor owns page lifetime.",
+    "scope": "Active main-thread session; NOTEBOOK receivers and fixed setup-time PANEL pages only. Invalid handles/indices/ownership signal. No removal, reordering, reparenting, icons, arbitrary styles or other book controls.",
+    "wxwidgets": "wxNotebook / wxBookCtrlBase (wxWidgets 3.2.12).",
+    "construction": {
+      "syntax": "(make-instance 'wxlambda:notebook :parent parent)",
+      "description": "PARENT required, other native arguments default. Subclass slot initargs/defaults/AFTER hooks and managed rollback apply. Add fully initialized page panels after their construction; no page self-attachment during its initializer."
+    }
+  },
+  {
+    "name": "make-notebook",
+    "kind": "generic-function",
+    "arguments": "PARENT window; :CLASS defaults NOTEBOOK, remaining initargs forwarded.",
+    "returns": "Native-backed NOTEBOOK/subclass.",
+    "description": "Thin validated CLOS factory with required parent and native defaults.",
+    "scope": "Active main-thread session; NOTEBOOK receivers and fixed setup-time PANEL pages only. Invalid handles/indices/ownership signal. No removal, reordering, reparenting, icons, arbitrary styles or other book controls.",
+    "wxwidgets": "wxNotebook constructor (wxWidgets 3.2.12)."
+  },
+  {
+    "name": "add-notebook-page",
+    "kind": "generic-function",
+    "arguments": "BOOK notebook, PAGE fully initialized panel parented directly to BOOK; :LABEL defaults empty, :SELECT defaults NIL.",
+    "returns": "The supplied PAGE wrapper.",
+    "description": "Setup-time AddPage, outside RUN/pumps/callbacks. Reject duplicate membership, wrong parent/type, containing sizer and incomplete page initialization. Pre-root canonical wrapper before publication; callback errors after adoption do not remove a successful page. Direct attached-page destruction is forbidden; destroy notebook/ancestor instead. First-page selection/callback count and native caption processing are port-specific.",
+    "scope": "Active main-thread session; NOTEBOOK receivers and fixed setup-time PANEL pages only. Invalid handles/indices/ownership signal. No removal, reordering, reparenting, icons, arbitrary styles or other book controls.",
+    "wxwidgets": "wxBookCtrlBase::AddPage, wxNotebook native implementation (wxWidgets 3.2.12)."
+  },
+  {
+    "name": "notebook-page-count",
+    "kind": "generic-function",
+    "arguments": "BOOK notebook.",
+    "returns": "Current nonnegative native page count.",
+    "description": "Read the fixed managed page collection count.",
+    "scope": "Active main-thread session; NOTEBOOK receivers and fixed setup-time PANEL pages only. Invalid handles/indices/ownership signal. No removal, reordering, reparenting, icons, arbitrary styles or other book controls.",
+    "wxwidgets": "wxBookCtrlBase::GetPageCount (wxWidgets 3.2.12)."
+  },
+  {
+    "name": "notebook-page",
+    "kind": "generic-function",
+    "arguments": "BOOK notebook, INDEX existing zero-based signed-int page index.",
+    "returns": "The canonical EQ panel wrapper supplied to ADD-NOTEBOOK-PAGE.",
+    "description": "Read native page identity then resolve its strongly rooted Lisp wrapper. Access during successful native publication is supported. No new wrapper/native adoption is performed.",
+    "scope": "Active main-thread session; NOTEBOOK receivers and fixed setup-time PANEL pages only. Invalid handles/indices/ownership signal. No removal, reordering, reparenting, icons, arbitrary styles or other book controls.",
+    "wxwidgets": "wxBookCtrlBase::GetPage (wxWidgets 3.2.12)."
+  },
+  {
+    "name": "notebook-page-label",
+    "kind": "generic-function",
+    "arguments": "BOOK notebook, INDEX existing zero-based page index.",
+    "returns": "Independent string of current native caption.",
+    "description": "Reads GetPageText. Native mnemonic processing/length limits differ by port; no exact arbitrary caption round-trip guarantee.",
+    "scope": "Active main-thread session; NOTEBOOK receivers and fixed setup-time PANEL pages only. Invalid handles/indices/ownership signal. No removal, reordering, reparenting, icons, arbitrary styles or other book controls.",
+    "wxwidgets": "wxBookCtrlBase/wxNotebook::GetPageText/SetPageText (wxWidgets 3.2.12).",
+    "setf": {
+      "syntax": "(setf (wxlambda:notebook-page-label book index) value)",
+      "description": "VALUE is a string without NUL, empty allowed. Native SetPageText; returns original VALUE string. No property alias or raw style exposure."
+    }
   }
 ]

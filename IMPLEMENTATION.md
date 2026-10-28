@@ -79,16 +79,16 @@ as if later features or platform checks already passed.
 - Idle batch: :IDLE family/resources, bounded RequestMore, session-restored
   automatic mode, own-window opt-in and native wake scheduling. Independent review
   and final verification pass.
-- Current bridge ABI: 36. Public API: 176 exports, fourteen window wrapper classes
-  (twelve concrete kinds plus WINDOW/DIALOG abstract bases) plus the event-handler base and frame-owned menu resources, 122 named generics and
-  forty generic SETF writers. The application-handler is a borrowed view; no
+- Current bridge ABI: 37. Public API: 182 exports, fifteen window wrapper classes
+  (thirteen concrete kinds plus WINDOW/DIALOG abstract bases) plus the event-handler base and frame-owned menu resources, 127 named generics and
+  forty-one generic SETF writers. The application-handler is a borrowed view; no
   native application construction or arbitrary-event class binding exists yet; built-ins plus registered command/notify names have
   observer/contextual bindings.
-- Latest implementation verification: all 54 GUI scenarios and native preflight
+- Latest implementation verification: all 55 GUI scenarios and native preflight
   pass on local Apple Silicon macOS SBCL 2.6.9 and CCL 1.13. Final reports:
-  `evidence/text-editing/{sbcl,ccl}-20261028-final/`. Native text/clipboard
-  regressions pass with zero wx assertions; system clipboard contents stay intact.
-  Five package checks pass in `evidence/packaging/text-editing-20261028/`.
+  `evidence/notebook/{sbcl,ccl}-20261028-final/`. Native notebook/event, text and
+  clipboard regressions pass with zero wx assertions; clipboard contents stay intact.
+  Five package checks pass in `evidence/packaging/notebook-20261028/`.
   Hosted Linux/Windows GUI behavior and the graphical Cadre viewer remain open.
 
 ### Feature priorities and working order
@@ -99,7 +99,8 @@ as if later features or platform checks already passed.
    slice. A persistent form now composes open/save workflows through generic
    message/file dialogs and Lisp-native document IO. Text clipboard support now extends
    the form/editor. Multiline text construction/editing now provides editor
-   primitives. Next add bounded notebook navigation; retain native OS dialog backends as unbound.
+   primitives; notebook navigation adds fixed editor/settings pages. Next add
+   single-selection list boxes for the tree/list-manager slice; retain native OS dialog backends as unbound.
    Add only necessary
    timer/value/lifetime prerequisites; do not drain native ownership/utilities.
 3. Expand controls/layout, navigation/notebooks, list/tree, clipboard and drawing
@@ -1859,3 +1860,60 @@ Physical typing/selection, IME/grapheme behavior, hosted Windows/Linux GUI, grap
 Cadre, a full multiline document application and live clipboard interop remain
 unverified. Next selected slice: bounded notebook navigation for broader everyday
 GUI coverage; deeper text/selection/undo APIs remain demand-driven.
+
+## Notebook navigation (2026-10-28, verified)
+
+ABI37 adds native-backed NOTEBOOK and thin MAKE-NOTEBOOK construction, setup-time
+ADD-NOTEBOOK-PAGE for fully initialized direct PANEL children, canonical NOTEBOOK-PAGE,
+page count and generic SETF page labels. Existing SELECTION specializes on notebooks:
+silent ChangeSelection by default, native vetoable SetSelection with :NOTIFY T.
+Requested assignment is returned even when vetoed; query actual selection. Counts:
+182 exports, 127 named generics, 41 SETF generics, 15 window wrapper classes (13
+concrete + WINDOW/DIALOG abstract bases), 55 GUI scenarios, 36 examples, 255 entries.
+
+Native ownership protects attached page panels from direct destruction; notebook/
+ancestor teardown invalidates descendants. Page additions require quiescence outside
+RUN/pump/callback/modal contexts; no removal/reorder/reparent/icons or arbitrary
+styles. Page self-attachment during its initializer rejects to preserve rollback.
+Wrappers are rooted before native publication so synchronous AddPage callbacks can
+resolve canonical pages; successful adoption survives a contained callback condition.
+Native caption mnemonic/length behavior is port-dependent, not exact arbitrary echo.
+
+Two built-in notify event kinds :NOTEBOOK-PAGE-CHANGING/:NOTEBOOK-PAGE-CHANGED preserve
+snapshots/context/user-data/propagation contracts. EVENT-SELECTION reads actual
+wxBookCtrlEvent metadata (not inherited GetInt); CHANGING semantics are port-dependent,
+with pinned Windows old-page caveat. Only CHANGING veto affects navigation. No old
+selection accessor, metadata selection writing, owned/synthetic/clone support yet.
+There are eleven bindable built-ins but only nine constructible built-ins. Dynamic
+registered-kind numbering now begins after both notebook kinds; ABI check protects
+mismatched libraries. No native event record field or Lisp snapshot slot was added.
+
+Bridge selection/AddPage and native/propagated notebook callback guards protect
+same-book reentry and ancestor destruction/close; synchronous modal/clipboard entry
+rejects until return. Native modal hook also suppresses internal prompt entry during
+navigation; deleting-origin page callbacks are suppressed. Independent review caught
+the initial setter-only guard gap: actual user page events now get origin-based
+guards in generic binding dispatch. Native regression dispatches actual derived
+wxBookCtrlEvent outside a setter and through frame propagation, proving those checks.
+
+Native harness and both focused Lisp suites pass (quiet-run.9BgHkFBL) with zero wx
+assertions. It checks page identity/publication, native events/veto, invalid indices/
+ownership/labels, modal/clipboard/reentry guards, synthetic/clone rejection, callback
+error recovery and constructor rollback. Test-body parentheses and Boolean Unbind
+expectations were corrected; inventory owner parsing was narrowed to avoid assigning
+wxBookCtrlEvent methods to wxBookCtrlBase. Independent final docs review corrected
+eleven-built-in wording and qualified unchanged-notification behavior as CHOICE-only.
+Regenerated inventory+13 checks and 255-entry zero-problem docset pass
+(quiet-run.9QbVfXJN). Final 55-scenario suites plus native preflight pass both Lisps:
+evidence/notebook/{sbcl,ccl}-20261028-final/. Final regenerated inventory+13 checks,
+255-entry zero-problem checker, isolated install/discovery/lookup, actual 182-export/
+class/SETF coverage on both Lisps and 16 Python unit tests pass (quiet-run.BJXkcP6u).
+Five package checks pass (evidence/packaging/notebook-20261028/,
+quiet-run.dApyEmEn); package: dist/wxlambda-form-notebook. This packages the existing
+form executable; the new notebook example/docs remain repository/docset deliverables.
+Docset rebuilt after final session-note edits.
+
+Physical tab/keyboard input, caption/native CHANGING behavior on hosted Windows/Linux,
+graphical Cadre, a full multi-document editor and external clipboard interoperability
+remain unverified. Next selected slice: single-selection list boxes, broadening the
+tree/list-manager workflow without native container/document parity prerequisites.

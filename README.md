@@ -773,3 +773,7 @@ automatic examples leave existing clipboard content untouched.
 [Multiline text editing](docs/TEXT-EDITING.md) adds multiline construction, user
 editability and native selection/caret/range replacement. The text-editor example
 shows Unicode multiline edits; the persistent form stays a single-line form.
+
+[Notebook navigation](docs/NOTEBOOK.md) adds fixed editor/settings panel pages,
+native selection/veto events and guarded ownership. Run the notebook example START
+for interactive tabs or EXERCISE for bounded navigation checks.
