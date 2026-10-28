@@ -5,3 +5,5 @@
 /.ci-deps/
 /vendor/
 __pycache__/
+/test-results/
+/evidence/

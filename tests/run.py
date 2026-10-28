@@ -1,60 +1,94 @@
-"""Run each single-session GUI test in a fresh Lisp process with a timeout."""
+"""Run GUI scenarios in fresh processes; optionally retain logs and JSON evidence."""
+from datetime import datetime, timezone
+import json
 import os
 from pathlib import Path
+import platform
 import subprocess
 import sys
+import time
 
-root = Path(__file__).resolve().parent.parent
-command = sys.argv[1:] or ["sbcl", "--noinform", "--non-interactive",
-                           "--load", str(Path.home() / "quicklisp/setup.lisp")]
-for mode in ("normal", "callback-error", "setup-error"):
-    print(f"Testing {mode}: {command[0]}", flush=True)
-    subprocess.run(command + ["--load", str(root / "tests/smoke.lisp")],
-                   cwd=root, env={**os.environ, "WXLAMBDA_TEST_MODE": mode},
-                   check=True, timeout=30)
+ROOT = Path(__file__).resolve().parent.parent
 
-print(f"Testing text and handler API: {command[0]}", flush=True)
-subprocess.run(command + ["--load", str(root / "tests/api.lisp")],
-               cwd=root, check=True, timeout=30)
 
-for mode in ("payloads", "error-before-run", "error-in-loop", "error-handled-in-loop"):
-    print(f"Testing events {mode}: {command[0]}", flush=True)
-    subprocess.run(command + ["--load", str(root / "tests/events.lisp")],
-                   cwd=root, env={**os.environ, "WXLAMBDA_EVENT_TEST_MODE": mode},
-                   check=True, timeout=30)
+def scenarios():
+    for mode in ("normal", "callback-error", "setup-error"):
+        yield f"smoke-{mode}", "smoke.lisp", {"WXLAMBDA_TEST_MODE": mode}
+    yield "api", "api.lisp", {}
+    for mode in ("payloads", "error-before-run", "error-in-loop", "error-handled-in-loop"):
+        yield f"events-{mode}", "events.lisp", {"WXLAMBDA_EVENT_TEST_MODE": mode}
+    yield "layout", "layout.lisp", {}
+    for mode in ("normal", "error-before-run", "error-in-loop", "error-handled-in-loop"):
+        yield f"controls-{mode}", "controls.lisp", {"WXLAMBDA_CONTROL_TEST_MODE": mode}
+    for name in ("repl", "repl-eof", "repl-delayed", "repl-debugger", "live"):
+        yield name, f"{name}.lisp", {}
+    for mode in ("normal", "error-before-run", "error-in-loop"):
+        yield f"choice-{mode}", "choice.lisp", {"WXLAMBDA_CHOICE_TEST_MODE": mode}
 
-print(f"Testing layout geometry: {command[0]}", flush=True)
-subprocess.run(command + ["--load", str(root / "tests/layout.lisp")],
-               cwd=root, check=True, timeout=30)
 
-for mode in ("normal", "error-before-run", "error-in-loop", "error-handled-in-loop"):
-    print(f"Testing controls {mode}: {command[0]}", flush=True)
-    subprocess.run(command + ["--load", str(root / "tests/controls.lisp")],
-                   cwd=root, env={**os.environ, "WXLAMBDA_CONTROL_TEST_MODE": mode},
-                   check=True, timeout=30)
+def run_case(command, path, environment):
+    """Return exit status and raw combined output, including failure evidence."""
+    try:
+        result = subprocess.run(command + ["--load", str(path)], cwd=ROOT,
+                                env=environment, stdout=subprocess.PIPE,
+                                stderr=subprocess.STDOUT, timeout=30)
+        return result.returncode, result.stdout, "passed" if result.returncode == 0 else "failed"
+    except subprocess.TimeoutExpired as failure:
+        return 124, (failure.output or b"") + b"\nScenario timed out after 30 seconds.\n", "timeout"
+    except OSError as failure:
+        return 127, f"Cannot launch Lisp: {failure}\n".encode(), "failed"
 
-print(f"Testing cooperative application REPL: {command[0]}", flush=True)
-subprocess.run(command + ["--load", str(root / "tests/repl.lisp")],
-               cwd=root, check=True, timeout=30)
 
-print(f"Testing application REPL EOF: {command[0]}", flush=True)
-subprocess.run(command + ["--load", str(root / "tests/repl-eof.lisp")],
-               cwd=root, check=True, timeout=30)
+def main():
+    command = sys.argv[1:] or ["sbcl", "--noinform", "--non-interactive",
+                               "--load", str(Path.home() / "quicklisp/setup.lisp")]
+    cases = [("platform", ROOT / "ci/platform.lisp", {}, "preflight")]
+    cases += [(name, ROOT / "tests" / file, env, "gui") for name, file, env in scenarios()]
+    report_dir = os.environ.get("WXLAMBDA_TEST_REPORT")
+    report_dir = Path(report_dir) if report_dir else None
+    if report_dir:
+        # Refuse stale evidence: each run needs a fresh directory.
+        report_dir.mkdir(parents=True, exist_ok=False)
+    try:
+        commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT,
+                                         stderr=subprocess.DEVNULL, text=True).strip()
+        dirty = bool(subprocess.check_output(["git", "status", "--porcelain"], cwd=ROOT,
+                                            stderr=subprocess.DEVNULL, text=True).strip())
+    except (OSError, subprocess.CalledProcessError):
+        commit, dirty = None, None
+    evidence = {"schema_version": 1, "started_utc": datetime.now(timezone.utc).isoformat(),
+                "platform": platform.platform(), "command": command,
+                "commit": commit, "working_tree_dirty": dirty,
+                "expected_gui_scenarios": len(cases) - 1,
+                "completed_gui_scenarios": 0, "status": "running", "results": []}
 
-print(f"Testing delayed application REPL input: {command[0]}", flush=True)
-subprocess.run(command + ["--load", str(root / "tests/repl-delayed.lisp")],
-               cwd=root, check=True, timeout=30)
+    def save():
+        if report_dir:
+            (report_dir / "summary.json").write_text(
+                json.dumps(evidence, indent=2) + "\n", encoding="utf-8")
 
-print(f"Testing application REPL debugger: {command[0]}", flush=True)
-subprocess.run(command + ["--load", str(root / "tests/repl-debugger.lisp")],
-               cwd=root, check=True, timeout=30)
+    save()
+    for name, path, overrides, kind in cases:
+        print(f"Testing {name}: {command[0]}", flush=True)
+        started = time.monotonic()
+        code, output, status = run_case(command, path, {**os.environ, **overrides})
+        print(output.decode("utf-8", errors="replace"), end="", flush=True)
+        evidence["results"].append({"name": name, "kind": kind, "status": status,
+                                    "exit_code": code, "seconds": time.monotonic() - started,
+                                    "log": f"{name}.log"})
+        if report_dir:
+            (report_dir / f"{name}.log").write_bytes(output)
+        if status == "passed" and kind == "gui":
+            evidence["completed_gui_scenarios"] += 1
+        evidence["status"] = "failed" if code else "running"
+        save()
+        if code:
+            return code if code > 0 else 128 - code
+    evidence["status"] = "passed"
+    evidence["finished_utc"] = datetime.now(timezone.utc).isoformat()
+    save()
+    return 0
 
-print(f"Testing live-development example: {command[0]}", flush=True)
-subprocess.run(command + ["--load", str(root / "tests/live.lisp")],
-               cwd=root, check=True, timeout=30)
 
-for mode in ("normal", "error-before-run", "error-in-loop"):
-    print(f"Testing choices {mode}: {command[0]}", flush=True)
-    subprocess.run(command + ["--load", str(root / "tests/choice.lisp")],
-                   cwd=root, env={**os.environ, "WXLAMBDA_CHOICE_TEST_MODE": mode},
-                   check=True, timeout=30)
+if __name__ == "__main__":
+    sys.exit(main())

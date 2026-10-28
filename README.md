@@ -398,6 +398,28 @@ python3 tests/run.py
 python3 tests/run.py ccl --no-init --batch --load ~/quicklisp/setup.lisp
 ```
 
+A separate preflight loads the native bridge, checks its ABI, and prints actual
+Lisp/OS/architecture and CFFI source metadata before any GUI scenario. To retain
+evidence, set `WXLAMBDA_TEST_REPORT` to a new directory before running the suite:
+
+```sh
+WXLAMBDA_TEST_REPORT=test-results python3 tests/run.py sbcl --noinform \
+  --no-sysinit --no-userinit --non-interactive --load ci/setup.lisp
+```
+
+The runner records per-process logs and `summary.json` with the source commit,
+working-tree status, command, platform, scenario results, durations, and exit
+codes. It preserves partial timeout output, stops at the first failure, and
+returns a failing exit code. Preflight is separate from the 21 GUI scenarios;
+a load failure cannot count as GUI coverage. An existing report directory is
+rejected to avoid mixing old and new evidence. Reporter checks can be run with
+`python3 -m unittest discover -s tests -p test_runner.py`.
+
+Retained local Phase 3 reports live in
+`evidence/platform/{sbcl,ccl}-20261028-phase3/`. The ignored `evidence/` directory
+is separate from the disposable `.ci-deps/` cache; keep evidence there when
+retaining local runs across dependency-cache cleanup.
+
 Choice tests cover selection bounds, empty/Unicode item lists, nested selection
 snapshots, handler replacement/removal, callback errors, and stale handles.
 
@@ -435,10 +457,10 @@ Locally tested and intended combinations are distinct:
 
 | Platform | Lisp | Validation |
 | --- | --- | --- |
-| Apple Silicon macOS, wxWidgets 3.2.12 | SBCL 2.6.9, CCL 1.13 | Local GUI suites and dependency cache switching |
+| Apple Silicon macOS, wxWidgets 3.2.12 | SBCL 2.6.9, CCL 1.13 | Local preflight and 21-scenario GUI suites; dependency cache switching verified separately |
 | Linux | SBCL | Intended; hosted job configured, no hosted results recorded |
 | macOS hosted runner | SBCL | Intended; hosted job configured, no hosted results recorded |
-| Windows x64 | Lisp runtime not validated | Intended; native build job only |
+| Windows x64 | SBCL 2.6.9 intended, not validated | Native build, preflight, and GUI suite configured; no runtime results |
 
 ## Continuous integration
 
@@ -449,18 +471,33 @@ The configured jobs are:
 | --- | --- | --- |
 | Ubuntu 24.04 | Distribution wxWidgets 3.2, GCC | SBCL, 21 scenarios under Xvfb |
 | macOS 15 | Homebrew wxWidgets 3.2, Clang | SBCL, 21 scenarios |
-| Windows Server 2022 x64 | wxWidgets 3.2.12 from source, MSVC | Not configured yet |
+| Windows Server 2022 x64 | wxWidgets 3.2.12 from source, MSVC | Pinned SBCL 2.6.9, preflight and 21 scenarios; unexecuted |
 
-These are configured checks, not a claim that the hosted jobs have passed. No
-hosted runs were available when the workflow was added. The Windows job checks
-compilation and linking only; it does not validate DLL loading, callbacks, or the
-GUI lifecycle. CCL remains locally tested on macOS, outside this CI matrix.
+These are configured checks, not a claim that hosted jobs have passed. No hosted
+results have been recorded. This checkout currently has no Git remote, so a
+GitHub repository association is needed to dispatch or inspect the relevant
+runs. CCL remains locally tested on macOS, outside this CI matrix.
+
+All jobs run reporting checks, native loading/ABI preflight, and the GUI suite
+(including Unicode copies, callbacks, controls, cleanup, and REPL recovery).
+An `always()` upload step retains generated `test-results/` logs and JSON reports
+for 30 days, even after test failures. A job that fails before tests start may
+have no test report; inspect its Actions logs as well as its conclusion. Hosted
+Windows, Linux, and macOS execution remains required before claiming validation.
 
 The Windows build follows the upstream [MSVC makefile instructions](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/docs/msw/install.md).
 It builds wxWidgets release DLLs from a pinned commit, then passes explicit
 `wxWidgets_ROOT_DIR`, `wxWidgets_LIB_DIR`, and `wxWidgets_CONFIGURATION=mswu`
 settings to CMake. System package versions on Linux/macOS follow their package
 repositories; these native dependencies are not locked to an exact patch release.
+
+`ci/install-sbcl.ps1` downloads the official [SBCL 2.6.9 Windows x64 MSI](https://sourceforge.net/projects/sbcl/files/sbcl/2.6.9/),
+verifies its pinned SHA256, and extracts it into the job's temporary directory.
+The bridge is emitted as `build/wxlambda.dll`, where the Lisp loader expects it;
+the wxWidgets DLL directory is added to the test process's `PATH`. Python runs
+in UTF-8 mode. This Windows setup has been statically reviewed, not executed on
+this macOS host; neither MSI execution nor PowerShell runtime behavior is locally
+verified. The full Windows job must pass to establish DLL loading and GUI behavior.
 
 CI uses the exact CFFI, Babel, Alexandria, and trivial-features commits in
 `ci/lisp-dependencies.json`, fetched over HTTPS into ignored `.ci-deps/`
@@ -504,7 +541,8 @@ After deliberately changing a locked revision, remove the corresponding generate
 pinned Babel revision emits a warning about `HANDLE-ERROR` in its Korean codec;
 the UTF-8 paths exercised by these tests pass on both local Lisps.
 
-Next milestones: hosted platform validation, Windows Lisp/GUI testing, more
+Next milestones: hosted platform validation (including the configured Windows
+Lisp/GUI tests), more
 controls, standalone application packaging, and richer interactive
 development support. Establish those contracts before generating larger binding
 coverage.

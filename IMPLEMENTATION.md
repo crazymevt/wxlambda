@@ -103,9 +103,33 @@ or explicitly deferred.
 
 ## Phase 3: Validate supported platforms
 
-- [ ] Execute macOS and Linux hosted jobs and preserve results.
-- [ ] Extend Windows checks to Lisp loading, callbacks, controls, and cleanup.
+- [ ] Execute macOS, Linux, and Windows hosted jobs and preserve results.
+- [ ] Extend Windows checks to Lisp loading, callbacks, controls, and cleanup;
+  mark complete only after the configured hosted Windows job passes.
 - [ ] Check Unicode and REPL behavior on advertised combinations.
+
+Windows CI now stages SHA256-pinned SBCL 2.6.9, places the bridge where the Lisp
+loader expects it, exposes dependent wxWidgets DLLs, and runs native loading/ABI
+preflight plus all 21 GUI scenarios. All hosted jobs retain per-process logs and
+JSON summaries for 30 days with an `always()` artifact upload. Configuration is
+not runtime evidence: the Windows setup and PowerShell installer are unexecuted
+on this macOS host.
+
+Local evidence recorded on 2026-10-28: both SBCL 2.6.9 and CCL 1.13 pass preflight
+and 21 GUI scenarios, including Unicode and REPL tests. Logs and JSON summaries
+are retained in dedicated ignored `evidence/platform/{sbcl,ccl}-20261028-phase3/`
+directories, separate from the disposable dependency cache.
+The reports identify the source commit and mark the working tree dirty because
+they verify the uncommitted Phase 3 changes. Workflow lint and reporter checks
+also pass. The downloaded Windows MSI's SHA256 matches the configured pin; it
+was not executed locally.
+
+**External dependencies:** this checkout has no Git remote. GitHub authentication
+is available, but no repository association or hosted run URL has been provided.
+There is no local Windows runtime, PowerShell, Linux display server, or container
+runner. Hosted macOS/Linux/Windows execution and Unicode/REPL evidence on those
+runners remain pending; Phase 3 is not complete. Commands and the distinction
+between configured and validated platforms are documented in README.md.
 
 **Acceptance:** Runtime evidence supports every advertised platform. Missing
 repository access or runners remain explicit external dependencies.

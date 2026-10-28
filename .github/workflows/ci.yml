@@ -8,6 +8,10 @@ on:
 permissions:
   contents: read
 
+env:
+  PYTHONUTF8: '1'
+  WXLAMBDA_TEST_REPORT: test-results
+
 jobs:
   gui:
     name: GUI tests / ${{ matrix.os }} / SBCL
@@ -32,6 +36,8 @@ jobs:
         run: brew install cmake sbcl wxwidgets@3.2
       - name: Fetch pinned Lisp dependencies
         run: python3 ci/fetch-deps.py
+      - name: Check test reporting
+        run: python3 -m unittest discover -s tests -p test_runner.py
       - name: Configure
         run: |
           if [[ "$RUNNER_OS" == macOS ]]; then
@@ -55,8 +61,17 @@ jobs:
           sbcl --noinform --no-sysinit --no-userinit --non-interactive
           --load ci/setup.lisp
 
-  windows-native:
-    name: Native build / Windows x64 / MSVC
+      - name: Preserve platform test evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: gui-${{ matrix.os }}-sbcl
+          path: test-results/
+          if-no-files-found: warn
+          retention-days: 30
+
+  windows:
+    name: GUI tests / Windows x64 / MSVC / SBCL
     runs-on: windows-2022
     timeout-minutes: 45
     steps:
@@ -72,6 +87,13 @@ jobs:
         uses: ilammy/msvc-dev-cmd@0b201ec74fa43914dc39ae48a89fd1d8cb592756 # v1
         with:
           arch: x64
+      - name: Stage pinned SBCL x64
+        shell: pwsh
+        run: ./ci/install-sbcl.ps1 -Destination "$env:RUNNER_TEMP/wxlambda-sbcl"
+      - name: Fetch pinned Lisp dependencies
+        run: python ci/fetch-deps.py
+      - name: Check test reporting
+        run: python -m unittest discover -s tests -p test_runner.py
       - name: Build wxWidgets release DLLs
         shell: cmd
         working-directory: vendor/wxWidgets/build/msw
@@ -83,5 +105,23 @@ jobs:
           -DwxWidgets_LIB_DIR="${{ github.workspace }}/vendor/wxWidgets/lib/vc_x64_dll"
           -DwxWidgets_CONFIGURATION=mswu
           -DwxWidgets_USE_REL_AND_DBG=OFF
+          -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE="${{ github.workspace }}/build"
       - name: Build bridge
         run: cmake --build build --config Release --parallel 2
+      - name: Test Lisp loading and GUI lifecycle
+        shell: pwsh
+        run: |
+          $env:PATH = "$env:GITHUB_WORKSPACE/vendor/wxWidgets/lib/vc_x64_dll;$env:PATH"
+          if (-not (Test-Path build/wxlambda.dll)) { throw 'Bridge DLL missing from build/' }
+          python tests/run.py sbcl --noinform --no-sysinit --no-userinit --non-interactive --load ci/setup.lisp
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Preserve platform test evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: gui-windows-2022-sbcl
+          path: |
+            test-results/
+            ${{ runner.temp }}/wxlambda-sbcl/install.log
+          if-no-files-found: warn
+          retention-days: 30
