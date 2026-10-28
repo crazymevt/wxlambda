@@ -785,3 +785,9 @@ actions; stable domain IDs remain Lisp application data.
 [Tree navigation and ownership](docs/TREE-NAVIGATION.md) add checked canonical
 item views, subtree invalidation, expansion and native selection/veto. The tree
 example demonstrates appends/deletes outside guarded selection callbacks.
+
+The [toolbar/status-bar slice](docs/FRAME-ACTIONS.md) adds shared menu/tool action
+IDs, stock-art normal/check tools, enabled/checked state and application-owned
+status fields. Run [frame-actions.lisp](examples/frame-actions.lisp) for an
+in-memory example. macOS uses the explicit safe in-window toolbar backend; native
+Cocoa toolbar chrome and dynamic tools remain outside this bounded scope.

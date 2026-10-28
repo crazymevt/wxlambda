@@ -2293,5 +2293,144 @@
       "syntax": "(setf (wxlambda:event-sash-position object) value)",
       "description": "EVENT snapshot or context: sash pixels, NIL for unrelated snapshots. SETF only current CHANGING context: -1 cancels, or 0..536870911."
     }
+  },
+  {
+    "name": "toolbar",
+    "kind": "class",
+    "arguments": "Concrete horizontal frame-owned toolbar window.",
+    "returns": "A managed toolbar, initially without tools.",
+    "description": "Concrete horizontal frame-owned toolbar window.",
+    "scope": "Use :parent frame. Fixed collection after Realize; see backend policy. Native errors signal NATIVE-ERROR; Lisp type/range errors remain Lisp conditions. See docs/FRAME-ACTIONS.md for backend, ownership and complete supported scope.",
+    "wxwidgets": "wxToolBar (wxWidgets 3.2.12).",
+    "syntax": "wxlambda:toolbar",
+    "construction": {
+      "syntax": "(make-instance 'wxlambda:toolbar :parent frame)",
+      "description": "Concrete native-backed construction supports subclass slots/default initargs/AFTER hooks and managed rollback."
+    }
+  },
+  {
+    "name": "status-bar",
+    "kind": "class",
+    "arguments": "Concrete frame-owned status bar with :fields 1..16 (default 1).",
+    "returns": "A managed status bar with empty native text fields.",
+    "description": "Concrete frame-owned status bar with :fields 1..16 (default 1).",
+    "scope": "Use :parent frame; fixed field count, equal relative widths, app-owned text. Native errors signal NATIVE-ERROR; Lisp type/range errors remain Lisp conditions. See docs/FRAME-ACTIONS.md for backend, ownership and complete supported scope.",
+    "wxwidgets": "wxStatusBar (wxWidgets 3.2.12).",
+    "syntax": "wxlambda:status-bar",
+    "construction": {
+      "syntax": "(make-instance 'wxlambda:status-bar :parent frame :fields 1)",
+      "description": "Concrete native-backed construction supports subclass slots/default initargs/AFTER hooks and managed rollback."
+    }
+  },
+  {
+    "name": "make-toolbar",
+    "kind": "generic-function",
+    "arguments": "FRAME and forwarded initargs, including validated :class subclass.",
+    "returns": "New native-backed toolbar.",
+    "description": "FRAME and forwarded initargs, including validated :class subclass.",
+    "scope": "Quiescent construction; one toolbar per frame. Native errors signal NATIVE-ERROR; Lisp type/range errors remain Lisp conditions. See docs/FRAME-ACTIONS.md for backend, ownership and complete supported scope.",
+    "wxwidgets": "wxToolBar / wxFrame::SetToolBar (wxWidgets 3.2.12)."
+  },
+  {
+    "name": "make-status-bar",
+    "kind": "generic-function",
+    "arguments": "FRAME and forwarded :fields/:class initargs.",
+    "returns": "New native-backed status bar.",
+    "description": "FRAME and forwarded :fields/:class initargs.",
+    "scope": "Quiescent construction; one status bar per frame. Native errors signal NATIVE-ERROR; Lisp type/range errors remain Lisp conditions. See docs/FRAME-ACTIONS.md for backend, ownership and complete supported scope.",
+    "wxwidgets": "wxStatusBar / wxFrame::SetStatusBar (wxWidgets 3.2.12)."
+  },
+  {
+    "name": "add-toolbar-tool",
+    "kind": "generic-function",
+    "arguments": "TOOLBAR ID LABEL; :art (:information default), :kind (:normal default) and :help (empty default).",
+    "returns": "The supplied positive ID.",
+    "description": "TOOLBAR ID LABEL; :art (:information default), :kind (:normal default) and :help (empty default).",
+    "scope": "Quiescent, before realization. IDs unique within toolbar; normal/check tools only. Seven stock art choices; UTF-8/NUL validation. Native errors signal NATIVE-ERROR; Lisp type/range errors remain Lisp conditions. See docs/FRAME-ACTIONS.md for backend, ownership and complete supported scope.",
+    "wxwidgets": "wxToolBar::AddTool / wxArtProvider::GetBitmap (wxWidgets 3.2.12)."
+  },
+  {
+    "name": "add-toolbar-separator",
+    "kind": "generic-function",
+    "arguments": "TOOLBAR. No action ID or state.",
+    "returns": "T after addition.",
+    "description": "TOOLBAR. No action ID or state.",
+    "scope": "Quiescent, before realization. Native errors signal NATIVE-ERROR; Lisp type/range errors remain Lisp conditions. See docs/FRAME-ACTIONS.md for backend, ownership and complete supported scope.",
+    "wxwidgets": "wxToolBar::AddSeparator (wxWidgets 3.2.12)."
+  },
+  {
+    "name": "realize-toolbar",
+    "kind": "generic-function",
+    "arguments": "TOOLBAR with at least one tool or separator.",
+    "returns": "T after native successful realization.",
+    "description": "TOOLBAR with at least one tool or separator.",
+    "scope": "Quiescent; exactly one successful call. Fixes tool collection. Native errors signal NATIVE-ERROR; Lisp type/range errors remain Lisp conditions. See docs/FRAME-ACTIONS.md for backend, ownership and complete supported scope.",
+    "wxwidgets": "wxToolBar::Realize (wxWidgets 3.2.12)."
+  },
+  {
+    "name": "toolbar-tool-count",
+    "kind": "generic-function",
+    "arguments": "TOOLBAR.",
+    "returns": "Integer count including separators.",
+    "description": "TOOLBAR.",
+    "scope": "Active live toolbar. Native errors signal NATIVE-ERROR; Lisp type/range errors remain Lisp conditions. See docs/FRAME-ACTIONS.md for backend, ownership and complete supported scope.",
+    "wxwidgets": "wxToolBar::GetToolsCount (wxWidgets 3.2.12)."
+  },
+  {
+    "name": "tool-enabled-p",
+    "kind": "generic-function",
+    "arguments": "TOOLBAR ID for a known action tool.",
+    "returns": "Boolean enabled state.",
+    "description": "TOOLBAR ID for a known action tool.",
+    "scope": "SETF writes silently, returning supplied value; same-toolbar action writes defer. Native errors signal NATIVE-ERROR; Lisp type/range errors remain Lisp conditions. See docs/FRAME-ACTIONS.md for backend, ownership and complete supported scope.",
+    "wxwidgets": "wxToolBar::GetToolEnabled / EnableTool (wxWidgets 3.2.12).",
+    "setf": {
+      "syntax": "(setf (wxlambda:tool-enabled-p toolbar id) value)",
+      "description": "SETF writes silently, returning supplied value; same-toolbar action writes defer."
+    }
+  },
+  {
+    "name": "tool-checked-p",
+    "kind": "generic-function",
+    "arguments": "TOOLBAR ID for a known check tool.",
+    "returns": "Boolean checked state.",
+    "description": "TOOLBAR ID for a known check tool.",
+    "scope": "SETF writes silently, returning supplied value; normal tools and separators reject. Same-toolbar action writes defer. Native errors signal NATIVE-ERROR; Lisp type/range errors remain Lisp conditions. See docs/FRAME-ACTIONS.md for backend, ownership and complete supported scope.",
+    "wxwidgets": "wxToolBar::GetToolState / ToggleTool (wxWidgets 3.2.12).",
+    "setf": {
+      "syntax": "(setf (wxlambda:tool-checked-p toolbar id) value)",
+      "description": "SETF writes silently, returning supplied value; normal tools and separators reject. Same-toolbar action writes defer."
+    }
+  },
+  {
+    "name": "activate-toolbar-tool",
+    "kind": "generic-function",
+    "arguments": "TOOLBAR ID for a realized action tool.",
+    "returns": "NIL if disabled, T if accepted, independent of native handled result.",
+    "description": "TOOLBAR ID for a realized action tool.",
+    "scope": "Native OnLeftClick path with check toggle before callbacks. :menu events; same-toolbar recursive activation and protected lifetime/loop entry reject. Callback conditions re-signal after native dispatch. Native errors signal NATIVE-ERROR; Lisp type/range errors remain Lisp conditions. See docs/FRAME-ACTIONS.md for backend, ownership and complete supported scope.",
+    "wxwidgets": "wxToolBar::OnLeftClick / ToggleTool (wxWidgets 3.2.12)."
+  },
+  {
+    "name": "status-field-count",
+    "kind": "generic-function",
+    "arguments": "STATUS-BAR.",
+    "returns": "Fixed integer field count.",
+    "description": "STATUS-BAR.",
+    "scope": "Active live bar; field count cannot be changed. Native errors signal NATIVE-ERROR; Lisp type/range errors remain Lisp conditions. See docs/FRAME-ACTIONS.md for backend, ownership and complete supported scope.",
+    "wxwidgets": "wxStatusBar::GetFieldsCount (wxWidgets 3.2.12)."
+  },
+  {
+    "name": "status-text",
+    "kind": "generic-function",
+    "arguments": "STATUS-BAR and optional zero-based FIELD (default 0).",
+    "returns": "Copied UTF-8 string. SETF returns supplied string.",
+    "description": "STATUS-BAR and optional zero-based FIELD (default 0).",
+    "scope": "Generic SETF accepts empty/Unicode string, rejects NUL and invalid/stale indices. App-owned text; automatic frame help disabled. Native errors signal NATIVE-ERROR; Lisp type/range errors remain Lisp conditions. See docs/FRAME-ACTIONS.md for backend, ownership and complete supported scope.",
+    "wxwidgets": "wxStatusBar::GetStatusText / SetStatusText (wxWidgets 3.2.12).",
+    "setf": {
+      "syntax": "(setf (wxlambda:status-text status-bar) value)\n(setf (wxlambda:status-text status-bar field) value)",
+      "description": "Generic SETF accepts empty/Unicode string, rejects NUL and invalid/stale indices. App-owned text; automatic frame help disabled."
+    }
   }
 ]

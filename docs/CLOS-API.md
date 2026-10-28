@@ -1,7 +1,7 @@
 # CLOS widget API
 
 Widgets are native-backed CLOS instances. The public classes are `window`,
-`frame`, `panel`, `notebook`, `list-box`, `tree-control`, `button`, `text-control`, `label`, `checkbox`, `choice`,
+`frame`, `toolbar`, `status-bar`, `panel`, `notebook`, `list-box`, `tree-control`, `splitter-window`, `button`, `text-control`, `label`, `checkbox`, `choice`,
 `gauge`, abstract `dialog`, and its `text-entry-dialog`, `single-choice-dialog`,
 `message-dialog` and `file-dialog` concrete families.
 `window` inherits from `event-handler` and is abstract. Standalone `event-handler`
@@ -41,6 +41,8 @@ Concrete native initargs are:
 
 - `frame`: `:title` (default "wxlambda"), `:width` (480), `:height` (240).
 - `panel`: required `:parent` window.
+- `toolbar`: required `:parent` frame; fixed tools after realization.
+- `status-bar`: required `:parent` frame, `:fields` (1, range 1..16). See [frame actions](FRAME-ACTIONS.md).
 - `button`: required `:parent`, `:label` ("Button").
 - `text-control`: required `:parent`, `:value` (empty string).
 - `label`: required `:parent`, `:label` (empty string).
@@ -253,3 +255,11 @@ identity can outlive native validity; see [tree ownership/navigation](TREE-NAVIG
 The bounded splitter batch adds native-backed `splitter-window`, persistent panel
 panes and guarded sash notifications. See [supported scope and example](SPLITTER.md).
 Dynamic pane replacement/removal and complete splitter parity remain deferred.
+
+## Frame toolbar/status actions
+
+Native-backed `toolbar` and `status-bar` add a bounded application-shell slice:
+fixed normal/check/separator tools with stock art and :menu action routing, silent
+tool state and application-owned indexed status fields. See
+[supported scope, backend policy and example](FRAME-ACTIONS.md). Native Cocoa
+toolbar chrome, dynamic tools and status widths/stacks remain deferred.

@@ -138,7 +138,7 @@ modal dialogs with Lisp-native open/save IO. Text clipboard Copy/Paste now exten
 the form/editor; multiline text primitives now support editor UI construction.
 Notebook navigation now adds fixed editor/settings pages. Single-selection
 list boxes and checked tree navigation now extend the tree/list-manager slice.
-Fixed splitter panes now provide the two-pane manager slice. Next add bounded toolbar/status-bar actions. Do not drain native ownership/utilities first.
+Fixed splitter panes now provide the two-pane manager slice. Toolbar/status-bar actions now extend the application shell; next add bounded keyboard accelerators. Do not drain native ownership/utilities first.
 
 ### Representative application acceptance
 
@@ -499,4 +499,18 @@ Both Lisps pass all 58 GUI scenarios for the splitter batch. Native probe, 13
 coverage checks, 16 Python checks, 291-entry zero-problem docset, both-Lisp export
 lookup and isolated Cadre discovery/install checks pass. Five package checks pass.
 See IMPLEMENTATION.md for evidence and remaining platform/manual limitations.
-Next selected feature: toolbar/status-bar actions; deeper native splitter APIs defer.
+Toolbar/status-bar actions are now implemented; deeper native splitter APIs defer.
+
+## Frame toolbar/status actions
+
+Native-backed `toolbar` and `status-bar` add a bounded application-shell slice:
+fixed normal/check/separator tools with stock art and :menu action routing, silent
+tool state and application-owned indexed status fields. See
+[supported scope, backend policy and example](FRAME-ACTIONS.md). Native Cocoa
+toolbar chrome, dynamic tools and status widths/stacks remain deferred.
+
+The frame-actions batch adds a complete example of shared menu/tool action IDs
+and status feedback within this bounded slice, preserving deferred native APIs
+in the generated inventory. Next selected feature: keyboard accelerators for
+shared application actions. Physical interaction and hosted Windows/Linux GUI
+remain unverified; no full toolbar class or native Cocoa chrome parity claim.

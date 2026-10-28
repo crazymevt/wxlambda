@@ -2083,3 +2083,60 @@ at evidence/splitter/{sbcl,ccl}-20261028-final/. All 16 Python checks and actual
 291-entry checker, isolated installation, discovery, symbol lookup and guide/example
 access pass after reviewed documentation fixes (quiet-run.yjJ6MnFp). The initial
 Python run caught a stale expected result count; corrected to 59 including preflight.
+
+## Frame toolbar/status actions (2026-10-28, bounded scope)
+
+ABI41 adds TOOLBAR and STATUS-BAR window subclasses, thin generic factories,
+fixed normal/check/separator toolbar tools addressed by toolbar-scoped positive
+IDs, seven stock art choices, explicit once-only REALIZE-TOOLBAR, count and silent
+generic SETF enabled/checked state, native accepted activation, fixed status field
+count and generic SETF text. See docs/FRAME-ACTIONS.md and examples/frame-actions.lisp.
+Counts: 225 exports, 164 named generics, 51 SETF generics, 20 window wrapper classes
+(18 concrete+2 abstract) plus borrowed TREE-ITEM, 59 GUI scenarios, 40 examples,
+306 docset entries. Frame chrome has no user sizers; direct bar deletion is
+synchronous and quiescent. Frame ownership invalidates bars and failed CLOS
+initialization cleans up native association/callback roots.
+
+wxEVT_TOOL aliases wxEVT_MENU; reuse :MENU and action IDs. Native check state
+toggles before action callbacks; programmatic activation returns accepted T,
+not native handled status. Actual/native propagated toolbar-origin guards block
+protected destruction/close, same-toolbar tool-state writes/activation, modal,
+clipboard and nested dispatch/pump entry. Status feedback remains writable.
+Status fields are application-owned: frame automatic help updates are disabled.
+Example consumes toolbar events in a contextual handler and shares action logic
+with menu events without duplicate propagation or implicit state synchronization.
+
+Independent review found deferred native bar destruction and teardown callback
+suppression issues; fixed with synchronous quiescent deletion and early owner
+registry/pending-destruction guards. A native crash report showed Cocoa restoring
+old raw tool-pointer placeholders in MacInstallNativeToolbar during toolbar
+replacement at a reused C++ address. This was not treated as a passing retry.
+OSX construction now explicitly selects wx's ordinary in-window toolbar backend,
+restores the previous effective option string and rejects builds lacking system
+options. Native Cocoa chrome remains unbound. wxSystemOptions cannot publicly
+remove entries; absent-value restoration as empty can shadow future environment
+changes, documented in the guide. Native probes test 24 realized/unrealized
+replacements with prior empty/0/1 values, effective HasOption semantics and actual
+OnLeftClick propagation outside bridge activation guards. Zero wx assertions,
+focused tests and example pass on SBCL+CCL (quiet-run.eP4hjhBC). Review also fixed
+the conditional native-feature probe and documentation SETF/guard/DPI wording.
+
+Session handoff: continue broad GUI coverage with selective depth. Next selected
+slice is keyboard accelerators for shared application actions. No dynamic tool
+removal/reordering, radio/dropdown tools, custom images, status widths/stacks or
+native Cocoa toolbar customization. Physical clicks/keyboard/accessibility, DPI
+rendering, hosted Windows/Linux GUI and graphical Cadre remain unverified.
+
+Final frame-actions verification: main/native builds, zero-assertion native probes
+and all 59 GUI scenarios pass on both SBCL and CCL (quiet-run.OX3Jjd32); fresh
+evidence: evidence/frame-actions/{sbcl,ccl}-20261028-final/. Regenerated inventory
+and 13 coverage checks, 16 Python checks and 306-entry zero-problem docset pass
+(quiet-run.bCtnmaJC). Actual 225-export/class/SETF lookup checks pass on both
+Lisps, as do isolated install/discovery/symbol/guide/example access checks
+(quiet-run.buyztgGM). Runtime counts match the handoff (quiet-run.tMekyyz3).
+Five isolated package checks pass (quiet-run.OGWexn2d), package
+dist/wxlambda-form-frame-actions, evidence/packaging/frame-actions-20261028/.
+The package remains the existing form executable; the new frame-actions example
+and guides are repository/docset deliverables, not bundled example launchers.
+Documentation is rebuilt and checked after final evidence notes. Follow
+docs/DOCSET.md to install for Cadre; graphical Cadre execution remains unrun.

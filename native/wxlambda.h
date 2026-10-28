@@ -94,6 +94,18 @@ WXL_API int wxl_set_dialog_value(wxl_handle dialog, const char *value, size_t le
 WXL_API int wxl_dialog_selection(wxl_handle dialog);
 WXL_API int wxl_set_dialog_selection(wxl_handle dialog, int selection);
 WXL_API const char *wxl_dialog_selection_text(wxl_handle dialog, size_t *length);
+/* Frame-owned horizontal toolbar and fixed 1..16 field status bar. */
+WXL_API wxl_handle wxl_toolbar(wxl_handle frame);
+WXL_API wxl_handle wxl_status_bar(wxl_handle frame, int fields);
+WXL_API int wxl_add_tool(wxl_handle bar, int id, const char* label, size_t length, int art, int kind, const char* help, size_t help_length);
+WXL_API int wxl_realize_toolbar(wxl_handle bar);
+WXL_API int wxl_tool_count(wxl_handle bar);
+WXL_API int wxl_tool_state(wxl_handle bar, int id, int field);
+WXL_API int wxl_set_tool_state(wxl_handle bar, int id, int field, int value);
+WXL_API int wxl_activate_tool(wxl_handle bar, int id);
+WXL_API int wxl_status_fields(wxl_handle bar);
+WXL_API const char* wxl_status_text(wxl_handle bar, int field, size_t* length);
+WXL_API int wxl_set_status_text(wxl_handle bar, int field, const char* text, size_t length);
 WXL_API wxl_handle wxl_menu_bar(wxl_handle frame);
 WXL_API wxl_handle wxl_menu(wxl_handle bar, const char *label, size_t length);
 WXL_API wxl_handle wxl_menu_item(wxl_handle menu, int id, const char *label, size_t length, const char *help, size_t help_length, int kind);

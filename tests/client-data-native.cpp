@@ -35,12 +35,13 @@ void inspect_binding(uint64_t token, const wxl_event* event) {
     saved_context = event->context;
     binding_called = true;
 }
-std::function<void(uint64_t, const wxl_event*)> notebook_probe, list_probe, tree_probe, splitter_probe;
+std::function<void(uint64_t, const wxl_event*)> notebook_probe, list_probe, tree_probe, splitter_probe, toolbar_probe;
 void ignore_event(uint64_t token, const wxl_event* event) {
     if ((token == 904 || token == 905) && notebook_probe) notebook_probe(token, event);
     if (token >= 906 && token <= 908 && list_probe) list_probe(token, event);
     if ((token == 909 || token == 910) && tree_probe) tree_probe(token, event);
     if ((token == 911 || token == 912) && splitter_probe) splitter_probe(token, event);
+    if ((token == 913 || token == 914) && toolbar_probe) toolbar_probe(token, event);
     if (token == 901) inspect_binding(token, event);
     if (token == 903) { ++menu_calls; menu_checked_payload = event->checked; menu_integer_payload = event->integer; menu_origin = event->origin_id; }
 }
@@ -800,6 +801,61 @@ struct SplitterProbe : FixedSplitter {
     using FixedSplitter::FixedSplitter;
     using wxSplitterWindow::SetSashPositionAndNotify;
 };
+void exercise_frame_actions() {
+    const auto frame = wxl_frame("Frame actions",640,360), bar = wxl_toolbar(frame), status_bar = wxl_status_bar(frame,2);
+    expect(bar && status_bar, "Frame bar construction");
+    expect(!wxl_toolbar(frame) && !wxl_status_bar(frame,1), "Duplicate bars rejected");
+    expect(wxl_add_tool(bar,1001,"Check",5,6,1,"Help",4)==0 && wxl_add_tool(bar,1002,"Open",4,1,0,nullptr,0)==0, "Tool add");
+    expect(wxl_add_tool(bar,1001,"Dup",3,0,0,nullptr,0)==-1 && wxl_add_tool(bar,0,nullptr,0,-1,2,nullptr,0)==0, "Tool IDs/separators");
+    expect(wxl_add_tool(bar,1003,"Bad",3,7,0,nullptr,0)==-1 && wxl_add_tool(bar,1003,"Bad",3,0,3,nullptr,0)==-1, "Invalid tool options");
+    expect(wxl_set_tool_state(bar,1001,1,2)==-1 && wxl_set_tool_state(bar,1002,1,1)==-1 && wxl_tool_state(bar,999,0)==-1, "Raw state validation");
+    expect(wxl_set_status_text(status_bar,2,"Bad",3)==-1 && wxl_status_text(status_bar,-1,nullptr)==nullptr, "Field validation");
+    expect(wxl_realize_toolbar(bar)==0 && wxl_realize_toolbar(bar)==-1 && wxl_tool_count(bar)==3, "Realize once/count");
+    expect(as<wxFrame>(frame)->GetStatusBarPane()==-1, "App-owned status text");
+    const auto dialog = wxl_message_dialog(frame,"Probe",5,"Probe",5,0,0);
+    unsigned calls=0;
+    toolbar_probe = [&](uint64_t token, const wxl_event* event) {
+        ++calls;
+        expect(event->kind==WXL_EVENT_MENU && event->origin_id==bar && event->id==1001 && event->checked==1 && event->integer==1 && event->extra_long==1, "Toolbar native payload");
+        expect(wxl_destroy(bar)==-1 && wxl_destroy(frame)==-1 && wxl_close(frame,1)==-1, "Native tool ancestor guard");
+        expect(wxl_set_tool_state(bar,1001,1,0)==-1 && wxl_set_tool_state(bar,1002,0,0)==-1 && wxl_activate_tool(bar,1002)==-1, "Same toolbar guard");
+        int result=-1;
+        expect(wxl_dialog_show(dialog,&result)==-1 && wxl_clipboard_text_available()==-1 && wxl_poll()==-1, "Native tool loop guard");
+        expect(wxl_set_status_text(status_bar,1,"Action",6)==0, "Status write during action");
+        if (token==913) expect(wxl_context_set_skipped(event->context,1)==0,"Propagate tool action");
+    };
+    expect(wxl_bind(bar,WXL_EVENT_MENU,913,1001,1001,1,0)==0 && wxl_bind(frame,WXL_EVENT_MENU,914,1001,1001,1,0)==0, "Native tool bindings");
+    auto* native = as<wxToolBar>(bar);
+    // Enter the actual native click path without the bridge activation guard.
+    native->ToggleTool(1001,true); native->OnLeftClick(1001,true);
+    expect(calls==2 && toolbar_operations.empty(),"Actual/propagated toolbar callbacks");
+    expect(wxl_unbind(913)==1 && wxl_unbind(914)==1,"Unbind toolbar probes"); toolbar_probe={};
+    expect(wxl_activate_tool(bar,1001)==1 && wxl_tool_state(bar,1001,1)==0,"Accepted activation independent of handled result");
+    expect(wxl_set_tool_state(bar,1002,0,0)==0 && wxl_activate_tool(bar,1002)==0,"Disabled tool no dispatch");
+    expect(wxl_destroy(bar)==0 && wxl_destroy(status_bar)==0 && wxl_poll()==0,"Quiescent bar destruction");
+    expect(as<wxFrame>(frame)->GetToolBar()==nullptr && as<wxFrame>(frame)->GetStatusBar()==nullptr,"Detached frame slots");
+    wxl_handle replacement_status=0;
+    for (const auto& option : {"", "0", "1"}) {
+        const auto previous=wxSystemOptions::GetOption("mac.toolbar.no-native");
+        wxSystemOptions::SetOption("mac.toolbar.no-native",option);
+        for (int repetition=0; repetition<8; ++repetition) {
+            const auto replacement=wxl_toolbar(frame);
+            expect(replacement && wxSystemOptions::GetOption("mac.toolbar.no-native")==option,"Backend option effective value restored");
+#if defined(__WXOSX__) && wxOSX_USE_NATIVE_TOOLBAR
+            expect(!as<wxToolBar>(replacement)->MacWantsNativeToolbar(),"Explicit safe in-window toolbar backend");
+#endif
+            expect(wxl_add_tool(replacement,1,"Unrealized",10,0,0,nullptr,0)==0,"Replacement tool");
+            if (repetition%2) expect(wxl_realize_toolbar(replacement)==0,"Replacement realization");
+            expect(wxl_destroy(replacement)==0,"Synchronous replacement deletion");
+        }
+        wxSystemOptions::SetOption("mac.toolbar.no-native",previous);
+    }
+    expect(wxl_toolbar(frame)!=0,"Replace unrealized toolbar");
+    replacement_status=wxl_status_bar(frame,1);
+    delete as<wxFrame>(frame);
+    expect(wxl_handler_alive(bar)==0 && wxl_handler_alive(status_bar)==0 && wxl_handler_alive(replacement_status)==0 && realized_toolbars.empty(),"Frame-owned bar invalidation");
+}
+
 void exercise_splitter() {
     const auto frame = wxl_frame("Splitter", 640, 480);
     const auto regular = wxl_splitter(frame, 0, 0, 20, 0.5);
@@ -896,6 +952,7 @@ int main() {
         exercise_list_box();
         exercise_tree();
         exercise_splitter();
+        exercise_frame_actions();
 #if wxUSE_CLIPBOARD
         exercise_clipboard();
 #endif

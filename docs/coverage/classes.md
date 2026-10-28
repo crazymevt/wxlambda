@@ -459,13 +459,13 @@ Class/struct definitions: 0 complete; 16 partial; 116 pending. Partial and pendi
 
 ## C3: Dialogs, navigation, menus, and application services
 
-Class/struct definitions: 0 complete; 14 partial; 97 pending. Partial and pending classes remain open.
+Class/struct definitions: 0 complete; 17 partial; 94 pending. Partial and pending classes remain open.
 
 [Declaration counts and remaining work](README.md).
 
 - [ ] `wxAboutDialogInfo` — [`wx/aboutdlg.h`](phase-c3.md), upstream line 53.
 - [ ] `wxAccessible` — [`wx/access.h`](phase-c3.md), upstream line 354.
-- [ ] `wxArtProvider` — [`wx/artprov.h`](phase-c3.md), upstream line 269.
+- [~] `wxArtProvider` — [`wx/artprov.h`](phase-c3.md), upstream line 269. — **Partial**: `toolbar`, `status-bar`, `make-toolbar`, `make-status-bar`, `add-toolbar-tool`, `add-toolbar-separator`, `realize-toolbar`, `toolbar-tool-count`, `tool-enabled-p`, `tool-checked-p`, `activate-toolbar-tool`, `status-field-count`, `status-text`; ABI: `wxl_toolbar`, `wxl_status_bar`, `wxl_add_tool`, `wxl_realize_toolbar`, `wxl_tool_count`, `wxl_tool_state`, `wxl_set_tool_state`, `wxl_activate_tool`, `wxl_status_fields`, `wxl_status_text`, `wxl_set_status_text`. Frame-owned horizontal toolbar, fixed normal/check/separator tools, positive toolbar-scoped IDs, stock art, explicit Realize and silent enabled/checked state. Native TOOL aliases MENU; guarded actions. Fixed status fields/text with automatic frame help disabled. OSX explicit in-window backend; native Cocoa chrome excluded. Quiescent structure/destruction. No raw tool adoption, dynamic tools, radio/dropdown/custom images or full parity. See docs/FRAME-ACTIONS.md.
 - [~] `wxBookCtrlBase` — [`wx/bookctrl.h`](phase-c3.md), upstream line 67. — **Partial**: `notebook`, `make-notebook`, `add-notebook-page`, `notebook-page-count`, `notebook-page`, `notebook-page-label`, `selection`; ABI: `wxl_notebook`, `wxl_notebook_add`, `wxl_notebook_count`, `wxl_notebook_page`, `wxl_notebook_label`, `wxl_set_notebook_label`, `wxl_notebook_selection`, `wxl_set_notebook_selection`. NOTEBOOK only, fixed setup-time PANEL pages with canonical wrapper roots/native parent ownership. Silent or native notifying/vetoable selection and native captions; operation/callback ancestor/reentry/modal/clipboard guards. No other books, page removal/reorder/reparent/icons or full native class coverage.
 - [~] `wxBookCtrlEvent` — [`wx/bookctrl.h`](phase-c3.md), upstream line 422. — **Partial**: `bind-event`, `event-selection`, `event-vetoed-p`; ABI: `wxl_bind`, `wxl_event_field`. Notebook changing/changed immutable snapshots and borrowed contexts only; notify veto on CHANGING, native selection metadata read-only. No public event class, old-selection, owned/synthetic/cloning support or other book events.
 - [ ] `wxBusyInfo` — [`wx/busyinfo.h`](phase-c3.md), upstream line 85.
@@ -553,7 +553,7 @@ Class/struct definitions: 0 complete; 14 partial; 97 pending. Partial and pendin
 - [ ] `wxSimplebook` — [`wx/simplebook.h`](phase-c3.md), upstream line 40.
 - [ ] `wxSplashScreen` — [`wx/splash.h`](phase-c3.md), upstream line 41.
 - [ ] `wxStatusBarPane` — [`wx/statusbr.h`](phase-c3.md), upstream line 35.
-- [ ] `wxStatusBar` — [`wx/statusbr.h`](phase-c3.md), upstream line 108.
+- [~] `wxStatusBar` — [`wx/statusbr.h`](phase-c3.md), upstream line 108. — **Partial**: `toolbar`, `status-bar`, `make-toolbar`, `make-status-bar`, `add-toolbar-tool`, `add-toolbar-separator`, `realize-toolbar`, `toolbar-tool-count`, `tool-enabled-p`, `tool-checked-p`, `activate-toolbar-tool`, `status-field-count`, `status-text`; ABI: `wxl_toolbar`, `wxl_status_bar`, `wxl_add_tool`, `wxl_realize_toolbar`, `wxl_tool_count`, `wxl_tool_state`, `wxl_set_tool_state`, `wxl_activate_tool`, `wxl_status_fields`, `wxl_status_text`, `wxl_set_status_text`. Frame-owned horizontal toolbar, fixed normal/check/separator tools, positive toolbar-scoped IDs, stock art, explicit Realize and silent enabled/checked state. Native TOOL aliases MENU; guarded actions. Fixed status fields/text with automatic frame help disabled. OSX explicit in-window backend; native Cocoa chrome excluded. Quiescent structure/destruction. No raw tool adoption, dynamic tools, radio/dropdown/custom images or full parity. See docs/FRAME-ACTIONS.md.
 - [ ] `wxTaskBarIconEvent` — [`wx/taskbar.h`](phase-c3.md), upstream line 31.
 - [ ] `wxTaskBarIcon` — [`wx/taskbar.h`](phase-c3.md), upstream line 97.
 - [ ] `wxThumbBarButton` — [`wx/taskbarbutton.h`](phase-c3.md), upstream line 35.
@@ -565,7 +565,7 @@ Class/struct definitions: 0 complete; 14 partial; 97 pending. Partial and pendin
 - [~] `wxTextEntryDialog` — [`wx/textdlg.h`](phase-c3.md), upstream line 76. — **Partial**: `text-entry-dialog`, `make-text-entry-dialog`, `show-modal`, `dialog-value`; ABI: `wxl_text_entry_dialog`, `wxl_dialog_show`, `wxl_dialog_value`, `wxl_set_dialog_value`. Managed modal-only text entry with fixed defaults, native stored value and CLOS lifetime/rollback. Password/styles/validators/custom buttons and live internal text control unbound. Platform-native message/file backends remain deferred after macOS cancellation probe hang; explicit generic message/file GUI backends are supported within their documented scope.
 - [ ] `wxTipProvider` — [`wx/tipdlg.h`](phase-c3.md), upstream line 25.
 - [ ] `wxToolBarToolBase` — [`wx/toolbar.h`](phase-c3.md), upstream line 80.
-- [ ] `wxToolBar` — [`wx/toolbar.h`](phase-c3.md), upstream line 292.
+- [~] `wxToolBar` — [`wx/toolbar.h`](phase-c3.md), upstream line 292. — **Partial**: `toolbar`, `status-bar`, `make-toolbar`, `make-status-bar`, `add-toolbar-tool`, `add-toolbar-separator`, `realize-toolbar`, `toolbar-tool-count`, `tool-enabled-p`, `tool-checked-p`, `activate-toolbar-tool`, `status-field-count`, `status-text`; ABI: `wxl_toolbar`, `wxl_status_bar`, `wxl_add_tool`, `wxl_realize_toolbar`, `wxl_tool_count`, `wxl_tool_state`, `wxl_set_tool_state`, `wxl_activate_tool`, `wxl_status_fields`, `wxl_status_text`, `wxl_set_status_text`. Frame-owned horizontal toolbar, fixed normal/check/separator tools, positive toolbar-scoped IDs, stock art, explicit Realize and silent enabled/checked state. Native TOOL aliases MENU; guarded actions. Fixed status fields/text with automatic frame help disabled. OSX explicit in-window backend; native Cocoa chrome excluded. Quiescent structure/destruction. No raw tool adoption, dynamic tools, radio/dropdown/custom images or full parity. See docs/FRAME-ACTIONS.md.
 - [ ] `wxToolbook` — [`wx/toolbook.h`](phase-c3.md), upstream line 58.
 - [ ] `wxTreebook` — [`wx/treebook.h`](phase-c3.md), upstream line 51.
 - [ ] `wxUIActionSimulator` — [`wx/uiaction.h`](phase-c3.md), upstream line 27.

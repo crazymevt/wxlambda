@@ -4,6 +4,10 @@
 #include <wx/choice.h>
 #include <wx/gauge.h>
 #include <wx/menu.h>
+#include <wx/toolbar.h>
+#include <wx/statusbr.h>
+#include <wx/artprov.h>
+#include <wx/sysopt.h>
 #include <wx/notebook.h>
 #include <wx/listbox.h>
 #include <wx/treectrl.h>
@@ -88,6 +92,8 @@ public:
     int requested_position = 0;
     void OnDoubleClickSash(int, int) override { } // Fixed two-pane ownership.
 };
+std::unordered_set<wxWindow*> toolbar_owners;
+std::unordered_set<wxWindow*> realized_toolbars;
 std::unordered_set<wxWindow*> splitter_owners;
 constexpr int splitter_pixel_limit = std::numeric_limits<int>::max() / 4;
 void splitter_pixel(int value, bool positive = false) {
@@ -343,7 +349,7 @@ template<class T> class ManagedWindow final : public T, public ClientDataAccess 
 public:
     using T::T;
     wxClientDataType ClientStorageKind() const override { return this->m_clientDataType; }
-    ~ManagedWindow() override { splitter_owners.erase(this); forget_tree_nodes(this); dialog_choice_counts.erase(this); dialog_message_buttons.erase(this); dialog_file_filters.erase(this); detach_window_stack(this); }
+    ~ManagedWindow() override { toolbar_owners.erase(this); realized_toolbars.erase(this); splitter_owners.erase(this); forget_tree_nodes(this); dialog_choice_counts.erase(this); dialog_message_buttons.erase(this); dialog_file_filters.erase(this); detach_window_stack(this); }
 };
 void set_registered_type(wxEvent& event, int type) {
         const RegisteredEvent* source = nullptr;
@@ -495,6 +501,38 @@ int event_sash_value(wxEvent& event) {
     auto* splitter = dynamic_cast<wxSplitterEvent*>(&event);
     return splitter && sash_event(event) ? splitter->GetSashPosition() : 0;
 }
+// Origin comparison never dereferences an untracked event-object pointer.
+std::vector<wxWeakRef<wxToolBar>> toolbar_operations;
+bool protected_toolbar_ancestor(wxWindow* object) {
+    for (const auto& bar : toolbar_operations)
+        for (auto* node = static_cast<wxWindow*>(bar.get()); node; node = node->GetParent())
+            if (node == object) return true;
+    return false;
+}
+void toolbar_mutable(wxToolBar* bar) {
+    for (const auto& active : toolbar_operations)
+        require(active.get() != bar, "Defer same-toolbar mutation/activation until action returns");
+}
+struct ToolbarOperation {
+    explicit ToolbarOperation(wxToolBar* bar) { toolbar_mutable(bar); toolbar_operations.emplace_back(bar); }
+    ~ToolbarOperation() { toolbar_operations.pop_back(); }
+};
+struct ToolbarCallbackOperation {
+    bool added = false, allow = true;
+    explicit ToolbarCallbackOperation(wxEvent& event) {
+        if (event.GetEventType() != wxEVT_TOOL) return;
+        for (const auto& entry : windows) {
+            auto* live = entry.second.get();
+            if (!live || event.GetEventObject() != live) continue;
+            auto* bar = dynamic_cast<wxToolBar*>(live);
+            if (!bar) return;
+            if (!toolbar_owners.count(bar) || window_destruction_pending(bar)) { allow = false; return; }
+            for (const auto& active : toolbar_operations) if (active.get() == bar) return;
+            toolbar_operations.emplace_back(bar); added = true; return;
+        }
+    }
+    ~ToolbarCallbackOperation() { if (added) toolbar_operations.pop_back(); }
+};
 int selected_event_index(wxEvent& event) {
     if (auto* book = dynamic_cast<wxBookCtrlEvent*>(&event)) return book->GetSelection();
     auto* command = dynamic_cast<wxCommandEvent*>(&event);
@@ -502,7 +540,7 @@ int selected_event_index(wxEvent& event) {
 }
 void make_box(wxl_handle id, int orientation) {
     auto* parent = window(id);
-    require(!dynamic_cast<wxNotebook*>(parent) && !dynamic_cast<wxSplitterWindow*>(parent), "Lay out page/pane panels, not their native container");
+    require(!dynamic_cast<wxToolBar*>(parent) && !dynamic_cast<wxStatusBar*>(parent) && !dynamic_cast<wxNotebook*>(parent) && !dynamic_cast<wxSplitterWindow*>(parent), "Lay out page/pane panels, not their native container");
     require(parent->GetSizer() == nullptr, "Window already has a sizer");
     parent->SetSizer(new wxBoxSizer(orientation));
 }
@@ -512,7 +550,7 @@ void invoke_callback(uint64_t token, const wxl_event& event) {
 }
 void require_dispatch_entry() {
     require(!active_modal.get() && actual_modals.empty(), "Cannot enter structural dispatch during a modal dialog");
-    require(notebook_operations.empty() && list_callback_operations.empty() && tree_operations.empty() && splitter_operations.empty(), "Cannot enter structural dispatch during navigation callbacks");
+    require(notebook_operations.empty() && list_callback_operations.empty() && tree_operations.empty() && splitter_operations.empty() && toolbar_operations.empty(), "Cannot enter structural dispatch during navigation callbacks");
     require(!running, "Event loop is already running");
     require(!pumping && callback_depth == 0, "Cannot enter event dispatch from a pump or callback");
 }
@@ -740,7 +778,8 @@ struct Binding {
         ListCallbackOperation list_guard(event);
         TreeCallbackOperation tree_guard(event);
         SplitterCallbackOperation splitter_guard(event);
-        if (!notebook_guard.allow || !list_guard.allow || !tree_guard.allow || !splitter_guard.allow) { event.Skip(); return; }
+        ToolbarCallbackOperation toolbar_guard(event);
+        if (!notebook_guard.allow || !list_guard.allow || !tree_guard.allow || !splitter_guard.allow || !toolbar_guard.allow) { event.Skip(); return; }
         const auto found = bindings.find(token);
         if (found == bindings.end()) { event.Skip(); return; }
         // Keep the method receiver alive if this or another binding is removed.
@@ -915,7 +954,7 @@ protected:
     int Enter(wxDialog* object) override {
         // Lisp may defer rethrow until its nearest notifying operation returns.
         // Do not open a new native prompt while its callback error is pending.
-        if (pending_callback_error || !notebook_operations.empty() || !list_callback_operations.empty() || !tree_operations.empty() || !splitter_operations.empty()) return wxID_CANCEL;
+        if (pending_callback_error || !notebook_operations.empty() || !list_callback_operations.empty() || !tree_operations.empty() || !splitter_operations.empty() || !toolbar_operations.empty()) return wxID_CANCEL;
         if (modal_cancel_requested && (active_modal.get() || !actual_modals.empty())) return wxID_CANCEL;
         // Native NSAlert modal loops cannot be aborted using wxDialog::EndModal.
         // Replace them before their platform ShowModal implementation is entered.
@@ -1020,7 +1059,7 @@ class ClipboardSession {
 public:
     ClipboardSession() {
         ready();
-        require(notebook_operations.empty() && list_callback_operations.empty() && tree_operations.empty() && splitter_operations.empty(), "Defer clipboard operations until navigation callbacks return");
+        require(notebook_operations.empty() && list_callback_operations.empty() && tree_operations.empty() && splitter_operations.empty() && toolbar_operations.empty(), "Defer clipboard operations until navigation callbacks return");
         require(!clipboard_busy, "Clipboard operation is already in progress");
 #ifdef WXLAMBDA_NATIVE_TESTS
         clipboard = test_clipboard ? test_clipboard : wxTheClipboard;
@@ -1051,7 +1090,7 @@ public:
 
 }
 extern "C" {
-int wxl_abi_version() { return 40; }
+int wxl_abi_version() { return 41; }
 const char* wxl_last_error() { return error.c_str(); }
 int wxl_clipboard_text_available() {
     return boolean_result([&] {
@@ -1307,7 +1346,7 @@ int wxl_dialog_show(wxl_handle id, int* code) {
     return status([&] {
         auto* object = as<wxDialog>(id);
         require(code, "Missing modal result output");
-        require(notebook_operations.empty() && list_callback_operations.empty() && tree_operations.empty() && splitter_operations.empty(), "Defer dialogs until navigation callbacks return");
+        require(notebook_operations.empty() && list_callback_operations.empty() && tree_operations.empty() && splitter_operations.empty() && toolbar_operations.empty(), "Defer dialogs until navigation callbacks return");
         require(!active_modal.get() && actual_modals.empty(), "Nested modal dialogs are not supported");
         require(!object->IsShown() && !object->IsModal(), "Dialog is already shown");
         struct ModalScope {
@@ -1362,6 +1401,104 @@ int wxl_set_dialog_selection(wxl_handle id, int value) { return status([&] {
     object->SetSelection(value);
 }); }
 const char* wxl_dialog_selection_text(wxl_handle id, size_t* length) { return metadata_string([&] { return as<wxSingleChoiceDialog>(id)->GetStringSelection(); }, length); }
+// wxOSX Cocoa NSToolbar identifiers embed C++ addresses and restored item IDs
+// embed tool pointers. Address reuse can resurrect stale native placeholders.
+// Select wx's ordinary in-window control backend during construction instead.
+struct ToolbarBackendScope {
+#if defined(__WXOSX__) && wxUSE_SYSTEM_OPTIONS
+    wxString previous = wxSystemOptions::GetOption("mac.toolbar.no-native");
+    ToolbarBackendScope() { wxSystemOptions::SetOption("mac.toolbar.no-native", 1); }
+    ~ToolbarBackendScope() { wxSystemOptions::SetOption("mac.toolbar.no-native", previous); }
+#else
+    ToolbarBackendScope() {
+#ifdef __WXOSX__
+        require(false, "Safe OSX toolbar backend requires wxUSE_SYSTEM_OPTIONS");
+#endif
+    }
+#endif
+};
+// Frame bars use native window ownership. Tool IDs are scoped to each toolbar.
+wxl_handle wxl_toolbar(wxl_handle frame_id) {
+    return create([&] {
+        require_dispatch_entry(); auto* frame = as<wxFrame>(frame_id);
+        require(!frame->GetToolBar(), "Frame already has a toolbar");
+        ToolbarBackendScope backend;
+        auto bar = std::make_unique<ManagedWindow<wxToolBar>>(frame, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTB_HORIZONTAL | wxTB_FLAT);
+        const auto id = track(bar.get()); toolbar_owners.insert(bar.get()); frame->SetToolBar(bar.get()); frame->Layout(); bar.release(); return id;
+    });
+}
+wxl_handle wxl_status_bar(wxl_handle frame_id, int fields) {
+    return create([&] {
+        require_dispatch_entry(); auto* frame = as<wxFrame>(frame_id);
+        require(fields >= 1 && fields <= 16, "Status field count must be 1..16");
+        require(!frame->GetStatusBar(), "Frame already has a status bar");
+        auto bar = std::make_unique<ManagedWindow<wxStatusBar>>(frame, wxID_ANY);
+        bar->SetFieldsCount(fields); const auto id = track(bar.get());
+        frame->SetStatusBar(bar.get()); frame->SetStatusBarPane(-1); // App owns all text.
+        bar.release(); return id;
+    });
+}
+int wxl_add_tool(wxl_handle id, int tool_id, const char* label, size_t length, int art, int kind, const char* help, size_t help_length) {
+    return status([&] {
+        require_dispatch_entry(); auto* bar = as<wxToolBar>(id);
+        require(!realized_toolbars.count(bar), "Tools are fixed after Realize");
+        require(kind >= 0 && kind <= 2, "Unsupported tool kind");
+        if (kind == 2) {
+            require(tool_id == 0 && art == -1 && !length && !help_length, "Separator requires zero ID, no art or text");
+            require(bar->AddSeparator() != nullptr, "Native separator creation failed"); return;
+        }
+        require(tool_id > 0 && !bar->FindById(tool_id), "Tool ID must be positive and unique within toolbar");
+        const wxArtID arts[] = {wxART_NEW, wxART_FILE_OPEN, wxART_FILE_SAVE, wxART_COPY, wxART_PASTE, wxART_QUIT, wxART_INFORMATION};
+        require(art >= 0 && art < 7, "Unsupported stock tool art");
+        const auto text = menu_string(label, length, false), hint = menu_string(help, help_length, true);
+        const auto bitmap = wxArtProvider::GetBitmap(arts[art], wxART_TOOLBAR, wxSize(16,16));
+        require(bitmap.IsOk(), "Stock tool art unavailable on this backend");
+        require(bar->AddTool(tool_id, text, wxBitmapBundle::FromBitmap(bitmap), wxBitmapBundle(), kind ? wxITEM_CHECK : wxITEM_NORMAL, hint) != nullptr, "Native tool creation failed");
+    });
+}
+int wxl_realize_toolbar(wxl_handle id) { return status([&] {
+    require_dispatch_entry(); auto* bar = as<wxToolBar>(id);
+    require(!realized_toolbars.count(bar), "Toolbar already realized");
+    require(bar->GetToolsCount() != 0, "Add tools before Realize");
+    ToolbarOperation operation(bar); require(bar->Realize(), "Native toolbar realization failed"); realized_toolbars.insert(bar);
+    bar->GetParent()->Layout();
+}); }
+int wxl_tool_count(wxl_handle id) {
+    int value = -1; status([&] { value = static_cast<int>(as<wxToolBar>(id)->GetToolsCount()); }); return value;
+}
+// Field 0 enabled, 1 checked. Queries reject separators and wrong-kind checks.
+int wxl_tool_state(wxl_handle id, int tool_id, int field) { return boolean_result([&] {
+    auto* bar = as<wxToolBar>(id); auto* tool = bar->FindById(tool_id);
+    require(tool && !tool->IsSeparator(), "Unknown/non-action tool ID");
+    require(field == 0 || (field == 1 && tool->CanBeToggled()), "Tool is not checkable or field is invalid");
+    return field == 0 ? bar->GetToolEnabled(tool_id) : bar->GetToolState(tool_id);
+}); }
+int wxl_set_tool_state(wxl_handle id, int tool_id, int field, int value) { return status([&] {
+    auto* bar = as<wxToolBar>(id); toolbar_mutable(bar); auto* tool = bar->FindById(tool_id);
+    require(tool && !tool->IsSeparator(), "Unknown/non-action tool ID");
+    require(field == 0 || (field == 1 && tool->CanBeToggled()), "Tool is not checkable or field is invalid");
+    require(value == 0 || value == 1, "Invalid boolean tool state");
+    if (field == 0) bar->EnableTool(tool_id, value != 0); else bar->ToggleTool(tool_id, value != 0);
+}); }
+int wxl_activate_tool(wxl_handle id, int tool_id) { return boolean_result([&] {
+    auto* bar = as<wxToolBar>(id); toolbar_mutable(bar);
+    require(realized_toolbars.count(bar), "Realize toolbar before activation");
+    auto* tool = bar->FindById(tool_id); require(tool && !tool->IsSeparator(), "Unknown/non-action tool ID");
+    if (!tool->IsEnabled()) return false;
+    ToolbarOperation operation(bar);
+    if (tool->CanBeToggled()) bar->ToggleTool(tool_id, !tool->IsToggled());
+    bar->OnLeftClick(tool_id, tool->CanBeToggled() && tool->IsToggled());
+    return true; // Accepted activation, independent of event handled/Skip result.
+}); }
+int wxl_status_fields(wxl_handle id) {
+    int value = -1; status([&] { value = as<wxStatusBar>(id)->GetFieldsCount(); }); return value;
+}
+const char* wxl_status_text(wxl_handle id, int field, size_t* length) { return metadata_string([&] {
+    auto* bar = as<wxStatusBar>(id); require(field >= 0 && field < bar->GetFieldsCount(), "Status field out of range"); return bar->GetStatusText(field);
+}, length); }
+int wxl_set_status_text(wxl_handle id, int field, const char* text, size_t length) { return status([&] {
+    auto* bar = as<wxStatusBar>(id); require(field >= 0 && field < bar->GetFieldsCount(), "Status field out of range"); bar->SetStatusText(menu_string(text, length, true), field);
+}); }
 wxl_handle wxl_menu_bar(wxl_handle frame_id) {
     return create([&] {
         require_dispatch_entry(); auto* owner = as<wxFrame>(frame_id);
@@ -1779,7 +1916,7 @@ int wxl_context_set_logging_off(uint64_t token, int value) {
     });
 }
 int wxl_close(wxl_handle id, int force) {
-    return boolean_result([&] { auto* object = as<wxFrame>(id); require(!protected_modal_ancestor(object), "Cannot close an active modal dialog ancestor"); require(!protected_notebook_ancestor(object) && !protected_list_ancestor(object) && !protected_tree_ancestor(object) && !protected_splitter_ancestor(object), "Cannot close a navigation callback ancestor"); return object->Close(force != 0); });
+    return boolean_result([&] { auto* object = as<wxFrame>(id); require(!protected_modal_ancestor(object), "Cannot close an active modal dialog ancestor"); require(!protected_notebook_ancestor(object) && !protected_list_ancestor(object) && !protected_tree_ancestor(object) && !protected_splitter_ancestor(object) && !protected_toolbar_ancestor(object), "Cannot close a navigation callback ancestor"); return object->Close(force != 0); });
 }
 int wxl_context_resume_propagation(uint64_t token, int level) {
     return status([&] {
@@ -2580,6 +2717,7 @@ int wxl_add(wxl_handle parent, wxl_handle child, int proportion,
         require(border >= 0, "Border must be nonnegative");
         require(alignment >= WXL_ALIGN_START && alignment <= WXL_ALIGN_END, "Invalid alignment");
         require(!expand || alignment == WXL_ALIGN_START, "Alignment requires expand=false");
+        require(!dynamic_cast<wxToolBar*>(c) && !dynamic_cast<wxStatusBar*>(c), "Frame bars cannot be placed in a sizer");
         require(c->GetParent() == p, "Child must belong to the sizer's window");
         auto* sizer = box(p);
         require(c->GetContainingSizer() == nullptr, "Child already belongs to a sizer");
@@ -2656,8 +2794,18 @@ int wxl_destroy(wxl_handle id) {
     return status([&] {
         auto* object = window(id);
         require(!protected_modal_ancestor(object), "Cannot destroy an active modal dialog or its ancestor");
-        require(!protected_notebook_ancestor(object) && !protected_list_ancestor(object) && !protected_tree_ancestor(object) && !protected_splitter_ancestor(object), "Cannot destroy a navigation operation receiver or its ancestor");
+        require(!protected_notebook_ancestor(object) && !protected_list_ancestor(object) && !protected_tree_ancestor(object) && !protected_splitter_ancestor(object) && !protected_toolbar_ancestor(object), "Cannot destroy a navigation operation receiver or its ancestor");
         require(!attached_notebook_page(object) && !attached_splitter_pane(object), "Attached pages/panes are owned by their native container");
+        if (dynamic_cast<wxToolBar*>(object)) {
+            // OSX Destroy() uninstalls native chrome and can defer deletion.
+            // Delete synchronously while quiescent, before allowing replacement.
+            require_dispatch_entry(); delete object; return;
+        }
+        if (auto* bar = dynamic_cast<wxStatusBar*>(object)) {
+            require_dispatch_entry(); auto* frame = dynamic_cast<wxFrame*>(bar->GetParent());
+            if (frame && frame->GetStatusBar() == bar) frame->SetStatusBar(nullptr);
+            delete bar; return;
+        }
         if (callback_depth) {
             wxWeakRef<wxWindow> weak(object);
             pending_destruction.insert(id);

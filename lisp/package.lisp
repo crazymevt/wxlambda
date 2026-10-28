@@ -32,6 +32,9 @@
            #:event-native-type #:event-type
            #:event-binding #:event-binding-p #:bind-event #:unbind-event #:binding-active-p #:queue-event #:event-id
            #:event-handler #:make-event-handler #:destroy-event-handler #:handler-enabled-p #:handler-alive-p
+           #:toolbar #:status-bar #:make-toolbar #:make-status-bar
+           #:add-toolbar-tool #:add-toolbar-separator #:realize-toolbar #:toolbar-tool-count
+           #:tool-enabled-p #:tool-checked-p #:activate-toolbar-tool #:status-field-count #:status-text
            #:window #:frame #:panel #:button #:text-control #:label #:checkbox #:choice
            #:load-native-library #:call-with-application #:with-application #:with-repl-application #:process-events #:main-loop-running-p #:pending-events-p #:process-pending-events
            #:return-to-application-repl

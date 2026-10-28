@@ -120,7 +120,7 @@ session ownership; actual native window destruction pops managed stacks without
 deleting those handlers. Explicit stack-aware processing differs from generic
 window receiver dispatch, which retains native stack bypass. Public window wrapper
 classes are `window` (abstract), `frame`, `panel`, `button`,
-`text-control`, `label`, `checkbox`, `choice`, `gauge`, `notebook`, `list-box` and `tree-control` (plus the
+`text-control`, `label`, `checkbox`, `choice`, `gauge`, `notebook`, `list-box`, `tree-control`, `splitter-window`, `toolbar` and `status-bar` (plus the
 DIALOG hierarchy described below). Lisp subclassing does not imply
 native C++ subclassing or virtual-method callbacks; those need separate bridge
 support. See `docs/CLOS-API.md`.
@@ -156,8 +156,8 @@ Preserve cancellation/failed-save close veto, dirty baselines and native filenam
 conversion. See `docs/DOCUMENT-FORM.md`. ABI35 adds bounded text
 clipboard support and form Edit Copy/Paste. Preserve isolated automatic transfer
 tests: do not overwrite/read system clipboard content in CI; live availability is
-the only automatic system query. See `docs/CLIPBOARD.md`. The next selected slice
-is splitter windows for a two-pane tree/list manager. ABI36 multiline text/basic editing uses native
+the only automatic system query. See `docs/CLIPBOARD.md`. The splitter and toolbar/status-bar slices are implemented; see the current handoff
+in IMPLEMENTATION.md for the next selected dependency. ABI36 multiline text/basic editing uses native
 offsets, never Lisp string indices; preserve explicit UTF-8 lengths, NUL validation,
 CLOS rollback and notifying Replace with callback/context protections. See
 `docs/TEXT-EDITING.md`. Do not drain wxDocument/native stream APIs.
@@ -187,3 +187,9 @@ callbacks. No synthetic/owned/cloned tree events. See `docs/TREE-NAVIGATION.md`.
 Keep wxQt tree construction unavailable until asynchronous raw-item events have
 generation-safe translation; do not remove that gate based only on synchronous
 macOS/GTK/MSW tests. See the ABI39 handoff in `IMPLEMENTATION.md`.
+
+ABI41 frame toolbar/status bars use managed window lifetimes and quiescent
+structure/deletion; fixed tools are addressed by toolbar-scoped positive IDs.
+wxEVT_TOOL aliases MENU. Preserve actual/propagated origin lifetime/reentry guards,
+app-owned status fields, and explicit safe in-window OSX toolbar construction.
+Native Cocoa pointer-ID placeholder restoration is excluded. See docs/FRAME-ACTIONS.md.
