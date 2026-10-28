@@ -6,12 +6,25 @@ wxWidgets binding.
 
 Implemented: application startup/shutdown, frames, panels, buttons, editable text,
 static labels, two-state checkboxes, dropdown choices, row/column layouts, spacers, text/state access,
-removable click/text/toggle/selection handlers, copied event payloads, and queued clicks.
+removable click/text/toggle/selection handlers, copied event payloads, queued clicks,
+and window visibility/input state.
 Lisp objects wrap checked integer handles; native pointers never escape the bridge.
 
 First-release lifecycle limits: **one GUI session per process**. Closing a window
 does not release its registered Lisp handlers; unbind them before destruction,
 or they remain rooted until session cleanup. Restart Lisp for a new GUI session.
+
+## Documentation and examples
+
+The [Cadre docset](docs/DOCSET.md) includes the public API reference, project
+guides and example sources in one searchable artifact under `docs/docset/`.
+Use `python3 tools/docset.py build`, `check`, or `install`; the docset library
+checkout is a build-tool dependency, separate from the GUI runtime. Read
+[window state](docs/WINDOW-STATE.md) for the first coverage implementation slice:
+`show-window` now accepts an optional boolean for showing/hiding, while
+`shown-p`, `enable-window` and `enabled-p` query/control visibility and input.
+The runnable [window-state example](examples/window-state.lisp) demonstrates
+these operations through button callbacks.
 
 ## Build
 
@@ -42,7 +55,7 @@ application with `(wxlambda:load-native-library #P"C:/path/to/wxlambda.dll")`.
 Dependent wxWidgets DLLs must also be discoverable by the OS loader.
 
 The bridge normally loads from `build/`, then falls back to the system library
-search path. The Lisp/native ABI version (currently 7) is checked on load; rebuild
+search path. The Lisp/native ABI version (currently 8) is checked on load; rebuild
 the bridge after updating the bindings. Installing the bridge with CMake does not
 install the ASDF system.
 
@@ -485,7 +498,9 @@ platform checks. Release preparation remains open.
 
 These tests briefly open real windows, queue a button event, then exit. They need
 an interactive graphical session (or a suitable display server on Linux).
-The 23 scenarios each run in a fresh process with a 30-second timeout:
+The 24 scenarios each run in a fresh process with a 30-second timeout:
+The window-state scenario exercises the documented example, native changed-state
+results, ancestor semantics and stale/inactive handles.
 
 ```sh
 python3 tests/run.py
@@ -504,7 +519,7 @@ WXLAMBDA_TEST_REPORT=test-results python3 tests/run.py sbcl --noinform \
 The runner records per-process logs and `summary.json` with the source commit,
 working-tree status, command, platform, scenario results, durations, and exit
 codes. It preserves partial timeout output, stops at the first failure, and
-returns a failing exit code. Preflight is separate from the 23 GUI scenarios;
+returns a failing exit code. Preflight is separate from the 24 GUI scenarios;
 a load failure cannot count as GUI coverage. An existing report directory is
 rejected to avoid mixing old and new evidence. Reporter checks can be run with
 `python3 -m unittest discover -s tests -p test_runner.py`.
@@ -559,7 +574,7 @@ Locally tested and intended combinations are distinct:
 
 | Platform | Lisp | Validation |
 | --- | --- | --- |
-| Apple Silicon macOS, wxWidgets 3.2.12 | SBCL 2.6.9, CCL 1.13 | Local preflight and 23-scenario GUI suites; dependency cache switching verified separately |
+| Apple Silicon macOS, wxWidgets 3.2.12 | SBCL 2.6.9, CCL 1.13 | Local preflight and 24-scenario GUI suites; dependency cache switching verified separately |
 | Linux | SBCL | Intended; hosted job configured, no hosted results recorded |
 | macOS hosted runner | SBCL | Intended; hosted job configured, no hosted results recorded |
 | Windows x64 | SBCL 2.6.9 intended, not validated | Native build, preflight, and GUI suite configured; no runtime results |
@@ -571,9 +586,9 @@ The configured jobs are:
 
 | Runner | Native build | Lisp GUI tests |
 | --- | --- | --- |
-| Ubuntu 24.04 | Distribution wxWidgets 3.2, GCC | SBCL, 23 scenarios under Xvfb |
-| macOS 15 | Homebrew wxWidgets 3.2, Clang | SBCL, 23 scenarios |
-| Windows Server 2022 x64 | wxWidgets 3.2.12 from source, MSVC | Pinned SBCL 2.6.9, preflight and 23 scenarios; unexecuted |
+| Ubuntu 24.04 | Distribution wxWidgets 3.2, GCC | SBCL, 24 scenarios under Xvfb |
+| macOS 15 | Homebrew wxWidgets 3.2, Clang | SBCL, 24 scenarios |
+| Windows Server 2022 x64 | wxWidgets 3.2.12 from source, MSVC | Pinned SBCL 2.6.9, preflight and 24 scenarios; unexecuted |
 
 These are configured checks, not a claim that hosted jobs have passed. No hosted
 results have been recorded. This checkout currently has no Git remote, so a
@@ -634,7 +649,7 @@ then Quicklisp, then pinned dependencies again in fresh processes. It checks
 CFFI source locations and the compiled output destination as well as actual
 native callback dispatch. Quicklisp must already be installed; set
 `QUICKLISP_SETUP` if its setup file is not `~/quicklisp/setup.lisp`.
-These three-process regressions are separate from the 23-scenario GUI suite
+These three-process regressions are separate from the 24-scenario GUI suite
 and are local checks, not configured hosted jobs.
 
 The fetcher verifies existing checkouts and refuses modified or mismatched ones.

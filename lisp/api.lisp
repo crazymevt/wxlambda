@@ -257,7 +257,24 @@ BORDER is nonnegative spacing on all four sides, in wxWidgets coordinates."
   (multiple-value-bind (x y width height) (window-geometry window)
     (declare (ignore x y))
     (values width height)))
-(defun show-window (window) (check-status (%show (handle window))) window)
+(defun boolean-result (result)
+  (when (minusp result) (error 'native-error :message (%last-error)))
+  (not (zerop result)))
+(defun show-window (window &optional (show t))
+  "Show WINDOW when SHOW is true, hide it when NIL. Return WINDOW and a second
+value indicating whether its native shown state changed. SHOWN-P queries its own
+shown flag, independently of whether an ancestor is hidden."
+  (values window (boolean-result (%show-state (handle window) (if show 1 0)))))
+(defun shown-p (window)
+  "Return WINDOW's own shown flag, not its effective visibility on screen."
+  (boolean-result (%shown (handle window))))
+(defun enable-window (window &optional (enable t))
+  "Enable WINDOW for input when ENABLE is true, disable it when NIL.
+Return WINDOW and whether the native enabled state changed."
+  (values window (boolean-result (%enable (handle window) (if enable 1 0)))))
+(defun enabled-p (window)
+  "Return whether WINDOW accepts input, including its ancestors' enabled state."
+  (boolean-result (%enabled (handle window))))
 (defun destroy-window (window) (check-status (%destroy (handle window))))
 (defun call-setter (function notify)
   (let ((*in-notifying-setter* (or notify *in-notifying-setter*)))

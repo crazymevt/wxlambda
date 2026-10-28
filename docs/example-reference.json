@@ -1,0 +1,26 @@
+{
+  "hello.lisp": {
+    "description": "Editable Unicode text and button callbacks with copied event payloads. Close the frame to exit.",
+    "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/hello.lisp"
+  },
+  "layout.lisp": {
+    "description": "Nested panel rows and columns with spacing and alignment. Close the frame to exit.",
+    "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/layout.lisp"
+  },
+  "form.lisp": {
+    "description": "Run the representative form with text, checkbox and choice updates. Close the frame to exit.",
+    "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/form.lisp"
+  },
+  "form-app.lisp": {
+    "description": "Reusable form implementation; load it then call WXLAMBDA-FORM:START. The form.lisp launcher does this automatically.",
+    "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/form-app.lisp --eval '(wxlambda-form:start)'"
+  },
+  "live.lisp": {
+    "description": "Enter the cooperative application REPL with window replacement and live callback redefinition. Use (wxlambda:stop) or EOF to exit.",
+    "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/live.lisp --eval '(wxlambda-live:start)'"
+  },
+  "window-state.lisp": {
+    "description": "Toggle text visibility and input using actual button callbacks. The reusable exercise runs the same callbacks without waiting for manual input.",
+    "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/window-state.lisp --eval '(wxlambda-window-state:start)'"
+  }
+}

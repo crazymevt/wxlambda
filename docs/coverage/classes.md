@@ -439,7 +439,7 @@ Forward declarations are represented in the per-header declaration inventories.
 - [ ] `wxHScrolledWindow` — [`wx/vscroll.h`](phase-c2.md), upstream line 759.
 - [ ] `wxHVScrolledWindow` — [`wx/vscroll.h`](phase-c2.md), upstream line 836.
 - [ ] `wxVisualAttributes` — [`wx/window.h`](phase-c2.md), upstream line 131.
-- [ ] `wxWindow` — [`wx/window.h`](phase-c2.md), upstream line 345.
+- [~] `wxWindow` — [`wx/window.h`](phase-c2.md), upstream line 345. — **Partial**: `show-window`, `shown-p`, `enable-window`, `enabled-p`; ABI: `wxl_show_state`, `wxl_shown`, `wxl_enable`, `wxl_enabled`. Visibility and effective enabled state, layout, geometry and destruction are exposed; the remaining wxWindow API stays open.
 - [ ] `wxIdManager` — [`wx/windowid.h`](phase-c2.md), upstream line 26.
 - [ ] `wxWindowPtr` — [`wx/windowptr.h`](phase-c2.md), upstream line 27.
 - [ ] `wxWithImages` — [`wx/withimages.h`](phase-c2.md), upstream line 42.

@@ -2839,7 +2839,7 @@ class or constructor does not imply full upstream coverage.
 - [ ] [L332](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L332) `documented event: EVT_SET_CURSOR(func)`
 - [ ] [L334](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L334) `documented event: EVT_SIZE(func)`
 - [ ] [L336](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L336) `documented event: EVT_SYS_COLOUR_CHANGED(func)`
-- [ ] [L345](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L345) `class wxWindow : public wxEvtHandler {`
+- [~] [L345](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L345) `class wxWindow : public wxEvtHandler {` — **Partial**: `show-window`, `shown-p`, `enable-window`, `enabled-p`; ABI: `wxl_show_state`, `wxl_shown`, `wxl_enable`, `wxl_enabled`. Visibility and effective enabled state, layout, geometry and destruction are exposed; the remaining wxWindow API stays open.
 - [ ] [L351](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L351) `wxWindow();`
 - [ ] [L376](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L376) `wxWindow(wxWindow* parent, wxWindowID id, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = 0, const wxString& name = wxPanelNameStr);`
 - [ ] [L392](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L392) `virtual ~wxWindow();`
@@ -3052,18 +3052,18 @@ class or constructor does not imply full upstream coverage.
 - [ ] [L2919](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2919) `bool NavigateIn(int flags = wxNavigationKeyEvent::IsForward);`
 - [ ] [L2938](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2938) `virtual void Lower();`
 - [ ] [L2954](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2954) `virtual void Raise();`
-- [ ] [L2968](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2968) `bool Hide();`
+- [x] [L2968](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2968) `bool Hide();` — **Implemented**: `show-window`; ABI: `wxl_show_state`. Equivalent Lisp mapping: (show-window window nil), using Show(false); second value preserves the native changed-state boolean.
 - [ ] [L2979](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2979) `virtual bool HideWithEffect(wxShowEffect effect, unsigned int timeout = 0);`
-- [ ] [L2991](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2991) `bool IsEnabled() const;`
+- [x] [L2991](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2991) `bool IsEnabled() const;` — **Implemented**: `enabled-p`; ABI: `wxl_enabled`. Effective enabled state includes disabled ancestors.
 - [ ] [L2998](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2998) `bool IsExposed(int x, int y) const;`
 - [ ] [L3003](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L3003) `bool IsExposed(wxPoint& pt) const;`
 - [ ] [L3008](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L3008) `bool IsExposed(int x, int y, int w, int h) const;`
 - [ ] [L3013](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L3013) `bool IsExposed(wxRect& rect) const;`
-- [ ] [L3019](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L3019) `virtual bool IsShown() const;`
+- [x] [L3019](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L3019) `virtual bool IsShown() const;` — **Implemented**: `shown-p`; ABI: `wxl_shown`. Own shown flag only; not effective screen visibility through ancestors.
 - [ ] [L3027](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L3027) `virtual bool IsShownOnScreen() const;`
-- [ ] [L3035](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L3035) `bool Disable();`
-- [ ] [L3059](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L3059) `virtual bool Enable(bool enable = true);`
-- [~] [L3079](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L3079) `virtual bool Show(bool show = true);` — **Partial**: `show-window`; ABI: `wxl_show`. Show(true) only; hide argument and native boolean return are not exposed.
+- [x] [L3035](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L3035) `bool Disable();` — **Implemented**: `enable-window`; ABI: `wxl_enable`. Equivalent Lisp mapping: (enable-window window nil), using Enable(false); second value preserves the native changed-state boolean.
+- [x] [L3059](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L3059) `virtual bool Enable(bool enable = true);` — **Implemented**: `enable-window`; ABI: `wxl_enable`. Full enable/disable boolean argument; returns window and native changed-state boolean.
+- [x] [L3079](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L3079) `virtual bool Show(bool show = true);` — **Implemented**: `show-window`; ABI: `wxl_show_state`. Full show/hide boolean argument; Lisp returns the window as primary value and native changed-state boolean as second value.
 - [ ] [L3100](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L3100) `virtual bool ShowWithEffect(wxShowEffect effect, unsigned int timeout = 0);`
 - [ ] [L3118](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L3118) `wxString GetHelpText() const;`
 - [ ] [L3127](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L3127) `void SetHelpText(const wxString& helpText);`

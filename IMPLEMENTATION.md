@@ -15,7 +15,8 @@ primary documentation deliverable: use Cadre's `docset` library format version 1
 indexed reference for every implemented public wxlambda export; include project
 guides and explained, runnable example sources in the same docset. Verify these
 deliverables alongside implementation; examples are required rather than optional.
-Docset tooling and its initial deliverable remain unchecked Phase 7 work below.
+The initial docset build and artifact are implemented in Phase 7 below;
+release-wide platform and graphical-viewer verification remain open.
 
 ## Phase 1: Establish the release baseline
 
@@ -252,11 +253,11 @@ The plan is complete; implementing its unchecked bindings remains future work.
 
 ## Phase 7: Prepare the release
 
-The docset build is a prerequisite for subsequent implementation work, including
-Phase 3 fixes and C1–C7 bindings, so their required docset updates can be built
-and verified. Establish it before starting those changes.
+The docset build prerequisite was established before the first coverage slice.
+Continue using it for subsequent implementation work, including Phase 3 fixes
+and C1–C7 bindings, so required docset updates can be built and verified.
 
-- [ ] Establish a reproducible Cadre-format docset build and update workflow for
+- [x] Establish a reproducible Cadre-format docset build and update workflow for
   implementation changes, with documented build/check/install commands. Generate
   format version 1 in `docs/docset/` with `manifest.sexp`, `index.sexp` and
   `entries.sexp`, docset ID `wxlambda`, and package `WXLAMBDA`.
@@ -265,7 +266,7 @@ and verified. Establish it before starting those changes.
 - [ ] Align ASDF and CMake release versions.
 - [ ] Prepare release notes and installation, development, debugging, and
   packaging instructions.
-- [ ] Produce the docset containing an indexed reference for every implemented
+- [x] Produce the docset containing an indexed reference for every implemented
   public wxlambda export, project guides/limitations, and example sources with
   explanations and run commands, all accessible through its index and contents.
 - [ ] Require zero problems from `docset:check-docset`; verify public-export
@@ -278,6 +279,36 @@ the built docset uses Cadre's format version 1 and includes the public wxlambda
 reference, project guides and example sources together. All three files are
 present; `docset:check-docset` reports zero problems; export coverage, links,
 example execution and Cadre discovery/lookup/navigation checks pass.
+
+## Coverage implementation: first slice
+
+- [x] Establish and verify the Cadre-format docset build before expanding bindings.
+- [x] Complete `wxWindow::Show(bool)`, `IsShown()`, `Enable(bool)` and `IsEnabled()`
+  through the native bridge, FFI and public Lisp exports, preserving setter results
+  and recording the equivalent `Hide()`/`Disable()` mappings.
+- [x] Add runnable window-state callbacks, focused tests and documentation, and
+  update the persistent coverage ledger.
+
+This bounded C2 slice builds on existing window handles; the C1 foundation
+inventory and the rest of C2–C7 remain open. `show-window` retains its window
+primary value and adds an optional show/hide argument and changed-state second
+value. `shown-p`, `enable-window` and `enabled-p` expose own visibility and
+effective input state. Native ABI 8 distinguishes false from native errors.
+
+The [docset workflow](docs/DOCSET.md) builds three committed files containing the
+53 public exports, project guides and all six example sources with usage notes.
+It requires Python 3, SBCL and the shared `docset` library; no GUI is needed to
+build/read the docs. Its checker, shared-reader discovery/search/lookup and
+indexed guide/example reading pass, including an isolated installation.
+The graphical Cadre viewer has not been manually exercised.
+
+The [window-state test](tests/window-state.lisp) runs the actual example callbacks,
+checks repeated setters, returned state-change flags, ancestor behavior and
+invalid/stale session use. Both local Apple Silicon macOS suites pass native
+preflight and all 24 GUI scenarios with wxWidgets 3.2.12, SBCL 2.6.9 and CCL 1.13;
+reports are retained in `evidence/coverage-first/{sbcl,ccl}-20261028/`.
+Reproduction commands are in [the window-state guide](docs/WINDOW-STATE.md). This does not
+close Phase 3 hosted checks or Phase 7 release-wide acceptance.
 
 ## Decisions
 

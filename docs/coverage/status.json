@@ -287,15 +287,15 @@
       "header": "wx/window.h",
       "line": 3079,
       "declaration": "virtual bool Show(bool show = true);",
-      "status": "~",
+      "status": "x",
       "symbol": "wxWindow::Show",
       "lisp": [
         "show-window"
       ],
       "native": [
-        "wxl_show"
+        "wxl_show_state"
       ],
-      "scope": "Show(true) only; hide argument and native boolean return are not exposed."
+      "scope": "Full show/hide boolean argument; Lisp returns the window as primary value and native changed-state boolean as second value."
     },
     {
       "header": "wx/window.h",
@@ -516,6 +516,76 @@
         "wxl_off_selection"
       ],
       "scope": "wxChoice selection only; index snapshot, one handler slot; generic event propagation remains open."
+    },
+    {
+      "header": "wx/window.h",
+      "line": 2991,
+      "declaration": "bool IsEnabled() const;",
+      "status": "x",
+      "symbol": "wxWindow::IsEnabled",
+      "lisp": [
+        "enabled-p"
+      ],
+      "native": [
+        "wxl_enabled"
+      ],
+      "scope": "Effective enabled state includes disabled ancestors."
+    },
+    {
+      "header": "wx/window.h",
+      "line": 3019,
+      "declaration": "virtual bool IsShown() const;",
+      "status": "x",
+      "symbol": "wxWindow::IsShown",
+      "lisp": [
+        "shown-p"
+      ],
+      "native": [
+        "wxl_shown"
+      ],
+      "scope": "Own shown flag only; not effective screen visibility through ancestors."
+    },
+    {
+      "header": "wx/window.h",
+      "line": 3059,
+      "declaration": "virtual bool Enable(bool enable = true);",
+      "status": "x",
+      "symbol": "wxWindow::Enable",
+      "lisp": [
+        "enable-window"
+      ],
+      "native": [
+        "wxl_enable"
+      ],
+      "scope": "Full enable/disable boolean argument; returns window and native changed-state boolean."
+    },
+    {
+      "header": "wx/window.h",
+      "line": 2968,
+      "declaration": "bool Hide();",
+      "status": "x",
+      "symbol": "wxWindow::Hide",
+      "lisp": [
+        "show-window"
+      ],
+      "native": [
+        "wxl_show_state"
+      ],
+      "scope": "Equivalent Lisp mapping: (show-window window nil), using Show(false); second value preserves the native changed-state boolean."
+    },
+    {
+      "header": "wx/window.h",
+      "line": 3035,
+      "declaration": "bool Disable();",
+      "status": "x",
+      "symbol": "wxWindow::Disable",
+      "lisp": [
+        "enable-window"
+      ],
+      "native": [
+        "wxl_enable"
+      ],
+      "scope": "Equivalent Lisp mapping: (enable-window window nil), using Enable(false); second value preserves the native changed-state boolean."
     }
   ],
   "classes": {
@@ -600,6 +670,22 @@
         "wxl_column"
       ],
       "scope": "Parent-owned horizontal/vertical layout only; standalone sizers and full API remain open."
+    },
+    "wxWindow": {
+      "status": "~",
+      "lisp": [
+        "show-window",
+        "shown-p",
+        "enable-window",
+        "enabled-p"
+      ],
+      "native": [
+        "wxl_show_state",
+        "wxl_shown",
+        "wxl_enable",
+        "wxl_enabled"
+      ],
+      "scope": "Visibility and effective enabled state, layout, geometry and destruction are exposed; the remaining wxWindow API stays open."
     }
   }
 }

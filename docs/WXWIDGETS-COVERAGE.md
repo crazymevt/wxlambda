@@ -46,8 +46,8 @@ feature detection and clear unavailable-feature errors.
 - In generated checklists, `[x]` means the declaration's operation is implemented
   with its stated Lisp mapping, `[~]` means partial support with the supported
   arguments/receivers and remaining limits stated inline, and `[ ]` means pending.
-  The class index uses `[~]` for the seven bound widgets and `wxBoxSizer`; none
-  has complete class coverage. Constructors with fixed IDs/styles remain partial.
+  The class index uses `[~]` for the seven bound widgets, `wxBoxSizer` and
+  `wxWindow`; none has complete class coverage. Constructors with fixed IDs/styles remain partial.
 - [status.json](coverage/status.json) is the persistent source of declaration and
   class statuses, Lisp exports, native ABI names and supported scopes. Exact
   header/line/signature matching prevents silently transferring a mark to the
@@ -105,8 +105,11 @@ widget classes has complete wxWidgets coverage yet.
   minor-axis alignment; nested standalone sizers and full flags remain open.
 - [x] Fixed/stretch spacing: `add-spacer`, `add-stretch`.
 - [x] Relayout and geometry queries: `layout-window`, `window-position`, `window-size`.
-- [x] Default show and destruction: `show-window`, `destroy-window`;
-  hide, general visibility options and destruction notifications remain open.
+- [x] Show/hide: `show-window` accepts an optional boolean and returns the window
+  plus the native changed-state boolean; `shown-p` queries its own shown flag.
+- [x] Enable/disable input: `enable-window` returns the window plus changed-state
+  boolean; `enabled-p` includes disabled ancestors.
+- [x] Destruction requests: `destroy-window`; destruction notifications remain open.
 - [x] Button bind/unbind/post: `on-click`, `off-click`, `queue-click`.
 - [x] Text-change bind/unbind: `on-text-change`, `off-text-change`.
 - [x] Checkbox toggle bind/unbind: `on-toggle`, `off-toggle`.
@@ -220,8 +223,7 @@ entire dependent phase complete.
 Focused generator/inventory verification (using the same extracted sources):
 
 ```sh
-/Users/jessie/.local/bin/quiet-run.sh -- \
-  python3 tests/coverage-inventory.py /path/to/wxWidgets-3.2.12/interface
+python3 tests/coverage-inventory.py /path/to/wxWidgets-3.2.12/interface
 ```
 
 Each phase closes only when its detailed inventory is reviewed and its required
@@ -234,17 +236,17 @@ for every implemented public wxlambda export, project guides and explained
 example sources together. Run the relevant examples, require zero problems from
 `docset:check-docset`, and verify export coverage, links and Cadre discovery,
 symbol lookup and guide/example navigation. The docset is the primary
-documentation deliverable. Its initial build tooling is the first prerequisite
-in implementation Phase 7, before subsequent implementation work. Platform-only work must be verified on its supported
+documentation deliverable. The initial Phase 7 build prerequisite is implemented
+in [the docset tooling](DOCSET.md); maintain the generated artifact with each
+implementation change. Platform-only work must be verified on its supported
 platform; local macOS success cannot close Linux/Windows work. Existing Phase 3
 hosted checks remain pending.
 
 To reproduce the baseline inventory, extract the pinned release's `interface/`
-directory and run through the project's shell-output wrapper:
+directory and run:
 
 ```sh
-/Users/jessie/.local/bin/quiet-run.sh -- \
-  python3 tools/coverage_inventory.py /path/to/wxWidgets-3.2.12/interface
+python3 tools/coverage_inventory.py /path/to/wxWidgets-3.2.12/interface
 ```
 
 The generator is documentation-only and does not require an installed wxWidgets

@@ -105,12 +105,13 @@ class CoverageInventoryChecks(unittest.TestCase):
             'wxStaticText::SetLabel', 'wxControl::GetLabel',
             'wxWindow::Show', 'wxWindow::Destroy', 'wxWindow::Layout',
             'wxWindow::GetPosition', 'wxWindow::GetSize',
+            'wxWindow::IsShown', 'wxWindow::Enable', 'wxWindow::IsEnabled',
             'wxSizer::Add', 'wxSizer::AddSpacer', 'wxSizer::AddStretchSpacer',
         }
         self.assertTrue(required <= {record['symbol'] for record in self.status['declarations']})
         self.assertEqual(set(self.status['classes']), {
             'wxFrame', 'wxPanel', 'wxButton', 'wxTextCtrl', 'wxStaticText',
-            'wxCheckBox', 'wxChoice', 'wxBoxSizer',
+            'wxCheckBox', 'wxChoice', 'wxBoxSizer', 'wxWindow',
         })
 
     def test_compiler_scaffolding_is_context_but_public_macros_are_tasks(self):

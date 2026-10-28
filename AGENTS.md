@@ -38,9 +38,10 @@ Document how to install it for Cadre (for example, under
 not run; do not claim unfinished deliverables are complete.
 
 See `IMPLEMENTATION.md` and `docs/WXWIDGETS-COVERAGE.md` for the roadmap and
-binding completion criteria. Establish the pending docset build tooling first
-in Phase 7, before subsequent implementation work (including Phase 3 fixes and
-C1–C7 bindings), so required docset updates can be built and verified.
+binding completion criteria. The initial Phase 7 build prerequisite is now
+implemented: use `python3 tools/docset.py build`, `check`, and `install` as
+documented in `docs/DOCSET.md`. Continue building and checking docset updates
+for subsequent implementation work, including Phase 3 fixes and C1–C7 bindings.
 
 ## Shell output
 

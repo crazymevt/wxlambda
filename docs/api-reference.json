@@ -1,0 +1,488 @@
+[
+  {
+    "name": "load-native-library",
+    "kind": "function",
+    "arguments": "Optional PATH names the bridge; default searches build/ and then the system loader.",
+    "returns": "T after successful load and ABI verification.",
+    "description": "Load the native bridge once. An explicit path supports packaged applications without consulting ASDF.",
+    "scope": "May be used before a GUI session. Loader and ABI failures signal Lisp errors.",
+    "wxwidgets": "Bridge-specific ABI loader."
+  },
+  {
+    "name": "call-with-application",
+    "kind": "function",
+    "arguments": "FUNCTION is a zero-argument function.",
+    "returns": "The values returned by FUNCTION.",
+    "description": "Initialize a main-thread GUI session, call FUNCTION, and clean up on normal return or unwinding. RUN is explicit.",
+    "scope": "The Lisp must run on its initial/main thread; nested or repeated application sessions are rejected. Setup/native failures signal NATIVE-ERROR; body conditions propagate.",
+    "wxwidgets": "wxEntryStart / wxEntryCleanup"
+  },
+  {
+    "name": "with-application",
+    "kind": "macro",
+    "arguments": "Empty options list, followed by BODY forms.",
+    "returns": "The values of the last BODY form.",
+    "description": "Evaluate BODY within CALL-WITH-APPLICATION with guaranteed cleanup.",
+    "scope": "Requires an active GUI session on the process main thread. Invalid/destroyed handles or unsupported native arguments signal NATIVE-ERROR; Lisp argument/type errors remain Lisp conditions. One GUI session per process.",
+    "wxwidgets": "wxEntryStart / wxEntryCleanup"
+  },
+  {
+    "name": "with-repl-application",
+    "kind": "macro",
+    "arguments": "Options INPUT, OUTPUT and ON-ERROR (:DEBUG or :REPORT), then BODY setup forms.",
+    "returns": "NIL when the cooperative REPL exits.",
+    "description": "Run setup, then evaluate terminal input while polling GUI events. STOP or EOF exits; incomplete input and debugging pause GUI events.",
+    "scope": "Main-thread, one-session contract. Setup conditions propagate. :DEBUG preserves restarts; :REPORT prints recovery diagnostics.",
+    "wxwidgets": "wxApp event polling; SBCL/CCL terminal integration."
+  },
+  {
+    "name": "return-to-application-repl",
+    "kind": "restart",
+    "arguments": "No arguments; invoke this restart from the application REPL debugger.",
+    "returns": "Control returns to the application REPL.",
+    "description": "Abandon the failing REPL evaluation or callback operation using the active debugger restart.",
+    "scope": "This is an exported restart name, not a callable function. Available only while the application REPL debugger establishes it.",
+    "wxwidgets": "Lisp-only debugger recovery.",
+    "syntax": "(invoke-restart 'wxlambda:return-to-application-repl)"
+  },
+  {
+    "name": "run",
+    "kind": "function",
+    "arguments": "No arguments.",
+    "returns": "NIL after the event loop returns.",
+    "description": "Block until STOP or the last top-level frame closes. Callback errors are re-signaled after returning from native code.",
+    "scope": "Requires at least one frame and no already-running loop. Unavailable inside the application REPL. Native failures and callback conditions propagate.",
+    "wxwidgets": "wxAppConsole::OnRun"
+  },
+  {
+    "name": "stop",
+    "kind": "function",
+    "arguments": "No arguments.",
+    "returns": "NIL in the application REPL; T after stopping a native RUN loop.",
+    "description": "Leave RUN or end the application REPL. Stopping the loop does not destroy windows.",
+    "scope": "Outside the application REPL, a running native event loop is required; otherwise NATIVE-ERROR.",
+    "wxwidgets": "wxAppConsole::ExitMainLoop"
+  },
+  {
+    "name": "process-events",
+    "kind": "function",
+    "arguments": "No arguments.",
+    "returns": "NIL.",
+    "description": "Process pending GUI events without blocking; re-signal callback errors after polling.",
+    "scope": "Requires an active GUI session on the process main thread. Invalid/destroyed handles or unsupported native arguments signal NATIVE-ERROR; Lisp argument/type errors remain Lisp conditions. One GUI session per process. Forbidden inside RUN or the application REPL debugger.",
+    "wxwidgets": "wxAppConsole::Yield(true) and ProcessIdle"
+  },
+  {
+    "name": "make-frame",
+    "kind": "function",
+    "arguments": "TITLE string; positive WIDTH and HEIGHT (defaults 480 and 240).",
+    "returns": "A new Lisp object wrapping the native window handle.",
+    "description": "Create a top-level frame; native ID and style options use defaults.",
+    "scope": "Requires an active GUI session on the process main thread. Invalid/destroyed handles or unsupported native arguments signal NATIVE-ERROR; Lisp argument/type errors remain Lisp conditions. One GUI session per process.",
+    "wxwidgets": "wxFrame constructor (wxWidgets 3.2)."
+  },
+  {
+    "name": "make-panel",
+    "kind": "function",
+    "arguments": "PARENT is a live window.",
+    "returns": "A new Lisp object wrapping the native window handle.",
+    "description": "Create a child panel.",
+    "scope": "Requires an active GUI session on the process main thread. Invalid/destroyed handles or unsupported native arguments signal NATIVE-ERROR; Lisp argument/type errors remain Lisp conditions. One GUI session per process.",
+    "wxwidgets": "wxPanel constructor (wxWidgets 3.2)."
+  },
+  {
+    "name": "make-button",
+    "kind": "function",
+    "arguments": "PARENT; optional LABEL string (default Button).",
+    "returns": "A new Lisp object wrapping the native window handle.",
+    "description": "Create a text button with replaceable click handler support.",
+    "scope": "Requires an active GUI session on the process main thread. Invalid/destroyed handles or unsupported native arguments signal NATIVE-ERROR; Lisp argument/type errors remain Lisp conditions. One GUI session per process.",
+    "wxwidgets": "wxButton constructor (wxWidgets 3.2)."
+  },
+  {
+    "name": "make-text",
+    "kind": "function",
+    "arguments": "PARENT; optional initial VALUE string.",
+    "returns": "A new Lisp object wrapping the native window handle.",
+    "description": "Create a single-line editable text control.",
+    "scope": "Requires an active GUI session on the process main thread. Invalid/destroyed handles or unsupported native arguments signal NATIVE-ERROR; Lisp argument/type errors remain Lisp conditions. One GUI session per process.",
+    "wxwidgets": "wxTextCtrl constructor (wxWidgets 3.2)."
+  },
+  {
+    "name": "make-label",
+    "kind": "function",
+    "arguments": "PARENT; optional LABEL string.",
+    "returns": "A new Lisp object wrapping the native window handle.",
+    "description": "Create static text; wxWidgets label/mnemonic syntax is retained.",
+    "scope": "Requires an active GUI session on the process main thread. Invalid/destroyed handles or unsupported native arguments signal NATIVE-ERROR; Lisp argument/type errors remain Lisp conditions. One GUI session per process.",
+    "wxwidgets": "wxStaticText constructor (wxWidgets 3.2)."
+  },
+  {
+    "name": "make-checkbox",
+    "kind": "function",
+    "arguments": "PARENT; LABEL string and CHECKED generalized boolean.",
+    "returns": "A new Lisp object wrapping the native window handle.",
+    "description": "Create a two-state checkbox with initial boolean state.",
+    "scope": "Requires an active GUI session on the process main thread. Invalid/destroyed handles or unsupported native arguments signal NATIVE-ERROR; Lisp argument/type errors remain Lisp conditions. One GUI session per process.",
+    "wxwidgets": "wxCheckBox constructor (wxWidgets 3.2)."
+  },
+  {
+    "name": "make-choice",
+    "kind": "function",
+    "arguments": "PARENT; ITEMS list of strings; SELECTION zero-based index or NIL.",
+    "returns": "A new Lisp object wrapping the native window handle.",
+    "description": "Create a dropdown with copied item strings; NIL means no selection.",
+    "scope": "Requires an active GUI session on the process main thread. Invalid/destroyed handles or unsupported native arguments signal NATIVE-ERROR; Lisp argument/type errors remain Lisp conditions. One GUI session per process.",
+    "wxwidgets": "wxChoice constructor (wxWidgets 3.2)."
+  },
+  {
+    "name": "make-column",
+    "kind": "function",
+    "arguments": "PARENT is a live window without a sizer.",
+    "returns": "PARENT.",
+    "description": "Attach a parent-owned vertical box sizer. Standalone nested sizer objects are not exposed.",
+    "scope": "Requires an active GUI session on the process main thread. Invalid/destroyed handles or unsupported native arguments signal NATIVE-ERROR; Lisp argument/type errors remain Lisp conditions. One GUI session per process.",
+    "wxwidgets": "wxBoxSizer / wxWindow::SetSizer"
+  },
+  {
+    "name": "make-row",
+    "kind": "function",
+    "arguments": "PARENT is a live window without a sizer.",
+    "returns": "PARENT.",
+    "description": "Attach a parent-owned horizontal box sizer. Standalone nested sizer objects are not exposed.",
+    "scope": "Requires an active GUI session on the process main thread. Invalid/destroyed handles or unsupported native arguments signal NATIVE-ERROR; Lisp argument/type errors remain Lisp conditions. One GUI session per process.",
+    "wxwidgets": "wxBoxSizer / wxWindow::SetSizer"
+  },
+  {
+    "name": "add-child",
+    "kind": "function",
+    "arguments": "PARENT has a row/column; CHILD belongs to it; PROPORTION >= 0, BORDER >= 0, EXPAND boolean, ALIGN :START/:CENTER/:END.",
+    "returns": "CHILD.",
+    "description": "Add a child window to the layout. Non-start minor-axis alignment requires EXPAND NIL. Borders apply uniformly on four sides.",
+    "scope": "Requires an active GUI session on the process main thread. Invalid/destroyed handles or unsupported native arguments signal NATIVE-ERROR; Lisp argument/type errors remain Lisp conditions. One GUI session per process.",
+    "wxwidgets": "wxSizer::Add"
+  },
+  {
+    "name": "add-spacer",
+    "kind": "function",
+    "arguments": "PARENT has a row/column; SIZE is nonnegative.",
+    "returns": "PARENT.",
+    "description": "Add fixed layout-axis spacing and relayout the parent.",
+    "scope": "Requires an active GUI session on the process main thread. Invalid/destroyed handles or unsupported native arguments signal NATIVE-ERROR; Lisp argument/type errors remain Lisp conditions. One GUI session per process.",
+    "wxwidgets": "wxBoxSizer::AddSpacer"
+  },
+  {
+    "name": "add-stretch",
+    "kind": "function",
+    "arguments": "PARENT has a row/column; PROPORTION is positive (default 1).",
+    "returns": "PARENT.",
+    "description": "Add flexible layout-axis spacing and relayout the parent.",
+    "scope": "Requires an active GUI session on the process main thread. Invalid/destroyed handles or unsupported native arguments signal NATIVE-ERROR; Lisp argument/type errors remain Lisp conditions. One GUI session per process.",
+    "wxwidgets": "wxSizer::AddStretchSpacer"
+  },
+  {
+    "name": "layout-window",
+    "kind": "function",
+    "arguments": "WINDOW is a live window.",
+    "returns": "WINDOW.",
+    "description": "Recompute the window sizer layout, including after batching label changes. Native success boolean is not exposed.",
+    "scope": "Requires an active GUI session on the process main thread. Invalid/destroyed handles or unsupported native arguments signal NATIVE-ERROR; Lisp argument/type errors remain Lisp conditions. One GUI session per process.",
+    "wxwidgets": "wxWindow::Layout"
+  },
+  {
+    "name": "window-position",
+    "kind": "function",
+    "arguments": "WINDOW is live.",
+    "returns": "Two integer values: X and Y.",
+    "description": "Query position relative to parent; frame coordinates are screen-relative.",
+    "scope": "Requires an active GUI session on the process main thread. Invalid/destroyed handles or unsupported native arguments signal NATIVE-ERROR; Lisp argument/type errors remain Lisp conditions. One GUI session per process.",
+    "wxwidgets": "wxWindow::GetPosition"
+  },
+  {
+    "name": "window-size",
+    "kind": "function",
+    "arguments": "WINDOW is live.",
+    "returns": "Two integer values: WIDTH and HEIGHT.",
+    "description": "Query outer window dimensions in wxWidgets coordinates.",
+    "scope": "Requires an active GUI session on the process main thread. Invalid/destroyed handles or unsupported native arguments signal NATIVE-ERROR; Lisp argument/type errors remain Lisp conditions. One GUI session per process.",
+    "wxwidgets": "wxWindow::GetSize"
+  },
+  {
+    "name": "show-window",
+    "kind": "function",
+    "arguments": "WINDOW is live; optional SHOW is a generalized boolean (default T).",
+    "returns": "WINDOW, then a boolean indicating whether its shown state changed.",
+    "description": "Show with true SHOW, hide with NIL. Existing one-argument calls still show the window and return it as their primary value.",
+    "scope": "Requires an active GUI session on the process main thread. Invalid/destroyed handles or unsupported native arguments signal NATIVE-ERROR; Lisp argument/type errors remain Lisp conditions. One GUI session per process.",
+    "wxwidgets": "wxWindow::Show(bool) / Hide() equivalent (wxWidgets 3.2)."
+  },
+  {
+    "name": "destroy-window",
+    "kind": "function",
+    "arguments": "WINDOW is live.",
+    "returns": "T after the destruction request.",
+    "description": "Request destruction; first explicitly unbind handlers to release Lisp closures. Child handles become invalid when native destruction occurs.",
+    "scope": "Requires an active GUI session on the process main thread. Invalid/destroyed handles or unsupported native arguments signal NATIVE-ERROR; Lisp argument/type errors remain Lisp conditions. One GUI session per process.",
+    "wxwidgets": "wxWindow::Destroy"
+  },
+  {
+    "name": "get-text",
+    "kind": "function",
+    "arguments": "CONTROL is a live text control.",
+    "returns": "An independent Lisp string.",
+    "description": "Read the current UTF-8 text; returned storage survives later native calls.",
+    "scope": "Requires an active GUI session on the process main thread. Invalid/destroyed handles or unsupported native arguments signal NATIVE-ERROR; Lisp argument/type errors remain Lisp conditions. One GUI session per process.",
+    "wxwidgets": "wxTextEntry::GetValue (wxTextCtrl only)"
+  },
+  {
+    "name": "set-text",
+    "kind": "function",
+    "arguments": "CONTROL is a text control; VALUE is a string; NOTIFY is a generalized boolean.",
+    "returns": "VALUE.",
+    "description": "Replace text silently by default. With NOTIFY true, text-change handlers may run synchronously and their conditions are re-signaled to the setter caller.",
+    "scope": "Requires an active GUI session on the process main thread. Invalid/destroyed handles or unsupported native arguments signal NATIVE-ERROR; Lisp argument/type errors remain Lisp conditions. One GUI session per process.",
+    "wxwidgets": "wxTextEntry::ChangeValue / SetValue (wxTextCtrl only)"
+  },
+  {
+    "name": "get-label",
+    "kind": "function",
+    "arguments": "LABEL is live static text.",
+    "returns": "An independent Lisp string.",
+    "description": "Read raw label text including mnemonic syntax. Other control types are not accepted.",
+    "scope": "Requires an active GUI session on the process main thread. Invalid/destroyed handles or unsupported native arguments signal NATIVE-ERROR; Lisp argument/type errors remain Lisp conditions. One GUI session per process.",
+    "wxwidgets": "wxControl::GetLabel (wxStaticText only)"
+  },
+  {
+    "name": "set-label",
+    "kind": "function",
+    "arguments": "LABEL is live static text; VALUE is a string.",
+    "returns": "VALUE.",
+    "description": "Change static text. Relayout its parent if needed; other control types are not accepted.",
+    "scope": "Requires an active GUI session on the process main thread. Invalid/destroyed handles or unsupported native arguments signal NATIVE-ERROR; Lisp argument/type errors remain Lisp conditions. One GUI session per process.",
+    "wxwidgets": "wxStaticText::SetLabel"
+  },
+  {
+    "name": "checked-p",
+    "kind": "function",
+    "arguments": "CHECKBOX is a live two-state checkbox.",
+    "returns": "T or NIL.",
+    "description": "Read the boolean checkbox state.",
+    "scope": "Requires an active GUI session on the process main thread. Invalid/destroyed handles or unsupported native arguments signal NATIVE-ERROR; Lisp argument/type errors remain Lisp conditions. One GUI session per process.",
+    "wxwidgets": "wxCheckBox::GetValue"
+  },
+  {
+    "name": "set-checked",
+    "kind": "function",
+    "arguments": "CHECKBOX; CHECKED generalized boolean; NOTIFY generalized boolean.",
+    "returns": "CHECKED normalized to T or NIL.",
+    "description": "Change checkbox state silently unless NOTIFY is true; synthetic toggle events are synchronous, even for unchanged state.",
+    "scope": "Requires an active GUI session on the process main thread. Invalid/destroyed handles or unsupported native arguments signal NATIVE-ERROR; Lisp argument/type errors remain Lisp conditions. One GUI session per process.",
+    "wxwidgets": "wxCheckBox::SetValue"
+  },
+  {
+    "name": "selection",
+    "kind": "function",
+    "arguments": "CHOICE is a live dropdown choice.",
+    "returns": "Zero-based index or NIL.",
+    "description": "Read selected index; NIL represents native no selection.",
+    "scope": "Requires an active GUI session on the process main thread. Invalid/destroyed handles or unsupported native arguments signal NATIVE-ERROR; Lisp argument/type errors remain Lisp conditions. One GUI session per process.",
+    "wxwidgets": "wxChoice::GetSelection"
+  },
+  {
+    "name": "set-selection",
+    "kind": "function",
+    "arguments": "CHOICE; INDEX is NIL or a nonnegative in-range index; NOTIFY generalized boolean.",
+    "returns": "INDEX.",
+    "description": "Select or clear the choice. Optional synthetic selection notifications are synchronous, even if unchanged. Handler conditions return to the caller.",
+    "scope": "Requires an active GUI session on the process main thread. Invalid/destroyed handles or unsupported native arguments signal NATIVE-ERROR; Lisp argument/type errors remain Lisp conditions. One GUI session per process.",
+    "wxwidgets": "wxChoice::SetSelection"
+  },
+  {
+    "name": "on-click",
+    "kind": "function",
+    "arguments": "BUTTON and FUNCTION; WITH-EVENT true makes FUNCTION accept one EVENT; otherwise no arguments.",
+    "returns": "The source control.",
+    "description": "Replace and release any prior handler. Receive :CLICK snapshots with no payload. Callback conditions never unwind through C++; they are re-signaled at a Lisp boundary.",
+    "scope": "Requires an active GUI session on the process main thread. Invalid/destroyed handles or unsupported native arguments signal NATIVE-ERROR; Lisp argument/type errors remain Lisp conditions. One GUI session per process. Handler closures stay rooted until explicit unbinding or session cleanup.",
+    "wxwidgets": "wxWidgets command event binding"
+  },
+  {
+    "name": "off-click",
+    "kind": "function",
+    "arguments": "BUTTON is a live source control.",
+    "returns": "The source control.",
+    "description": "Remove the handler and release its closure. Repeated removal is harmless for a live control, including inside its callback.",
+    "scope": "Requires an active GUI session on the process main thread. Invalid/destroyed handles or unsupported native arguments signal NATIVE-ERROR; Lisp argument/type errors remain Lisp conditions. One GUI session per process. Unbind before destruction; unbinding a destroyed handle is an error.",
+    "wxwidgets": "wxWidgets event bridge unbinding"
+  },
+  {
+    "name": "on-text-change",
+    "kind": "function",
+    "arguments": "CONTROL (wxTextCtrl) and FUNCTION; FUNCTION receives one EVENT.",
+    "returns": "The source control.",
+    "description": "Replace and release any prior handler. Receive :TEXT-CHANGE snapshots with copied text. Callback conditions never unwind through C++; they are re-signaled at a Lisp boundary.",
+    "scope": "Requires an active GUI session on the process main thread. Invalid/destroyed handles or unsupported native arguments signal NATIVE-ERROR; Lisp argument/type errors remain Lisp conditions. One GUI session per process. Handler closures stay rooted until explicit unbinding or session cleanup.",
+    "wxwidgets": "wxWidgets command event binding"
+  },
+  {
+    "name": "off-text-change",
+    "kind": "function",
+    "arguments": "CONTROL (wxTextCtrl) is a live source control.",
+    "returns": "The source control.",
+    "description": "Remove the handler and release its closure. Repeated removal is harmless for a live control, including inside its callback.",
+    "scope": "Requires an active GUI session on the process main thread. Invalid/destroyed handles or unsupported native arguments signal NATIVE-ERROR; Lisp argument/type errors remain Lisp conditions. One GUI session per process. Unbind before destruction; unbinding a destroyed handle is an error.",
+    "wxwidgets": "wxWidgets event bridge unbinding"
+  },
+  {
+    "name": "on-toggle",
+    "kind": "function",
+    "arguments": "CHECKBOX and FUNCTION; FUNCTION receives one EVENT.",
+    "returns": "The source control.",
+    "description": "Replace and release any prior handler. Receive :TOGGLE snapshots with boolean state. Callback conditions never unwind through C++; they are re-signaled at a Lisp boundary.",
+    "scope": "Requires an active GUI session on the process main thread. Invalid/destroyed handles or unsupported native arguments signal NATIVE-ERROR; Lisp argument/type errors remain Lisp conditions. One GUI session per process. Handler closures stay rooted until explicit unbinding or session cleanup.",
+    "wxwidgets": "wxWidgets command event binding"
+  },
+  {
+    "name": "off-toggle",
+    "kind": "function",
+    "arguments": "CHECKBOX is a live source control.",
+    "returns": "The source control.",
+    "description": "Remove the handler and release its closure. Repeated removal is harmless for a live control, including inside its callback.",
+    "scope": "Requires an active GUI session on the process main thread. Invalid/destroyed handles or unsupported native arguments signal NATIVE-ERROR; Lisp argument/type errors remain Lisp conditions. One GUI session per process. Unbind before destruction; unbinding a destroyed handle is an error.",
+    "wxwidgets": "wxWidgets event bridge unbinding"
+  },
+  {
+    "name": "on-selection",
+    "kind": "function",
+    "arguments": "CHOICE and FUNCTION; FUNCTION receives one EVENT.",
+    "returns": "The source control.",
+    "description": "Replace and release any prior handler. Receive :SELECTION snapshots with selected index or NIL. Callback conditions never unwind through C++; they are re-signaled at a Lisp boundary.",
+    "scope": "Requires an active GUI session on the process main thread. Invalid/destroyed handles or unsupported native arguments signal NATIVE-ERROR; Lisp argument/type errors remain Lisp conditions. One GUI session per process. Handler closures stay rooted until explicit unbinding or session cleanup.",
+    "wxwidgets": "wxWidgets command event binding"
+  },
+  {
+    "name": "off-selection",
+    "kind": "function",
+    "arguments": "CHOICE is a live source control.",
+    "returns": "The source control.",
+    "description": "Remove the handler and release its closure. Repeated removal is harmless for a live control, including inside its callback.",
+    "scope": "Requires an active GUI session on the process main thread. Invalid/destroyed handles or unsupported native arguments signal NATIVE-ERROR; Lisp argument/type errors remain Lisp conditions. One GUI session per process. Unbind before destruction; unbinding a destroyed handle is an error.",
+    "wxwidgets": "wxWidgets event bridge unbinding"
+  },
+  {
+    "name": "queue-click",
+    "kind": "function",
+    "arguments": "BUTTON is a live button.",
+    "returns": "T.",
+    "description": "Post a button click for later dispatch. It uses the handler registered at dispatch time, including any replacement.",
+    "scope": "Requires an active GUI session on the process main thread. Invalid/destroyed handles or unsupported native arguments signal NATIVE-ERROR; Lisp argument/type errors remain Lisp conditions. One GUI session per process.",
+    "wxwidgets": "wxPostEvent / wxEVT_BUTTON"
+  },
+  {
+    "name": "native-error",
+    "kind": "condition",
+    "arguments": "Condition class; native diagnostic text is available through its printed report.",
+    "returns": "A Lisp ERROR condition.",
+    "description": "Signals native bridge failures instead of exposing C++ exceptions or native pointers.",
+    "scope": "Catch with HANDLER-CASE or HANDLER-BIND. Lisp argument and callback conditions retain their own condition types.",
+    "wxwidgets": "Bridge exception translation.",
+    "syntax": "(handler-case form (wxlambda:native-error (condition) ...))"
+  },
+  {
+    "name": "event",
+    "kind": "type",
+    "arguments": "Snapshot type created by callbacks, without a public constructor.",
+    "returns": "Lisp-owned event value.",
+    "description": "Read-only event snapshot: kind, source, text, checked state and selection. Snapshot strings survive later callbacks and window destruction.",
+    "scope": "Use only the exported predicate/accessors; native event objects do not escape callbacks.",
+    "wxwidgets": "wxCommandEvent snapshot.",
+    "syntax": "wxlambda:event"
+  },
+  {
+    "name": "event-p",
+    "kind": "function",
+    "arguments": "OBJECT is any Lisp value.",
+    "returns": "T for an EVENT, otherwise NIL.",
+    "description": "Test whether an object is a Lisp-owned event snapshot.",
+    "scope": "No GUI session required.",
+    "wxwidgets": "Lisp snapshot predicate.",
+    "syntax": "(wxlambda:event-p object)"
+  },
+  {
+    "name": "event-kind",
+    "kind": "function",
+    "arguments": "EVENT is an event snapshot.",
+    "returns": ":CLICK, :TEXT-CHANGE, :TOGGLE or :SELECTION.",
+    "description": "Read the event kind.",
+    "scope": "No active GUI session required for saved snapshots. Wrong argument types signal Lisp type errors.",
+    "wxwidgets": "Lisp-owned wxCommandEvent snapshot.",
+    "syntax": "(wxlambda:event-kind event)"
+  },
+  {
+    "name": "event-source",
+    "kind": "function",
+    "arguments": "EVENT is an event snapshot.",
+    "returns": "The original source Lisp control object.",
+    "description": "Read the source object; its native handle may subsequently be destroyed.",
+    "scope": "No active GUI session required for saved snapshots. Wrong argument types signal Lisp type errors.",
+    "wxwidgets": "Lisp-owned wxCommandEvent snapshot.",
+    "syntax": "(wxlambda:event-source event)"
+  },
+  {
+    "name": "event-text",
+    "kind": "function",
+    "arguments": "EVENT is an event snapshot.",
+    "returns": "Independent string for text-change events; otherwise NIL.",
+    "description": "Read the copied text payload.",
+    "scope": "No active GUI session required for saved snapshots. Wrong argument types signal Lisp type errors.",
+    "wxwidgets": "Lisp-owned wxCommandEvent snapshot.",
+    "syntax": "(wxlambda:event-text event)"
+  },
+  {
+    "name": "event-checked-p",
+    "kind": "function",
+    "arguments": "EVENT is an event snapshot.",
+    "returns": "T or NIL.",
+    "description": "Read toggle state; NIL also applies to non-toggle events.",
+    "scope": "No active GUI session required for saved snapshots. Wrong argument types signal Lisp type errors.",
+    "wxwidgets": "Lisp-owned wxCommandEvent snapshot.",
+    "syntax": "(wxlambda:event-checked-p event)"
+  },
+  {
+    "name": "event-selection",
+    "kind": "function",
+    "arguments": "EVENT is an event snapshot.",
+    "returns": "Zero-based index or NIL.",
+    "description": "Read choice selection; NIL means no selection or a non-selection event.",
+    "scope": "No active GUI session required for saved snapshots. Wrong argument types signal Lisp type errors.",
+    "wxwidgets": "Lisp-owned wxCommandEvent snapshot.",
+    "syntax": "(wxlambda:event-selection event)"
+  },
+  {
+    "name": "shown-p",
+    "kind": "function",
+    "arguments": "WINDOW is live.",
+    "returns": "T or NIL.",
+    "description": "Read the window's own shown flag. A hidden ancestor does not change this flag; it does not report effective screen visibility.",
+    "scope": "Requires an active GUI session on the process main thread. Invalid/destroyed handles or unsupported native arguments signal NATIVE-ERROR; Lisp argument/type errors remain Lisp conditions. One GUI session per process.",
+    "wxwidgets": "wxWindow::IsShown (wxWidgets 3.2)."
+  },
+  {
+    "name": "enable-window",
+    "kind": "function",
+    "arguments": "WINDOW is live; optional ENABLE is a generalized boolean (default T).",
+    "returns": "WINDOW, then a boolean indicating whether its native enabled state changed.",
+    "description": "Enable or disable user input. Repeated requests are harmless; a disabled parent also disables its children effectively.",
+    "scope": "Requires an active GUI session on the process main thread. Invalid/destroyed handles or unsupported native arguments signal NATIVE-ERROR; Lisp argument/type errors remain Lisp conditions. One GUI session per process.",
+    "wxwidgets": "wxWindow::Enable(bool) / Disable() equivalent (wxWidgets 3.2)."
+  },
+  {
+    "name": "enabled-p",
+    "kind": "function",
+    "arguments": "WINDOW is live.",
+    "returns": "T or NIL.",
+    "description": "Read effective enabled state, including disabled ancestors. A child's own disabled state survives parent disable/re-enable.",
+    "scope": "Requires an active GUI session on the process main thread. Invalid/destroyed handles or unsupported native arguments signal NATIVE-ERROR; Lisp argument/type errors remain Lisp conditions. One GUI session per process.",
+    "wxwidgets": "wxWindow::IsEnabled (wxWidgets 3.2)."
+  }
+]

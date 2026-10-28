@@ -69,6 +69,12 @@ WXL_API int wxl_layout(wxl_handle window);
 /* All four output pointers must be non-NULL. Values use wxWidgets coordinates. */
 WXL_API int wxl_geometry(wxl_handle window, int *x, int *y, int *width, int *height);
 WXL_API int wxl_show(wxl_handle window);
+/* Boolean operations return 0/1, or -1 on error. Setters return whether the
+   native state changed. wxl_show is retained with its original status contract. */
+WXL_API int wxl_show_state(wxl_handle window, int show);
+WXL_API int wxl_shown(wxl_handle window);
+WXL_API int wxl_enable(wxl_handle window, int enable);
+WXL_API int wxl_enabled(wxl_handle window);
 WXL_API int wxl_destroy(wxl_handle window);
 /* notify=0 is silent; nonzero may synchronously invoke text-change callbacks. */
 WXL_API int wxl_set_text(wxl_handle control, const char *value, int notify);

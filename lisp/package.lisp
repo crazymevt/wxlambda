@@ -4,7 +4,7 @@
            #:return-to-application-repl
            #:run #:stop #:make-frame #:make-panel #:make-button #:make-text
            #:make-column #:make-row #:add-child #:add-spacer #:add-stretch
-           #:layout-window #:window-position #:window-size #:show-window #:destroy-window
+           #:layout-window #:window-position #:window-size #:show-window #:shown-p #:enable-window #:enabled-p #:destroy-window
            #:set-text #:get-text #:on-click #:off-click #:queue-click #:native-error
            #:on-text-change #:off-text-change
            #:make-label #:get-label #:set-label

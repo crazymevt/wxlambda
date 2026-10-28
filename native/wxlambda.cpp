@@ -81,6 +81,12 @@ template<class F> int status(F fn) noexcept {
     catch (...) { error = "Unknown native exception"; }
     return -1;
 }
+// Boolean operations need a distinct error sentinel: zero is a valid false.
+template<class F> int boolean_result(F fn) noexcept {
+    bool value = false;
+    const int result = status([&] { value = fn(); });
+    return result == 0 ? (value ? 1 : 0) : -1;
+}
 template<class F> wxl_handle create(F fn) noexcept {
     wxl_handle result = 0;
     status([&] { ready(); result = fn(); });
@@ -92,7 +98,7 @@ wxString utf8(const char* value) {
 }
 }
 extern "C" {
-int wxl_abi_version() { return 7; }
+int wxl_abi_version() { return 8; }
 const char* wxl_last_error() { return error.c_str(); }
 int wxl_start(wxl_callback callback) {
     return status([&] {
@@ -326,6 +332,18 @@ int wxl_geometry(wxl_handle id, int* x, int* y, int* width, int* height) {
     });
 }
 int wxl_show(wxl_handle id) { return status([&] { window(id)->Show(); }); }
+int wxl_show_state(wxl_handle id, int show) {
+    return boolean_result([&] { return window(id)->Show(show != 0); });
+}
+int wxl_shown(wxl_handle id) {
+    return boolean_result([&] { return window(id)->IsShown(); });
+}
+int wxl_enable(wxl_handle id, int enable) {
+    return boolean_result([&] { return window(id)->Enable(enable != 0); });
+}
+int wxl_enabled(wxl_handle id) {
+    return boolean_result([&] { return window(id)->IsEnabled(); });
+}
 int wxl_destroy(wxl_handle id) { return status([&] { window(id)->Destroy(); }); }
 int wxl_set_text(wxl_handle id, const char* value, int notify) {
     return status([&] {
