@@ -5,7 +5,7 @@ This C1 slice extends bindings beyond command events with `:close`, backed by
 `event-family` classifies these snapshots as `:command` or `:close`;
 registered [notify events](NOTIFY-EVENTS.md) additionally use `:notify`; this is a portable
 supported-kind classification, not arbitrary native RTTI or event registration.
-The baseline is wxWidgets 3.2.12 and the native bridge is ABI 29.
+The baseline is wxWidgets 3.2.12 and the native bridge is ABI 30.
 
 The native type lookup is now **`event-type`**, replacing `command-event-type`
 without an alias. It accepts the seven built-in kinds and registered command/notify names. Native type IDs remain
@@ -95,7 +95,7 @@ This guide covers `wxEVT_CLOSE_WINDOW`; [session events](SESSION-EVENTS.md)
 add query/end-session tags and logging-off state. Registered command/notify
 types are supported. Native control-specific notify subclasses, arbitrary
 native event classes/factories,
-persistent event ownership/cloning, origin/type mutation and userData remain
+persistent event ownership/cloning, origin/type mutation and arbitrary native userData adoption remain
 open. The frame-only close request is a bounded mapping of an inherited window
 operation; panel/dialog/other top-level receivers are not exposed here. Native
 virtual callbacks, pushed handler ownership, timer/idle and worker dispatch also

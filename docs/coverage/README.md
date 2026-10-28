@@ -18,18 +18,18 @@ public-header/documentation reconciliation and platform verification in C7.
 
 | Phase | Headers | Tasks | Implemented | Partial | Pending | Context |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| [C1: Foundation, values, application, events, and base utilities](phase-c1.md) | 119 | 5292 | 5 | 79 | 5208 | 26 |
+| [C1: Foundation, values, application, events, and base utilities](phase-c1.md) | 119 | 5292 | 5 | 83 | 5204 | 26 |
 | [C2: Windows, layout, basic controls, and input](phase-c2.md) | 82 | 2862 | 23 | 46 | 2793 | 0 |
 | [C3: Dialogs, navigation, menus, and application services](phase-c3.md) | 57 | 1875 | 0 | 0 | 1875 | 0 |
 | [C4: Models, complex controls, and document frameworks](phase-c4.md) | 20 | 2328 | 0 | 0 | 2328 | 4 |
 | [C5: Drawing, images, graphics, and printing](phase-c5.md) | 52 | 2245 | 0 | 0 | 2245 | 0 |
 | [C6: Optional libraries, rich content, and integration](phase-c6.md) | 57 | 8912 | 0 | 0 | 8912 | 380 |
 | [C7: Platform extensions and remaining portability APIs](phase-c7.md) | 11 | 279 | 0 | 0 | 279 | 3 |
-| Total | 398 | 23793 | 28 | 125 | 23640 | 413 |
+| Total | 398 | 23793 | 28 | 129 | 23636 | 413 |
 
 ## Classes and widgets
 
-1016 class/struct definitions: 0 complete; 19 partial; 997 pending.
+1016 class/struct definitions: 0 complete; 20 partial; 996 pending.
 
 See the [complete class/widget index](classes.md) for partial scopes and missing
 types. An implemented constructor does not complete a class or its inherited API.
@@ -68,7 +68,7 @@ unreviewed inherited/platform behavior.
 | [wx/dynarray.h](phase-c1.md#wxdynarrayh) | 0 | 0 | 58 | 0 |
 | [wx/dynlib.h](phase-c1.md#wxdynlibh) | 0 | 0 | 34 | 0 |
 | [wx/encconv.h](phase-c1.md#wxencconvh) | 0 | 0 | 13 | 0 |
-| [wx/event.h](phase-c1.md#wxeventh) | 5 | 65 | 590 | 16 |
+| [wx/event.h](phase-c1.md#wxeventh) | 5 | 66 | 589 | 16 |
 | [wx/eventfilter.h](phase-c1.md#wxeventfilterh) | 0 | 0 | 6 | 0 |
 | [wx/evtloop.h](phase-c1.md#wxevtlooph) | 0 | 0 | 26 | 0 |
 | [wx/ffile.h](phase-c1.md#wxffileh) | 0 | 0 | 37 | 0 |
@@ -105,7 +105,7 @@ unreviewed inherited/platform behavior.
 | [wx/msgqueue.h](phase-c1.md#wxmsgqueueh) | 0 | 0 | 9 | 0 |
 | [wx/mstream.h](phase-c1.md#wxmstreamh) | 0 | 0 | 11 | 0 |
 | [wx/numformatter.h](phase-c1.md#wxnumformatterh) | 0 | 0 | 14 | 0 |
-| [wx/object.h](phase-c1.md#wxobjecth) | 0 | 0 | 66 | 0 |
+| [wx/object.h](phase-c1.md#wxobjecth) | 0 | 3 | 63 | 0 |
 | [wx/platform.h](phase-c1.md#wxplatformh) | 0 | 0 | 4 | 0 |
 | [wx/platinfo.h](phase-c1.md#wxplatinfoh) | 0 | 0 | 77 | 0 |
 | [wx/position.h](phase-c1.md#wxpositionh) | 0 | 0 | 19 | 0 |

@@ -1,6 +1,6 @@
 # Event-category metadata
 
-ABI 29 adds EVENT-CATEGORY for saved immutable snapshots and current innermost
+ABI 30 adds EVENT-CATEGORY for saved immutable snapshots and current innermost
 contexts, plus EVENT-CATEGORY-MASK for compiled native category values. The
 coverage baseline is wxWidgets 3.2.12. Categories are numeric flags, not native
 type IDs, EVENT-ID routing values or EVENT-FAMILY keywords.
@@ -54,7 +54,7 @@ constants do not imply those event families are bound.
 wxEventLoopBase::YieldFor and category-selective pumping remain unbound. Existing
 PROCESS-EVENTS/PROCESS-PENDING-EVENTS behavior is unchanged. Remaining C1 work
 includes typed tag mutation, origin retention, persistent event ownership/cloning,
-userData, pushed handlers, timer/idle and worker dispatch. Next design bounded
+arbitrary native userData adoption, externally adopted handlers, timer/idle and worker dispatch. Next design bounded
 registered-tag mutation using actual native class checks, retaining the session
 fallback isolation and rejecting incompatible native tag changes.
 

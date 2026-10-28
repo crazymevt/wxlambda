@@ -1,6 +1,6 @@
 (defpackage #:wxlambda
   (:use #:cl)
-  (:export #:event-handler-client-data #:event-extra-long #:event-selection-p
+  (:export #:event-user-data #:event-handler-client-data #:event-extra-long #:event-selection-p
            #:window-event-handler #:push-event-handler #:pop-event-handler #:remove-event-handler
            #:process-window-event #:process-window-event-locally
            #:next-handler #:previous-handler #:handler-unlinked-p #:unlink-event-handler

@@ -1,6 +1,6 @@
 # Bounded registered event-tag mutation
 
-ABI 29 adds context-only SETF EVENT-NATIVE-TYPE. The reader still returns the
+ABI 30 adds context-only SETF EVENT-NATIVE-TYPE. The reader still returns the
 captured/current native type integer; assign an integer returned by EVENT-TYPE
 for a name registered in the active session. Baseline: wxWidgets 3.2.12.
 
@@ -63,7 +63,7 @@ actual-class rejection branch is statically reviewed rather than directly
 exercised. Tests do not impose local callback order or emit real OS session events.
 
 SetEventType coverage remains partial. Native origin retention/SetEventObject,
-generic wxObject wrappers, persistent native event ownership/cloning, userData,
+generic wxObject wrappers, persistent native event ownership/cloning, arbitrary native userData adoption,
 pushed handlers and broader event families remain C1 work. Next define the
 ownership/lifetime policy needed for origin writes and persistent events before
 exposing borrowed native object pointers or widening mutable tags.

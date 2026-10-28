@@ -118,7 +118,7 @@ python3 tools/docset.py build
 python3 tools/docset.py check
 ```
 
-Use the project quiet-command wrapper in agent sessions. Rebuild the ABI 29
+Use the project quiet-command wrapper in agent sessions. Rebuild the ABI 30
 bridge alongside the bindings. The GUI runner includes this scenario; broader
 platform and graphical Cadre verification remain separate. The API, this guide
 and example are included in the [Cadre docset](DOCSET.md), installable under
@@ -150,5 +150,5 @@ peer editing excludes attached nodes; arbitrary SetEventHandler/external adoptio
 remain unbound.
 
 [Handler Lisp client data](HANDLER-CLIENT-DATA.md) now retains EQ values through
-a native typed token adapter with safe foreign-mode rejection. Event/client/
-userData and item-pointer ownership remain separate unbound APIs.
+a native typed token adapter with safe foreign-mode rejection. General native event/client/item pointer ownership remains unbound; per-binding
+Lisp USER-DATA is separately supported.

@@ -10,7 +10,24 @@ std::atomic<unsigned> assertion_count{0};
 void capture_assert(const wxString&, int, const wxString&, const wxString&, const wxString&) {
     ++assertion_count;
 }
-void ignore_event(uint64_t, const wxl_event*) { }
+void expect(bool ok, const char* message);
+bool binding_called = false;
+uint64_t saved_context = 0;
+void inspect_binding(uint64_t token, const wxl_event* event) {
+    expect(event->user_data == token, "Snapshot binding user data mismatch");
+    uint64_t value = 0;
+    expect(wxl_context_user_data(event->context, &value) == 0 && value == token,
+           "Current context must expose its captured binding token");
+    expect(wxl_unbind(token) == 1, "Self-unbind failed");
+    value = 0;
+    expect(wxl_context_user_data(event->context, &value) == 0 && value == token,
+           "Self-unbind must not invalidate captured context user data");
+    saved_context = event->context;
+    binding_called = true;
+}
+void ignore_event(uint64_t token, const wxl_event* event) {
+    if (token == 901) inspect_binding(token, event);
+}
 void expect(bool ok, const char* message) {
     if (!ok) throw std::runtime_error(message);
 }
@@ -30,6 +47,33 @@ void expect_rejected(wxl_handle id) {
     expect(token == 999, "Failed read must preserve its output");
     expect(wxl_set_handler_client_data(id, 41) == -1, "Foreign storage replacement must reject");
     expect(wxl_set_handler_client_data(id, 0) == -1, "Foreign storage clearing must reject");
+}
+void exercise_binding_data() {
+    const auto id = wxl_event_handler();
+    expect(wxl_bind(id, WXL_EVENT_CLICK, 901, wxID_ANY, wxID_ANY, 1, 1) == 0,
+           "User-data binding creation failed");
+    wxCommandEvent event(wxEVT_BUTTON, 17);
+    event_handler(id)->ProcessEvent(event);
+    expect(binding_called && wxl_binding_active(901) == 0, "Self-unbinding callback was not delivered");
+    uint64_t value = 99;
+    expect(wxl_context_user_data(saved_context, &value) == -1 && value == 99,
+           "Expired context user data must reject without writing output");
+    auto owned = std::make_unique<wxCommandEvent>(wxEVT_BUTTON, 17);
+    const auto event_id = next_handle++;
+    owned_events.emplace(event_id, std::move(owned));
+    expect(wxl_event_user_data(event_id, &value) == 0 && value == 0,
+           "Owned events have no binding user data");
+    BindingUserData foreign(999);
+    owned_event(event_id).m_callbackUserData = &foreign; // Test-only internal-state injection.
+    value = 99;
+    expect(wxl_event_user_data(event_id, &value) == -1 && value == 99,
+           "Owned borrowed user data must reject");
+    expect(wxl_clone_event(event_id, 0) == 0, "Cloning borrowed user data must reject");
+    owned_event(event_id).m_callbackUserData = nullptr;
+    expect(wxl_event_destroy(event_id) == 0, "Owned cleanup failed");
+    expect(wxl_bind(id, WXL_EVENT_CLICK, 902, wxID_ANY, wxID_ANY, 0, 1) == 0,
+           "Destroy-time binding creation failed");
+    expect(wxl_handler_destroy(id) == 0, "Bound handler cleanup failed");
 }
 void exercise_client_data(unsigned& foreign_destroyed) {
     const auto empty = wxl_event_handler();
@@ -99,13 +143,14 @@ int main() {
         expect(wxl_start(ignore_event) == 0, "Application startup failed");
         active = true;
         exercise_client_data(foreign_destroyed);
+        exercise_binding_data();
         expect(wxl_finish() == 0, "Application cleanup failed");
         active = false;
         expect(wxl_client_data_active(31) == -1, "Inactive client-data scan must reject");
         expect(foreign_destroyed == 1, "Foreign data was deleted more than once");
         expect(assertion_count.load() == 0, "Client-data operations triggered a wx assertion");
         wxSetAssertHandler(old_assert_handler);
-        std::cout << "PASS: client-data token ownership, foreign typed/untyped/null guards and zero wx assertions\n";
+        std::cout << "PASS: handler client data, binding user-data self-unbind/scoped lifetime, foreign guards and zero wx assertions\n";
         return 0;
     } catch (const std::exception& failure) {
         if (active) wxl_finish();

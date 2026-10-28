@@ -1,6 +1,6 @@
 # Owned native events, detached clones and copied dispatch
 
-ABI 29 adds the native-backed `owned-event` CLOS class and `make-event`,
+ABI 30 adds the native-backed `owned-event` CLOS class and `make-event`,
 `clone-event`, `destroy-event` and `event-alive-p`. These are independently owned
 native resources, distinct from immutable `event` snapshots and borrowed
 callback-scoped `event-context` values. The baseline is wxWidgets 3.2.12.
@@ -64,7 +64,7 @@ teardown.
 CLONE-EVENT accepts a live OWNED-EVENT or the current innermost EVENT-CONTEXT and
 returns a new OWNED-EVENT. It calls native Clone only for exact wxCommandEvent,
 wxNotifyEvent or wxCloseEvent classes with supported tags. Other native subclasses
-and events carrying userData or command client pointers reject cloning. A saved
+and events carrying borrowed native userData or command client pointers reject cloning. A saved
 snapshot is not a native event and has no CLONE-EVENT method.
 
 Native origin is cleared on every clone: a clone never retains a borrowed
@@ -186,5 +186,10 @@ origin detachment. Owned construction accepts command/notify :EXTRA-LONG; keywor
 synthetic queue/process calls do not add that option.
 
 [Handler Lisp client data](HANDLER-CLIENT-DATA.md) now retains EQ values through
-a native typed token adapter with safe foreign-mode rejection. Event/client/
-userData and item-pointer ownership remain separate unbound APIs.
+a native typed token adapter with safe foreign-mode rejection. General native event/client/item pointer ownership remains unbound; per-binding
+Lisp USER-DATA is separately supported.
+
+[Per-binding Lisp user data](BINDING-USER-DATA.md) now provides BIND-EVENT
+:USER-DATA and read-only snapshot/context association access, distinct from
+handler client data and native command/client/item pointers. Borrowed native
+userdata still prevents owned cloning; no mutable association API is added.

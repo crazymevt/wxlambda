@@ -2,7 +2,7 @@
 
 This C1 slice binds `wxNewEventType`, synthetic `wxCommandEvent`/`wxNotifyEvent`
 families and synchronous `wxEvtHandler::ProcessEvent`. The baseline is wxWidgets
-3.2.12 and the native bridge is ABI 29. It does not bind native control-specific
+3.2.12 and the native bridge is ABI 30. It does not bind native control-specific
 notify subclasses or OS session routing.
 
 ## Register a named native type
@@ -112,7 +112,7 @@ Real OS delivery remains unverified. See [session events](SESSION-EVENTS.md).
 Tests do not emit real OS logout/shutdown events.
 
 Native control-specific notify subclasses, arbitrary native class registration,
-userData, persistent event ownership/cloning, remaining native payload fields,
+arbitrary native userData adoption, broader persistent event ownership/cloning, remaining native payload fields,
 context text/integer mutation, pushed/linked handlers, timer/idle and worker
 dispatch remain required coverage work. The registered base notify mapping does
 not complete those classes or the full C1 phase.

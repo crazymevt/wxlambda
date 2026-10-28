@@ -91,9 +91,9 @@ struct CallbackScope {
 struct EventScope {
     uint64_t token;
     static uint64_t next;
-    struct Borrow { uint64_t token; wxEvent* event; unsigned depth; };
+    struct Borrow { uint64_t token; wxEvent* event; unsigned depth; uint64_t user_data; };
     static std::vector<Borrow> stack;
-    explicit EventScope(wxEvent& event) : token(++next) { stack.push_back({token, &event, callback_depth + 1}); }
+    explicit EventScope(wxEvent& event, uint64_t user_data = 0) : token(++next) { stack.push_back({token, &event, callback_depth + 1, user_data}); }
     ~EventScope() { stack.pop_back(); }
 };
 uint64_t EventScope::next = 0;
@@ -457,12 +457,19 @@ void write_event_field(wxEvent& event, int field, int64_t value) {
         default: throw std::runtime_error("This event field is read-only or unknown");
     }
 }
+// wxEvtHandler owns this adapter through its dynamic binding entry.
+class BindingUserData final : public wxObject {
+public:
+    explicit BindingUserData(uint64_t value) : token(value) {}
+    const uint64_t token;
+};
 struct Binding {
     wxWeakRef<wxEvtHandler> receiver;
     wxl_handle source;
     uint64_t token;
     int kind, id, last_id;
     bool with_context;
+    BindingUserData* user_data = nullptr; // Comparison only; native binding owns it.
     bool live() const {
         auto* object = receiver.get();
         auto* widget = dynamic_cast<wxWindow*>(object);
@@ -490,10 +497,11 @@ struct Binding {
                                      family, command ? command->GetInt() : 0,
                                      session_type(event.GetEventType()) ? (static_cast<wxCloseEvent&>(event).GetLoggingOff() ? 1 : 0) : 0,
                                      event.GetTimestamp(), event.IsCommandEvent() ? 1 : 0, origin_id(event), static_cast<int>(event.GetEventCategory()),
-                                     command ? command->GetExtraLong() : 0, command && command->IsSelection() ? 1 : 0};
+                                     command ? command->GetExtraLong() : 0, command && command->IsSelection() ? 1 : 0,
+                                     user_data && event.GetEventUserData() == user_data ? token : 0};
             if (with_context) {
                 event.Skip(false);
-                EventScope scope(event);
+                EventScope scope(event, snapshot.user_data);
                 snapshot.context = scope.token;
                 invoke_callback(token, snapshot);
                 return;
@@ -510,7 +518,7 @@ bool remove_binding(uint64_t token) {
     auto binding = found->second;
     if (auto* receiver = binding->receiver.get()) {
         require(receiver->Unbind(native_event_type(binding->kind), &Binding::on_event, binding.get(),
-                                 binding->id, binding->last_id), "Native event binding not found");
+                                 binding->id, binding->last_id, binding->user_data), "Native event binding not found");
     }
     bindings.erase(token);
     return true;
@@ -564,7 +572,7 @@ wxString utf8(const char* value) {
 }
 }
 extern "C" {
-int wxl_abi_version() { return 29; }
+int wxl_abi_version() { return 30; }
 const char* wxl_last_error() { return error.c_str(); }
 int wxl_start(wxl_callback callback) {
     return status([&] {
@@ -793,6 +801,21 @@ int wxl_event_type(int kind) {
     const int result = status([&] { ready(); type = native_event_type(kind); });
     return result == 0 ? type : -1;
 }
+int wxl_context_user_data(uint64_t token, uint64_t* value) {
+    return status([&] {
+        current_event(token);
+        require(value != nullptr, "Missing user-data output");
+        *value = EventScope::stack.back().user_data;
+    });
+}
+int wxl_event_user_data(wxl_handle id, uint64_t* value) {
+    return status([&] {
+        auto& event = owned_event(id);
+        require(value != nullptr, "Missing user-data output");
+        require(event.GetEventUserData() == nullptr, "Owned event contains borrowed native user data");
+        *value = 0;
+    });
+}
 int wxl_context_active(uint64_t token) {
     return boolean_result([&] {
         ready();
@@ -927,13 +950,14 @@ int wxl_context_resume_propagation(uint64_t token, int level) {
         event.ResumePropagation(level);
     });
 }
-int wxl_bind(wxl_handle id, int kind, uint64_t token, int first, int last, int with_context) {
+int wxl_bind(wxl_handle id, int kind, uint64_t token, int first, int last, int with_context, int user_data) {
     return status([&] {
         auto* receiver = event_handler(id);
         const auto type = native_event_type(kind);
         require(!session_type(type) || id == application_handle || isolated_handler(id),
                 "Session bindings require the application view or an owned standalone handler");
         require(with_context == 0 || with_context == 1, "Invalid binding context mode");
+        require(user_data == 0 || user_data == 1, "Invalid binding user-data mode");
         require(token && !bindings.count(token), "Invalid or duplicate binding token");
         require(last == wxID_ANY || (first != wxID_ANY && first <= last), "Invalid event ID range");
         auto binding = std::make_shared<Binding>();
@@ -941,8 +965,13 @@ int wxl_bind(wxl_handle id, int kind, uint64_t token, int first, int last, int w
         binding->source = id; binding->token = token;
         binding->kind = kind; binding->id = first; binding->last_id = last;
         binding->with_context = with_context != 0;
+        auto adapter = user_data ? std::make_unique<BindingUserData>(token) : nullptr;
+        binding->user_data = adapter.get();
         bindings.emplace(token, binding);
-        try { receiver->Bind(type, &Binding::on_event, binding.get(), first, last); }
+        try {
+            receiver->Bind(type, &Binding::on_event, binding.get(), first, last, adapter.get());
+            adapter.release(); // Native dynamic binding now owns the adapter.
+        }
         catch (...) { bindings.erase(token); throw; }
     });
 }
@@ -1181,7 +1210,7 @@ wxl_handle wxl_button(wxl_handle parent, const char* label) {
         auto* control = new ManagedWindow<wxButton>(window(parent), wxID_ANY, utf8(label));
         auto id = track(control);
         control->Bind(wxEVT_BUTTON, [id](wxCommandEvent& event) {
-            emit_event(id, {WXL_EVENT_CLICK, nullptr, 0, -1, event.GetId(), 0, 0, event.GetEventType(), 0, 0, WXL_FAMILY_COMMAND, event.GetInt(), 0, event.GetTimestamp(), event.IsCommandEvent() ? 1 : 0, origin_id(event), static_cast<int>(event.GetEventCategory()), event.GetExtraLong(), event.IsSelection() ? 1 : 0});
+            emit_event(id, {WXL_EVENT_CLICK, nullptr, 0, -1, event.GetId(), 0, 0, event.GetEventType(), 0, 0, WXL_FAMILY_COMMAND, event.GetInt(), 0, event.GetTimestamp(), event.IsCommandEvent() ? 1 : 0, origin_id(event), static_cast<int>(event.GetEventCategory()), event.GetExtraLong(), event.IsSelection() ? 1 : 0, 0});
             event.Skip();
         });
         return id;
@@ -1198,7 +1227,7 @@ wxl_handle wxl_text(wxl_handle parent, const char* value) {
                 // Both objects must survive reentrant callbacks and conversion.
                 const auto text = event.GetString();
                 const auto bytes = text.ToUTF8();
-                const wxl_event payload{WXL_EVENT_TEXT_CHANGE, bytes.data() ? bytes.data() : "", 0, -1, event.GetId(), bytes.length(), 0, event.GetEventType(), 0, 0, WXL_FAMILY_COMMAND, event.GetInt(), 0, event.GetTimestamp(), event.IsCommandEvent() ? 1 : 0, origin_id(event), static_cast<int>(event.GetEventCategory()), event.GetExtraLong(), event.IsSelection() ? 1 : 0};
+                const wxl_event payload{WXL_EVENT_TEXT_CHANGE, bytes.data() ? bytes.data() : "", 0, -1, event.GetId(), bytes.length(), 0, event.GetEventType(), 0, 0, WXL_FAMILY_COMMAND, event.GetInt(), 0, event.GetTimestamp(), event.IsCommandEvent() ? 1 : 0, origin_id(event), static_cast<int>(event.GetEventCategory()), event.GetExtraLong(), event.IsSelection() ? 1 : 0, 0};
                 invoke_callback(token, payload);
             }
             event.Skip();
@@ -1270,7 +1299,7 @@ wxl_handle wxl_checkbox(wxl_handle parent, const char* label, int checked) {
         control->SetValue(checked != 0);
         const auto id = track(control);
         control->Bind(wxEVT_CHECKBOX, [id](wxCommandEvent& event) {
-            emit_event(id, {WXL_EVENT_TOGGLE, nullptr, event.IsChecked() ? 1 : 0, -1, event.GetId(), 0, 0, event.GetEventType(), 0, 0, WXL_FAMILY_COMMAND, event.GetInt(), 0, event.GetTimestamp(), event.IsCommandEvent() ? 1 : 0, origin_id(event), static_cast<int>(event.GetEventCategory()), event.GetExtraLong(), event.IsSelection() ? 1 : 0});
+            emit_event(id, {WXL_EVENT_TOGGLE, nullptr, event.IsChecked() ? 1 : 0, -1, event.GetId(), 0, 0, event.GetEventType(), 0, 0, WXL_FAMILY_COMMAND, event.GetInt(), 0, event.GetTimestamp(), event.IsCommandEvent() ? 1 : 0, origin_id(event), static_cast<int>(event.GetEventCategory()), event.GetExtraLong(), event.IsSelection() ? 1 : 0, 0});
             event.Skip();
         });
         return id;
@@ -1310,7 +1339,7 @@ wxl_handle wxl_choice(wxl_handle parent, const char** items, int count, int sele
         control->SetSelection(selection);
         const auto id = track(control);
         control->Bind(wxEVT_CHOICE, [id](wxCommandEvent& event) {
-            emit_event(id, {WXL_EVENT_SELECTION, nullptr, 0, event.GetSelection(), event.GetId(), 0, 0, event.GetEventType(), 0, 0, WXL_FAMILY_COMMAND, event.GetInt(), 0, event.GetTimestamp(), event.IsCommandEvent() ? 1 : 0, origin_id(event), static_cast<int>(event.GetEventCategory()), event.GetExtraLong(), event.IsSelection() ? 1 : 0});
+            emit_event(id, {WXL_EVENT_SELECTION, nullptr, 0, event.GetSelection(), event.GetId(), 0, 0, event.GetEventType(), 0, 0, WXL_FAMILY_COMMAND, event.GetInt(), 0, event.GetTimestamp(), event.IsCommandEvent() ? 1 : 0, origin_id(event), static_cast<int>(event.GetEventCategory()), event.GetExtraLong(), event.IsSelection() ? 1 : 0, 0});
             event.Skip();
         });
         return id;

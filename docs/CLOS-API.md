@@ -189,5 +189,5 @@ peer editing excludes attached nodes; arbitrary SetEventHandler/external adoptio
 remain unbound.
 
 [Handler Lisp client data](HANDLER-CLIENT-DATA.md) now retains EQ values through
-a native typed token adapter with safe foreign-mode rejection. Event/client/
-userData and item-pointer ownership remain separate unbound APIs.
+a native typed token adapter with safe foreign-mode rejection. General native event/client/item pointer ownership remains unbound; per-binding
+Lisp USER-DATA is separately supported.

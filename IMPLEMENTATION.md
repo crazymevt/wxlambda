@@ -73,15 +73,18 @@ must reconcile additional documented public interfaces beyond those headers.
 - Handler-client-data batch: EQ Lisp state via native typed token adapters,
   managed foreign-mode protection and session-root cleanup. Independent review
   and final verification pass.
-- Current bridge ABI: 29. Public API: 126 exports, nine window wrapper classes
-  (eight concrete widget kinds) plus the event-handler base, 88 named generics and
+- Binding-user-data batch: per-registration EQ Lisp values, immutable captured
+  associations and context-frame lifetime through self-unbind. Independent review
+  and final verification pass.
+- Current bridge ABI: 30. Public API: 127 exports, nine window wrapper classes
+  (eight concrete widget kinds) plus the event-handler base, 89 named generics and
   twenty-seven generic SETF writers. The application-handler is a borrowed view; no
   native application construction or arbitrary-event class binding exists yet; built-ins plus registered command/notify names have
   observer/contextual bindings.
-- Latest implementation verification: 46 GUI scenarios and native preflight
+- Latest implementation verification: 47 GUI scenarios and native preflight
   pass on local Apple Silicon macOS SBCL 2.6.9 and CCL 1.13. Final reports:
-  `evidence/handler-client-data/{sbcl,ccl}-20261028/`. Five package checks
-  pass in `evidence/packaging/handler-client-data-20261028-final/`.
+  `evidence/binding-user-data/{sbcl,ccl}-20261028-final/`. Five package checks
+  pass in `evidence/packaging/binding-user-data-20261028/`.
   Hosted Linux/Windows GUI behavior and the graphical Cadre viewer remain open.
 
 ### Next dependency and working order
@@ -101,9 +104,11 @@ must reconcile additional documented public interfaces beyond those headers.
    policy are implemented. Registered command/notify types and synchronous dispatch are implemented.
    The borrowed application handler view and query/end-session metadata/bindings
    are implemented, as are scoped CanVeto mutation, timestamp and command metadata.
-   Scoped native ID mutation and routing semantics are implemented. Next define
-   retained origin/client/userData lifetime contracts after bounded origin
-   detachment, command payloads, managed stacks and owned/pending events. Bounded registered-tag mutation
+   Scoped native ID mutation and routing semantics are implemented. Managed
+   handler client data and per-binding Lisp user-data lifetimes are established.
+   Next define retained-origin, native command/client-item data and arbitrary
+   native object adoption contracts. Bounded origin detachment, command payloads,
+   managed stacks and owned/pending events are implemented. Bounded registered-tag mutation
    with actual native class checks is implemented. Category metadata is implemented. Current type
    reads and bounded origin identities are implemented; arbitrary native tag/origin
    writers and general wxObject wrappers remain open. Native OS session delivery is unverified. Native session events are
@@ -114,7 +119,7 @@ must reconcile additional documented public interfaces beyond those headers.
    ordinary standalone wxEvtHandler dispatch can otherwise reach app defaults.
    Native control-specific notify subclasses and remaining event ownership stay open. Preserve immutable
    snapshots and opaque binding/context identities; never expose a native event
-   pointer after callback return. Arbitrary native event classes/userData, session routing and
+   pointer after callback return. Arbitrary native event classes/userData adoption, session routing and
    arbitrary borrowed/native stack adoption remains a gap.
 4. Build timer/idle, event propagation/skip/veto and worker-to-GUI dispatch on
    those contracts, adding prerequisite value types before their consumers.
@@ -1362,6 +1367,52 @@ session delivery, graphical Cadre and prior inaccessible pointer/class-mismatch
 branches remain unverified. Continue C1 event/userData, retained-origin or broader
 client-data ownership contracts explicitly; this handler slot does not complete
 generic client containers or derived control item data.
+
+## Per-binding Lisp user-data associations (2026-10-28)
+
+ABI 30 adds BIND-EVENT :USER-DATA and read-only EVENT-USER-DATA for snapshots,
+current contexts and safe owned-event NIL reads. Non-NIL values are retained by
+EQ in callback association roots; native entry-owned wxObject adapters contain
+only numeric binding tokens. Native scope captures the token before callback and
+Lisp dispatch frames retain the value, so self/peer unbind and GC do not invalidate
+active context data. Nested contexts suspend/restore outer lifetime as before.
+Snapshots preserve the reference after unbind/session end, not a deep immutable
+copy of mutable contents. No callback arity change or SETF association API exists.
+
+Handler client data and native command/client/item payloads remain separate.
+Owned events cannot adopt borrowed binding pointers and current borrowed clones
+still reject even after self-unbind without dereferencing the freed adapter.
+NIL-data bindings keep prior clone behavior. Rebind to change associations.
+For generalized GETF places, bind EVENT-USER-DATA result locally before mutation;
+initial example direct INCF(GETF(reader)) required nonexistent SETF and was fixed.
+An initial native harness compile used nonexistent SetEventUserData; test-only
+internal injection replaced it without widening public APIs. Runtime native/Lisp
+behavior had no issue from those test/example corrections. Extended optional
+wxlambda-client-data-native regression checks captured context/self-unbind,
+expiration and owned borrowed-pointer guards; require zero native assertions.
+
+Verified counts: 127 exports, 89 named generics, 27 generic SETF writers,
+47 GUI scenarios, 184 docset entries and twenty-eight examples. Independent
+runtime/harness review passes. Documentation review caught stale no-userData
+scope wording; the old Bind/Unbind and accumulated class scopes were rewritten,
+regenerated and independently re-reviewed with no remaining findings.
+
+Both local full GUI suites and native preflights pass, including the final
+application/custom-command, registered-notify and isolated close/session-family
+matrix with Lisp zero and list data. No application session events were synthesized.
+Focused regressions/example pass on both Lisps, as do five relocated package
+checks, sixteen Python tests and twelve coverage-inventory tests. The extended
+optional native regression passes with zero wx assertions (quiet-run.dGuk7Wpl),
+covering captured context tokens after self-unbind, expiry and borrowed-pointer
+owned/clone rejection. Docset checking reports zero problems; actual public-export
+and SETF coverage, isolated installation, discovery, symbol lookup and guide/example
+access pass. Reports: evidence/binding-user-data/{sbcl,ccl}-20261028-final/ and
+evidence/packaging/binding-user-data-20261028/; package:
+dist/wxlambda-form-binding-user-data.
+Hosted Windows/Linux GUI, native OS-session
+delivery, graphical Cadre and prior inaccessible pointer/class-mismatch branches
+remain unverified. Continue C1 retained-origin/native client-item ownership
+or broader lifetime prerequisites without exposing arbitrary native pointers.
 
 ## Decisions
 

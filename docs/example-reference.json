@@ -106,5 +106,9 @@
   "handler-client-data.lisp": {
     "description": "Attach EQ-preserved Lisp state to a managed handler, read it through callback receiver identity and clear it before cleanup without exposing Lisp/native pointers.",
     "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/handler-client-data.lisp --eval '(wxlambda-handler-client-data:start)'"
+  },
+  "binding-user-data.lisp": {
+    "description": "Associate EQ Lisp state per binding, read it through snapshots/current contexts and preserve active data across unbinding without exposing native pointers.",
+    "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/binding-user-data.lisp --eval '(wxlambda-binding-user-data:start)'"
   }
 }

@@ -1,6 +1,6 @@
 # Native event type and origin identity
 
-ABI 29 extends EVENT-NATIVE-TYPE to a generic reader for immutable snapshots and
+ABI 30 extends EVENT-NATIVE-TYPE to a generic reader for immutable snapshots and
 current innermost contexts. EVENT-ORIGIN-ID is a new generic reader with the same
 saved/current lifetime distinction. Baseline: wxWidgets 3.2.12.
 
@@ -56,7 +56,7 @@ API always supplies a known receiver and cannot manufacture arbitrary native
 origin pointers. Real OS session events are not emitted.
 
 GetEventObject coverage is partial: generic wxObject wrappers, origin retention,
-full SetEventObject, arbitrary SetEventType, userData and broader native event
+full SetEventObject, arbitrary SetEventType, arbitrary native userData adoption and broader native event
 ownership/cloning remain C1 work. Bounded owned-event/cloning, registered tags,
 clear-only origins and category metadata are now bound.
 Next design typed mutation/ownership contracts that preserve

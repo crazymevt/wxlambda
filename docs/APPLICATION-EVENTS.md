@@ -67,7 +67,7 @@ C++; they are recorded and re-signaled when the native operation returns.
 Handled boundary failures allow the callback to continue; an escaping condition
 uses the existing callback-error recovery rules. A subsequent pump remains usable.
 
-Application dispatch was introduced in ABI 11; the current bridge is ABI 29. Rebuild it alongside the Lisp bindings. This uses
+Application dispatch was introduced in ABI 11; the current bridge is ABI 30. Rebuild it alongside the Lisp bindings. This uses
 the wxWidgets 3.2.12 inventory baseline; application traits, arbitrary event-loop
 objects, generic event binding, pending-event suspension/deletion, filters,
 propagation, idle handlers, timers and worker dispatch remain open C1 work.

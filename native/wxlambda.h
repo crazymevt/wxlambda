@@ -38,6 +38,7 @@ typedef struct wxl_event {
     int category;
     int64_t extra_long; /* Native signed long, copied for command/notify events. */
     int selection_action; /* Native IsSelection, not a predicate on the kind tag. */
+    uint64_t user_data; /* Binding root token, zero for none; never a native pointer. */
 } wxl_event;
 /* The record and its text are borrowed only until this callback returns.
    Callbacks must never unwind across this boundary. */
@@ -81,10 +82,13 @@ WXL_API int wxl_handler_destroy(wxl_handle handler);
    return 0 or -1. Unbind/active return 0/1 or -1. Filters use -1 for wxID_ANY.
    Observer callbacks Skip; contextual callbacks control Skip. Native callback
    order is not guaranteed here. */
-WXL_API int wxl_bind(wxl_handle handler, int kind, uint64_t token, int first_id, int last_id, int with_context);
+WXL_API int wxl_bind(wxl_handle handler, int kind, uint64_t token, int first_id, int last_id, int with_context, int user_data);
 /* Contexts refer only to their currently executing innermost native callback; no raw event pointer
    escapes. Queries use 0/1/-1, stop returns the old level or -1, writers 0/-1. */
 WXL_API int wxl_event_type(int kind);
+/* Scoped reads capture the binding token before native self-unbinding can delete its adapter. */
+WXL_API int wxl_context_user_data(uint64_t context, uint64_t *value);
+WXL_API int wxl_event_user_data(wxl_handle event, uint64_t *value);
 WXL_API int wxl_context_active(uint64_t context);
 WXL_API int wxl_context_skipped(uint64_t context);
 WXL_API int wxl_context_set_skipped(uint64_t context, int skip);

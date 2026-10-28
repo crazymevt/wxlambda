@@ -42,7 +42,7 @@
 (defclass checkbox (window)
   ((handler-token :initform nil :accessor handler-token)))
 
-(defstruct (event (:constructor %make-event (kind-value source payload-text checked-value selection-value identifier native-type-code can-veto veto family-code payload-integer logging-off time-stamp command origin-code category-code extra-long-data selection-action)))
+(defstruct (event (:constructor %make-event (kind-value source payload-text checked-value selection-value identifier native-type-code can-veto veto family-code payload-integer logging-off time-stamp command origin-code category-code extra-long-data selection-action user-data-value)))
   "A Lisp-owned snapshot. Slots are read-only; TEXT is an independent string."
   (kind-value nil :read-only t)
   (source nil :read-only t)
@@ -61,7 +61,8 @@
   (origin-code 0 :read-only t)
   (category-code 0 :read-only t)
   (extra-long-data 0 :read-only t)
-  (selection-action nil :read-only t))
+  (selection-action nil :read-only t)
+  (user-data-value nil :read-only t))
 
 (defstruct (event-binding (:constructor %make-event-binding (source kind token)))
   (source nil :read-only t) (kind nil :read-only t) (token 0 :read-only t))
@@ -71,7 +72,8 @@
 (defvar *event-bindings* nil)
 (defstruct (event-context (:constructor %make-event-context (token)))
   (token 0 :read-only t))
-(defstruct handler source function with-context)
+(defstruct handler source function with-context user-data)
+(defvar *callback-user-data* nil)
 (defvar *active* nil)
 (defvar *repl-running* nil)
 (defvar *repl-debugging* nil)
@@ -95,10 +97,17 @@
         (let ((handler (gethash token *handlers*)))
           (when handler
             (when (cffi:null-pointer-p payload) (error "Missing event payload"))
-            (cffi:with-foreign-slots ((kind text checked selection id text-length context native-type can-veto vetoed family integer logging-off timestamp command origin-id category extra-long selection-action) payload (:struct native-event))
+            (cffi:with-foreign-slots ((kind text checked selection id text-length context native-type can-veto vetoed family integer logging-off timestamp command origin-id category extra-long selection-action user-data-token) payload (:struct native-event))
               (let* ((event-kind (or (case kind (1 :click) (2 :text-change) (3 :toggle) (4 :selection) (5 :close) (6 :query-end-session) (7 :end-session))
                                      (gethash kind *registered-event-kinds*)
                                      (error "Unregistered native event kind ~S" kind)))
+                     (user-data (unless (zerop user-data-token)
+                                  (unless (= user-data-token token)
+                                    (error "Binding user-data token does not match callback"))
+                                  (handler-user-data handler)))
+                     ;; Keep the current association rooted even after self-unbinding.
+                     ;; Nested callbacks replace this view only for their own extent.
+                     (*callback-user-data* (cons user-data-token user-data))
                      (value (progn
                               (when (and (= kind 2) (cffi:null-pointer-p text))
                                 (error "Missing text-change payload"))
@@ -107,7 +116,7 @@
                      (checked-p (and (= kind 3) (not (zerop checked))))
                      (event (%make-event event-kind (handler-source handler) value checked-p
                                          (when (= kind 4) (unless (= selection -1) selection)) id native-type
-                                         (not (zerop can-veto)) (not (zerop vetoed)) family integer (not (zerop logging-off)) timestamp (not (zerop command)) origin-id category extra-long (not (zerop selection-action)))))
+                                         (not (zerop can-veto)) (not (zerop vetoed)) family integer (not (zerop logging-off)) timestamp (not (zerop command)) origin-id category extra-long (not (zerop selection-action)) user-data)))
                 (if (handler-with-context handler)
                     (funcall (handler-function handler) event (%make-event-context context))
                     (funcall (handler-function handler) event)))))))
@@ -819,9 +828,9 @@ live checkbox, including when called from inside its handler."
   (check-type id (integer -2147483648 2147483647))
   (when (= id -1) (error "Event ID -1 is reserved; use NIL for an unfiltered binding"))
   id)
-(defgeneric bind-event (handler kind function &key id last-id with-context)
-  (:documentation "Bind an observer, or a two-argument contextual callback with explicit Skip control."))
-(defmethod bind-event ((source event-handler) kind function &key id last-id with-context)
+(defgeneric bind-event (handler kind function &key id last-id with-context user-data)
+  (:documentation "Bind an observer, or a two-argument contextual callback with explicit Skip control. USER-DATA retains a Lisp value exposed by EVENT-USER-DATA during this binding's callbacks."))
+(defmethod bind-event ((source event-handler) kind function &key id last-id with-context user-data)
   (require-active-application)
   (check-type function function)
   (let ((native-kind (native-event-kind kind)))
@@ -833,10 +842,10 @@ live checkbox, including when called from inside its handler."
            (binding (%make-event-binding source kind token))
            (complete nil))
       (setf (gethash token *event-bindings*) binding
-            (gethash token *handlers*) (make-handler :source source :function function :with-context with-context))
+            (gethash token *handlers*) (make-handler :source source :function function :with-context with-context :user-data user-data))
       (unwind-protect
            (progn
-             (check-status (%bind (handle source) native-kind token (or id -1) (or last-id -1) (if with-context 1 0)))
+             (check-status (%bind (handle source) native-kind token (or id -1) (or last-id -1) (if with-context 1 0) (if user-data 1 0)))
              (setf complete t)
              binding)
         (unless complete
@@ -1431,3 +1440,22 @@ live checkbox, including when called from inside its handler."
            value)
       (unless (or complete (zerop token))
         (remhash token *handler-client-data-roots*)))))
+
+;;; Binding user data is copied as an association, not as mutable Lisp contents.
+(defgeneric event-user-data (event)
+  (:documentation "Read this callback binding's EQ Lisp datum; snapshots retain it, contexts require their current innermost callback. Owned events have no binding datum."))
+(defmethod event-user-data ((event event)) (event-user-data-value event))
+(defmethod event-user-data ((context event-context))
+  (require-active-application)
+  (cffi:with-foreign-object (token :uint64)
+    (check-status (%context-user-data (event-context-token context) token))
+    (let ((id (cffi:mem-ref token :uint64)))
+      (unless (zerop id)
+        (unless (and *callback-user-data* (= id (car *callback-user-data*)))
+          (error 'native-error :message "Binding user data is not rooted in this callback"))
+        (cdr *callback-user-data*)))))
+(defmethod event-user-data ((event owned-event))
+  (require-active-application)
+  (cffi:with-foreign-object (token :uint64)
+    (check-status (%event-user-data (handle event) token))
+    nil))

@@ -3,7 +3,7 @@
 This C1 slice adds independent observer bindings on standalone `event-handler`
 objects and borrowed window identities. It covers `:click` (`wxEVT_BUTTON`),
 `:text-change` (`wxEVT_TEXT`), `:toggle` (`wxEVT_CHECKBOX`) and `:selection`
-(`wxEVT_CHOICE`), using the wxWidgets 3.2.12 baseline. The bridge is ABI 29.
+(`wxEVT_CHOICE`), using the wxWidgets 3.2.12 baseline. The bridge is ABI 30.
 Optional [scoped contexts](EVENT-CONTEXTS.md) now support Skip/propagation;
 close-veto support is now available through the [close family](CLOSE-EVENTS.md).
 Registered [notify/command types](NOTIFY-EVENTS.md) now add named native tags and
@@ -94,7 +94,7 @@ Queuing only supplies event data: it does not change a text control's contents,
 checkbox state or choice selection. Use generic SETF properties to change those
 values and optionally notify. Synthetic selections are payload indices, not
 validated against a choice's items. Native origin override, arbitrary custom
-event classes, userData and worker-to-GUI dispatch are not implemented. Synthetic `:close` events use a
+event classes, arbitrary native userData adoption and worker-to-GUI dispatch are not implemented. Synthetic `:close` events use a
 separate native event class and may run default frame closing; see [close events](CLOSE-EVENTS.md).
 
 ## Lifetime, errors and cleanup
@@ -167,3 +167,8 @@ standalone handlers without transferring native ownership, detach them on actual
 window destruction and provide explicit stack-aware copy processing. Standalone
 peer editing excludes attached nodes; arbitrary SetEventHandler/external adoption
 remain unbound.
+
+[Per-binding Lisp user data](BINDING-USER-DATA.md) now provides BIND-EVENT
+:USER-DATA and read-only snapshot/context association access, distinct from
+handler client data and native command/client/item pointers. Borrowed native
+userdata still prevents owned cloning; no mutable association API is added.

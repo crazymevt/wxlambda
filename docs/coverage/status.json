@@ -888,7 +888,7 @@
       "native": [
         "wxl_bind"
       ],
-      "scope": "Independent observer bindings for supported command/close kinds, exact IDs/ranges and one immutable Lisp snapshot per matching binding. Observer Skip or optional two-argument scoped contextual callback controlling Skip/propagation. No userData, arbitrary event types or native-origin lookup."
+      "scope": "Independent bindings for all supported built-in and registered command/notify tags, exact ID/range filters, observer Skip or innermost contextual callbacks, and optional EQ Lisp USER-DATA through an entry-owned wxObject token adapter. Snapshot association and active frame survive unbind appropriately. No arbitrary native pointer/functor adoption, mutable association API or worker registration."
     },
     {
       "header": "wx/event.h",
@@ -902,7 +902,7 @@
       "native": [
         "wxl_unbind"
       ],
-      "scope": "Exact binding identity for the supported supported command/close kinds. Self/peer unbinding is safe; active native callback object is kept alive until return. No arbitrary functor/handler signatures or userData."
+      "scope": "Exact managed registration identity removes native entry/token adapter and global callback/data roots; active callback frame and saved snapshots can retain the Lisp reference. Self/peer unbind is safe without dereferencing freed userData. No arbitrary native functor signatures, pointer adoption or mutable data association."
     },
     {
       "header": "wx/event.h",
@@ -2072,6 +2072,57 @@
         "wxl_client_data_active"
       ],
       "scope": "Managed handler typed token adapter retains an EQ Lisp value in session roots; NIL clears. Fresh None/typedNULL accepted, foreign non-null typed and every untyped/Void mode (including NULL pointer) reject untouched before typed access. No Lisp pointer, generic client object wrapper, untyped data, event/userData/item data or external native adoption. Protected mode inspection is an implementation dependency for C7."
+    },
+    {
+      "header": "wx/event.h",
+      "line": 174,
+      "declaration": "wxObject *GetEventUserData() const;",
+      "status": "~",
+      "symbol": "wxEvent::GetEventUserData",
+      "lisp": [
+        "bind-event",
+        "event-user-data"
+      ],
+      "native": [
+        "wxl_bind",
+        "wxl_context_user_data",
+        "wxl_event_user_data"
+      ],
+      "scope": "Per-binding EQ Lisp value via native entry-owned numeric wxObject token adapter; snapshots capture reference, contexts retain callback frame identity after unbind, owned events NIL/reject borrowed pointers. No raw Lisp/native pointer, generic wxObject wrapper, mutable association or arbitrary native userData adoption. Mutable referents are not deep-copied."
+    },
+    {
+      "header": "wx/object.h",
+      "line": 239,
+      "declaration": "wxObject();",
+      "status": "~",
+      "symbol": "wxObject::wxObject",
+      "lisp": [
+        "bind-event",
+        "event-user-data"
+      ],
+      "native": [
+        "wxl_bind",
+        "wxl_context_user_data",
+        "wxl_event_user_data"
+      ],
+      "scope": "Per-binding EQ Lisp value via native entry-owned numeric wxObject token adapter; snapshots capture reference, contexts retain callback frame identity after unbind, owned events NIL/reject borrowed pointers. No raw Lisp/native pointer, generic wxObject wrapper, mutable association or arbitrary native userData adoption. Mutable referents are not deep-copied."
+    },
+    {
+      "header": "wx/object.h",
+      "line": 255,
+      "declaration": "virtual ~wxObject();",
+      "status": "~",
+      "symbol": "wxObject::~wxObject",
+      "lisp": [
+        "bind-event",
+        "event-user-data"
+      ],
+      "native": [
+        "wxl_bind",
+        "wxl_context_user_data",
+        "wxl_event_user_data"
+      ],
+      "scope": "Per-binding EQ Lisp value via native entry-owned numeric wxObject token adapter; snapshots capture reference, contexts retain callback frame identity after unbind, owned events NIL/reject borrowed pointers. No raw Lisp/native pointer, generic wxObject wrapper, mutable association or arbitrary native userData adoption. Mutable referents are not deep-copied."
     }
   ],
   "classes": {
@@ -2224,7 +2275,7 @@
         "wxl_gauge_vertical",
         "wxl_gauge_pulse"
       ],
-      "scope": "Parent-owned progress gauge: positive range, value, horizontal/vertical orientation and pulsing. Constructor options, two-step creation and full inherited API remain open. Gauge support introduced in ABI 10; current bridge ABI 29; see docs/GAUGE.md and tests/gauge.lisp."
+      "scope": "Parent-owned progress gauge: positive range, value, horizontal/vertical orientation and pulsing. Constructor options, two-step creation and full inherited API remain open. Gauge support introduced in ABI 10; current bridge ABI 30; see docs/GAUGE.md and tests/gauge.lisp."
     },
     "wxAppConsole": {
       "status": "~",
@@ -2290,7 +2341,8 @@
         "handler-unlinked-p",
         "unlink-event-handler",
         "event-handler-client-data",
-        "(setf event-handler-client-data)"
+        "(setf event-handler-client-data)",
+        "event-user-data"
       ],
       "native": [
         "wxl_event_handler",
@@ -2310,9 +2362,11 @@
         "wxl_unlink_handler",
         "wxl_handler_client_data",
         "wxl_set_handler_client_data",
-        "wxl_client_data_active"
+        "wxl_client_data_active",
+        "wxl_context_user_data",
+        "wxl_event_user_data"
       ],
-      "scope": "Owned/borrowed handler identities and command/close-family bindings with exact IDs/ranges, safe unbinding, copied queue payloads and weak invalidation. Callback-time receiver disposal is deferred; generic roots are reaped at Lisp boundaries. Optional contextual callbacks now control Skip/propagation for supported command/close kinds. Arbitrary event types/userData, derived notify classes, pushed chains and worker dispatch remain open. See docs/EVENT-CONTEXTS.md. Registered command/notify names and synchronous ProcessEvent are now supported; native OS session delivery remains unverified. Query/end-session binding is available on the managed app and isolated owned handlers; synthetic app/window session emission rejects; OS delivery remains unverified. GUI post copies, native owned-event handoff, local copy processing and target-only pending deletion are supported. Delete rejects app/dispatch boundaries and synchronizes native pending-handler membership. Source consumption occurs only for transfer; per-handler pending processing and app-wide deletion remain open. Managed standalone reciprocal chains, canonical peer roots, guarded segment joins/splits/unlink and native destructor splicing are now supported. Reads may run in callbacks; mutations and linked callback-time destruction reject. Borrowed window/app chains and native Push/Pop/Remove ownership remain open. Owned standalone handlers may be attached by dedicated managed window-stack APIs without native ownership transfer. Standalone peer operations reject attached nodes, except IsUnlinked=false. Active/queued session events prevent push and attached session binding/delivery rejects. Managed typed client objects now retain arbitrary Lisp values by numeric session-root token, including window/application receivers. Foreign typed/untyped storage rejects safely; no raw Lisp pointer or event/item/client container ownership."
+      "scope": "Managed standalone ownership, borrowed window/app identities, guarded standalone chains and managed window stacks support bindings, ID/range filters, normal/local/copied/pending/transfer delivery and bounded target cancellation. Handler-wide Lisp client data and distinct per-binding EQ USER-DATA use native numeric token adapters with session/frame/snapshot lifetime guards. Attached session delivery and dispatch-time structural edits reject. External adoption, arbitrary raw typed/untyped/userData/client/item pointers, generic container ownership, per-handler pending queries, app-wide cancellation, native OS-session validation, timer/idle and worker facilities remain open."
     },
     "wxEvent": {
       "status": "~",
@@ -2354,7 +2408,8 @@
         "(setf event-checked-p)",
         "event-selection",
         "(setf event-selection)",
-        "(setf event-origin-id)"
+        "(setf event-origin-id)",
+        "event-user-data"
       ],
       "native": [
         "wxl_bind",
@@ -2383,9 +2438,11 @@
         "wxl_event_field",
         "wxl_set_event_field",
         "wxl_event_text",
-        "wxl_set_event_text"
+        "wxl_set_event_text",
+        "wxl_context_user_data",
+        "wxl_event_user_data"
       ],
-      "scope": "Immutable supported command/close snapshots and current-callback wxEvent base views for Skip/propagation; close veto is checked through wxCloseEvent only. Arbitrary native construction/cloning, mutable type/origin, userData and broader families remain open. See docs/CLOSE-EVENTS.md. Timestamp/command classification snapshots and current reads, bounded native LONG timestamp SETF and close-only CanVeto SETF are implemented; snapshots stay immutable. Scoped ID reads/SETF are implemented; native routing after mutation is verified separately from snapshot immutability. Current native type and bounded registered-origin identity reads are implemented; native type/origin mutation and general wxObject wrappers remain open. Captured/current virtual category reads are supported; no selective pumping. Bounded registered same-family native type SETF is now supported with actual native class checks; arbitrary and built-in/session tag mutation remains open. Session-owned detached exact command/notify/close events now support native construction, cloning, disposal and copied dispatch; no arbitrary derived class, retained origin, client/userData ownership or arbitrary native transfer. Native wxEVT_TEXT payload guards prevent lazy text-entry origin shadowing; detached clones freeze effective strings. Supported owned events can now be transferred through wxQueueEvent after preflight; the original handle is consumed. Post/local operations preserve source through independent copies. Extra LONG/raw IsSelection and uniform kind-specific semantic checked/selection native views are now bound. Clear-only compatible registered origin detachment is supported; non-NIL/retained origins, client/userData ownership and full derived-event semantics remain open."
+      "scope": "Supported immutable snapshots, innermost native contexts and detached owned command/notify/close resources provide generic metadata/payload views, bounded registered-tag SETF, NIL-only origin clearing and native clone/copy/post/transfer semantics. Per-binding EQ Lisp USER-DATA is captured by snapshots and retained by active context frames across unbind; mutable referents are not deep-copied. Remaining gaps include arbitrary native classes/tags, retained or new origin objects, general native userData/client/item pointer adoption, generic wxObject wrappers and broader event families."
     },
     "wxCloseEvent": {
       "status": "~",
@@ -2491,7 +2548,7 @@
         "wxl_event_text",
         "wxl_set_event_text"
       ],
-      "scope": "Registered synthetic notify types, immutable payload/family snapshots and scoped Veto/Allow. No native control-specific notify subclasses, persistent native event ownership/cloning, validated OS session delivery or userData. See docs/NOTIFY-EVENTS.md. Session-owned detached exact command/notify/close events now support native construction, cloning, disposal and copied dispatch; no arbitrary derived class, retained origin, client/userData ownership or arbitrary native transfer. Native wxEVT_TEXT payload guards prevent lazy text-entry origin shadowing; detached clones freeze effective strings. Supported owned events can now be transferred through wxQueueEvent after preflight; the original handle is consumed. Post/local operations preserve source through independent copies. Extra LONG/raw IsSelection and uniform kind-specific semantic checked/selection native views are now bound. Clear-only compatible registered origin detachment is supported; non-NIL/retained origins, client/userData ownership and full derived-event semantics remain open."
+      "scope": "Registered notify snapshots/current views and exact owned wxNotifyEvent resources provide payload metadata, Veto/Allow and guarded detached clone/copy/post/transfer operations. Shared per-binding EQ Lisp USER-DATA readers retain association lifetimes without adopting native pointers; handler client data remains separate. Native control-specific notify subclasses, broad virtual hooks, retained origins, general native client/item/userData pointer ownership and worker dispatch remain open."
     },
     "wxCommandEvent": {
       "status": "~",
@@ -2536,7 +2593,7 @@
         "wxl_event_text",
         "wxl_set_event_text"
       ],
-      "scope": "Built-in and registered command tags with copied string/integer payloads and scoped dispatch. Remaining native fields/mutators, arbitrary derived classes, persistent ownership/cloning and worker dispatch remain open. Session-owned detached exact command/notify/close events now support native construction, cloning, disposal and copied dispatch; no arbitrary derived class, retained origin, client/userData ownership or arbitrary native transfer. Native wxEVT_TEXT payload guards prevent lazy text-entry origin shadowing; detached clones freeze effective strings. Supported owned events can now be transferred through wxQueueEvent after preflight; the original handle is consumed. Post/local operations preserve source through independent copies. Extra LONG/raw IsSelection and uniform kind-specific semantic checked/selection native views are now bound. Clear-only compatible registered origin detachment is supported; non-NIL/retained origins, client/userData ownership and full derived-event semantics remain open."
+      "scope": "Supported built-in/registered command snapshots, current views and exact owned base-class events provide counted UTF-8 text, signed32 integer, native LONG extra metadata and kind-limited checked/selection semantics. Detached cloning/copying/posting/transfer and bounded native-tag/origin operations preserve existing guards. Per-binding EQ Lisp USER-DATA is read through shared snapshot/context association APIs, not command client fields. Arbitrary derived control payload semantics, retained origins, native client/item/userData pointer adoption and worker dispatch remain open."
     },
     "wxClientData": {
       "status": "~",
@@ -2550,6 +2607,19 @@
         "wxl_client_data_active"
       ],
       "scope": "Prerequisite native token-adapter subclass only for managed wxEvtHandler client objects, backed by session Lisp roots. Native adapter deletion invalidates association; asynchronous roots reap at access/cleanup/session end. No public wxClientData wrapper/factory, arbitrary subclasses, untyped/client/userData/item ownership or full container API."
+    },
+    "wxObject": {
+      "status": "~",
+      "lisp": [
+        "bind-event",
+        "event-user-data"
+      ],
+      "native": [
+        "wxl_bind",
+        "wxl_context_user_data",
+        "wxl_event_user_data"
+      ],
+      "scope": "Prerequisite entry-owned native binding-token adapter only; Lisp object retained separately by association/frame/snapshot references. No generic public wxObject wrapper/factory, raw pointer adoption, reference-data API or arbitrary ownership."
     }
   }
 }

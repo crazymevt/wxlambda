@@ -83,7 +83,7 @@ application with `(wxlambda:load-native-library #P"C:/path/to/wxlambda.dll")`.
 Dependent wxWidgets DLLs must also be discoverable by the OS loader.
 
 The bridge normally loads from `build/`, then falls back to the system library
-search path. The Lisp/native ABI version (currently 29) is checked on load; rebuild
+search path. The Lisp/native ABI version (currently 30) is checked on load; rebuild
 the bridge after updating the bindings. Installing the bridge with CMake does not
 install the ASDF system.
 
@@ -728,3 +728,6 @@ metadata, semantic checked/selection SETF and bounded origin clearing.
 
 [Handler Lisp client data](docs/HANDLER-CLIENT-DATA.md) retains EQ state through
 managed typed native adapters while rejecting foreign storage safely.
+
+[Binding Lisp user data](docs/BINDING-USER-DATA.md) adds per-registration EQ
+association reads with safe current-context and saved-snapshot lifetimes.

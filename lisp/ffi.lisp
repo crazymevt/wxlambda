@@ -24,7 +24,8 @@
   (origin-id :uint64)
   (category :int)
   (extra-long :int64)
-  (selection-action :int))
+  (selection-action :int)
+  (user-data-token :uint64))
 
 (cffi:defcfun ("wxl_abi_version" %abi-version) :int)
 (cffi:defcfun ("wxl_last_error" %last-error) :string)
@@ -91,7 +92,7 @@
           (if (probe-file local)
               (cffi:load-foreign-library local)
               (cffi:use-foreign-library wxlambda-native))))
-    (unless (= 29 (%abi-version)) (error "Unsupported wxlambda native ABI"))
+    (unless (= 30 (%abi-version)) (error "Unsupported wxlambda native ABI"))
     (setf *native-loaded* t))
   t)
 
@@ -116,7 +117,7 @@
 (cffi:defcfun ("wxl_set_handler_enabled" %set-handler-enabled) :int (handler :uint64) (enabled :int))
 (cffi:defcfun ("wxl_handler_destroy" %handler-destroy) :int (handler :uint64))
 
-(cffi:defcfun ("wxl_bind" %bind) :int (handler :uint64) (kind :int) (token :uint64) (id :int) (last-id :int) (with-context :int))
+(cffi:defcfun ("wxl_bind" %bind) :int (handler :uint64) (kind :int) (token :uint64) (id :int) (last-id :int) (with-context :int) (user-data :int))
 (cffi:defcfun ("wxl_unbind" %unbind) :int (token :uint64))
 (cffi:defcfun ("wxl_binding_active" %binding-active) :int (token :uint64))
 (cffi:defcfun ("wxl_queue_event" %queue-event) :int (handler :uint64) (kind :int) (id :int) (text :pointer) (length :size) (value :int) (can-veto :int) (vetoed :int) (logging-off :int))
@@ -184,3 +185,6 @@
 (cffi:defcfun ("wxl_handler_client_data" %handler-client-data) :int (handler :uint64) (token :pointer))
 (cffi:defcfun ("wxl_set_handler_client_data" %set-handler-client-data) :int (handler :uint64) (token :uint64))
 (cffi:defcfun ("wxl_client_data_active" %client-data-active) :int (token :uint64))
+
+(cffi:defcfun ("wxl_context_user_data" %context-user-data) :int (context :uint64) (token :pointer))
+(cffi:defcfun ("wxl_event_user_data" %event-user-data) :int (event :uint64) (token :pointer))

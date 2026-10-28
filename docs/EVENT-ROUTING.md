@@ -1,6 +1,6 @@
 # Scoped event IDs and routing
 
-ABI 29 extends EVENT-ID to a generic reader for saved immutable snapshots and
+ABI 30 extends EVENT-ID to a generic reader for saved immutable snapshots and
 current innermost contexts. Context-only SETF maps wxEvent::SetId. Supported
 scope is the existing seven built-in kinds and registered command/notify types,
 using the wxWidgets 3.2.12 baseline. No native event ownership is transferred.
@@ -52,10 +52,11 @@ parent exact/range/wildcard matching, consumption and queued delivery. It does
 not generate native OS logout/shutdown events. Synthetic session events retain
 their isolated owned-handler restrictions.
 
-Native type mutation, origin access/mutation, categories/userData, persistent
-event ownership/cloning, derived notify classes, pushed handlers, timer/idle and
-worker dispatch remain C1 work. Next define safe native type/origin contracts;
-a type tag must never authorize casting an incompatible native event object.
+Arbitrary native tag/origin mutation, general native userData/client pointer
+adoption, broader persistent event ownership/cloning, derived notify classes,
+external native handler adoption, timer/idle and worker dispatch remain C1 work.
+Bounded registered tag mutation, origin clearing, category metadata and detached
+owned events are now supported; no type tag authorizes incompatible native casts.
 
 Build/check using `python3 tools/docset.py build` and `check`; install using
 `python3 tools/docset.py install` under `$XDG_DATA_HOME/docsets/wxlambda/`

@@ -1,6 +1,6 @@
 # Lisp client data attached to managed handlers
 
-ABI 29 adds EVENT-HANDLER-CLIENT-DATA and its generic SETF writer. The receiver
+ABI 30 adds EVENT-HANDLER-CLIENT-DATA and its generic SETF writer. The receiver
 is any current public EVENT-HANDLER wrapper: an owned standalone handler, a
 managed window/control or the borrowed managed APPLICATION-HANDLER. The baseline
 is wxWidgets 3.2.12. OWNED-EVENT and immutable event snapshots are different
@@ -63,9 +63,9 @@ reconciliation. It is not a new public field/mode getter, arbitrary native
 handler adoption or wxClientDataContainer binding.
 
 Untyped GetClientData/SetClientData remains unbound. This property is also not
-wxCommandEvent::GetClientObject/SetClientObject, event userData or per-item client
-data on a choice/list control. Those pointer lifetimes and ownership rules remain
-separate gaps. Owned-event clone/dispatch rejection of borrowed event client or
+wxCommandEvent::GetClientObject/SetClientObject or per-item client data on a
+choice/list control. Those pointer lifetimes and ownership rules remain gaps.
+Per-binding Lisp USER-DATA is now supported separately; it is not this handler slot. Owned-event clone/dispatch rejection of borrowed event client or
 userData pointers is unchanged by storing a Lisp value on a handler.
 
 ## Lifetime and cleanup boundaries
@@ -136,3 +136,8 @@ Build/check with `python3 tools/docset.py build` and `check`; install with
 (default `~/.local/share/docsets/wxlambda/`) for Cadre discovery and lookup.
 See [handler lifetime](EVENT-HANDLERS.md), [window stacks](WINDOW-HANDLER-STACKS.md),
 [owned events](OWNED-EVENTS.md) and [docset installation](DOCSET.md).
+
+[Per-binding Lisp user data](BINDING-USER-DATA.md) now provides BIND-EVENT
+:USER-DATA and read-only snapshot/context association access, distinct from
+handler client data and native command/client/item pointers. Borrowed native
+userdata still prevents owned cloning; no mutable association API is added.

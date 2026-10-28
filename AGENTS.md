@@ -97,7 +97,10 @@ Direct clone construction uses source native state over payload defaults; factor
 clone calls reject explicit payload overrides. No raw origin retention or
 event client/userData ownership is exposed. Managed EVENT-HANDLER-CLIENT-DATA
 retains Lisp values through typed numeric-token adapters/session roots; foreign
-typed/untyped modes reject untouched. It is not event payload or per-item data. Origin SETF is clear-only NIL: non-null
+typed/untyped modes reject untouched. It is not event payload or per-item data. BIND-EVENT :USER-DATA separately
+retains per-registration EQ values through native entry-owned token adapters.
+Snapshots capture the reference, not mutable contents; active context frames
+retain it across unbinding. No EVENT-USER-DATA SETF or raw pointer adoption. Origin SETF is clear-only NIL: non-null
 current origins require registered compatible command/notify classes; built-in
 non-null origins reject. Semantic checked/selection views remain kind-limited,
 while raw IsSelection is extra-LONG action metadata independent of kind/index.
