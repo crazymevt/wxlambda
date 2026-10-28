@@ -111,6 +111,8 @@ class CoverageInventoryChecks(unittest.TestCase):
     def test_reviewed_bindings_have_persistent_status(self):
         required = {
             'wxFrame::wxFrame', 'wxPanel::wxPanel', 'wxButton::wxButton',
+            'wxAppConsole::ProcessPendingEvents', 'wxAppConsole::HasPendingEvents',
+            'wxAppConsole::IsMainLoopRunning',
             'wxTextCtrl::wxTextCtrl', 'wxStaticText::wxStaticText',
             'wxCheckBox::wxCheckBox', 'wxChoice::wxChoice',
             'wxGauge::wxGauge', 'wxGauge::GetValue', 'wxGauge::SetValue',

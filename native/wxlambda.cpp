@@ -24,7 +24,16 @@ std::unordered_map<wxl_handle, wxWindow*> windows;
 std::unordered_map<wxl_handle, uint64_t> handlers;
 wxl_handle next_handle = 1;
 wxl_callback dispatch = nullptr;
-bool started = false, used = false, running = false;
+bool started = false, used = false, running = false, pumping = false;
+unsigned callback_depth = 0;
+struct CallbackScope {
+    CallbackScope() { ++callback_depth; }
+    ~CallbackScope() { --callback_depth; }
+};
+struct PumpScope {
+    PumpScope() { pumping = true; }
+    ~PumpScope() { pumping = false; }
+};
 
 void require(bool ok, const char* message) {
     if (!ok) throw std::runtime_error(message);
@@ -58,11 +67,19 @@ void make_box(wxl_handle id, int orientation) {
     require(parent->GetSizer() == nullptr, "Window already has a sizer");
     parent->SetSizer(new wxBoxSizer(orientation));
 }
+void invoke_callback(uint64_t token, const wxl_event& event) {
+    CallbackScope scope;
+    dispatch(token, &event);
+}
+void require_dispatch_entry() {
+    require(!running, "Event loop is already running");
+    require(!pumping && callback_depth == 0, "Cannot enter event dispatch from a pump or callback");
+}
 void emit_event(wxl_handle id, const wxl_event& event) {
     const auto it = handlers.find(id);
     if (it != handlers.end() && dispatch) {
         const auto token = it->second;
-        dispatch(token, &event);
+        invoke_callback(token, event);
     }
 }
 wxl_handle track(wxWindow* object) {
@@ -114,7 +131,7 @@ wxString utf8(const char* value) {
 }
 }
 extern "C" {
-int wxl_abi_version() { return 10; }
+int wxl_abi_version() { return 11; }
 const char* wxl_last_error() { return error.c_str(); }
 int wxl_start(wxl_callback callback) {
     return status([&] {
@@ -141,7 +158,7 @@ int wxl_start(wxl_callback callback) {
 int wxl_run() {
     return status([] {
         ready();
-        require(!running, "Event loop is already running");
+        require_dispatch_entry();
         require(!wxTopLevelWindows.empty(), "Create a frame before running the event loop");
         running = true;
         try { wxTheApp->OnRun(); }
@@ -152,16 +169,31 @@ int wxl_run() {
 int wxl_poll() {
     return status([] {
         ready();
-        require(!running, "Cannot poll inside the blocking event loop");
+        require_dispatch_entry();
+        PumpScope scope;
         wxTheApp->Yield(true);
         wxTheApp->ProcessIdle();
+    });
+}
+int wxl_main_loop_running() {
+    return boolean_result([] { ready(); return wxApp::IsMainLoopRunning(); });
+}
+int wxl_pending_events() {
+    return boolean_result([] { ready(); return wxTheApp->HasPendingEvents(); });
+}
+int wxl_process_pending_events() {
+    return status([] {
+        ready();
+        require_dispatch_entry();
+        PumpScope scope;
+        wxTheApp->ProcessPendingEvents();
     });
 }
 int wxl_stop() { return status([] { ready(); require(running, "Event loop is not running"); wxTheApp->ExitMainLoop(); }); }
 int wxl_finish() {
     return status([] {
         ready();
-        require(!running, "Cannot clean up inside the event loop");
+        require_dispatch_entry();
         // Destroy remaining top-level windows before OnExit (also on setup failure).
         while (!wxTopLevelWindows.empty())
             delete wxTopLevelWindows.GetFirst()->GetData();
@@ -199,7 +231,7 @@ wxl_handle wxl_text(wxl_handle parent, const char* value) {
                 const auto text = event.GetString();
                 const auto bytes = text.ToUTF8();
                 const wxl_event payload{WXL_EVENT_TEXT_CHANGE, bytes.data() ? bytes.data() : "", 0};
-                dispatch(token, &payload);
+                invoke_callback(token, payload);
             }
         });
         return id;

@@ -117,10 +117,30 @@ while native GUI code runs. The REPL blocks until FUNCTION returns."
   (if *repl-running* (setf *repl-running* nil) (check-status (%stop))))
 
 (defun process-events ()
-  "Process pending GUI events on the application thread without blocking."
+  "Process GUI events and idle work without blocking; forbidden inside pumps or callbacks."
   (when *repl-debugging*
     (error "GUI event processing is paused in the application REPL debugger"))
   (check-status (%poll))
+  (check-callback-error))
+
+(defun require-active-application ()
+  (unless *active*
+    (error 'native-error :message "An active application session is required")))
+
+(defun main-loop-running-p ()
+  "Return true while the active application's native blocking main loop runs."
+  (require-active-application)
+  (boolean-result (%main-loop-running)))
+(defun pending-events-p ()
+  "Query queued wx events, excluding OS input, idle work and future timers."
+  (require-active-application)
+  (boolean-result (%pending-events)))
+(defun process-pending-events ()
+  "Dispatch queued wx events only, outside RUN, other pumps and callbacks."
+  (require-active-application)
+  (when *repl-debugging*
+    (error "GUI event processing is paused in the application REPL debugger"))
+  (check-status (%process-pending-events))
   (check-callback-error))
 
 (defun repl-input-ready-p (input)

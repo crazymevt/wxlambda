@@ -458,6 +458,55 @@ on both Lisps. The reviewer verified the fix and reported no remaining actionabl
 findings. The user has directed that unfinished C1 foundations take priority before further
 C2 widget expansion; finish and review this gauge slice, then return to C1.
 
+## C1 foundation: application event dispatch
+
+- [x] Expose `main-loop-running-p`, `pending-events-p` and
+  `process-pending-events` for the active bridge application, distinguishing wx
+  pending events from GUI/OS polling and idle processing.
+- [x] Guard RUN, both event pumps and native cleanup against callback/pump
+  reentrancy, including synchronous notifying setters before RUN starts.
+- [x] Add the runnable application-events example, focused regression scenario,
+  guide, API reference and pinned C1 declaration mappings.
+
+This is an application-dispatch prerequisite within C1, not completion of the
+application or event-handler inventory. The next dependency is event-handler
+ownership and generic binding, followed by timer/idle/propagation and
+worker-to-GUI dispatch, with required value/ownership contracts before consumers.
+All new APIs require an active main-thread session. Queries return T/NIL;
+pending-only dispatch returns NIL and re-signals contained callback conditions
+after returning from native code. Existing synchronous notifications and the
+cooperative application REPL remain supported. Native ABI 11 adds these entry
+points and the dispatch boundary; rebuild the bridge alongside the bindings.
+
+Local Apple Silicon macOS verification passes native preflight and all 28 GUI
+scenarios on SBCL 2.6.9 and CCL 1.13, including the example, loop/queue queries,
+pending dispatch, raw/native callback guards, notifying-setter boundaries,
+debugger pauses, inactive sessions and recovery after callback failure.
+The initial focused test used an incorrect zero-argument text callback; it was
+corrected to accept the event snapshot and both Lisp reruns pass. Full reports
+are retained in `evidence/application-events/{sbcl,ccl}-20261028/`.
+Independent review found that fresh-ASDF-load calls initially raised an FFI
+lookup error instead of NATIVE-ERROR before bridge loading. All three new public
+functions now check the active session before calling the FFI. The fresh-load
+regression verifies NATIVE-ERROR without loading the bridge, then checks raw
+native pre-session errors. The reviewer independently verified this fix and
+reported no remaining actionable findings. Both full 28-scenario suites pass
+after the fix; final reports are under
+`evidence/application-events/{sbcl,ccl}-review-fix-20261028/`.
+
+Python reporter/docset regressions and all pinned-upstream inventory checks pass.
+The docset contains 86 entries and covers all 68 public exports, guides and nine
+example sources. Build/check and actual-package export/SETF lookup verification
+pass on both Lisps with zero `docset:check-docset` problems; indexed reading,
+links, shared-reader discovery and an isolated temporary installation are
+verified. Installation instructions are
+in [DOCSET.md](docs/DOCSET.md).
+The rebuilt `dist/wxlambda-form-application-events-reviewed` passes all five packaging
+isolation, relocation, REPL and missing-library checks; evidence is in
+`evidence/packaging/application-events-reviewed-20261028/`. Hosted Linux/Windows GUI
+execution and the graphical Cadre viewer remain unvalidated. The C1 inventory
+remains open, and no further C2 widget families were added.
+
 ## Decisions
 
 - D1 Target a bounded first release while tracking full wxWidgets coverage in

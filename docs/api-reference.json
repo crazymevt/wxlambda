@@ -51,7 +51,7 @@
     "arguments": "No arguments.",
     "returns": "NIL after the event loop returns.",
     "description": "Block until STOP or the last top-level frame closes. Callback errors are re-signaled after returning from native code.",
-    "scope": "Requires at least one frame and no already-running loop. Unavailable inside the application REPL. Native failures and callback conditions propagate.",
+    "scope": "Requires an active main-thread GUI session and at least one frame. Forbidden inside RUN, either pump, any native-to-Lisp callback, and the application REPL. Native failures and callback conditions propagate.",
     "wxwidgets": "wxAppConsole::OnRun"
   },
   {
@@ -68,8 +68,8 @@
     "kind": "function",
     "arguments": "No arguments.",
     "returns": "NIL.",
-    "description": "Process pending GUI events without blocking; re-signal callback errors after polling.",
-    "scope": "Requires an active GUI session on the process main thread. Invalid/destroyed handles or unsupported native arguments signal NATIVE-ERROR; Lisp argument/type errors remain Lisp conditions. One GUI session per process. Forbidden inside RUN or the application REPL debugger.",
+    "description": "Yield to GUI events and process idle work without waiting for new input; re-signal callback errors after returning from native polling.",
+    "scope": "Requires an active main-thread GUI session. Forbidden inside RUN, either event pump or any native-to-Lisp callback (NATIVE-ERROR), and inside the application REPL debugger (Lisp error). Existing synchronous notifying setters remain supported.",
     "wxwidgets": "wxAppConsole::Yield(true) and ProcessIdle"
   },
   {
@@ -677,5 +677,32 @@
     "description": "Request platform-native indeterminate progress. Call periodically while keeping the GUI event loop responsive. Visual animation and value readings vary by platform; no timer, worker dispatch or completion event is provided. SETF GAUGE-VALUE restores determinate mode.",
     "scope": "Requires a live gauge in an active main-thread GUI session. Stale/destroyed handles, native type errors and values above the range signal NATIVE-ERROR; wrong Lisp receivers use CLOS dispatch errors. Numeric arguments must fit signed 32-bit integers; invalid Lisp types/ranges signal TYPE-ERROR. No command events or native virtual overrides.",
     "wxwidgets": "wxGauge::Pulse (wxWidgets 3.2.12 baseline)."
+  },
+  {
+    "name": "main-loop-running-p",
+    "kind": "function",
+    "arguments": "No arguments.",
+    "returns": "T while the native main loop runs, otherwise NIL.",
+    "description": "Query wxAppConsole::IsMainLoopRunning. False during standalone pending dispatch, standalone GUI polling and the cooperative application REPL; those modes can still deliver callbacks. This is a main-loop query, not a callback-safety predicate.",
+    "scope": "Requires an active main-thread GUI session; use before startup or after cleanup signals NATIVE-ERROR. This API is scoped to the bridge application, not arbitrary wxApp instances.",
+    "wxwidgets": "wxAppConsole::IsMainLoopRunning (wxWidgets 3.2.12 baseline)."
+  },
+  {
+    "name": "pending-events-p",
+    "kind": "function",
+    "arguments": "No arguments.",
+    "returns": "T if wxWidgets has queued pending events, otherwise NIL.",
+    "description": "Query wxAppConsole::HasPendingEvents across the current application. Does not report OS input, idle work or timers that have not queued an event. It is an observation, not a guarantee about the next dispatch. Safe to query during callbacks.",
+    "scope": "Requires an active main-thread GUI session; use before startup or after cleanup signals NATIVE-ERROR. This API is scoped to the bridge application, not arbitrary wxApp instances.",
+    "wxwidgets": "wxAppConsole::HasPendingEvents (wxWidgets 3.2.12 baseline)."
+  },
+  {
+    "name": "process-pending-events",
+    "kind": "function",
+    "arguments": "No arguments.",
+    "returns": "NIL after successful dispatch.",
+    "description": "Dispatch queued wx events for all pending handlers of the bridge application via ProcessPendingEvents. Does not yield to OS input or run ProcessIdle. Does not wait for new events; callback duration and continuously requeued work may delay return. Callback conditions are contained at the native boundary and re-signaled afterwards.",
+    "scope": "Requires an active main-thread GUI session; use before startup or after cleanup signals NATIVE-ERROR. This API is scoped to the bridge application, not arbitrary wxApp instances. Forbidden inside RUN, either pump or any native-to-Lisp callback (NATIVE-ERROR), and inside the application REPL debugger (Lisp error). Dispatch guards recover on callback failure. Synchronous notifying setters remain supported.",
+    "wxwidgets": "wxAppConsole::ProcessPendingEvents (wxWidgets 3.2.12 baseline)."
   }
 ]

@@ -80,6 +80,10 @@ widget classes has complete wxWidgets coverage yet.
 - [x] Application initialization/cleanup: `call-with-application`, `with-application`.
 - [x] Main loop and stopping: `run`, `stop`.
 - [x] Nonblocking event polling: `process-events`.
+- [x] Active-application main-loop/queued-event state: `main-loop-running-p`,
+  `pending-events-p`; explicit wx pending dispatch: `process-pending-events`.
+  These do not complete arbitrary wxApp/event-loop bindings. All dispatch entries
+  reject pump/callback reentrancy; see [application events](APPLICATION-EVENTS.md).
 - [x] Interactive application loop and debugger return: `with-repl-application`,
   `return-to-application-repl` (SBCL/CCL; one GUI session per process).
 - [x] Native errors translated to Lisp `native-error` conditions.
@@ -143,6 +147,12 @@ entire dependent phase complete.
 ### C1: Foundation, values, application, events, and base utilities
 
 [Full C1 declaration checklist](coverage/phase-c1.md)
+
+The next dependency chain starts with application dispatch boundaries (now
+implemented for the bridge session), then event-handler ownership and generic
+binding, then timer/idle/propagation support and worker-to-GUI dispatch.
+Prerequisite value and ownership contracts must precede each consumer.
+Application dispatch does not close the broader application or event checklist.
 
 - [ ] Complete application traits, initialization, event loops, generic
   `wxEvtHandler` binding/unbinding, event filters, event classes, propagation,

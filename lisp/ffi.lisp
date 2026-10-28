@@ -16,6 +16,9 @@
 (cffi:defcfun ("wxl_start" %start) :int (callback :pointer))
 (cffi:defcfun ("wxl_run" %run) :int)
 (cffi:defcfun ("wxl_poll" %poll) :int)
+(cffi:defcfun ("wxl_main_loop_running" %main-loop-running) :int)
+(cffi:defcfun ("wxl_pending_events" %pending-events) :int)
+(cffi:defcfun ("wxl_process_pending_events" %process-pending-events) :int)
 (cffi:defcfun ("wxl_stop" %stop) :int)
 (cffi:defcfun ("wxl_finish" %finish) :int)
 (cffi:defcfun ("wxl_frame" %frame) :uint64 (title (:string :encoding :utf-8)) (width :int) (height :int))
@@ -73,7 +76,7 @@
           (if (probe-file local)
               (cffi:load-foreign-library local)
               (cffi:use-foreign-library wxlambda-native))))
-    (unless (= 10 (%abi-version)) (error "Unsupported wxlambda native ABI"))
+    (unless (= 11 (%abi-version)) (error "Unsupported wxlambda native ABI"))
     (setf *native-loaded* t))
   t)
 

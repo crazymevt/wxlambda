@@ -1,7 +1,7 @@
 (defpackage #:wxlambda
   (:use #:cl)
   (:export #:window #:frame #:panel #:button #:text-control #:label #:checkbox #:choice
-           #:load-native-library #:call-with-application #:with-application #:with-repl-application #:process-events
+           #:load-native-library #:call-with-application #:with-application #:with-repl-application #:process-events #:main-loop-running-p #:pending-events-p #:process-pending-events
            #:return-to-application-repl
            #:run #:stop #:make-frame #:make-panel #:make-button #:make-text
            #:make-column #:make-row #:add-child #:add-spacer #:add-stretch

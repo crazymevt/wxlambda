@@ -30,5 +30,9 @@
   "gauge.lisp": {
     "description": "A GAUGE subclass with default initargs and a custom step slot; buttons advance determinate progress or request indeterminate pulsing. The exercise runs both callbacks and cleans up.",
     "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/gauge.lisp --eval '(wxlambda-gauge:start)'"
+  },
+  "application-events.lisp": {
+    "description": "The same button callback reports native main-loop state when dispatched through the pending wx event queue and through RUN. The reusable exercise asserts both modes and cleans up handlers/windows.",
+    "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/application-events.lisp --eval '(wxlambda-application-events:start)'"
   }
 }

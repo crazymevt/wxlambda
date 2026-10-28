@@ -31,8 +31,13 @@ WXL_API int wxl_abi_version(void);
 WXL_API const char *wxl_last_error(void);
 WXL_API int wxl_start(wxl_callback callback);
 WXL_API int wxl_run(void);
-/* Process pending events without blocking; forbidden inside wxl_run. */
+/* GUI dispatch is forbidden inside run, a pump or any Lisp callback. */
 WXL_API int wxl_poll(void);
+/* Boolean queries: 0/1 on success, -1 on failure. Active session required. */
+WXL_API int wxl_main_loop_running(void);
+WXL_API int wxl_pending_events(void);
+/* Dispatch queued wx events only, without OS events or idle processing. */
+WXL_API int wxl_process_pending_events(void);
 WXL_API int wxl_stop(void);
 WXL_API int wxl_finish(void);
 WXL_API wxl_handle wxl_frame(const char *title, int width, int height);

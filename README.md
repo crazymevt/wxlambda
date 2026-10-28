@@ -24,6 +24,10 @@ Progress controls support range/value properties, orientation and indeterminate
 pulsing; see [the gauge guide](docs/GAUGE.md) and runnable
 [example](examples/gauge.lisp).
 
+The [application event guide](docs/APPLICATION-EVENTS.md) explains native
+main-loop and pending-event queries, explicit queued-event dispatch and the
+callback reentrancy boundary.
+
 ## Documentation and examples
 
 The [Cadre docset](docs/DOCSET.md) includes the public API reference, project
@@ -69,7 +73,7 @@ application with `(wxlambda:load-native-library #P"C:/path/to/wxlambda.dll")`.
 Dependent wxWidgets DLLs must also be discoverable by the OS loader.
 
 The bridge normally loads from `build/`, then falls back to the system library
-search path. The Lisp/native ABI version (currently 10) is checked on load; rebuild
+search path. The Lisp/native ABI version (currently 11) is checked on load; rebuild
 the bridge after updating the bindings. Installing the bridge with CMake does not
 install the ASDF system.
 

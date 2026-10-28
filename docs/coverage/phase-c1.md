@@ -94,17 +94,17 @@ class or constructor does not imply full upstream coverage.
 - [ ] [L102](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L102) `wxEventLoopBase* GetMainLoop() const;`
 - [ ] [L111](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L111) `virtual void HandleEvent(wxEvtHandler* handler, wxEventFunction func, wxEvent& event) const;`
 - [ ] [L127](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L127) `virtual bool UsesEventLoop() const;`
-- [ ] [L155](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L155) `virtual void ProcessPendingEvents();`
+- [~] [L155](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L155) `virtual void ProcessPendingEvents();` — **Partial**: `process-pending-events`; ABI: `wxl_process_pending_events`. Bridge application only. Dispatches queued wx events for all its pending handlers, not OS/idle work. Forbidden during RUN, pumps or native-to-Lisp callbacks; callback errors are re-signaled at the Lisp boundary.
 - [ ] [L163](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L163) `void DeletePendingEvents();`
-- [ ] [L173](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L173) `bool HasPendingEvents() const;`
+- [~] [L173](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L173) `bool HasPendingEvents() const;` — **Partial**: `pending-events-p`; ABI: `wxl_pending_events`. Bridge application only, in an active main-thread session. Pending wx event queue observation, not OS input, future timer or idle readiness.
 - [ ] [L180](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L180) `void SuspendProcessingOfPendingEvents();`
 - [ ] [L186](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L186) `void ResumeProcessingOfPendingEvents();`
 - [ ] [L211](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L211) `void ScheduleForDestruction(wxObject *object);`
 - [ ] [L220](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L220) `bool IsScheduledForDestruction(wxObject *object) const;`
-- [~] [L237](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L237) `bool Yield(bool onlyIfNeeded = false);` — **Partial**: `process-events`; ABI: `wxl_poll`. Active bridge application only; onlyIfNeeded is fixed true and native boolean result is discarded. Polling inside run is forbidden.
+- [~] [L237](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L237) `bool Yield(bool onlyIfNeeded = false);` — **Partial**: `process-events`; ABI: `wxl_poll`. Active bridge application only; onlyIfNeeded is fixed true and native boolean result is discarded. Dispatch is forbidden during RUN, pumps or native-to-Lisp callbacks; idle processing also runs.
 - [ ] [L248](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L248) `static void SetInstance(wxAppConsole* app);`
 - [ ] [L256](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L256) `static wxAppConsole* GetInstance();`
-- [ ] [L266](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L266) `static bool IsMainLoopRunning();`
+- [~] [L266](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L266) `static bool IsMainLoopRunning();` — **Partial**: `main-loop-running-p`; ABI: `wxl_main_loop_running`. Active bridge application only. Native main-loop state; false during standalone pumps and the cooperative application REPL.
 - [ ] [L295](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L295) `virtual void OnAssertFailure(const wxChar *file, int line, const wxChar *func, const wxChar *cond, const wxChar *msg);`
 - [ ] [L311](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L311) `virtual bool OnCmdLineError(wxCmdLineParser& parser);`
 - [ ] [L322](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L322) `virtual bool OnCmdLineHelp(wxCmdLineParser& parser);`
