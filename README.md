@@ -643,7 +643,10 @@ After deliberately changing a locked revision, remove the corresponding generate
 pinned Babel revision emits a warning about `HANDLE-ERROR` in its Korean codec;
 the UTF-8 paths exercised by these tests pass on both local Lisps.
 
-Next milestones: hosted platform validation (including the configured Windows
-Lisp/GUI tests), release preparation, packaging on additional platforms, and
-richer interactive development support. Establish those contracts before
-generating larger binding coverage.
+The [implementation roadmap](IMPLEMENTATION.md) now includes the
+[full wxWidgets coverage plan](docs/WXWIDGETS-COVERAGE.md) as Phase 6; release
+preparation moves to Phase 7. The coverage plan checks off existing operations
+and groups remaining widgets and API declarations into coverage phases C1–C7.
+Hosted platform validation (including the configured Windows Lisp/GUI tests),
+packaging on additional platforms, and richer interactive development support
+remain open as described in the roadmap.

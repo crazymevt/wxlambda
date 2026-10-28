@@ -1,0 +1,605 @@
+{
+  "version": "3.2.12",
+  "declarations": [
+    {
+      "header": "wx/frame.h",
+      "line": 201,
+      "declaration": "wxFrame(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_FRAME_STYLE, const wxString& name = wxFrameNameStr);",
+      "status": "~",
+      "symbol": "wxFrame::wxFrame",
+      "lisp": [
+        "make-frame"
+      ],
+      "native": [
+        "wxl_frame"
+      ],
+      "scope": "Title, width and height; parent is NULL, ID is wxID_ANY, remaining options use defaults."
+    },
+    {
+      "header": "wx/panel.h",
+      "line": 66,
+      "declaration": "wxPanel(wxWindow* parent, wxWindowID id = wxID_ANY, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxTAB_TRAVERSAL, const wxString& name = wxPanelNameStr);",
+      "status": "~",
+      "symbol": "wxPanel::wxPanel",
+      "lisp": [
+        "make-panel"
+      ],
+      "native": [
+        "wxl_panel"
+      ],
+      "scope": "Parent only; remaining constructor options use defaults."
+    },
+    {
+      "header": "wx/button.h",
+      "line": 147,
+      "declaration": "wxButton(wxWindow* parent, wxWindowID id, const wxString& label = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = 0, const wxValidator& validator = wxDefaultValidator, const wxString& name = wxButtonNameStr);",
+      "status": "~",
+      "symbol": "wxButton::wxButton",
+      "lisp": [
+        "make-button"
+      ],
+      "native": [
+        "wxl_button"
+      ],
+      "scope": "Parent and label; ID is wxID_ANY, remaining options use defaults."
+    },
+    {
+      "header": "wx/textctrl.h",
+      "line": 1473,
+      "declaration": "wxTextCtrl(wxWindow* parent, wxWindowID id, const wxString& value = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = 0, const wxValidator& validator = wxDefaultValidator, const wxString& name = wxTextCtrlNameStr);",
+      "status": "~",
+      "symbol": "wxTextCtrl::wxTextCtrl",
+      "lisp": [
+        "make-text"
+      ],
+      "native": [
+        "wxl_text"
+      ],
+      "scope": "Parent and initial value; ID is wxID_ANY, remaining options use defaults."
+    },
+    {
+      "header": "wx/stattext.h",
+      "line": 81,
+      "declaration": "wxStaticText(wxWindow* parent, wxWindowID id, const wxString& label, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = 0, const wxString& name = wxStaticTextNameStr);",
+      "status": "~",
+      "symbol": "wxStaticText::wxStaticText",
+      "lisp": [
+        "make-label"
+      ],
+      "native": [
+        "wxl_label"
+      ],
+      "scope": "Parent and label; ID is wxID_ANY, remaining options use defaults."
+    },
+    {
+      "header": "wx/checkbox.h",
+      "line": 108,
+      "declaration": "wxCheckBox(wxWindow* parent, wxWindowID id, const wxString& label, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = 0, const wxValidator& validator = wxDefaultValidator, const wxString& name = wxCheckBoxNameStr);",
+      "status": "~",
+      "symbol": "wxCheckBox::wxCheckBox",
+      "lisp": [
+        "make-checkbox"
+      ],
+      "native": [
+        "wxl_checkbox"
+      ],
+      "scope": "Parent, label and initial boolean value; two-state control, ID is wxID_ANY, remaining options use defaults."
+    },
+    {
+      "header": "wx/choice.h",
+      "line": 108,
+      "declaration": "wxChoice( wxWindow *parent, wxWindowID id, const wxPoint& pos, const wxSize& size, const wxArrayString& choices, long style = 0, const wxValidator& validator = wxDefaultValidator, const wxString& name = wxChoiceNameStr );",
+      "status": "~",
+      "symbol": "wxChoice::wxChoice",
+      "lisp": [
+        "make-choice"
+      ],
+      "native": [
+        "wxl_choice"
+      ],
+      "scope": "Parent, copied strings and initial selection; wxArrayString overload, ID is wxID_ANY, remaining options use defaults."
+    },
+    {
+      "header": "wx/sizer.h",
+      "line": 2031,
+      "declaration": "wxBoxSizer(int orient);",
+      "status": "~",
+      "symbol": "wxBoxSizer::wxBoxSizer",
+      "lisp": [
+        "make-row",
+        "make-column"
+      ],
+      "native": [
+        "wxl_row",
+        "wxl_column"
+      ],
+      "scope": "Horizontal/vertical orientation; sizer owned by the parent window, no standalone Lisp sizer handle."
+    },
+    {
+      "header": "wx/checkbox.h",
+      "line": 136,
+      "declaration": "virtual bool GetValue() const;",
+      "status": "x",
+      "symbol": "wxCheckBox::GetValue",
+      "lisp": [
+        "checked-p"
+      ],
+      "native": [
+        "wxl_checked"
+      ],
+      "scope": "Boolean value query for bound checkboxes; three-state APIs are separate and remain open."
+    },
+    {
+      "header": "wx/checkbox.h",
+      "line": 176,
+      "declaration": "virtual void SetValue(bool state);",
+      "status": "x",
+      "symbol": "wxCheckBox::SetValue",
+      "lisp": [
+        "set-checked"
+      ],
+      "native": [
+        "wxl_set_checked"
+      ],
+      "scope": "Boolean setter; silent by default, Lisp additionally offers synthetic notification."
+    },
+    {
+      "header": "wx/choice.h",
+      "line": 177,
+      "declaration": "virtual int GetSelection() const ;",
+      "status": "x",
+      "symbol": "wxChoice::GetSelection",
+      "lisp": [
+        "selection"
+      ],
+      "native": [
+        "wxl_selection"
+      ],
+      "scope": "Selected index; native -1 maps to Lisp NIL."
+    },
+    {
+      "header": "wx/choice.h",
+      "line": 178,
+      "declaration": "virtual void SetSelection(int n);",
+      "status": "x",
+      "symbol": "wxChoice::SetSelection",
+      "lisp": [
+        "set-selection"
+      ],
+      "native": [
+        "wxl_set_selection"
+      ],
+      "scope": "Index or no selection (Lisp NIL); silent by default, optional synthetic notification."
+    },
+    {
+      "header": "wx/textentry.h",
+      "line": 188,
+      "declaration": "virtual void ChangeValue(const wxString& value);",
+      "status": "~",
+      "symbol": "wxTextEntry::ChangeValue",
+      "lisp": [
+        "set-text"
+      ],
+      "native": [
+        "wxl_set_text"
+      ],
+      "scope": "Silent value replacement for wxTextCtrl only; other wxTextEntry receivers remain open."
+    },
+    {
+      "header": "wx/textentry.h",
+      "line": 306,
+      "declaration": "virtual wxString GetValue() const;",
+      "status": "~",
+      "symbol": "wxTextEntry::GetValue",
+      "lisp": [
+        "get-text"
+      ],
+      "native": [
+        "wxl_get_text"
+      ],
+      "scope": "Independent UTF-8 Lisp string for wxTextCtrl only; other wxTextEntry receivers remain open."
+    },
+    {
+      "header": "wx/textentry.h",
+      "line": 547,
+      "declaration": "virtual void SetValue(const wxString& value);",
+      "status": "~",
+      "symbol": "wxTextEntry::SetValue",
+      "lisp": [
+        "set-text"
+      ],
+      "native": [
+        "wxl_set_text"
+      ],
+      "scope": "Notifying value replacement for wxTextCtrl only via :notify T; other receivers remain open."
+    },
+    {
+      "header": "wx/stattext.h",
+      "line": 112,
+      "declaration": "virtual void SetLabel(const wxString& label);",
+      "status": "x",
+      "symbol": "wxStaticText::SetLabel",
+      "lisp": [
+        "set-label"
+      ],
+      "native": [
+        "wxl_set_label"
+      ],
+      "scope": "UTF-8 label setter for wxStaticText."
+    },
+    {
+      "header": "wx/control.h",
+      "line": 91,
+      "declaration": "wxString GetLabel() const;",
+      "status": "~",
+      "symbol": "wxControl::GetLabel",
+      "lisp": [
+        "get-label"
+      ],
+      "native": [
+        "wxl_get_label"
+      ],
+      "scope": "Inherited by wxStaticText; exported get-label accepts static text only. Other control receivers remain open."
+    },
+    {
+      "header": "wx/control.h",
+      "line": 174,
+      "declaration": "void SetLabel(const wxString& label);",
+      "status": "~",
+      "symbol": "wxControl::SetLabel",
+      "lisp": [
+        "set-label"
+      ],
+      "native": [
+        "wxl_set_label"
+      ],
+      "scope": "Inherited interface exposed through wxStaticText override only; other control receivers remain open."
+    },
+    {
+      "header": "wx/window.h",
+      "line": 1476,
+      "declaration": "wxSize GetSize() const;",
+      "status": "x",
+      "symbol": "wxWindow::GetSize",
+      "lisp": [
+        "window-size"
+      ],
+      "native": [
+        "wxl_geometry"
+      ],
+      "scope": "Value-returning overload mapped to Lisp width and height values; pointer overload is not separately bound."
+    },
+    {
+      "header": "wx/window.h",
+      "line": 1915,
+      "declaration": "wxPoint GetPosition() const;",
+      "status": "x",
+      "symbol": "wxWindow::GetPosition",
+      "lisp": [
+        "window-position"
+      ],
+      "native": [
+        "wxl_geometry"
+      ],
+      "scope": "Value-returning overload mapped to Lisp x and y values; pointer overload is not separately bound."
+    },
+    {
+      "header": "wx/window.h",
+      "line": 3079,
+      "declaration": "virtual bool Show(bool show = true);",
+      "status": "~",
+      "symbol": "wxWindow::Show",
+      "lisp": [
+        "show-window"
+      ],
+      "native": [
+        "wxl_show"
+      ],
+      "scope": "Show(true) only; hide argument and native boolean return are not exposed."
+    },
+    {
+      "header": "wx/window.h",
+      "line": 3518,
+      "declaration": "virtual bool Destroy();",
+      "status": "~",
+      "symbol": "wxWindow::Destroy",
+      "lisp": [
+        "destroy-window"
+      ],
+      "native": [
+        "wxl_destroy"
+      ],
+      "scope": "Destruction request exposed; native boolean return is discarded. Handlers require explicit unbinding."
+    },
+    {
+      "header": "wx/window.h",
+      "line": 3668,
+      "declaration": "virtual bool Layout();",
+      "status": "~",
+      "symbol": "wxWindow::Layout",
+      "lisp": [
+        "layout-window"
+      ],
+      "native": [
+        "wxl_layout"
+      ],
+      "scope": "Relayout exposed; native boolean return is discarded."
+    },
+    {
+      "header": "wx/sizer.h",
+      "line": 186,
+      "declaration": "wxSizerItem* Add(wxWindow* window, int proportion = 0, int flag = 0, int border = 0, wxObject* userData = NULL);",
+      "status": "~",
+      "symbol": "wxSizer::Add",
+      "lisp": [
+        "add-child"
+      ],
+      "native": [
+        "wxl_add"
+      ],
+      "scope": "Window/proportion/uniform border/expand/minor-axis alignment on parent-owned wxBoxSizer; arbitrary flags, userData and wxSizerItem return are not exposed."
+    },
+    {
+      "header": "wx/sizer.h",
+      "line": 322,
+      "declaration": "virtual wxSizerItem *AddSpacer(int size);",
+      "status": "~",
+      "symbol": "wxSizer::AddSpacer",
+      "lisp": [
+        "add-spacer"
+      ],
+      "native": [
+        "wxl_spacer"
+      ],
+      "scope": "Fixed nonnegative spacer on parent-owned wxBoxSizer; wxSizerItem return is not exposed."
+    },
+    {
+      "header": "wx/sizer.h",
+      "line": 2047,
+      "declaration": "virtual wxSizerItem *AddSpacer(int size);",
+      "status": "~",
+      "symbol": "wxBoxSizer::AddSpacer",
+      "lisp": [
+        "add-spacer"
+      ],
+      "native": [
+        "wxl_spacer"
+      ],
+      "scope": "Fixed nonnegative spacer override on parent-owned wxBoxSizer; wxSizerItem return is not exposed."
+    },
+    {
+      "header": "wx/sizer.h",
+      "line": 331,
+      "declaration": "wxSizerItem* AddStretchSpacer(int prop = 1);",
+      "status": "~",
+      "symbol": "wxSizer::AddStretchSpacer",
+      "lisp": [
+        "add-stretch"
+      ],
+      "native": [
+        "wxl_stretch"
+      ],
+      "scope": "Positive proportion on parent-owned wxBoxSizer; wxSizerItem return is not exposed."
+    },
+    {
+      "header": "wx/ctrlsub.h",
+      "line": 111,
+      "declaration": "virtual void SetSelection(int n) = 0;",
+      "status": "~",
+      "symbol": "wxItemContainerImmutable::SetSelection",
+      "lisp": [
+        "set-selection"
+      ],
+      "native": [
+        "wxl_set_selection"
+      ],
+      "scope": "Inherited interface exposed for wxChoice only; other item-container receivers remain open."
+    },
+    {
+      "header": "wx/ctrlsub.h",
+      "line": 121,
+      "declaration": "virtual int GetSelection() const = 0;",
+      "status": "~",
+      "symbol": "wxItemContainerImmutable::GetSelection",
+      "lisp": [
+        "selection"
+      ],
+      "native": [
+        "wxl_selection"
+      ],
+      "scope": "Inherited interface exposed for wxChoice only; other item-container receivers remain open."
+    },
+    {
+      "header": "wx/app.h",
+      "line": 81,
+      "declaration": "virtual void ExitMainLoop();",
+      "status": "~",
+      "symbol": "wxAppConsole::ExitMainLoop",
+      "lisp": [
+        "stop"
+      ],
+      "native": [
+        "wxl_stop"
+      ],
+      "scope": "Active bridge application only; requires its event loop to be running."
+    },
+    {
+      "header": "wx/app.h",
+      "line": 237,
+      "declaration": "bool Yield(bool onlyIfNeeded = false);",
+      "status": "~",
+      "symbol": "wxAppConsole::Yield",
+      "lisp": [
+        "process-events"
+      ],
+      "native": [
+        "wxl_poll"
+      ],
+      "scope": "Active bridge application only; onlyIfNeeded is fixed true and native boolean result is discarded. Polling inside run is forbidden."
+    },
+    {
+      "header": "wx/app.h",
+      "line": 424,
+      "declaration": "virtual int OnRun();",
+      "status": "~",
+      "symbol": "wxAppConsole::OnRun",
+      "lisp": [
+        "run"
+      ],
+      "native": [
+        "wxl_run"
+      ],
+      "scope": "Runs the bridge application loop; native exit code and overriding this virtual method are not exposed."
+    },
+    {
+      "header": "wx/button.h",
+      "line": 92,
+      "declaration": "documented event: EVT_BUTTON(id, func)",
+      "status": "~",
+      "symbol": "EVT_BUTTON",
+      "lisp": [
+        "on-click",
+        "off-click",
+        "queue-click"
+      ],
+      "native": [
+        "wxl_on_click",
+        "wxl_off_click",
+        "wxl_click"
+      ],
+      "scope": "wxButton click only; one handler slot per control, optional event snapshot; generic event propagation remains open."
+    },
+    {
+      "header": "wx/textctrl.h",
+      "line": 1410,
+      "declaration": "documented event: EVT_TEXT(id, func)",
+      "status": "~",
+      "symbol": "EVT_TEXT",
+      "lisp": [
+        "on-text-change",
+        "off-text-change"
+      ],
+      "native": [
+        "wxl_on_text_change",
+        "wxl_off_text_change"
+      ],
+      "scope": "wxTextCtrl text change only; UTF-8 string snapshot, one handler slot; generic event propagation remains open."
+    },
+    {
+      "header": "wx/checkbox.h",
+      "line": 63,
+      "declaration": "documented event: EVT_CHECKBOX(id, func)",
+      "status": "~",
+      "symbol": "EVT_CHECKBOX",
+      "lisp": [
+        "on-toggle",
+        "off-toggle"
+      ],
+      "native": [
+        "wxl_on_toggle",
+        "wxl_off_toggle"
+      ],
+      "scope": "Two-state wxCheckBox toggle only; boolean snapshot, one handler slot; generic event propagation remains open."
+    },
+    {
+      "header": "wx/choice.h",
+      "line": 21,
+      "declaration": "documented event: EVT_CHOICE(id, func)",
+      "status": "~",
+      "symbol": "EVT_CHOICE",
+      "lisp": [
+        "on-selection",
+        "off-selection"
+      ],
+      "native": [
+        "wxl_on_selection",
+        "wxl_off_selection"
+      ],
+      "scope": "wxChoice selection only; index snapshot, one handler slot; generic event propagation remains open."
+    }
+  ],
+  "classes": {
+    "wxFrame": {
+      "status": "~",
+      "lisp": [
+        "make-frame"
+      ],
+      "native": [
+        "wxl_frame"
+      ],
+      "scope": "Title, width and height; parent is NULL, ID is wxID_ANY, remaining options use defaults. Full class and inherited API coverage remain open."
+    },
+    "wxPanel": {
+      "status": "~",
+      "lisp": [
+        "make-panel"
+      ],
+      "native": [
+        "wxl_panel"
+      ],
+      "scope": "Parent only; remaining constructor options use defaults. Full class and inherited API coverage remain open."
+    },
+    "wxButton": {
+      "status": "~",
+      "lisp": [
+        "make-button"
+      ],
+      "native": [
+        "wxl_button"
+      ],
+      "scope": "Parent and label; ID is wxID_ANY, remaining options use defaults. Full class and inherited API coverage remain open."
+    },
+    "wxTextCtrl": {
+      "status": "~",
+      "lisp": [
+        "make-text"
+      ],
+      "native": [
+        "wxl_text"
+      ],
+      "scope": "Parent and initial value; ID is wxID_ANY, remaining options use defaults. Full class and inherited API coverage remain open."
+    },
+    "wxStaticText": {
+      "status": "~",
+      "lisp": [
+        "make-label"
+      ],
+      "native": [
+        "wxl_label"
+      ],
+      "scope": "Parent and label; ID is wxID_ANY, remaining options use defaults. Full class and inherited API coverage remain open."
+    },
+    "wxCheckBox": {
+      "status": "~",
+      "lisp": [
+        "make-checkbox"
+      ],
+      "native": [
+        "wxl_checkbox"
+      ],
+      "scope": "Parent, label and initial boolean value; two-state control, ID is wxID_ANY, remaining options use defaults. Full class and inherited API coverage remain open."
+    },
+    "wxChoice": {
+      "status": "~",
+      "lisp": [
+        "make-choice"
+      ],
+      "native": [
+        "wxl_choice"
+      ],
+      "scope": "Parent, copied strings and initial selection; wxArrayString overload, ID is wxID_ANY, remaining options use defaults. Full class and inherited API coverage remain open."
+    },
+    "wxBoxSizer": {
+      "status": "~",
+      "lisp": [
+        "make-row",
+        "make-column"
+      ],
+      "native": [
+        "wxl_row",
+        "wxl_column"
+      ],
+      "scope": "Parent-owned horizontal/vertical layout only; standalone sizers and full API remain open."
+    }
+  }
+}

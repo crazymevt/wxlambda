@@ -1,0 +1,3191 @@
+{
+  "version": "3.2.12",
+  "source": "https://github.com/wxWidgets/wxWidgets/tree/v3.2.12/interface",
+  "headers": [
+    {
+      "header": "wx/aboutdlg.h",
+      "sha256": "278811937a5d619e651e533faeace9d0ac37528589f31c3f5c8ad3d32be87494",
+      "phase": 3,
+      "entries": 42,
+      "tasks": 42,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/accel.h",
+      "sha256": "59983132346d6dc1ff63f26edb6630b155c8f9126aa3287eb12270f7ea63cd92",
+      "phase": 2,
+      "entries": 24,
+      "tasks": 24,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/access.h",
+      "sha256": "10f1c11643c98462ecf009a1958e6c8c69848dcc0d59e6181afe098ee349da27",
+      "phase": 3,
+      "entries": 103,
+      "tasks": 103,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/activityindicator.h",
+      "sha256": "d7acd42a7121b265c12d802f17e0accd6a48293ba08bdc41b65cd3d40f907980",
+      "phase": 2,
+      "entries": 7,
+      "tasks": 7,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/addremovectrl.h",
+      "sha256": "0907fe03a18a84a755d4d07364d1efd4abd85ea5b936cb6de9d66588da43f99e",
+      "phase": 2,
+      "entries": 14,
+      "tasks": 14,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/affinematrix2d.h",
+      "sha256": "b80d27c1f8605b9d4316cd29603a39f8fcdd54f0e7af3c0ea558d9a9d5398fa7",
+      "phase": 5,
+      "entries": 18,
+      "tasks": 18,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/affinematrix2dbase.h",
+      "sha256": "c678352d5542c8432302be678a98f7283b795bbf8cde36c8e985c44e6ceb9370",
+      "phase": 5,
+      "entries": 22,
+      "tasks": 22,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/anidecod.h",
+      "sha256": "8b8a793ea2385b3ddd18f528d5420e011a35e087eddd0565dacb92e5c75b7ff1",
+      "phase": 5,
+      "entries": 13,
+      "tasks": 13,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/animate.h",
+      "sha256": "569e1bcae634e5e18a45e24688a16d4b8aa5ba2f1f056498523eec7c4eb99827",
+      "phase": 5,
+      "entries": 47,
+      "tasks": 47,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/animdecod.h",
+      "sha256": "cd8efd6cdb7677182b259c1f99d2aaef8c9bd5ec00b4ed9462f5394f99327e71",
+      "phase": 5,
+      "entries": 18,
+      "tasks": 18,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/any.h",
+      "sha256": "05c0fc14defc4b18bef14074d741060d3089f60de1f563a5a6b5f647f50a88bc",
+      "phase": 1,
+      "entries": 62,
+      "tasks": 62,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/anybutton.h",
+      "sha256": "3e627bdbbc0a86f8152e4abd242026a8481e682670800bc6ddc0782d86488133",
+      "phase": 2,
+      "entries": 27,
+      "tasks": 27,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/app.h",
+      "sha256": "3bb18bf1f515f9d2a30522c1096385e1c1a0931fad0815842bc13d402f105b7c",
+      "phase": 1,
+      "entries": 106,
+      "tasks": 106,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/appprogress.h",
+      "sha256": "b3a835d29eebdf9e3220ff3d975c9dff7e21ba0a7647320b796df58c05560766",
+      "phase": 1,
+      "entries": 7,
+      "tasks": 7,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/apptrait.h",
+      "sha256": "7ad2a8267147a96105ddae13fdc37b2575ce92ed75b323935bad6c0f6f424fa3",
+      "phase": 1,
+      "entries": 15,
+      "tasks": 15,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/archive.h",
+      "sha256": "2af5137c36b98571a9142a3f1b2519ec9104b07ac227ed6de61c91d940621f23",
+      "phase": 1,
+      "entries": 55,
+      "tasks": 55,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/arrstr.h",
+      "sha256": "8a65ffbc13fcb6e6469a6dd836e484a5b3991903a825466aef06577c2daeb81e",
+      "phase": 1,
+      "entries": 49,
+      "tasks": 49,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/artprov.h",
+      "sha256": "7ce9b8e5040671aeb8c7c0ca5d988ca6b9284232ea5728ef8e726e9c806e0e87",
+      "phase": 3,
+      "entries": 90,
+      "tasks": 90,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/atomic.h",
+      "sha256": "4d6344ac1fd3d38c265d31102eebbc1524da1fb449cc42a6d5cf9bea9130b2ed",
+      "phase": 1,
+      "entries": 2,
+      "tasks": 2,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/aui/auibar.h",
+      "sha256": "e9e8471942275c5bf82cb0f546ff20f00f5e0dd8ab28e8d5e36c9da0f1f98a83",
+      "phase": 6,
+      "entries": 203,
+      "tasks": 203,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/aui/auibook.h",
+      "sha256": "a0bae562666dfa2a6ce21c8640578a8b39859b0b362f688da565411ca60b154a",
+      "phase": 6,
+      "entries": 252,
+      "tasks": 252,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/aui/dockart.h",
+      "sha256": "57452c15ac76a0a693da438928e26af3cf11f7e6799396bc85eed4688a4ef12d",
+      "phase": 6,
+      "entries": 72,
+      "tasks": 72,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/aui/floatpane.h",
+      "sha256": "8e4ac518375d1157fd3e7c22544cd1f50cf92b8e209370d05e76f83ac52b6520",
+      "phase": 6,
+      "entries": 9,
+      "tasks": 9,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/aui/framemanager.h",
+      "sha256": "62a896093cf5c6744db51afd18989669ab1ab512f1ca1a728b155068d1e1baad",
+      "phase": 6,
+      "entries": 214,
+      "tasks": 214,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/aui/tabmdi.h",
+      "sha256": "d5b6cb212f7000a08cf5c77ba7821cffc8b23bb5e4b652f15e417712028370a3",
+      "phase": 6,
+      "entries": 60,
+      "tasks": 60,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/bannerwindow.h",
+      "sha256": "6194b2bf1b896ccab892ed99ffb6fd91a2546156f840f65f79fbf3b7823a44e8",
+      "phase": 2,
+      "entries": 8,
+      "tasks": 8,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/base64.h",
+      "sha256": "809705425bea2239dcddeeeeec43c9d9aa0cc34cb219cae0986a4c3a8ae3d61f",
+      "phase": 1,
+      "entries": 11,
+      "tasks": 11,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/bitmap.h",
+      "sha256": "7eaef648164e9a7e97f22549ce068ed57b543517f3f5f52755a8be5d08a6e057",
+      "phase": 5,
+      "entries": 84,
+      "tasks": 84,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/bmpbndl.h",
+      "sha256": "cf5d4283efa4361d0808108681d450d304f450eded5780ac0a11a04b0529b162",
+      "phase": 5,
+      "entries": 41,
+      "tasks": 41,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/bmpbuttn.h",
+      "sha256": "f5be497ca3d8f33abaa0296a6cab359d9ebb3402a5286f9dd62c69d0da507fb7",
+      "phase": 2,
+      "entries": 11,
+      "tasks": 11,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/bmpcbox.h",
+      "sha256": "cc48f1d0859e750d7d4cbf649fc3d30d28e949e0f1b214c1075310c94bd059ac",
+      "phase": 2,
+      "entries": 22,
+      "tasks": 22,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/bookctrl.h",
+      "sha256": "4910367bdd24916bb406858798f66b522129d32461a3c223affaef01fac48875",
+      "phase": 3,
+      "entries": 41,
+      "tasks": 41,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/brush.h",
+      "sha256": "70dd7f96cccaf349b7b84d66dd901d87f19e51e95bb8f5e60bd273f4adeed90b",
+      "phase": 5,
+      "entries": 36,
+      "tasks": 36,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/buffer.h",
+      "sha256": "44ad3cf7c59ef9a468e86d5918502a2ed0f56943543bd80d6b44135281cbdfd0",
+      "phase": 1,
+      "entries": 59,
+      "tasks": 59,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/busyinfo.h",
+      "sha256": "0c673947ca0d56cae51e2f4fb768c0573c5ba21f9eafdda87e1eefc5a372eb8a",
+      "phase": 3,
+      "entries": 16,
+      "tasks": 16,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/button.h",
+      "sha256": "5e2c3f1d783f5c736e7fece16361412cbb00ef97488c43e8481f158e210683d3",
+      "phase": 2,
+      "entries": 18,
+      "tasks": 18,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/calctrl.h",
+      "sha256": "98637270b81b059ea2ed0dd60df9ab73ec6a0892c8d118cb3bdb285d8d289d5b",
+      "phase": 2,
+      "entries": 78,
+      "tasks": 78,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/caret.h",
+      "sha256": "8a4470b32cee7a84ccd68880e712461cff5de0d6c4e5f3088e5feac6dc63b0b9",
+      "phase": 2,
+      "entries": 21,
+      "tasks": 21,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/chartype.h",
+      "sha256": "6ad43bd7445425635904975d0fcc50b08c60370791cda5e65a4f9742a29917e2",
+      "phase": 1,
+      "entries": 8,
+      "tasks": 8,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/checkbox.h",
+      "sha256": "d001a9975b8c8145c8f3404c4e7a1915f309550f0f34593dc4bed6b70fd0fe03",
+      "phase": 2,
+      "entries": 22,
+      "tasks": 22,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/checklst.h",
+      "sha256": "c8d0cf60c29fdeb9f41f30664d44bdacb30dd74f08f61822cac388188b8e16b0",
+      "phase": 2,
+      "entries": 11,
+      "tasks": 11,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/choicdlg.h",
+      "sha256": "521836a1219a99544f4a258b6c0bda2b410092d16c85550b847948277fdce7b7",
+      "phase": 3,
+      "entries": 37,
+      "tasks": 37,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/choice.h",
+      "sha256": "e116aec1423ffc8ea1bfdae85f965b1867f92c7c9aec35f28cd9d5f31451901a",
+      "phase": 2,
+      "entries": 19,
+      "tasks": 19,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/choicebk.h",
+      "sha256": "8afb0441fece139d42a4ce9f74e641c02d2cfd961f985cb16ae467925f658911",
+      "phase": 3,
+      "entries": 20,
+      "tasks": 20,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/clipbrd.h",
+      "sha256": "0d2b33cdb114e34398794064c1abd85b25c83607bf70d08b43e255f27fa0f8f5",
+      "phase": 3,
+      "entries": 16,
+      "tasks": 16,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/clntdata.h",
+      "sha256": "082874d53cf2d551ac3c8573de03db3eba10584e10e9bdc6b9c044c63db78f3c",
+      "phase": 1,
+      "entries": 20,
+      "tasks": 20,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/clrpicker.h",
+      "sha256": "f5ddb28d2ae005e53603d64a06660b9549b7a4d2b71799e387af9a9daddbf54f",
+      "phase": 2,
+      "entries": 29,
+      "tasks": 29,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/cmdline.h",
+      "sha256": "fe9a71c8cd6ea6ccf1f6099c8ced2afbe9b70cee24908b8a2ba431eb551943c7",
+      "phase": 1,
+      "entries": 70,
+      "tasks": 70,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/cmdproc.h",
+      "sha256": "3d7371c034cc75ba3b7455b6548ddf5994b44d36072c32d22c4b02219f4b56d0",
+      "phase": 4,
+      "entries": 32,
+      "tasks": 32,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/cmndata.h",
+      "sha256": "a43c23dab9e1c5065d4db425327482e270823c71bc23f7a62ab3967426268bdd",
+      "phase": 5,
+      "entries": 100,
+      "tasks": 100,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/collheaderctrl.h",
+      "sha256": "2bd8d3eca32a7fc10e44ba0bbe4100900a8e3220501973a30f3148b284c66e5a",
+      "phase": 2,
+      "entries": 7,
+      "tasks": 7,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/collpane.h",
+      "sha256": "19061c887c71ac48e6a4f1ec86dd9ac2be4ee5bb4d58dd8c5a7c0ff8df8e29b9",
+      "phase": 2,
+      "entries": 21,
+      "tasks": 21,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/colordlg.h",
+      "sha256": "e5fff55f58d905c43ab85d51132e9dd727bd2f8b3686078cf0750b79b841a220",
+      "phase": 3,
+      "entries": 14,
+      "tasks": 14,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/colour.h",
+      "sha256": "1381c980982a10032b7a8a075b228263d3cb84d19852560d406ccca28805d928",
+      "phase": 5,
+      "entries": 53,
+      "tasks": 53,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/colourdata.h",
+      "sha256": "1b94b8508a11a585078cebd57392b5a3f357635fdfa2544a3b2e054c0f1b4c60",
+      "phase": 3,
+      "entries": 16,
+      "tasks": 16,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/combo.h",
+      "sha256": "4b2ee301e680c9cb0f6d23bb882762b2d19d30c394e476cad4615b9f3a0e648a",
+      "phase": 2,
+      "entries": 99,
+      "tasks": 99,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/combobox.h",
+      "sha256": "a0d4db3cf481efce4570bbd0012a0c64cead599f06c572a6ffe8136e82b2db27",
+      "phase": 2,
+      "entries": 34,
+      "tasks": 34,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/commandlinkbutton.h",
+      "sha256": "9d02c1fd8c55764e3209bcb7c75e880d94198722922b384b76d4504f12ac7a51",
+      "phase": 2,
+      "entries": 11,
+      "tasks": 11,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/config.h",
+      "sha256": "2d7ece3779458da5b2fbb48cd161424fd66f2ccbf94ac766b62a8bcaa78ab0ea",
+      "phase": 1,
+      "entries": 70,
+      "tasks": 70,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/containr.h",
+      "sha256": "eb0bee11d39daf8ad572035009a7ebd4ed19ede456714b65e2365777eeef3bd4",
+      "phase": 2,
+      "entries": 3,
+      "tasks": 3,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/control.h",
+      "sha256": "9f51479e61f0fcdec74d569b3f43b82d2051001b92cbbe9ddec62125dfe363de",
+      "phase": 2,
+      "entries": 20,
+      "tasks": 20,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/convauto.h",
+      "sha256": "e1f3580d23259ee95a7c65643fe7fa1987f00ce1ffee9738e8fddee60763745e",
+      "phase": 1,
+      "entries": 12,
+      "tasks": 12,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/cpp.h",
+      "sha256": "ce137ab770e7461becb0f9fe790cd2baece8d7770f0fa98d6b7e7da0a8251edd",
+      "phase": 1,
+      "entries": 7,
+      "tasks": 7,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/creddlg.h",
+      "sha256": "43a48c118c4ab5bdb2e5e6c70fb8c6ed0853e15191b17a4cd6cae0003dec8308",
+      "phase": 3,
+      "entries": 7,
+      "tasks": 7,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/cshelp.h",
+      "sha256": "23e1e7027876d01f95f158c70189581e16e627247eabfccfb2e0e4bb94bd11cb",
+      "phase": 3,
+      "entries": 22,
+      "tasks": 22,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/ctrlsub.h",
+      "sha256": "b9545a3e3cc24d5f096de082796f4c2655949c88de3cc4c1f96ab4abfe399da2",
+      "phase": 2,
+      "entries": 52,
+      "tasks": 52,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/cursor.h",
+      "sha256": "806b20c81e2c576f9ee6235ab0526385d0e64cd28e414c7a0b2b15187f3a8340",
+      "phase": 2,
+      "entries": 16,
+      "tasks": 16,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/custombgwin.h",
+      "sha256": "eb6390a835b72194d4ff5a005c804f3495b0824e8431cacdc8a3d56f413f17d3",
+      "phase": 2,
+      "entries": 3,
+      "tasks": 3,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/dataobj.h",
+      "sha256": "e94348902b93106e3ccea8300da28f5ae64a0d5e88f9e261d11743d4e92d63e1",
+      "phase": 3,
+      "entries": 73,
+      "tasks": 73,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/dataview.h",
+      "sha256": "0ca09b7714a55fce99e5512eae33ad5b176a7f80b9b1653071e7ea03fe61ba4c",
+      "phase": 4,
+      "entries": 488,
+      "tasks": 488,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/datectrl.h",
+      "sha256": "ce5c7a388cefed74f45b62e891f1282432e0427f9700e95c979f3794c3b86346",
+      "phase": 2,
+      "entries": 17,
+      "tasks": 17,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/dateevt.h",
+      "sha256": "5decfb85951466cac4549f3f654aee2b8721cf28191c92eeb9fa593d5a04a217",
+      "phase": 2,
+      "entries": 7,
+      "tasks": 7,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/datetime.h",
+      "sha256": "5211aed98d44909cc5e747fdb5147f36c85f421ed906c86069811650427335c3",
+      "phase": 1,
+      "entries": 253,
+      "tasks": 253,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/datstrm.h",
+      "sha256": "7f440388eb2404117822dcee4b41c5e83581d1175af7d37365d228c79f627e78",
+      "phase": 1,
+      "entries": 42,
+      "tasks": 42,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/dc.h",
+      "sha256": "425a287bf8fe670c09e3371908ed80cac64903509a73432d19e8d5ec56f28c77",
+      "phase": 5,
+      "entries": 188,
+      "tasks": 188,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/dcbuffer.h",
+      "sha256": "f9c1ecc7020e7e75714fc31a735a3eb071a45a8c61bf25babd50ffdb09b143c7",
+      "phase": 5,
+      "entries": 20,
+      "tasks": 20,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/dcclient.h",
+      "sha256": "0c7743b92fc6131a20e7ed7386930963d2dca684072e2dad034634f59df4c5e6",
+      "phase": 5,
+      "entries": 6,
+      "tasks": 6,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/dcgraph.h",
+      "sha256": "c937f3068a5c6e3d9e13fea113570a25d13ad6bc4b0f283b6f19b77dc9b7abfa",
+      "phase": 5,
+      "entries": 10,
+      "tasks": 10,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/dcmemory.h",
+      "sha256": "b2284ebaf8dd2b1b45bd46b1e5e19ed6320837f6b1687142c3731e746a5bd02f",
+      "phase": 5,
+      "entries": 8,
+      "tasks": 8,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/dcmirror.h",
+      "sha256": "78aea3b6d465322f35bddc4c33e305d714d58d869d941bde41e3da10865324e3",
+      "phase": 5,
+      "entries": 2,
+      "tasks": 2,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/dcprint.h",
+      "sha256": "c35369e9ce4665781a0dca9d2ecc945172b9fcdb8816043e2ad15e81b0d2f446",
+      "phase": 5,
+      "entries": 3,
+      "tasks": 3,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/dcps.h",
+      "sha256": "da71c708ff549e574d7e2224f537002eee8b5ef2bc0a6764af642afb7995ac53",
+      "phase": 5,
+      "entries": 3,
+      "tasks": 3,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/dcscreen.h",
+      "sha256": "28033be3fbd93e371d3c76e2d015d31f18f18b25fb0fa86a7bce8ab1915e2293",
+      "phase": 5,
+      "entries": 5,
+      "tasks": 5,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/dcsvg.h",
+      "sha256": "35594ebad86a291e08de5cf2c859991a7ab9428929faad55a55587dfaaf5ff59",
+      "phase": 5,
+      "entries": 26,
+      "tasks": 26,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/dde.h",
+      "sha256": "d7d77a446de7797e656d47741eaf82d1fe436d7cf401df551621d53242f41f66",
+      "phase": 7,
+      "entries": 37,
+      "tasks": 37,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/debug.h",
+      "sha256": "9bc4fa49855a0081443dfd557798f2501d63b378cbce1183e0d4283d3e83a9bd",
+      "phase": 1,
+      "entries": 26,
+      "tasks": 26,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/debugrpt.h",
+      "sha256": "d6eb15b66cad22054a8697630dddda3017cd80581ddc9fa67849d7f8b84d7c31",
+      "phase": 1,
+      "entries": 41,
+      "tasks": 41,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/defs.h",
+      "sha256": "f9394cf9631f91533621686fc8eafa4d71f4e61afe0e455341c357847155f576",
+      "phase": 1,
+      "entries": 237,
+      "tasks": 234,
+      "context_entries": 3
+    },
+    {
+      "header": "wx/dialog.h",
+      "sha256": "a54b7d15a6da746804c96dce097b256441bdf85a4d16917784edb592e779d11a",
+      "phase": 3,
+      "entries": 76,
+      "tasks": 76,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/dialup.h",
+      "sha256": "fc729a496a511bf4c9c79e9f8bf2f275ca288e05af957f520ecbadf7c1e2c163",
+      "phase": 7,
+      "entries": 22,
+      "tasks": 22,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/dir.h",
+      "sha256": "32e03ef73ec8c72e28bf33e6d8ade51a04f9509a5f4aba22ba450c247c3d6570",
+      "phase": 1,
+      "entries": 29,
+      "tasks": 29,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/dirctrl.h",
+      "sha256": "f44b8003a7187b392e10d9e2c99ba18c9272deeb31dd509b3f2f6a04a60725ca",
+      "phase": 3,
+      "entries": 48,
+      "tasks": 48,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/dirdlg.h",
+      "sha256": "2474aca427ed0702f29b1d7c1a8f7bf06508cd6bd0b35edc8ca21f21ae33fc39",
+      "phase": 3,
+      "entries": 24,
+      "tasks": 24,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/display.h",
+      "sha256": "dcb0f75d51251908d2872d1ec81729305ef484c7784a7ca540166bf26724dcfc",
+      "phase": 3,
+      "entries": 20,
+      "tasks": 20,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/dnd.h",
+      "sha256": "289c9d9624321124ea2d6da6efce24cb1aac90ff52856eeb1796631977c64ad6",
+      "phase": 3,
+      "entries": 38,
+      "tasks": 38,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/docmdi.h",
+      "sha256": "c90154f946817bb5115c7206fe7ecaf7183082af25f243f7636614f9326f8d96",
+      "phase": 4,
+      "entries": 12,
+      "tasks": 12,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/docview.h",
+      "sha256": "fb5c1867496cb7b915be04ea21e3295b010440d5052578a46c542330767a6255",
+      "phase": 4,
+      "entries": 195,
+      "tasks": 195,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/dragimag.h",
+      "sha256": "6d20da4922f1a78e4317524a320e20a3d69c0d538743a549db2d2a9c7a14667f",
+      "phase": 3,
+      "entries": 16,
+      "tasks": 16,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/dynarray.h",
+      "sha256": "6ac5f59b319afbaef5d62389186c86ab2a1b448e0cc83745bb09e41ad49c5ca6",
+      "phase": 1,
+      "entries": 58,
+      "tasks": 58,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/dynlib.h",
+      "sha256": "aa414d7b2827eb157b984312481f4bb1b88b54e8e3ab0dba6aafe4b156746138",
+      "phase": 1,
+      "entries": 34,
+      "tasks": 34,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/editlbox.h",
+      "sha256": "f48fe11f370e7510fad64f48fae55d2f4f1a9b72e120b2b63d2c6bae27b3b5bd",
+      "phase": 2,
+      "entries": 17,
+      "tasks": 17,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/encconv.h",
+      "sha256": "955d8b4840d71685688322bc36c06c3cd2bd3896bef48a29b26354c77fd65f01",
+      "phase": 1,
+      "entries": 13,
+      "tasks": 13,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/event.h",
+      "sha256": "b42325658d33472713355a58b14a27e7be60bb23b8ae0f1c7eee4146d46f68d4",
+      "phase": 1,
+      "entries": 676,
+      "tasks": 660,
+      "context_entries": 16
+    },
+    {
+      "header": "wx/eventfilter.h",
+      "sha256": "b66733ab2b54a6c24eb9aadc5e15e11dcf94d29bd524d1bb2b588a6317ae05a0",
+      "phase": 1,
+      "entries": 6,
+      "tasks": 6,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/evtloop.h",
+      "sha256": "782a5ffdf02d1d6ce2503c11e20c678fd1fd3b3c3e5de9eebafd2029ca48936b",
+      "phase": 1,
+      "entries": 26,
+      "tasks": 26,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/fdrepdlg.h",
+      "sha256": "9d461ff233b39429084e130e1adf16ffea028af2fad1163e8b13b84dbc7ff77d",
+      "phase": 3,
+      "entries": 34,
+      "tasks": 34,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/ffile.h",
+      "sha256": "2f199bdaa3012a13c98ac2eeb9e7c5b46db691e0689018a47fd890900503ae66",
+      "phase": 1,
+      "entries": 37,
+      "tasks": 37,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/file.h",
+      "sha256": "bd86e436128ec185324aa2a5abf62408fad817dfdd0f02682f20361a2c3c26bb",
+      "phase": 1,
+      "entries": 44,
+      "tasks": 44,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/fileconf.h",
+      "sha256": "1cd4370b33e5f2597d6c2674af04eab3a02eadecc4749f4378bce6f274c25946",
+      "phase": 1,
+      "entries": 27,
+      "tasks": 27,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/filectrl.h",
+      "sha256": "385faff2206281fa6f616132f2bf1fbeaa72281ab3560f6fc3f226c2635d0b5b",
+      "phase": 3,
+      "entries": 46,
+      "tasks": 46,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/filedlg.h",
+      "sha256": "56efa0dd1c8b9ce6580351667fea465ce4bc9e341530484ccfa1d7c4fd85bf95",
+      "phase": 3,
+      "entries": 43,
+      "tasks": 43,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/filedlgcustomize.h",
+      "sha256": "68fdcb1b06d08db98352f2793c821f5cb966cda859e48eceff8eac2310aae20d",
+      "phase": 3,
+      "entries": 31,
+      "tasks": 31,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/filefn.h",
+      "sha256": "f57be2198cb3c0fffd429bc246bf92457a746734fca82d95ac919950f07715c7",
+      "phase": 1,
+      "entries": 47,
+      "tasks": 47,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/filehistory.h",
+      "sha256": "e89b041dfbe107e9ddb09e37b08df30e0e3fa665b3a089582d4d2bc1e58894fd",
+      "phase": 3,
+      "entries": 21,
+      "tasks": 21,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/filename.h",
+      "sha256": "37a4cea790e81cee0e18e1c7304268279efef912d345968b53599ff63f9e544a",
+      "phase": 1,
+      "entries": 132,
+      "tasks": 132,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/filepicker.h",
+      "sha256": "a31a09b3df03f9f7a7473b872d2ec55b9821315aa496f4f82fae6207a1ba3c48",
+      "phase": 2,
+      "entries": 55,
+      "tasks": 55,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/filesys.h",
+      "sha256": "6ee4e81c7da10563192abd8a1afb5f5386f642bbc22db0d883cedfa05d5313e0",
+      "phase": 1,
+      "entries": 37,
+      "tasks": 37,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/font.h",
+      "sha256": "80c5f694a7224eb415d930f474b3ed2b180b1802dca0dcf6f30b97b6d8ff93f5",
+      "phase": 5,
+      "entries": 111,
+      "tasks": 111,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/fontdata.h",
+      "sha256": "dfbb5de9c9dfd6a619f0168a1dd3b3a147e1b5a9c4cc55a08d48b82953e75b31",
+      "phase": 3,
+      "entries": 18,
+      "tasks": 18,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/fontdlg.h",
+      "sha256": "b1a7195aff3c9c4dd6b66e3d1d9034446bc3135d4051b9cd5c290f74480da093",
+      "phase": 3,
+      "entries": 10,
+      "tasks": 10,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/fontenum.h",
+      "sha256": "b07e07ee9960302a61efdb8a5663dfedaee70a396c75d434fdf5743062903544",
+      "phase": 5,
+      "entries": 11,
+      "tasks": 11,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/fontmap.h",
+      "sha256": "3c3db27fdf1be182b3ea71cc425c8f49095f553b8f4865c3e5092ef0365f4368",
+      "phase": 5,
+      "entries": 18,
+      "tasks": 18,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/fontpicker.h",
+      "sha256": "ab18d7737dc7676a9afae775cf03a764112780186219b48fbc5051fd213e212a",
+      "phase": 2,
+      "entries": 28,
+      "tasks": 28,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/fontutil.h",
+      "sha256": "31ce3534324313ca128533987e1ed87819dac80d21f253ae289de8b7e045e780",
+      "phase": 5,
+      "entries": 32,
+      "tasks": 32,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/frame.h",
+      "sha256": "3d380b9a02d6fa546234829b3d78db09d1d8f9be59159471697cf0859ea8184e",
+      "phase": 2,
+      "entries": 52,
+      "tasks": 52,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/fs_arc.h",
+      "sha256": "84eea5d219735ca7a79e3bffcee477f56137fb53e88726477ddea2f72ffba50a",
+      "phase": 1,
+      "entries": 5,
+      "tasks": 5,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/fs_filter.h",
+      "sha256": "37491fe5619f096af3b714f2330273d2af6d70c6971c404b00ec0f3dee2a0189",
+      "phase": 1,
+      "entries": 3,
+      "tasks": 3,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/fs_inet.h",
+      "sha256": "799d75f0b9781ef5826d0c1f5ba938d161ff48aedfbdfecdae267ad063e3a808",
+      "phase": 1,
+      "entries": 2,
+      "tasks": 2,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/fs_mem.h",
+      "sha256": "57f0be5505d8195f2335edaf2ccc98d9d62b64171d185516cb1d0d597766a207",
+      "phase": 1,
+      "entries": 9,
+      "tasks": 9,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/fswatcher.h",
+      "sha256": "2fc0a5124638fc44ddc259f59d2300b890d0d0bce64b9f238a5dddf98b04a6fc",
+      "phase": 1,
+      "entries": 27,
+      "tasks": 27,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/gauge.h",
+      "sha256": "e5c304c1c9dc626ae1a16cd869accb5fb48cf5dd4d22b664f3ade39362f17b53",
+      "phase": 2,
+      "entries": 21,
+      "tasks": 21,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/gbsizer.h",
+      "sha256": "cf35acb8bca20c4060c70e0492c75a03a171b4c8c0ccd999c1df25d7b725e17a",
+      "phase": 2,
+      "entries": 64,
+      "tasks": 64,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/gdicmn.h",
+      "sha256": "a77d0e6b4acca0652d8de6cc592b93353a08cfdd644ed184c6a7c1030f462a06",
+      "phase": 5,
+      "entries": 187,
+      "tasks": 187,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/gdiobj.h",
+      "sha256": "48cccb69632360e9ff0b901c8cca55c6b834ea4d0fb0996892c1fd6cc8471bd0",
+      "phase": 5,
+      "entries": 2,
+      "tasks": 2,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/generic/aboutdlgg.h",
+      "sha256": "e10aeb0342502d2724195d6920e7502bbf33b2fe85e9b9191d3aafae09a34570",
+      "phase": 1,
+      "entries": 10,
+      "tasks": 10,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/generic/helpext.h",
+      "sha256": "1f46ef0b96d27b63b287bbd0d2dbce8ef6d72ba408c9694d988cb777351b81d4",
+      "phase": 1,
+      "entries": 16,
+      "tasks": 16,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/geometry.h",
+      "sha256": "c0f39d77a4fd2fffe94d56e206e12d09cc9dd75238b9e85ebe5c98d7ed0a4181",
+      "phase": 5,
+      "entries": 218,
+      "tasks": 218,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/gifdecod.h",
+      "sha256": "aead0f3cd804bb7fd940c31fcb7453d05166bcf22bc0aea0eb7052632057a841",
+      "phase": 5,
+      "entries": 13,
+      "tasks": 13,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/glcanvas.h",
+      "sha256": "0ff6ba832d676698572a82806b5c78e2d4a87856e04a461f730402e8cc1f3655",
+      "phase": 6,
+      "entries": 58,
+      "tasks": 58,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/graphics.h",
+      "sha256": "759f4043bc2fa9b976b7987e541bf0cd09a9c957dd281fe60b1b9d532b1f9ad1",
+      "phase": 5,
+      "entries": 238,
+      "tasks": 238,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/grid.h",
+      "sha256": "ba028d0423893a1c83a9cb2fc3708d655af13762d28d6a62de846b0522983054",
+      "phase": 4,
+      "entries": 759,
+      "tasks": 756,
+      "context_entries": 3
+    },
+    {
+      "header": "wx/hash.h",
+      "sha256": "eb5f04be7b1eb6f40206819098e5666d5cdc9ce598801871f119249d4d2686a1",
+      "phase": 1,
+      "entries": 15,
+      "tasks": 15,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/hashmap.h",
+      "sha256": "ae5d70337037d979616aa66c2e8e5e1a47d2c9fe623f551dece1e2292799212f",
+      "phase": 1,
+      "entries": 18,
+      "tasks": 18,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/hashset.h",
+      "sha256": "801527186f6e90558ff85d5921977d5fed6869169cb7331596c9ac0242638889",
+      "phase": 1,
+      "entries": 17,
+      "tasks": 17,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/headercol.h",
+      "sha256": "460d1e2c28744d1ede3a49dc4e3f44c8a9a1fec4af069cc08ff98ada290174b0",
+      "phase": 4,
+      "entries": 57,
+      "tasks": 57,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/headerctrl.h",
+      "sha256": "3a3fdb1ce723c88edc2b7ada6db46f6b2e89397401422fec1d74819f6a758439",
+      "phase": 4,
+      "entries": 76,
+      "tasks": 76,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/help.h",
+      "sha256": "2d45137d176a61584a4ce1501829e3e33be8641d1aa9f5669a492961c6f43198",
+      "phase": 3,
+      "entries": 24,
+      "tasks": 24,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/html/helpctrl.h",
+      "sha256": "aa5e802fcc7f2d3d741643dac170a97239308c848b0d56696dcc67d36a11bbea",
+      "phase": 6,
+      "entries": 29,
+      "tasks": 29,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/html/helpdata.h",
+      "sha256": "01a92238f0cb2c7424288c194eafb409118a3b6c6069fc6b48623b8f1b65196f",
+      "phase": 6,
+      "entries": 32,
+      "tasks": 32,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/html/helpdlg.h",
+      "sha256": "5752a504b1829bc8c5497dbbdea667ebe9f74c1821d77f7deea92769c073108e",
+      "phase": 6,
+      "entries": 8,
+      "tasks": 8,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/html/helpfrm.h",
+      "sha256": "0036c711af810b1f82b99bddda0c050ebb28d39b2d51de393c816def8a513cba",
+      "phase": 6,
+      "entries": 14,
+      "tasks": 14,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/html/helpwnd.h",
+      "sha256": "d443204aafaac1bec36091cfe94b0c4cada63c31f2af887f6c4e8bc6554bcf4d",
+      "phase": 6,
+      "entries": 22,
+      "tasks": 22,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/html/htmlcell.h",
+      "sha256": "d44babcec287b53484dc46e6f067a98d70e336d1dd3efd733ef888a1f4300aed",
+      "phase": 6,
+      "entries": 103,
+      "tasks": 103,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/html/htmldefs.h",
+      "sha256": "3199c7bca36079021c369a1975db73b52e3caa73223baada0960a8e6f95200b7",
+      "phase": 6,
+      "entries": 21,
+      "tasks": 21,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/html/htmlfilt.h",
+      "sha256": "579f7ac03f513cd23f32394b05791c7cbe0d4651bfbef121a260f8dfcd6f88f6",
+      "phase": 6,
+      "entries": 4,
+      "tasks": 4,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/html/htmlpars.h",
+      "sha256": "e4367c03195382c80a10aaf2d3e05aadc6b5098cb19936c42467d6637099107e",
+      "phase": 6,
+      "entries": 29,
+      "tasks": 29,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/html/htmltag.h",
+      "sha256": "a2d36e9e46c83d4082da2852a5c99f6ddfcf79cf3d7291c19a9c7bd06bf65d09",
+      "phase": 6,
+      "entries": 16,
+      "tasks": 16,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/html/htmlwin.h",
+      "sha256": "73258d72762865a459177562133b43afe13158e2c899cd0a84c244e43ef94204",
+      "phase": 6,
+      "entries": 82,
+      "tasks": 82,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/html/htmprint.h",
+      "sha256": "39012fb1dc0c26a2ec4f6eb293f6208e5c615bc1f6fd459ce38e3c1f591dc008",
+      "phase": 6,
+      "entries": 45,
+      "tasks": 45,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/html/winpars.h",
+      "sha256": "cbe7e61b59fa01004d372561114186c3791578034a37dacf211234fcbef68593",
+      "phase": 6,
+      "entries": 44,
+      "tasks": 44,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/htmllbox.h",
+      "sha256": "cd90d318d616d4812b386b13862997070db487fff19e9ab4f04ce9a9b985ad6c",
+      "phase": 6,
+      "entries": 31,
+      "tasks": 31,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/hyperlink.h",
+      "sha256": "838c6c72a0c7b36d92521bc4a075dc2b909b787ab303f73ba1875daa65a92298",
+      "phase": 2,
+      "entries": 31,
+      "tasks": 31,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/icon.h",
+      "sha256": "5bc9edb2e0040c4373f3b17f8e4a9ddd272641e771161f288e7d87e724a97446",
+      "phase": 5,
+      "entries": 27,
+      "tasks": 27,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/iconbndl.h",
+      "sha256": "0737322da4a83e6fccd4a935b5893e77c6dc99c0d60447239156de90390eeea5",
+      "phase": 5,
+      "entries": 22,
+      "tasks": 22,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/iconloc.h",
+      "sha256": "7ece36581374df3c5bb574f280b01daf7dab5b0893a3d6e0b0917eaacef06aa9",
+      "phase": 5,
+      "entries": 4,
+      "tasks": 4,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/image.h",
+      "sha256": "2d5aa9cc625bde0016dd11bad806ec10316cc36da7eec7d6a0120cc74eaa8ee1",
+      "phase": 5,
+      "entries": 197,
+      "tasks": 197,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/imaggif.h",
+      "sha256": "d7f62336b7f2e8a36808d9f6e06d642f9b4d6e7429e720e4b66c38af2c8a3942",
+      "phase": 5,
+      "entries": 8,
+      "tasks": 8,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/imagiff.h",
+      "sha256": "fec5657e2591d23c9f50a85837d72291c319727fc34c28105f95b0ab1a90b70d",
+      "phase": 5,
+      "entries": 5,
+      "tasks": 5,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/imagjpeg.h",
+      "sha256": "fa75c6e6ad5d7f402676ab32ca413d9be34f9a9fde02212979a450a513db4e6d",
+      "phase": 5,
+      "entries": 6,
+      "tasks": 6,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/imaglist.h",
+      "sha256": "3f0c1d7c1f4588fad446a2ab5ba50a1d20a7794a30fc9b9470a5b4897ff577fa",
+      "phase": 4,
+      "entries": 24,
+      "tasks": 24,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/imagpcx.h",
+      "sha256": "b6c30e6a46ec8518eacfb6b56bfedb01dfbb02c7bf1bffdf35f9338fcfdce6d6",
+      "phase": 5,
+      "entries": 5,
+      "tasks": 5,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/imagpng.h",
+      "sha256": "855ee9f20c6e7d141cd7c2abd218a407da99f1ffd858a8ffb1a4190134bfe804",
+      "phase": 5,
+      "entries": 12,
+      "tasks": 12,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/imagpnm.h",
+      "sha256": "481520bea0f1157285b01cdd2c701d477871b9614d5d489ed7bd6cd196aa8e4b",
+      "phase": 5,
+      "entries": 5,
+      "tasks": 5,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/imagtga.h",
+      "sha256": "079bd3494b6d39842d70a1df79fd2af3584c0f1957d8c5aeed24935e9dead9a5",
+      "phase": 5,
+      "entries": 5,
+      "tasks": 5,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/imagtiff.h",
+      "sha256": "23709ae1f533c5168d9aab7f409f228fcd7d42cfba46b5745feee6b62a7c6dae",
+      "phase": 5,
+      "entries": 12,
+      "tasks": 12,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/imagxpm.h",
+      "sha256": "dc4e95e90321f60885099e6e420a714e5128c1705afb467f4004860420d01870",
+      "phase": 5,
+      "entries": 5,
+      "tasks": 5,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/infobar.h",
+      "sha256": "d0405ef680a8e02d1e759cbd36b11502befb175ffd1bf2489385f0652928f115",
+      "phase": 2,
+      "entries": 17,
+      "tasks": 17,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/init.h",
+      "sha256": "37651873b5fb3c8075047a35b533e6fbdc6d0e9bcb015bffd7c10684a2237d2f",
+      "phase": 1,
+      "entries": 9,
+      "tasks": 9,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/intl.h",
+      "sha256": "f48b1cbfdf86083aaa35544c522419dea782b6627322aa3c14784d87ae9a0ba9",
+      "phase": 1,
+      "entries": 59,
+      "tasks": 59,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/ipc.h",
+      "sha256": "a5e8a9e460d3bfb868ffcfa385b34a8173f4af55086f160e5ea09bb1da5aeba7",
+      "phase": 1,
+      "entries": 37,
+      "tasks": 37,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/ipcbase.h",
+      "sha256": "765036eb3537099dcb6f8dd17fc85387f5f630dcddbff1d21070dde076c11c7e",
+      "phase": 1,
+      "entries": 3,
+      "tasks": 3,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/itemattr.h",
+      "sha256": "737c983493a58b55773ba586e3252e2a3dcabf1ec06c62f1ddcd15002b1123f1",
+      "phase": 4,
+      "entries": 16,
+      "tasks": 16,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/joystick.h",
+      "sha256": "b27efdab743378e0cc0ad4069ee1075edff1ab95a1b662eafd412d70e658e018",
+      "phase": 7,
+      "entries": 45,
+      "tasks": 45,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/kbdstate.h",
+      "sha256": "bdd6f414bf7ad593304fa3e870ad7ab506e9058285c4de11a784f4ddeda9d6ce",
+      "phase": 2,
+      "entries": 16,
+      "tasks": 16,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/language.h",
+      "sha256": "ef829505a035b3d4865d7f58937a7fc20d02df2d407368d8f19dfd5caae222c5",
+      "phase": 1,
+      "entries": 2,
+      "tasks": 2,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/layout.h",
+      "sha256": "de4318da6619c8f60cadac035ef53967c03f80d72bc94cd9c07237cac6701322",
+      "phase": 2,
+      "entries": 47,
+      "tasks": 47,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/laywin.h",
+      "sha256": "1c5ca3768a910a146275ded995b06ea03916a2f84cbc8b74f51fb81feb866a84",
+      "phase": 2,
+      "entries": 45,
+      "tasks": 45,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/link.h",
+      "sha256": "e07d8aa7e394beaa5fce1ce573c5f9b1f09666d51930735e3a9bfeadfd4872a3",
+      "phase": 1,
+      "entries": 2,
+      "tasks": 2,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/list.h",
+      "sha256": "26a835b1d62dd44df508df52209743585cf1f9308a8aac52e0186494581af987",
+      "phase": 1,
+      "entries": 61,
+      "tasks": 61,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/listbook.h",
+      "sha256": "49f9ccdbc6fce65f62987608a19bd3f629e55d99afb88c0b360cd6220055f47a",
+      "phase": 3,
+      "entries": 20,
+      "tasks": 20,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/listbox.h",
+      "sha256": "2c085002fe94be99ee45cf04d8b7e1f2eeb30bdb23a381a22815df3a0ed68b64",
+      "phase": 2,
+      "entries": 39,
+      "tasks": 39,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/listctrl.h",
+      "sha256": "cea53feca5e7a4e1f1b52d2a6d6ab78e7767cb44d08fb9e4003f0cdc0ec01dd8",
+      "phase": 4,
+      "entries": 301,
+      "tasks": 301,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/log.h",
+      "sha256": "0a1d0d764f5bd89d8883a94aad406a7e21c63db9fb283474707176fcf183489a",
+      "phase": 1,
+      "entries": 129,
+      "tasks": 123,
+      "context_entries": 6
+    },
+    {
+      "header": "wx/longlong.h",
+      "sha256": "6810653e0c7acad7b14410c1a40e1792f025a338cb5085e3da369749c4adf73f",
+      "phase": 1,
+      "entries": 53,
+      "tasks": 53,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/lzmastream.h",
+      "sha256": "986a5ccb3aaacae56c9c57368ee392d2dc3bf4d4511b25030f693aedc0f986ec",
+      "phase": 1,
+      "entries": 7,
+      "tasks": 7,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/math.h",
+      "sha256": "7f15ed89e72f0a7e406124bf4911ff20ef676752c5327d406cf291fb4da0b46d",
+      "phase": 1,
+      "entries": 12,
+      "tasks": 12,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/mdi.h",
+      "sha256": "5b5a1dd2309acfab02b33c69ad3eb4a422a638d8754cf41165b1cf7210a26509",
+      "phase": 3,
+      "entries": 29,
+      "tasks": 29,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/mediactrl.h",
+      "sha256": "7bc2ae7a7e5f286e1ba78db38b083fe968bb821dc1ac6f29bfdf88de56c958ea",
+      "phase": 6,
+      "entries": 42,
+      "tasks": 42,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/memory.h",
+      "sha256": "decf8b067454be29b3520f3fe260641fcaa2430db970752e27e635aeb9c0eec4",
+      "phase": 1,
+      "entries": 17,
+      "tasks": 17,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/menu.h",
+      "sha256": "6e6b73d5f00dd99493857769dbaa15b1df6b84fe97bad0261399030df9bb5422",
+      "phase": 3,
+      "entries": 96,
+      "tasks": 96,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/menuitem.h",
+      "sha256": "d5d13c3a411a44d945079121ba14c03e3836326aea048a03afe71af6e2eb0b0a",
+      "phase": 3,
+      "entries": 56,
+      "tasks": 56,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/metafile.h",
+      "sha256": "a13d66e1037db85f472a21c8aa0f7ad442b3e57153415423334ff541d822151f",
+      "phase": 5,
+      "entries": 11,
+      "tasks": 11,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/mimetype.h",
+      "sha256": "24f52a700450cac0a8a0eafc98eb8b700f7b2828f50d7d03ec5c94d58c750ac2",
+      "phase": 1,
+      "entries": 53,
+      "tasks": 53,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/minifram.h",
+      "sha256": "b7346a2b8ccd21d3bc14dec9c0389aedd141d9382a413bfd6e992864addd474d",
+      "phase": 3,
+      "entries": 15,
+      "tasks": 15,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/modalhook.h",
+      "sha256": "8bfa55d0ed35bde5cd8cd7c5e5bb96cb5824bc2093326994c9cb974276e5086b",
+      "phase": 3,
+      "entries": 7,
+      "tasks": 7,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/module.h",
+      "sha256": "587499f2d2a874792f5f5b506e1d50c80fe68d095c8885aec7380c09dbd99594",
+      "phase": 1,
+      "entries": 7,
+      "tasks": 7,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/mousemanager.h",
+      "sha256": "fd78fbd9123c648dfec1c6c7fb9eabf7709e05058d83defcb53ab931fed44553",
+      "phase": 2,
+      "entries": 12,
+      "tasks": 12,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/mousestate.h",
+      "sha256": "99f776e5e02432d2ca3c4c6a96291de790b2ebbfd8695bbf011cb35cf243c90a",
+      "phase": 2,
+      "entries": 22,
+      "tasks": 22,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/msgdlg.h",
+      "sha256": "e8ff73b4a505320296479750160b4133194dc509b5a6df07a0bde1baf6b5a17d",
+      "phase": 3,
+      "entries": 46,
+      "tasks": 46,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/msgout.h",
+      "sha256": "49b96522bf26858e11381fbeebfc92a1c158efa245021921c0e294d113d6df12",
+      "phase": 1,
+      "entries": 15,
+      "tasks": 15,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/msgqueue.h",
+      "sha256": "d79ff4a2829300d3dcc76d4c79b2f798b8a161466393a410f2d4681890ea067b",
+      "phase": 1,
+      "entries": 9,
+      "tasks": 9,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/mstream.h",
+      "sha256": "64bb2d3bdfd1a0771719105bb0508b0a6bd872b7ee4e76de63b2996ac6229b1c",
+      "phase": 1,
+      "entries": 11,
+      "tasks": 11,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/msw/ole/activex.h",
+      "sha256": "146671f26fe80946438a7bc5ca3912c3917a1aa429d18b3ef77afeb9d5fea205",
+      "phase": 7,
+      "entries": 11,
+      "tasks": 11,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/msw/ole/automtn.h",
+      "sha256": "658ddc93d57ca31a9c3b368d76d5d7c64e1c8cb9f323395fd3a192a1ee317be4",
+      "phase": 7,
+      "entries": 22,
+      "tasks": 22,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/msw/ole/oleutils.h",
+      "sha256": "09f3e268efe9f22bb063a08d1962dc98561e24e7ef6b6c09c07c8817d8d4b58a",
+      "phase": 7,
+      "entries": 31,
+      "tasks": 30,
+      "context_entries": 1
+    },
+    {
+      "header": "wx/msw/ole/safearray.h",
+      "sha256": "126526ca8b8bf748126f7212c52bc3905e5d758dabc3d5e2eb8ecbc004990c7a",
+      "phase": 7,
+      "entries": 22,
+      "tasks": 21,
+      "context_entries": 1
+    },
+    {
+      "header": "wx/msw/regconf.h",
+      "sha256": "08150c8a969fa0222cccaba3c8924b27e84d17250e2f3b0e4699928473a68fc7",
+      "phase": 7,
+      "entries": 2,
+      "tasks": 2,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/msw/registry.h",
+      "sha256": "294928944302e1a617108b72804b3c0d7c42aade64c8a6f9db1d293d67be536d",
+      "phase": 7,
+      "entries": 59,
+      "tasks": 58,
+      "context_entries": 1
+    },
+    {
+      "header": "wx/nativewin.h",
+      "sha256": "dcb4ed92c71d5dcc1c8b1dc4f23d23da7e843ec04f8f3cda5c76e9490f24421d",
+      "phase": 7,
+      "entries": 5,
+      "tasks": 5,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/nonownedwnd.h",
+      "sha256": "bc9df5e520e1c33aa78ab5e6b4d50ad41b88c833902bd724c13dcf1023384c22",
+      "phase": 2,
+      "entries": 4,
+      "tasks": 4,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/notebook.h",
+      "sha256": "07710c1e442e22c8d57ec7b25518e7e05a979d4bddd4e89e5cb025d77d50bddc",
+      "phase": 3,
+      "entries": 38,
+      "tasks": 38,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/notifmsg.h",
+      "sha256": "92a1bf1d7708fd3cc1b8e8167ba2a3b54cadc4e96ddd386d0a871d18a44b175c",
+      "phase": 3,
+      "entries": 22,
+      "tasks": 22,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/numdlg.h",
+      "sha256": "d395d495b5c1061235e6d8a2366c5f2088d645f8493df114612611f6ff221851",
+      "phase": 3,
+      "entries": 6,
+      "tasks": 6,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/numformatter.h",
+      "sha256": "ee9ec7d2aff899ba5d8e550b7d658c0e4ed170c20e7fbdb8fd2d558b6aec4197",
+      "phase": 1,
+      "entries": 14,
+      "tasks": 14,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/object.h",
+      "sha256": "f753c06be543af5543d7a4be90ad7afff7e496204a9f0e14719b1544a68c8ef5",
+      "phase": 1,
+      "entries": 66,
+      "tasks": 66,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/odcombo.h",
+      "sha256": "4172c3aebecd718316de10c61d89430d1d2142bfeb4ddad654836f7fd6ee5b87",
+      "phase": 2,
+      "entries": 24,
+      "tasks": 24,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/overlay.h",
+      "sha256": "0e5efb3c5ed4318947f19e75c58b682fd1fe50182b5453012e0e807e385e2025",
+      "phase": 5,
+      "entries": 9,
+      "tasks": 9,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/palette.h",
+      "sha256": "42000f38ce16371632c54d6ff74af34787f62c4c3de8635ef3ab406e4019822c",
+      "phase": 5,
+      "entries": 12,
+      "tasks": 12,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/panel.h",
+      "sha256": "60f1ba4632b8fb55e3933174649159e93d0b620326d195db25ffad7329fdd118",
+      "phase": 2,
+      "entries": 12,
+      "tasks": 12,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/pen.h",
+      "sha256": "9cfaef2fccf914550d74c25d109dbbf8497334b52422fab817939e100280fff6",
+      "phase": 5,
+      "entries": 78,
+      "tasks": 78,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/persist/bookctrl.h",
+      "sha256": "8157ef7da9a239bc6bcef1cbe7e313a5f7b71e7af10693a38623f3f5590a5c4d",
+      "phase": 4,
+      "entries": 5,
+      "tasks": 5,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/persist/combobox.h",
+      "sha256": "a0ad04a22392a6ed406763009967d3b9f956e2d0a1f5f0ee30e7f2d12a371e8e",
+      "phase": 4,
+      "entries": 5,
+      "tasks": 5,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/persist/dataview.h",
+      "sha256": "9d2856ea1668a5d7077b44e4de599262a9e637b4f998635aefb1932a81f63c00",
+      "phase": 4,
+      "entries": 5,
+      "tasks": 5,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/persist/toplevel.h",
+      "sha256": "78d1e858befa7a759a0428bc539226f6074aa5860b1765c25b21df3324ed3565",
+      "phase": 4,
+      "entries": 5,
+      "tasks": 5,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/persist/treebook.h",
+      "sha256": "9d2b7f68beb4a4003cbf07396154be3133c69ba58ca46d36461a6104261d394a",
+      "phase": 4,
+      "entries": 5,
+      "tasks": 5,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/persist/window.h",
+      "sha256": "b1527ca45263d8337dfeb45709a5f0253913d98882a2286c61077e215400043f",
+      "phase": 4,
+      "entries": 6,
+      "tasks": 5,
+      "context_entries": 1
+    },
+    {
+      "header": "wx/persist.h",
+      "sha256": "61ed31959bbc31f08f0091214a967ecb887da137c55e3af40c0558fb4e9987ca",
+      "phase": 4,
+      "entries": 29,
+      "tasks": 29,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/pickerbase.h",
+      "sha256": "ebe9050de4877d0fcd4a6270f2a7d1e892423b1907d8e616e68964e24664477c",
+      "phase": 2,
+      "entries": 27,
+      "tasks": 27,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/platform.h",
+      "sha256": "6b138549530e9ab6704de1e5bd61c3bccc851dbb9bd4f548c4738ffd291176fb",
+      "phase": 1,
+      "entries": 4,
+      "tasks": 4,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/platinfo.h",
+      "sha256": "e14ed65976d236930b6927aeb3fe93f8dbe989d79928a3cc9722582276daae8a",
+      "phase": 1,
+      "entries": 77,
+      "tasks": 77,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/popupwin.h",
+      "sha256": "1bea533357beaef6c8e87b48e4b0ef31942e2b0fa376548d9eef94ec1ca92479",
+      "phase": 3,
+      "entries": 14,
+      "tasks": 14,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/position.h",
+      "sha256": "00676bf19bfa1eaa59594b9c63a44b40ef732e778cd6c616a00ef3705ed17ded",
+      "phase": 1,
+      "entries": 19,
+      "tasks": 19,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/power.h",
+      "sha256": "309c2cd893b26f5ae033f5912081e4343a33b016749e09d277e51cef10c67da4",
+      "phase": 7,
+      "entries": 26,
+      "tasks": 26,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/preferences.h",
+      "sha256": "696d705efa8a2e220e8fd5663ef25bd0bc1c0b63475df8a30337fd4beace67f7",
+      "phase": 3,
+      "entries": 22,
+      "tasks": 22,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/print.h",
+      "sha256": "0ed1ba4fe7869e621619fb76795ef17af51308d056058921edea519e95fa56ab",
+      "phase": 5,
+      "entries": 22,
+      "tasks": 22,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/printdlg.h",
+      "sha256": "db79ac5cc90e014a78199448746e9aed4ef2f8d6b38a52b7ec349702a15bac03",
+      "phase": 5,
+      "entries": 13,
+      "tasks": 13,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/process.h",
+      "sha256": "0314dc5bc21cb2b96640795b329fd61c76f0be94b0eb265a1b5aa51e18b5ae02",
+      "phase": 1,
+      "entries": 27,
+      "tasks": 27,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/progdlg.h",
+      "sha256": "9c416a7a415fa1e5d55a4df1d925aa95971bd462303379f470a37e59ccdf13b7",
+      "phase": 3,
+      "entries": 30,
+      "tasks": 30,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/propdlg.h",
+      "sha256": "dd2697b556cdd7c972d71d033f5a48c39e4f739b8f199a64efd1ed95780ff220",
+      "phase": 3,
+      "entries": 21,
+      "tasks": 21,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/propgrid/advprops.h",
+      "sha256": "e22953b0f93ed2f1444a6ec2cb71490924545abbd58352c7d38cf78bc05b4ec5",
+      "phase": 6,
+      "entries": 101,
+      "tasks": 101,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/propgrid/editors.h",
+      "sha256": "195b21a4bcc43ed52024b0c2258eb1e7a17235365a2b85f27dd9807267dd778d",
+      "phase": 6,
+      "entries": 105,
+      "tasks": 104,
+      "context_entries": 1
+    },
+    {
+      "header": "wx/propgrid/manager.h",
+      "sha256": "e325f94ab2033749a338437f60b6436cb94233ec3c81253566e4851c8cd2aa95",
+      "phase": 6,
+      "entries": 63,
+      "tasks": 63,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/propgrid/property.h",
+      "sha256": "e00ab53ae51ca43b8500a2fe8be5b51839710981746fa059c6791d827d060054",
+      "phase": 6,
+      "entries": 322,
+      "tasks": 322,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/propgrid/propgrid.h",
+      "sha256": "274ec3d3c514ee7c1f43eb6ef348fb2c6d811e319ca07f4d1afaa65e07edcb2b",
+      "phase": 6,
+      "entries": 176,
+      "tasks": 176,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/propgrid/propgriddefs.h",
+      "sha256": "563fd9417cd7ec01ee789eaaa905391e652b6cfbab579df781a7c757da07d3c3",
+      "phase": 6,
+      "entries": 21,
+      "tasks": 21,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/propgrid/propgridiface.h",
+      "sha256": "2d54d4916611c78a0872f6b4374c4cd5cc83c42c3793c7ea1243899489f5ea1e",
+      "phase": 6,
+      "entries": 149,
+      "tasks": 149,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/propgrid/propgridpagestate.h",
+      "sha256": "cd41c5e82c7eab779c2f851fc3ea5e96b8d30b59fa5154c46e045603c8b67149",
+      "phase": 6,
+      "entries": 78,
+      "tasks": 78,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/propgrid/props.h",
+      "sha256": "4aad6265f846c96943a50929dde7724761fa4ff557ee615889b5711ab59968de",
+      "phase": 6,
+      "entries": 218,
+      "tasks": 218,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/protocol/ftp.h",
+      "sha256": "f6f2ba651bd79c4383e2e3f62f803a3e0f6f152b5e9481783ff4c12c8e8b283d",
+      "phase": 1,
+      "entries": 30,
+      "tasks": 30,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/protocol/http.h",
+      "sha256": "40cc88b0b84a98b9f5dd5822a50f9d456245350f976b9783442adddd99d12612",
+      "phase": 1,
+      "entries": 15,
+      "tasks": 15,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/protocol/log.h",
+      "sha256": "81afd90ddfd644f234746bba0b48dbc3283980ea5fa0f4ce4c0342bbe1f56f21",
+      "phase": 1,
+      "entries": 5,
+      "tasks": 5,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/protocol/protocol.h",
+      "sha256": "23dc4fc28c57c4827ccd73b2e39c3a6ee8474373e6a6e4deba299c1e7e5a6408",
+      "phase": 1,
+      "entries": 17,
+      "tasks": 16,
+      "context_entries": 1
+    },
+    {
+      "header": "wx/quantize.h",
+      "sha256": "672676839c5fab59ae9df08a51d66daba7584280d38f8a2be4f82099379e577f",
+      "phase": 5,
+      "entries": 5,
+      "tasks": 5,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/radiobox.h",
+      "sha256": "999d834e23bd7d7ecbdc2c7002cd89eef87185cd1d4a3a5da8102ed03ebef599",
+      "phase": 2,
+      "entries": 27,
+      "tasks": 27,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/radiobut.h",
+      "sha256": "946919d403bb7c9354e7a024f4a4647f19fc7dfe79d878f53af6b3fb1b4a9806",
+      "phase": 2,
+      "entries": 14,
+      "tasks": 14,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/rawbmp.h",
+      "sha256": "12ca42e559b411629b43751e807d66b30544ecf16f626be93bcffb5460d6f20e",
+      "phase": 5,
+      "entries": 28,
+      "tasks": 28,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/rearrangectrl.h",
+      "sha256": "1510643c4ee394dceaef7c90da603f9f7bf2a2bb77173e704eb72d297f9cfd19",
+      "phase": 2,
+      "entries": 21,
+      "tasks": 21,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/recguard.h",
+      "sha256": "02f97854c2310a06f0edf30464ed35e54887be089de008a4e1fc92dea704072f",
+      "phase": 1,
+      "entries": 5,
+      "tasks": 5,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/regex.h",
+      "sha256": "389d2c0a97419bbf8c0ba36ecee11e499ee5b302ac3952698f7b52937e892d48",
+      "phase": 1,
+      "entries": 22,
+      "tasks": 22,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/region.h",
+      "sha256": "7a37219d51f13d3e28844803ed9fab8ea081821a7acb258d8718a7a1b6624c2e",
+      "phase": 5,
+      "entries": 54,
+      "tasks": 54,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/renderer.h",
+      "sha256": "2bba24137086c243f983c9fe25e758ae448d355721d76b4c0f0210f63d54590d",
+      "phase": 5,
+      "entries": 82,
+      "tasks": 82,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/ribbon/art.h",
+      "sha256": "43e1ba2f4dfa491081f7f92a7fadb71648569a1b41a11efdbe3eb04f66cb8da0",
+      "phase": 6,
+      "entries": 126,
+      "tasks": 126,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/ribbon/bar.h",
+      "sha256": "d4f6acc91920629db00ca105378a2e56e3d6d0b5175d33bf5f6a50e59b8b20c8",
+      "phase": 6,
+      "entries": 75,
+      "tasks": 75,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/ribbon/buttonbar.h",
+      "sha256": "14049e1c16e225fd124a67c71fbc071a9d5ffe6752736bd631e448d05e47bd96",
+      "phase": 6,
+      "entries": 52,
+      "tasks": 52,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/ribbon/control.h",
+      "sha256": "129ce2622e843c19cf3f4ff56725171a5b9bcd10565bb08c8f00a9aa62df3891",
+      "phase": 6,
+      "entries": 16,
+      "tasks": 16,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/ribbon/gallery.h",
+      "sha256": "5e99b1368c85f6f4675a0fc944693bcaac29dcdf8f4c91c774d320868a3112e7",
+      "phase": 6,
+      "entries": 42,
+      "tasks": 42,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/ribbon/page.h",
+      "sha256": "6655f151c24bb062f2168b1813d3ae1eacb70ac947f96a9bfb0897acc2534dc2",
+      "phase": 6,
+      "entries": 15,
+      "tasks": 15,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/ribbon/panel.h",
+      "sha256": "de78fcc27c19d324db8e2b991f59c4fda50000e7a67e415dd51c441dce7ad3e5",
+      "phase": 6,
+      "entries": 33,
+      "tasks": 33,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/ribbon/toolbar.h",
+      "sha256": "78afd5a6bcb23ecfbe0e9bf052b10dac5c04d7832b6f8474930b98f8e07c82c4",
+      "phase": 6,
+      "entries": 50,
+      "tasks": 50,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/richmsgdlg.h",
+      "sha256": "bfd55e762b1d6d5978ed9bf75cfc7a4095a69fb8d1934d65187937b991e162a2",
+      "phase": 3,
+      "entries": 12,
+      "tasks": 12,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/richtext/richtextbuffer.h",
+      "sha256": "05b2e1e26820f9208bb1eceeaabfc1ee80ea5ef334324e0606e07155a957f459",
+      "phase": 6,
+      "entries": 1994,
+      "tasks": 1628,
+      "context_entries": 366
+    },
+    {
+      "header": "wx/richtext/richtextctrl.h",
+      "sha256": "e27378c8af6be9403a8b61bca39201b1e9527ab659f5e1074b66a9cbef2f5949",
+      "phase": 6,
+      "entries": 503,
+      "tasks": 492,
+      "context_entries": 11
+    },
+    {
+      "header": "wx/richtext/richtextformatdlg.h",
+      "sha256": "c3f4af2886de03878808e58708b446b79ef09501ada83affcba0e5f226a30960",
+      "phase": 6,
+      "entries": 52,
+      "tasks": 50,
+      "context_entries": 2
+    },
+    {
+      "header": "wx/richtext/richtexthtml.h",
+      "sha256": "4e6dc795bb8c9177c7223b1ad6e4ed98f27e75fa5851c73103f71ce690764e61",
+      "phase": 6,
+      "entries": 13,
+      "tasks": 13,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/richtext/richtextprint.h",
+      "sha256": "4cc6dafab5bf800e3c706003d8dd0b0289a35ec8c21d0445b6d22bb6b236b2bb",
+      "phase": 6,
+      "entries": 64,
+      "tasks": 64,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/richtext/richtextstyledlg.h",
+      "sha256": "ecd8549564673d699445ce7f1915f68a444997e9e2e9d3b714da91fba2d78026",
+      "phase": 6,
+      "entries": 31,
+      "tasks": 31,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/richtext/richtextstyles.h",
+      "sha256": "d7b570f18e5c273ed82284522ad6b0079e92188cbff645814bff439be1082112",
+      "phase": 6,
+      "entries": 110,
+      "tasks": 110,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/richtext/richtextsymboldlg.h",
+      "sha256": "42527ad4fdfc1733f8f46c28b971897e81df099bab913c05777dcefe3c4024b1",
+      "phase": 6,
+      "entries": 16,
+      "tasks": 16,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/richtext/richtextxml.h",
+      "sha256": "48d19868a38c733ba8151b5ae32b2f013067989c530e5497cd309665987ce44d",
+      "phase": 6,
+      "entries": 12,
+      "tasks": 12,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/richtooltip.h",
+      "sha256": "cabcfb227a9f8d8013fa419814a7e7497bfa23fa9a510c0f07d14983ef0a1cd5",
+      "phase": 6,
+      "entries": 12,
+      "tasks": 12,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/sashwin.h",
+      "sha256": "28284ce1147848ddf21f03c18f624b2904d27e8bfc0e67f685528a79db4e8f0e",
+      "phase": 2,
+      "entries": 47,
+      "tasks": 47,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/sckipc.h",
+      "sha256": "473ecb54b3f03684ee3115c0044ad8ce7127523ba05977daf2db6b0808f5e721",
+      "phase": 1,
+      "entries": 37,
+      "tasks": 37,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/sckstrm.h",
+      "sha256": "66b4b6f944dc2309ea6d502ddc32984effc04fa1f7f51410d4ee03e3ada813e9",
+      "phase": 1,
+      "entries": 4,
+      "tasks": 4,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/scopedarray.h",
+      "sha256": "1da5d77f06c5e0f6647f47840aa3a9660fe654ce914f8de2ee69ebfe0a58f909",
+      "phase": 1,
+      "entries": 16,
+      "tasks": 16,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/scopedptr.h",
+      "sha256": "fcb0376ebdee3bd2885ebb3fa8477460dc5727a8bf4f5c57ca213b2e571e3673",
+      "phase": 1,
+      "entries": 22,
+      "tasks": 22,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/scopeguard.h",
+      "sha256": "5089bafd81870482af853720f8fb280aec4e8bdbc9552e240bd92c4411eac521",
+      "phase": 1,
+      "entries": 20,
+      "tasks": 20,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/scrolbar.h",
+      "sha256": "af8192cfa7eeb47f5608d18e58722ccaeb4d8d77f1577b51169c57bddae53fb9",
+      "phase": 2,
+      "entries": 34,
+      "tasks": 34,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/scrolwin.h",
+      "sha256": "03091b2a46baf321d61bfd568c9ca217e8e965d7e604fdaa326c4801972109e5",
+      "phase": 2,
+      "entries": 57,
+      "tasks": 57,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/secretstore.h",
+      "sha256": "5c0c2b0a5b6667d460782cdf06604880063d01450f57a0e967dd1a688d03ed19",
+      "phase": 1,
+      "entries": 26,
+      "tasks": 26,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/settings.h",
+      "sha256": "9ad1714ae422b797a1662ba6f90221d8825ebb3965da646d006d94be9dfcb3b3",
+      "phase": 3,
+      "entries": 23,
+      "tasks": 23,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/sharedptr.h",
+      "sha256": "b79672f40d4aedef08b48a385c9381fcef05b49a634859e950b9f6434eec18d2",
+      "phase": 1,
+      "entries": 15,
+      "tasks": 15,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/simplebook.h",
+      "sha256": "5f0018d189d7cd945e97fe100bdb4a4c7e5bb510de74dad43517f04c18d20aa4",
+      "phase": 3,
+      "entries": 9,
+      "tasks": 9,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/sizer.h",
+      "sha256": "c9c37b634689120185907304952f8f440f042e1084d4e50ff1fbefc87dbace82",
+      "phase": 2,
+      "entries": 218,
+      "tasks": 218,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/slider.h",
+      "sha256": "162a00c935767ace7d369c29ffbf19fd63cd29a67e01e55e2c655e1c37f1a16d",
+      "phase": 2,
+      "entries": 74,
+      "tasks": 74,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/snglinst.h",
+      "sha256": "67cb17c5419b0a1dae5e77889c0891dcf522d367eb55540a2e79bf4a874536fe",
+      "phase": 1,
+      "entries": 7,
+      "tasks": 7,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/socket.h",
+      "sha256": "eceffa58ecde105c6862081f38711fa6ed776153506d53283db4a5d6a9d6571c",
+      "phase": 1,
+      "entries": 101,
+      "tasks": 101,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/sound.h",
+      "sha256": "9e009cd9ef0f695e7a3b2a5cdf7a16ac46d64ab9de1de5e9e507877fbab2cfc3",
+      "phase": 6,
+      "entries": 15,
+      "tasks": 15,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/spinbutt.h",
+      "sha256": "1390a6e41887979e554f476fdf21938fd2c19101372b91cad3c8a39ccf617f4f",
+      "phase": 2,
+      "entries": 26,
+      "tasks": 26,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/spinctrl.h",
+      "sha256": "6f0c19981a6aefd4a0d9688d7e1305a454e4f00de45f2e48b21da503d6ff8043",
+      "phase": 2,
+      "entries": 53,
+      "tasks": 53,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/splash.h",
+      "sha256": "3c52eeb2e4b741281f5fa60df7323055150a43ce28e5bb7e7fbc9b89fe044cdc",
+      "phase": 3,
+      "entries": 12,
+      "tasks": 12,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/splitter.h",
+      "sha256": "3a9982e60e3917d25e558da96c0d74ab04b31850bfac485324456af54fff1358",
+      "phase": 2,
+      "entries": 75,
+      "tasks": 75,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/srchctrl.h",
+      "sha256": "5ee3df8fd4b20892a61db888688f75cdf37ec7a4678d8d03996ef2be630cb07e",
+      "phase": 2,
+      "entries": 23,
+      "tasks": 23,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/sstream.h",
+      "sha256": "0af83ed7f4b029c8b863a36448cba713fe1662e37b060b7d9cbd5cc6a7df9856",
+      "phase": 1,
+      "entries": 5,
+      "tasks": 5,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/stack.h",
+      "sha256": "951839ae18780638b9e2f05206bc21cecb17e691e85aa9f56acaec72d8d32d4a",
+      "phase": 1,
+      "entries": 12,
+      "tasks": 12,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/stackwalk.h",
+      "sha256": "cd7d380e6a215944e087c1c0bec551428c551a9d465a5b5ad0c62708eb5b089d",
+      "phase": 1,
+      "entries": 18,
+      "tasks": 18,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/statbmp.h",
+      "sha256": "765ff4575b23d643c72241e2961218da9b55da41e5319d38e6e90c60947688c7",
+      "phase": 2,
+      "entries": 12,
+      "tasks": 12,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/statbox.h",
+      "sha256": "4021810edfbe2e2e6ef9b72614c291fe595c2e7018e0defb6124aa3103da32ea",
+      "phase": 2,
+      "entries": 8,
+      "tasks": 8,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/statline.h",
+      "sha256": "9be331ffe74cd6b1f1fbf39bdc4ee18c381a1a229df265e7704a168efdf599c4",
+      "phase": 2,
+      "entries": 8,
+      "tasks": 8,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/stattext.h",
+      "sha256": "27b6336a780e898f8824ca9c8f70a9a5d7e5b07dc9c4eec853880459821d2a16",
+      "phase": 2,
+      "entries": 18,
+      "tasks": 18,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/statusbr.h",
+      "sha256": "b2b83b4d0dbebb7901caae5b3df5a3dc1a585b804fab2c1c3e195ff646f2441f",
+      "phase": 3,
+      "entries": 40,
+      "tasks": 40,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/stc/stc.h",
+      "sha256": "79d3e8dcb7204e348b00384370bbfaf976eb7d572bdedf36670058b6148dce61",
+      "phase": 6,
+      "entries": 3090,
+      "tasks": 3090,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/stdpaths.h",
+      "sha256": "29ff367ddc30c1582f1d1e62a308e6d8cb765249c44c67a4d52270f116de8df2",
+      "phase": 1,
+      "entries": 36,
+      "tasks": 36,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/stdstream.h",
+      "sha256": "5cd7bf34217d48a62cef47cfcd9b9b2e68c42bf8e3b898fed07463b25e03cabe",
+      "phase": 1,
+      "entries": 12,
+      "tasks": 12,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/stockitem.h",
+      "sha256": "bce24d9d0c93eafe306ca58dc60c0ca4429fbe1bcfd9b23242d2410cbf727718",
+      "phase": 3,
+      "entries": 4,
+      "tasks": 4,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/stopwatch.h",
+      "sha256": "68ff66c059d5c15001a5413b8d7012ded6e31bde7d858f7900d969605ca7898b",
+      "phase": 1,
+      "entries": 7,
+      "tasks": 7,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/strconv.h",
+      "sha256": "1f65bf0e064fbb3217ccd860f21430954284aa36e69b047d31a881a4771edf69",
+      "phase": 1,
+      "entries": 33,
+      "tasks": 33,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/stream.h",
+      "sha256": "1b589feacb11a0866c68dac541848ad9a93e80ddb37bbc4e2559f3af54fb4cb2",
+      "phase": 1,
+      "entries": 118,
+      "tasks": 118,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/string.h",
+      "sha256": "31b47588b2a19d6916b4c939b98bfe5982545d336895a3e43079bb8bcacdb992",
+      "phase": 1,
+      "entries": 313,
+      "tasks": 313,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/sysopt.h",
+      "sha256": "fdae0cad26c04695400c1390de7485e8a0a46ff6d387d2be07a987ff9bf692f5",
+      "phase": 1,
+      "entries": 8,
+      "tasks": 8,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/systhemectrl.h",
+      "sha256": "159ff7b2d83a4884e033ce106fdf5c3a9a2d3e4396776b8b2dc07f5729b3deef",
+      "phase": 2,
+      "entries": 3,
+      "tasks": 3,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/tarstrm.h",
+      "sha256": "64419c251484d7151e37e474da72cca7a68338016071ae76f8704c5340ab7882",
+      "phase": 1,
+      "entries": 54,
+      "tasks": 54,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/taskbar.h",
+      "sha256": "52b2d076daa7c7b11d30ae3d8baf652a090c3fd65e428e4b1c3a4f8a005cfd53",
+      "phase": 3,
+      "entries": 34,
+      "tasks": 34,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/taskbarbutton.h",
+      "sha256": "88180cfd01556a96a4fdca9c65bbde7b9098abed20c416373ea95612a9e46fb6",
+      "phase": 3,
+      "entries": 87,
+      "tasks": 87,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/textcompleter.h",
+      "sha256": "ceac3e5202b3e800e7c3607666c025d1cddfa4006b791cc6241204668683275e",
+      "phase": 2,
+      "entries": 5,
+      "tasks": 5,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/textctrl.h",
+      "sha256": "1c0d0d45a44799fda85616a83ed633093e2de5e0a975d51b6ef51ed3d65d8269",
+      "phase": 2,
+      "entries": 228,
+      "tasks": 228,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/textdlg.h",
+      "sha256": "d9413e3e61f88f831de8431bdbb67f7fa06df25a928b1c4c2057cd4ea0e1a2b0",
+      "phase": 3,
+      "entries": 19,
+      "tasks": 19,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/textentry.h",
+      "sha256": "7aac43f3bfca77e8f2e291eb66be20e72f754be06f4f89f401bb7602a45566cb",
+      "phase": 2,
+      "entries": 44,
+      "tasks": 44,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/textfile.h",
+      "sha256": "dbb55bdff98154584e162525bcd314cc263e1470423d0aa9a9f773a7a9342570",
+      "phase": 1,
+      "entries": 34,
+      "tasks": 34,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/textwrapper.h",
+      "sha256": "e2c115419eea3277bdba7febaf35f1eb75ac2044fcb754aae248d813b7bea41e",
+      "phase": 2,
+      "entries": 5,
+      "tasks": 5,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/tglbtn.h",
+      "sha256": "85822179633bc7c65aa89dd57e67f0a9e75f98d729e56477d5378c98cf673589",
+      "phase": 2,
+      "entries": 16,
+      "tasks": 16,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/thread.h",
+      "sha256": "9a83877727f7d66c030a56397d4ce2ffa521c36cec686f23e4f6fa9cafda6e91",
+      "phase": 1,
+      "entries": 105,
+      "tasks": 105,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/time.h",
+      "sha256": "96cc377da311245488c2091dd2a90dd987b078a96e0cffd1552766f8d826a0a3",
+      "phase": 1,
+      "entries": 6,
+      "tasks": 6,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/timectrl.h",
+      "sha256": "fd34343451a439fdfa3660c310b3c57ad3616a3a0b0c6b59bd513368117f563b",
+      "phase": 2,
+      "entries": 11,
+      "tasks": 11,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/timer.h",
+      "sha256": "930741fc5e0b3aff386c918a10b60e0789354998b6271e9754a72043d8c9e51e",
+      "phase": 1,
+      "entries": 26,
+      "tasks": 26,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/tipdlg.h",
+      "sha256": "6b2ce2342fd96337723ddfc03f26972278ec4ce51092f98c9641d1bb99e326bd",
+      "phase": 3,
+      "entries": 7,
+      "tasks": 7,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/tipwin.h",
+      "sha256": "7fbbffdd0df20be90b70a29c720fde7d5e5b36f56f62222f91bfcbcc441d7967",
+      "phase": 2,
+      "entries": 4,
+      "tasks": 4,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/tls.h",
+      "sha256": "cd64c00d87bb8458417e910cb001cff196e6a6d073f47ea6a6ebd0769252e9e2",
+      "phase": 1,
+      "entries": 3,
+      "tasks": 3,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/tokenzr.h",
+      "sha256": "c9b5f8b0e6e76cc976d47142fe1b88e63ddf8e2af923afa46ea2e9e5f96825a8",
+      "phase": 1,
+      "entries": 14,
+      "tasks": 14,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/toolbar.h",
+      "sha256": "bef757f03efbcb61f87571bca6434724410edf0d511fe87c779fa8d201860e60",
+      "phase": 3,
+      "entries": 124,
+      "tasks": 124,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/toolbook.h",
+      "sha256": "b9e90c772d626d2e1ffc5195e00db66a022502de0b91858c9eacffeaced4345e",
+      "phase": 3,
+      "entries": 15,
+      "tasks": 15,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/tooltip.h",
+      "sha256": "ce1f694d9194afac1e168e213b8238a86cbdf4aba6b0e28a6287a7249426b51f",
+      "phase": 2,
+      "entries": 10,
+      "tasks": 10,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/toplevel.h",
+      "sha256": "7f0b559589ac7d14d2d6b3fbda7fa0b60d34aab6e45fad455742dd86be891c19",
+      "phase": 2,
+      "entries": 14,
+      "tasks": 14,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/tracker.h",
+      "sha256": "5141b896d81864ed9f177cdfab4940d615e9b0ff2907d0954dff9a235fe706d7",
+      "phase": 1,
+      "entries": 1,
+      "tasks": 1,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/translation.h",
+      "sha256": "36c64d542c003ee5d78fe78935ce7b014ef7e665493c0780b7feb8c33dd95550",
+      "phase": 1,
+      "entries": 39,
+      "tasks": 39,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/treebase.h",
+      "sha256": "957153f633af52120e31bde96e2b13f0174723e1bb342627e57496be2d3dc82d",
+      "phase": 4,
+      "entries": 44,
+      "tasks": 44,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/treebook.h",
+      "sha256": "ebf4bebf94309e5c7a086738516eb669b671963f9657a7afbccde61eb066e812",
+      "phase": 3,
+      "entries": 23,
+      "tasks": 23,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/treectrl.h",
+      "sha256": "f0435d05e18a42d091e947667e5ba430c7d6bb5234c3426d343762e70c74f0b9",
+      "phase": 4,
+      "entries": 176,
+      "tasks": 176,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/treelist.h",
+      "sha256": "2ad6f0e1b0f34dd9008cb9d64e35c2db8638ae6348ddcd529702b9cb8170f2a1",
+      "phase": 4,
+      "entries": 92,
+      "tasks": 92,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/txtstrm.h",
+      "sha256": "26d311d5411b0bc38d838d2ee2ffd0a23a7a88f3c398f7fa83d0d465073e21d4",
+      "phase": 1,
+      "entries": 60,
+      "tasks": 60,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/uiaction.h",
+      "sha256": "740389152a6b1089c3be8cd457fc828bfb5c9bbb6418b8ba54bcb75768e83062",
+      "phase": 3,
+      "entries": 14,
+      "tasks": 14,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/uilocale.h",
+      "sha256": "cc59c888cd5d3f24d7b5766343c1002edc15d1a34c36afdf1c95c1137b2d4a21",
+      "phase": 1,
+      "entries": 46,
+      "tasks": 46,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/unichar.h",
+      "sha256": "9e979a4066ee967ca562b5d1bbc4c2317c43baba60353ae1503a3651cae5a0d2",
+      "phase": 1,
+      "entries": 50,
+      "tasks": 50,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/uri.h",
+      "sha256": "feefd2e71fe0712cb0fbe81e6d0ae6215eb2dbcf6939341e6eb23be08213c0f7",
+      "phase": 1,
+      "entries": 30,
+      "tasks": 30,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/url.h",
+      "sha256": "a75acddf3ce8d6502a57996764d4953a24704d60466b12f5a42fd8848d9bced6",
+      "phase": 1,
+      "entries": 12,
+      "tasks": 12,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/ustring.h",
+      "sha256": "2f139f41c985a42f87cde5d3dd74802c07a604dd61eb899b1c616c2f1462b8b3",
+      "phase": 1,
+      "entries": 52,
+      "tasks": 52,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/utils.h",
+      "sha256": "3f355d7e173fc3e35f6d4834125024739d2cee64dd08d9c2bcb91d3803a6cded",
+      "phase": 1,
+      "entries": 97,
+      "tasks": 97,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/valgen.h",
+      "sha256": "57aa9f74fc41c64e531f97a92577ca1eba8401a558fe0f24a9681051239a1829",
+      "phase": 2,
+      "entries": 14,
+      "tasks": 14,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/validate.h",
+      "sha256": "7fc14f6ac96265f4fc348cad150a948e42c7928a7dcfd62958ba99d101f7855c",
+      "phase": 2,
+      "entries": 12,
+      "tasks": 12,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/valnum.h",
+      "sha256": "f09f485a4b0fc2f8bdb5813287b1956a6c118dec8a3235e385a489165e418714",
+      "phase": 2,
+      "entries": 27,
+      "tasks": 27,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/valtext.h",
+      "sha256": "f665f6ca1a0633d0bbb77e497639f487a3fcbafe1a6a25994c759dd1eab25e1d",
+      "phase": 2,
+      "entries": 31,
+      "tasks": 31,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/variant.h",
+      "sha256": "c52a0a286470a23c705c4a8f18b22a832c2decfd8dee73a1ca17c55a2efdf237",
+      "phase": 1,
+      "entries": 125,
+      "tasks": 125,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/vector.h",
+      "sha256": "e76ececb9788bc961385cff111e97ccb17e96ee647d2426849889f22fe836439",
+      "phase": 1,
+      "entries": 50,
+      "tasks": 50,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/version.h",
+      "sha256": "6532efa877ede3867350cdfa1254ab0fde3cfb7f471719ac1ac5f983751eeca1",
+      "phase": 1,
+      "entries": 2,
+      "tasks": 2,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/versioninfo.h",
+      "sha256": "d1f9ee0c43e80416c936ff57a555698ec2e939160f39a8112b64fc6c5cc3ff7f",
+      "phase": 1,
+      "entries": 13,
+      "tasks": 13,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/vidmode.h",
+      "sha256": "475adfdf561f54cbcf5364a9137d16a9b5fc799fdc889f3ed06bd369bccacafa",
+      "phase": 3,
+      "entries": 14,
+      "tasks": 14,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/vlbox.h",
+      "sha256": "f4f2ed3114d23da3a7b93410589332682ccaf719fd07eb2b03c23b4f8f8eb7d6",
+      "phase": 2,
+      "entries": 31,
+      "tasks": 31,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/volume.h",
+      "sha256": "fcde456d240315dfba847d683f385f5aaa7b86c599159ba4d08a7c1a578ec82f",
+      "phase": 1,
+      "entries": 19,
+      "tasks": 19,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/vscroll.h",
+      "sha256": "681fbaa8cfffc4f14f5649ef786a5d6e9d0d9004eae8274bd74fce4899eec22b",
+      "phase": 2,
+      "entries": 79,
+      "tasks": 79,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/weakref.h",
+      "sha256": "9349fac8d564ce27630c0f067d7c3de37511fba6549b8ec5dcfdfb91ec4aac05",
+      "phase": 1,
+      "entries": 14,
+      "tasks": 14,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/webrequest.h",
+      "sha256": "e06820b4d4e7e4871445765bfbc6589bc743cded0ca8cd36c2a3730dc79b19a4",
+      "phase": 1,
+      "entries": 71,
+      "tasks": 71,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/webview.h",
+      "sha256": "1413530db2508980ea9c0cd177f16fb3d334488477e7414f6c661563db59c02a",
+      "phase": 6,
+      "entries": 138,
+      "tasks": 138,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/webviewarchivehandler.h",
+      "sha256": "844c0b4c8247735601f9e09eb2183394c5daa049218a44c857be0b24a4193583",
+      "phase": 6,
+      "entries": 3,
+      "tasks": 3,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/webviewfshandler.h",
+      "sha256": "32d764d634b67686f7e4f18fbc62bfc1ecab4d4f450d6c12ff8ce95381ad5aa2",
+      "phase": 6,
+      "entries": 3,
+      "tasks": 3,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/wfstream.h",
+      "sha256": "dc8ea262dcc6b9ac607aec971d468b4ea9ee8f3543658ee0835458b6d841377f",
+      "phase": 1,
+      "entries": 42,
+      "tasks": 42,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/window.h",
+      "sha256": "63a31609ba9f383ee212e013f1b694bc8fde6b4ac98eb8ce8187d14556f36560",
+      "phase": 2,
+      "entries": 386,
+      "tasks": 386,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/windowid.h",
+      "sha256": "99e22f9fdf62ec1fa21720b521d9dc9e6d25c7b099cedbc04bd499fecf87317a",
+      "phase": 2,
+      "entries": 4,
+      "tasks": 4,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/windowptr.h",
+      "sha256": "1e14667be6d7d601e28b14c4585b044880c0006d57aa5fdc61fa72855c095f7a",
+      "phase": 2,
+      "entries": 8,
+      "tasks": 8,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/withimages.h",
+      "sha256": "2f2e59558b4fd2906a8082e0c307ba903724c1db4f0caed9b94aae3d41f0d288",
+      "phase": 2,
+      "entries": 14,
+      "tasks": 14,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/wizard.h",
+      "sha256": "86fc88617290640412d2f0e03d1ccb86a2e645dadc49a3b0e7d1e4cfa78ba4e7",
+      "phase": 3,
+      "entries": 70,
+      "tasks": 70,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/wrapsizer.h",
+      "sha256": "54753e9e4afe354010d1194e98efc21c87b46c3237bfdd8d24b2ee69782be66b",
+      "phase": 2,
+      "entries": 8,
+      "tasks": 8,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/wupdlock.h",
+      "sha256": "80db76d854596bcd8bd20639bf46134bb502b77bc46691a1504495a48d5f75ab",
+      "phase": 2,
+      "entries": 5,
+      "tasks": 5,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/wxcrt.h",
+      "sha256": "cf3b16d004a7848d7129fef96302c0d34ec0cfbff037d85542b2627b3e7b4e6c",
+      "phase": 1,
+      "entries": 212,
+      "tasks": 212,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/xlocale.h",
+      "sha256": "198478f0cb7c82b4dc504f68da1daec189186286d557c871115e3959319ec68d",
+      "phase": 1,
+      "entries": 24,
+      "tasks": 24,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/xml/xml.h",
+      "sha256": "7e5fab67924026916b19ee91bf3c7e908526ba4802c7f555b783ce4c7b5bbab1",
+      "phase": 6,
+      "entries": 90,
+      "tasks": 90,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/xrc/xh_sizer.h",
+      "sha256": "be167475c07e82ac3458b2e9bcf19667a7cbba7babe25218b31c490649cec490",
+      "phase": 6,
+      "entries": 6,
+      "tasks": 6,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/xrc/xmlres.h",
+      "sha256": "6d02f7e157b558aaa11016538a68e315265f73f0fe557c3cc4e4eb71243a2127",
+      "phase": 6,
+      "entries": 102,
+      "tasks": 102,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/zipstrm.h",
+      "sha256": "e7fe3eeab4094fb9e874ba667e480d5c25333f7aff7bc0498712f28b72bc1d13",
+      "phase": 1,
+      "entries": 68,
+      "tasks": 68,
+      "context_entries": 0
+    },
+    {
+      "header": "wx/zstream.h",
+      "sha256": "3496d1a3f89169ed3f69b5eaa928d89bb02058333c6d613b618a3c18179a8eb7",
+      "phase": 1,
+      "entries": 16,
+      "tasks": 16,
+      "context_entries": 0
+    }
+  ],
+  "class_definitions": 1006
+}

@@ -2,8 +2,9 @@
 
 Target a usable first release with the existing controls, reliable REPL-driven
 development, validated platforms, and standalone packaging. Full wxWidgets
-coverage remains future work. This is a plan; unchecked steps are not claims of
-implemented or verified behavior.
+coverage is inventoried in Phase 6; its implementation remains future work.
+This is a plan; unchecked steps are not claims of implemented or verified
+behavior.
 
 ## Phase 1: Establish the release baseline
 
@@ -209,13 +210,36 @@ in `evidence/phase5/{sbcl,ccl}-20261028/`.
 
 The result is a command-line directory package, not a notarized Finder `.app`.
 Other machines/OS versions and manual UI input remain unvalidated. Phase 3's
-hosted checks and Phase 6's release preparation remain open; this local sample
+hosted checks and Phase 7's release preparation remain open; this local sample
 does not establish release-wide platform support.
 
 **Acceptance:** The sample launches, processes events, and exits without relying
 on development paths or Quicklisp.
 
-## Phase 6: Prepare the release
+## Phase 6: Create the full wxWidgets coverage plan
+
+- [x] Inventory the pinned wxWidgets API, including widgets, functions, overloads,
+  events, styles, optional components and platform-specific declarations.
+- [x] Mark implemented and partial operations in the detailed lists and class
+  index, preserving their scopes and Lisp/native mappings across regeneration.
+- [x] Group the remaining inventory into coverage implementation phases with
+  dependencies, verification requirements and completion rules.
+- [x] Preserve release preparation as Phase 7 and link the new coverage plan.
+
+The [wxWidgets coverage plan](docs/WXWIDGETS-COVERAGE.md) records the implemented
+baseline and coverage phases C1–C7. Its class index and per-header declaration
+checklists cover all 398 wxWidgets 3.2.12 interface headers, with source links
+and a hash manifest. A persistent status ledger retains checked/partial entries;
+compiler scaffolding is context rather than binding tasks. These are
+source-inventory entries, not a count of distinct
+functions or a claim of full binding coverage. Final source/documentation and
+inherited-API reconciliation is an explicit remaining coverage task.
+
+**Acceptance:** Every pinned interface header has phased, source-linked work
+items; existing support is distinguished from complete class/API coverage.
+The plan is complete; implementing its unchecked bindings remains future work.
+
+## Phase 7: Prepare the release
 
 - [ ] Review exports, documentation, examples, ABI compatibility, and limitations.
 - [ ] Run supported-platform and packaged-application checks.
@@ -228,8 +252,8 @@ workflow.
 
 ## Decisions
 
-- D1 Target a bounded first release because full wxWidgets coverage is open-ended;
-  rejected: exhaustive bindings as a release requirement.
+- D1 Target a bounded first release while tracking full wxWidgets coverage in
+  the Phase 6 plan; rejected: making exhaustive bindings a release requirement.
 - D2 Gate editor support on prototype evidence because main-thread integration
   remains unproven; rejected: making release completion depend indefinitely on
   SLIME/SLY.
