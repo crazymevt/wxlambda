@@ -4513,6 +4513,660 @@
         "wxl_set_list_selection"
       ],
       "scope": "LIST-BOX only, unsorted single selection/text items. Finite UTF-8/NUL-checked construction; silent item edits preserve/adjust selection deterministically. Native list callback lifetime/pump guards; owned/simple command selection+activation events. Other item containers, multiselect/sort/client data/virtual models remain unbound."
+    },
+    {
+      "header": "wx/treectrl.h",
+      "line": 213,
+      "declaration": "wxTreeCtrl(wxWindow* parent, wxWindowID id = wxID_ANY, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxTR_DEFAULT_STYLE, const wxValidator& validator = wxDefaultValidator, const wxString& name = wxTreeCtrlNameStr);",
+      "status": "~",
+      "symbol": "wxTreeCtrl::wxTreeCtrl",
+      "lisp": [
+        "tree-control",
+        "tree-item",
+        "make-tree-control",
+        "add-tree-root",
+        "append-tree-item",
+        "tree-root",
+        "tree-item-parent",
+        "tree-item-children",
+        "tree-item-text",
+        "tree-item-expanded-p",
+        "tree-item-alive-p",
+        "delete-tree-item",
+        "selection"
+      ],
+      "native": [
+        "wxl_tree",
+        "wxl_tree_add",
+        "wxl_tree_query",
+        "wxl_tree_relative",
+        "wxl_tree_text",
+        "wxl_set_tree_text",
+        "wxl_tree_expanded",
+        "wxl_set_tree_expanded",
+        "wxl_tree_delete",
+        "wxl_tree_select",
+        "wxl_tree_item_alive"
+      ],
+      "scope": "Managed visible-root single-selection TREE-CONTROL only. Checked owner/item tokens with canonical views, subtree/owner invalidation, silent selection normalization and native selection/veto guards. No raw IDs/adoption, other tree styles, multiselect, images/item data, label editing or full native class parity. wxQt backend unavailable pending generation-safe async item events; hosted GTK/MSW runtime still unverified."
+    },
+    {
+      "header": "wx/treectrl.h",
+      "line": 234,
+      "declaration": "virtual wxTreeItemId AddRoot(const wxString& text, int image = -1, int selImage = -1, wxTreeItemData* data = NULL);",
+      "status": "~",
+      "symbol": "wxTreeCtrl::AddRoot",
+      "lisp": [
+        "tree-control",
+        "tree-item",
+        "make-tree-control",
+        "add-tree-root",
+        "append-tree-item",
+        "tree-root",
+        "tree-item-parent",
+        "tree-item-children",
+        "tree-item-text",
+        "tree-item-expanded-p",
+        "tree-item-alive-p",
+        "delete-tree-item",
+        "selection"
+      ],
+      "native": [
+        "wxl_tree",
+        "wxl_tree_add",
+        "wxl_tree_query",
+        "wxl_tree_relative",
+        "wxl_tree_text",
+        "wxl_set_tree_text",
+        "wxl_tree_expanded",
+        "wxl_set_tree_expanded",
+        "wxl_tree_delete",
+        "wxl_tree_select",
+        "wxl_tree_item_alive"
+      ],
+      "scope": "Managed visible-root single-selection TREE-CONTROL only. Checked owner/item tokens with canonical views, subtree/owner invalidation, silent selection normalization and native selection/veto guards. No raw IDs/adoption, other tree styles, multiselect, images/item data, label editing or full native class parity. wxQt backend unavailable pending generation-safe async item events; hosted GTK/MSW runtime still unverified."
+    },
+    {
+      "header": "wx/treectrl.h",
+      "line": 247,
+      "declaration": "wxTreeItemId AppendItem(const wxTreeItemId& parent, const wxString& text, int image = -1, int selImage = -1, wxTreeItemData* data = NULL);",
+      "status": "~",
+      "symbol": "wxTreeCtrl::AppendItem",
+      "lisp": [
+        "tree-control",
+        "tree-item",
+        "make-tree-control",
+        "add-tree-root",
+        "append-tree-item",
+        "tree-root",
+        "tree-item-parent",
+        "tree-item-children",
+        "tree-item-text",
+        "tree-item-expanded-p",
+        "tree-item-alive-p",
+        "delete-tree-item",
+        "selection"
+      ],
+      "native": [
+        "wxl_tree",
+        "wxl_tree_add",
+        "wxl_tree_query",
+        "wxl_tree_relative",
+        "wxl_tree_text",
+        "wxl_set_tree_text",
+        "wxl_tree_expanded",
+        "wxl_set_tree_expanded",
+        "wxl_tree_delete",
+        "wxl_tree_select",
+        "wxl_tree_item_alive"
+      ],
+      "scope": "Managed visible-root single-selection TREE-CONTROL only. Checked owner/item tokens with canonical views, subtree/owner invalidation, silent selection normalization and native selection/veto guards. No raw IDs/adoption, other tree styles, multiselect, images/item data, label editing or full native class parity. wxQt backend unavailable pending generation-safe async item events; hosted GTK/MSW runtime still unverified."
+    },
+    {
+      "header": "wx/treectrl.h",
+      "line": 280,
+      "declaration": "virtual void Collapse(const wxTreeItemId& item);",
+      "status": "~",
+      "symbol": "wxTreeCtrl::Collapse",
+      "lisp": [
+        "tree-control",
+        "tree-item",
+        "make-tree-control",
+        "add-tree-root",
+        "append-tree-item",
+        "tree-root",
+        "tree-item-parent",
+        "tree-item-children",
+        "tree-item-text",
+        "tree-item-expanded-p",
+        "tree-item-alive-p",
+        "delete-tree-item",
+        "selection"
+      ],
+      "native": [
+        "wxl_tree",
+        "wxl_tree_add",
+        "wxl_tree_query",
+        "wxl_tree_relative",
+        "wxl_tree_text",
+        "wxl_set_tree_text",
+        "wxl_tree_expanded",
+        "wxl_set_tree_expanded",
+        "wxl_tree_delete",
+        "wxl_tree_select",
+        "wxl_tree_item_alive"
+      ],
+      "scope": "Managed visible-root single-selection TREE-CONTROL only. Checked owner/item tokens with canonical views, subtree/owner invalidation, silent selection normalization and native selection/veto guards. No raw IDs/adoption, other tree styles, multiselect, images/item data, label editing or full native class parity. wxQt backend unavailable pending generation-safe async item events; hosted GTK/MSW runtime still unverified."
+    },
+    {
+      "header": "wx/treectrl.h",
+      "line": 318,
+      "declaration": "virtual void Delete(const wxTreeItemId& item);",
+      "status": "~",
+      "symbol": "wxTreeCtrl::Delete",
+      "lisp": [
+        "tree-control",
+        "tree-item",
+        "make-tree-control",
+        "add-tree-root",
+        "append-tree-item",
+        "tree-root",
+        "tree-item-parent",
+        "tree-item-children",
+        "tree-item-text",
+        "tree-item-expanded-p",
+        "tree-item-alive-p",
+        "delete-tree-item",
+        "selection"
+      ],
+      "native": [
+        "wxl_tree",
+        "wxl_tree_add",
+        "wxl_tree_query",
+        "wxl_tree_relative",
+        "wxl_tree_text",
+        "wxl_set_tree_text",
+        "wxl_tree_expanded",
+        "wxl_set_tree_expanded",
+        "wxl_tree_delete",
+        "wxl_tree_select",
+        "wxl_tree_item_alive"
+      ],
+      "scope": "Managed visible-root single-selection TREE-CONTROL only. Checked owner/item tokens with canonical views, subtree/owner invalidation, silent selection normalization and native selection/veto guards. No raw IDs/adoption, other tree styles, multiselect, images/item data, label editing or full native class parity. wxQt backend unavailable pending generation-safe async item events; hosted GTK/MSW runtime still unverified."
+    },
+    {
+      "header": "wx/treectrl.h",
+      "line": 398,
+      "declaration": "virtual void Expand(const wxTreeItemId& item);",
+      "status": "~",
+      "symbol": "wxTreeCtrl::Expand",
+      "lisp": [
+        "tree-control",
+        "tree-item",
+        "make-tree-control",
+        "add-tree-root",
+        "append-tree-item",
+        "tree-root",
+        "tree-item-parent",
+        "tree-item-children",
+        "tree-item-text",
+        "tree-item-expanded-p",
+        "tree-item-alive-p",
+        "delete-tree-item",
+        "selection"
+      ],
+      "native": [
+        "wxl_tree",
+        "wxl_tree_add",
+        "wxl_tree_query",
+        "wxl_tree_relative",
+        "wxl_tree_text",
+        "wxl_set_tree_text",
+        "wxl_tree_expanded",
+        "wxl_set_tree_expanded",
+        "wxl_tree_delete",
+        "wxl_tree_select",
+        "wxl_tree_item_alive"
+      ],
+      "scope": "Managed visible-root single-selection TREE-CONTROL only. Checked owner/item tokens with canonical views, subtree/owner invalidation, silent selection normalization and native selection/veto guards. No raw IDs/adoption, other tree styles, multiselect, images/item data, label editing or full native class parity. wxQt backend unavailable pending generation-safe async item events; hosted GTK/MSW runtime still unverified."
+    },
+    {
+      "header": "wx/treectrl.h",
+      "line": 479,
+      "declaration": "virtual wxTreeItemId GetFirstChild(const wxTreeItemId& item, wxTreeItemIdValue& cookie) const;",
+      "status": "~",
+      "symbol": "wxTreeCtrl::GetFirstChild",
+      "lisp": [
+        "tree-control",
+        "tree-item",
+        "make-tree-control",
+        "add-tree-root",
+        "append-tree-item",
+        "tree-root",
+        "tree-item-parent",
+        "tree-item-children",
+        "tree-item-text",
+        "tree-item-expanded-p",
+        "tree-item-alive-p",
+        "delete-tree-item",
+        "selection"
+      ],
+      "native": [
+        "wxl_tree",
+        "wxl_tree_add",
+        "wxl_tree_query",
+        "wxl_tree_relative",
+        "wxl_tree_text",
+        "wxl_set_tree_text",
+        "wxl_tree_expanded",
+        "wxl_set_tree_expanded",
+        "wxl_tree_delete",
+        "wxl_tree_select",
+        "wxl_tree_item_alive"
+      ],
+      "scope": "Managed visible-root single-selection TREE-CONTROL only. Checked owner/item tokens with canonical views, subtree/owner invalidation, silent selection normalization and native selection/veto guards. No raw IDs/adoption, other tree styles, multiselect, images/item data, label editing or full native class parity. wxQt backend unavailable pending generation-safe async item events; hosted GTK/MSW runtime still unverified."
+    },
+    {
+      "header": "wx/treectrl.h",
+      "line": 571,
+      "declaration": "virtual wxTreeItemId GetItemParent(const wxTreeItemId& item) const;",
+      "status": "~",
+      "symbol": "wxTreeCtrl::GetItemParent",
+      "lisp": [
+        "tree-control",
+        "tree-item",
+        "make-tree-control",
+        "add-tree-root",
+        "append-tree-item",
+        "tree-root",
+        "tree-item-parent",
+        "tree-item-children",
+        "tree-item-text",
+        "tree-item-expanded-p",
+        "tree-item-alive-p",
+        "delete-tree-item",
+        "selection"
+      ],
+      "native": [
+        "wxl_tree",
+        "wxl_tree_add",
+        "wxl_tree_query",
+        "wxl_tree_relative",
+        "wxl_tree_text",
+        "wxl_set_tree_text",
+        "wxl_tree_expanded",
+        "wxl_set_tree_expanded",
+        "wxl_tree_delete",
+        "wxl_tree_select",
+        "wxl_tree_item_alive"
+      ],
+      "scope": "Managed visible-root single-selection TREE-CONTROL only. Checked owner/item tokens with canonical views, subtree/owner invalidation, silent selection normalization and native selection/veto guards. No raw IDs/adoption, other tree styles, multiselect, images/item data, label editing or full native class parity. wxQt backend unavailable pending generation-safe async item events; hosted GTK/MSW runtime still unverified."
+    },
+    {
+      "header": "wx/treectrl.h",
+      "line": 581,
+      "declaration": "virtual wxString GetItemText(const wxTreeItemId& item) const;",
+      "status": "~",
+      "symbol": "wxTreeCtrl::GetItemText",
+      "lisp": [
+        "tree-control",
+        "tree-item",
+        "make-tree-control",
+        "add-tree-root",
+        "append-tree-item",
+        "tree-root",
+        "tree-item-parent",
+        "tree-item-children",
+        "tree-item-text",
+        "tree-item-expanded-p",
+        "tree-item-alive-p",
+        "delete-tree-item",
+        "selection"
+      ],
+      "native": [
+        "wxl_tree",
+        "wxl_tree_add",
+        "wxl_tree_query",
+        "wxl_tree_relative",
+        "wxl_tree_text",
+        "wxl_set_tree_text",
+        "wxl_tree_expanded",
+        "wxl_set_tree_expanded",
+        "wxl_tree_delete",
+        "wxl_tree_select",
+        "wxl_tree_item_alive"
+      ],
+      "scope": "Managed visible-root single-selection TREE-CONTROL only. Checked owner/item tokens with canonical views, subtree/owner invalidation, silent selection normalization and native selection/veto guards. No raw IDs/adoption, other tree styles, multiselect, images/item data, label editing or full native class parity. wxQt backend unavailable pending generation-safe async item events; hosted GTK/MSW runtime still unverified."
+    },
+    {
+      "header": "wx/treectrl.h",
+      "line": 624,
+      "declaration": "virtual wxTreeItemId GetNextSibling(const wxTreeItemId& item) const;",
+      "status": "~",
+      "symbol": "wxTreeCtrl::GetNextSibling",
+      "lisp": [
+        "tree-control",
+        "tree-item",
+        "make-tree-control",
+        "add-tree-root",
+        "append-tree-item",
+        "tree-root",
+        "tree-item-parent",
+        "tree-item-children",
+        "tree-item-text",
+        "tree-item-expanded-p",
+        "tree-item-alive-p",
+        "delete-tree-item",
+        "selection"
+      ],
+      "native": [
+        "wxl_tree",
+        "wxl_tree_add",
+        "wxl_tree_query",
+        "wxl_tree_relative",
+        "wxl_tree_text",
+        "wxl_set_tree_text",
+        "wxl_tree_expanded",
+        "wxl_set_tree_expanded",
+        "wxl_tree_delete",
+        "wxl_tree_select",
+        "wxl_tree_item_alive"
+      ],
+      "scope": "Managed visible-root single-selection TREE-CONTROL only. Checked owner/item tokens with canonical views, subtree/owner invalidation, silent selection normalization and native selection/veto guards. No raw IDs/adoption, other tree styles, multiselect, images/item data, label editing or full native class parity. wxQt backend unavailable pending generation-safe async item events; hosted GTK/MSW runtime still unverified."
+    },
+    {
+      "header": "wx/treectrl.h",
+      "line": 663,
+      "declaration": "virtual wxTreeItemId GetRootItem() const;",
+      "status": "~",
+      "symbol": "wxTreeCtrl::GetRootItem",
+      "lisp": [
+        "tree-control",
+        "tree-item",
+        "make-tree-control",
+        "add-tree-root",
+        "append-tree-item",
+        "tree-root",
+        "tree-item-parent",
+        "tree-item-children",
+        "tree-item-text",
+        "tree-item-expanded-p",
+        "tree-item-alive-p",
+        "delete-tree-item",
+        "selection"
+      ],
+      "native": [
+        "wxl_tree",
+        "wxl_tree_add",
+        "wxl_tree_query",
+        "wxl_tree_relative",
+        "wxl_tree_text",
+        "wxl_set_tree_text",
+        "wxl_tree_expanded",
+        "wxl_set_tree_expanded",
+        "wxl_tree_delete",
+        "wxl_tree_select",
+        "wxl_tree_item_alive"
+      ],
+      "scope": "Managed visible-root single-selection TREE-CONTROL only. Checked owner/item tokens with canonical views, subtree/owner invalidation, silent selection normalization and native selection/veto guards. No raw IDs/adoption, other tree styles, multiselect, images/item data, label editing or full native class parity. wxQt backend unavailable pending generation-safe async item events; hosted GTK/MSW runtime still unverified."
+    },
+    {
+      "header": "wx/treectrl.h",
+      "line": 671,
+      "declaration": "virtual wxTreeItemId GetSelection() const;",
+      "status": "~",
+      "symbol": "wxTreeCtrl::GetSelection",
+      "lisp": [
+        "tree-control",
+        "tree-item",
+        "make-tree-control",
+        "add-tree-root",
+        "append-tree-item",
+        "tree-root",
+        "tree-item-parent",
+        "tree-item-children",
+        "tree-item-text",
+        "tree-item-expanded-p",
+        "tree-item-alive-p",
+        "delete-tree-item",
+        "selection"
+      ],
+      "native": [
+        "wxl_tree",
+        "wxl_tree_add",
+        "wxl_tree_query",
+        "wxl_tree_relative",
+        "wxl_tree_text",
+        "wxl_set_tree_text",
+        "wxl_tree_expanded",
+        "wxl_set_tree_expanded",
+        "wxl_tree_delete",
+        "wxl_tree_select",
+        "wxl_tree_item_alive"
+      ],
+      "scope": "Managed visible-root single-selection TREE-CONTROL only. Checked owner/item tokens with canonical views, subtree/owner invalidation, silent selection normalization and native selection/veto guards. No raw IDs/adoption, other tree styles, multiselect, images/item data, label editing or full native class parity. wxQt backend unavailable pending generation-safe async item events; hosted GTK/MSW runtime still unverified."
+    },
+    {
+      "header": "wx/treectrl.h",
+      "line": 768,
+      "declaration": "virtual bool IsExpanded(const wxTreeItemId& item) const;",
+      "status": "~",
+      "symbol": "wxTreeCtrl::IsExpanded",
+      "lisp": [
+        "tree-control",
+        "tree-item",
+        "make-tree-control",
+        "add-tree-root",
+        "append-tree-item",
+        "tree-root",
+        "tree-item-parent",
+        "tree-item-children",
+        "tree-item-text",
+        "tree-item-expanded-p",
+        "tree-item-alive-p",
+        "delete-tree-item",
+        "selection"
+      ],
+      "native": [
+        "wxl_tree",
+        "wxl_tree_add",
+        "wxl_tree_query",
+        "wxl_tree_relative",
+        "wxl_tree_text",
+        "wxl_set_tree_text",
+        "wxl_tree_expanded",
+        "wxl_set_tree_expanded",
+        "wxl_tree_delete",
+        "wxl_tree_select",
+        "wxl_tree_item_alive"
+      ],
+      "scope": "Managed visible-root single-selection TREE-CONTROL only. Checked owner/item tokens with canonical views, subtree/owner invalidation, silent selection normalization and native selection/veto guards. No raw IDs/adoption, other tree styles, multiselect, images/item data, label editing or full native class parity. wxQt backend unavailable pending generation-safe async item events; hosted GTK/MSW runtime still unverified."
+    },
+    {
+      "header": "wx/treectrl.h",
+      "line": 836,
+      "declaration": "virtual void SelectItem(const wxTreeItemId& item, bool select = true);",
+      "status": "~",
+      "symbol": "wxTreeCtrl::SelectItem",
+      "lisp": [
+        "tree-control",
+        "tree-item",
+        "make-tree-control",
+        "add-tree-root",
+        "append-tree-item",
+        "tree-root",
+        "tree-item-parent",
+        "tree-item-children",
+        "tree-item-text",
+        "tree-item-expanded-p",
+        "tree-item-alive-p",
+        "delete-tree-item",
+        "selection"
+      ],
+      "native": [
+        "wxl_tree",
+        "wxl_tree_add",
+        "wxl_tree_query",
+        "wxl_tree_relative",
+        "wxl_tree_text",
+        "wxl_set_tree_text",
+        "wxl_tree_expanded",
+        "wxl_set_tree_expanded",
+        "wxl_tree_delete",
+        "wxl_tree_select",
+        "wxl_tree_item_alive"
+      ],
+      "scope": "Managed visible-root single-selection TREE-CONTROL only. Checked owner/item tokens with canonical views, subtree/owner invalidation, silent selection normalization and native selection/veto guards. No raw IDs/adoption, other tree styles, multiselect, images/item data, label editing or full native class parity. wxQt backend unavailable pending generation-safe async item events; hosted GTK/MSW runtime still unverified."
+    },
+    {
+      "header": "wx/treectrl.h",
+      "line": 945,
+      "declaration": "virtual void SetItemText(const wxTreeItemId& item, const wxString& text);",
+      "status": "~",
+      "symbol": "wxTreeCtrl::SetItemText",
+      "lisp": [
+        "tree-control",
+        "tree-item",
+        "make-tree-control",
+        "add-tree-root",
+        "append-tree-item",
+        "tree-root",
+        "tree-item-parent",
+        "tree-item-children",
+        "tree-item-text",
+        "tree-item-expanded-p",
+        "tree-item-alive-p",
+        "delete-tree-item",
+        "selection"
+      ],
+      "native": [
+        "wxl_tree",
+        "wxl_tree_add",
+        "wxl_tree_query",
+        "wxl_tree_relative",
+        "wxl_tree_text",
+        "wxl_set_tree_text",
+        "wxl_tree_expanded",
+        "wxl_set_tree_expanded",
+        "wxl_tree_delete",
+        "wxl_tree_select",
+        "wxl_tree_item_alive"
+      ],
+      "scope": "Managed visible-root single-selection TREE-CONTROL only. Checked owner/item tokens with canonical views, subtree/owner invalidation, silent selection normalization and native selection/veto guards. No raw IDs/adoption, other tree styles, multiselect, images/item data, label editing or full native class parity. wxQt backend unavailable pending generation-safe async item events; hosted GTK/MSW runtime still unverified."
+    },
+    {
+      "header": "wx/treectrl.h",
+      "line": 1003,
+      "declaration": "virtual void Unselect();",
+      "status": "~",
+      "symbol": "wxTreeCtrl::Unselect",
+      "lisp": [
+        "tree-control",
+        "tree-item",
+        "make-tree-control",
+        "add-tree-root",
+        "append-tree-item",
+        "tree-root",
+        "tree-item-parent",
+        "tree-item-children",
+        "tree-item-text",
+        "tree-item-expanded-p",
+        "tree-item-alive-p",
+        "delete-tree-item",
+        "selection"
+      ],
+      "native": [
+        "wxl_tree",
+        "wxl_tree_add",
+        "wxl_tree_query",
+        "wxl_tree_relative",
+        "wxl_tree_text",
+        "wxl_set_tree_text",
+        "wxl_tree_expanded",
+        "wxl_set_tree_expanded",
+        "wxl_tree_delete",
+        "wxl_tree_select",
+        "wxl_tree_item_alive"
+      ],
+      "scope": "Managed visible-root single-selection TREE-CONTROL only. Checked owner/item tokens with canonical views, subtree/owner invalidation, silent selection normalization and native selection/veto guards. No raw IDs/adoption, other tree styles, multiselect, images/item data, label editing or full native class parity. wxQt backend unavailable pending generation-safe async item events; hosted GTK/MSW runtime still unverified."
+    },
+    {
+      "header": "wx/treectrl.h",
+      "line": 1114,
+      "declaration": "wxTreeItemId GetItem() const;",
+      "status": "~",
+      "symbol": "wxTreeEvent::GetItem",
+      "lisp": [
+        "event-tree-item",
+        "bind-event"
+      ],
+      "native": [
+        "wxl_bind",
+        "wxl_event_tree_item"
+      ],
+      "scope": "Native selection changing/changed snapshots/contexts retain checked managed view identity, not text/validity. No old-item, public native event construction, owned/cloning or other tree event support. wxQt backend unavailable pending generation-safe async item events; hosted GTK/MSW runtime still unverified."
+    },
+    {
+      "header": "wx/treectrl.h",
+      "line": 1166,
+      "declaration": "wxEventType wxEVT_TREE_DELETE_ITEM;",
+      "status": "~",
+      "symbol": "wxEVT_TREE_DELETE_ITEM",
+      "lisp": [
+        "delete-tree-item",
+        "tree-item-alive-p"
+      ],
+      "native": [
+        "wxl_tree",
+        "wxl_tree_delete"
+      ],
+      "scope": "Internal token invalidation observer only; no public deletion event kind/binding/snapshot. wxQt backend unavailable pending generation-safe async item events; hosted GTK/MSW runtime still unverified."
+    },
+    {
+      "header": "wx/treectrl.h",
+      "line": 1173,
+      "declaration": "wxEventType wxEVT_TREE_SEL_CHANGED;",
+      "status": "~",
+      "symbol": "wxEVT_TREE_SEL_CHANGED",
+      "lisp": [
+        "bind-event",
+        "event-tree-item"
+      ],
+      "native": [
+        "wxl_bind",
+        "wxl_event_tree_item"
+      ],
+      "scope": "Managed visible-root single-selection TREE-CONTROL only. Checked owner/item tokens with canonical views, subtree/owner invalidation, silent selection normalization and native selection/veto guards. No raw IDs/adoption, other tree styles, multiselect, images/item data, label editing or full native class parity. wxQt backend unavailable pending generation-safe async item events; hosted GTK/MSW runtime still unverified."
+    },
+    {
+      "header": "wx/treectrl.h",
+      "line": 1174,
+      "declaration": "wxEventType wxEVT_TREE_SEL_CHANGING;",
+      "status": "~",
+      "symbol": "wxEVT_TREE_SEL_CHANGING",
+      "lisp": [
+        "bind-event",
+        "event-tree-item"
+      ],
+      "native": [
+        "wxl_bind",
+        "wxl_event_tree_item"
+      ],
+      "scope": "Managed visible-root single-selection TREE-CONTROL only. Checked owner/item tokens with canonical views, subtree/owner invalidation, silent selection normalization and native selection/veto guards. No raw IDs/adoption, other tree styles, multiselect, images/item data, label editing or full native class parity. wxQt backend unavailable pending generation-safe async item events; hosted GTK/MSW runtime still unverified."
+    },
+    {
+      "header": "wx/treebase.h",
+      "line": 31,
+      "declaration": "bool IsOk() const;",
+      "status": "~",
+      "symbol": "wxTreeItemId::IsOk",
+      "lisp": [
+        "tree-item-alive-p"
+      ],
+      "native": [
+        "wxl_tree_item_alive"
+      ],
+      "scope": "Checked token/owner liveness adapter, not raw pointer/non-null validity or arbitrary wxTreeItemId adoption. wxQt backend unavailable pending generation-safe async item events; hosted GTK/MSW runtime still unverified."
     }
   ],
   "classes": {
@@ -5376,6 +6030,82 @@
         "wxl_set_list_selection"
       ],
       "scope": "LIST-BOX only, unsorted single selection/text items. Finite UTF-8/NUL-checked construction; silent item edits preserve/adjust selection deterministically. Native list callback lifetime/pump guards; owned/simple command selection+activation events. Other item containers, multiselect/sort/client data/virtual models remain unbound."
+    },
+    "wxTreeCtrl": {
+      "status": "~",
+      "lisp": [
+        "tree-control",
+        "tree-item",
+        "make-tree-control",
+        "add-tree-root",
+        "append-tree-item",
+        "tree-root",
+        "tree-item-parent",
+        "tree-item-children",
+        "tree-item-text",
+        "tree-item-expanded-p",
+        "tree-item-alive-p",
+        "delete-tree-item",
+        "selection"
+      ],
+      "native": [
+        "wxl_tree",
+        "wxl_tree_add",
+        "wxl_tree_query",
+        "wxl_tree_relative",
+        "wxl_tree_text",
+        "wxl_set_tree_text",
+        "wxl_tree_expanded",
+        "wxl_set_tree_expanded",
+        "wxl_tree_delete",
+        "wxl_tree_select",
+        "wxl_tree_item_alive"
+      ],
+      "scope": "Managed visible-root single-selection TREE-CONTROL only. Checked owner/item tokens with canonical views, subtree/owner invalidation, silent selection normalization and native selection/veto guards. No raw IDs/adoption, other tree styles, multiselect, images/item data, label editing or full native class parity. wxQt unavailable pending generation-safe async item events; no full platform claim."
+    },
+    "wxTreeItemId": {
+      "status": "~",
+      "lisp": [
+        "tree-control",
+        "tree-item",
+        "make-tree-control",
+        "add-tree-root",
+        "append-tree-item",
+        "tree-root",
+        "tree-item-parent",
+        "tree-item-children",
+        "tree-item-text",
+        "tree-item-expanded-p",
+        "tree-item-alive-p",
+        "delete-tree-item",
+        "selection"
+      ],
+      "native": [
+        "wxl_tree",
+        "wxl_tree_add",
+        "wxl_tree_query",
+        "wxl_tree_relative",
+        "wxl_tree_text",
+        "wxl_set_tree_text",
+        "wxl_tree_expanded",
+        "wxl_set_tree_expanded",
+        "wxl_tree_delete",
+        "wxl_tree_select",
+        "wxl_tree_item_alive"
+      ],
+      "scope": "Managed visible-root single-selection TREE-CONTROL only. Checked owner/item tokens with canonical views, subtree/owner invalidation, silent selection normalization and native selection/veto guards. No raw IDs/adoption, other tree styles, multiselect, images/item data, label editing or full native class parity. wxQt unavailable pending generation-safe async item events; no full platform claim."
+    },
+    "wxTreeEvent": {
+      "status": "~",
+      "lisp": [
+        "bind-event",
+        "event-tree-item"
+      ],
+      "native": [
+        "wxl_bind",
+        "wxl_event_tree_item"
+      ],
+      "scope": "Native derived selection events only, view identity snapshots/current contexts and CHANGING veto. No old-item/public event construction/owned/cloning/other tree events. wxQt unavailable pending generation-safe async item events; no full platform claim."
     }
   }
 }

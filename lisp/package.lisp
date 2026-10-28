@@ -1,6 +1,9 @@
 (defpackage #:wxlambda
   (:use #:cl)
-  (:export #:list-box #:make-list-box #:item-count #:item-text #:append-item #:delete-item #:clear-items
+  (:export #:tree-control #:tree-item #:make-tree-control #:add-tree-root #:append-tree-item
+           #:tree-root #:tree-item-parent #:tree-item-children #:tree-item-text #:tree-item-expanded-p
+           #:tree-item-alive-p #:delete-tree-item #:event-tree-item
+           #:list-box #:make-list-box #:item-count #:item-text #:append-item #:delete-item #:clear-items
            #:notebook #:make-notebook #:add-notebook-page #:notebook-page-count #:notebook-page #:notebook-page-label
            #:text-multiline-p #:text-editable-p #:text-selection #:text-insertion-point #:text-last-position #:replace-text
            #:clipboard-text #:clipboard-text-available-p #:flush-clipboard

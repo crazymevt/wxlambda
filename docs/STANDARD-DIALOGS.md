@@ -138,5 +138,5 @@ unrelated native event ownership utilities. Graphical user acceptance, validatio
 OS-native dialog conventions and cross-platform GUI behavior require their own
 reports; the native declaration inventory remains factual and partial.
 
-ABI37 rejects synchronous modal entry during notebook navigation/page callbacks or list-origin callbacks;
+ABI37 rejects synchronous modal entry during notebook navigation/page callbacks or list/tree-origin callbacks;
 defer prompts to later application work. See [notebook navigation](NOTEBOOK.md).

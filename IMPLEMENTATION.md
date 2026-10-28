@@ -79,31 +79,27 @@ as if later features or platform checks already passed.
 - Idle batch: :IDLE family/resources, bounded RequestMore, session-restored
   automatic mode, own-window opt-in and native wake scheduling. Independent review
   and final verification pass.
-- Current bridge ABI: 38. Public API: 189 exports, sixteen window wrapper classes
-  (fourteen concrete kinds plus WINDOW/DIALOG abstract bases) plus the event-handler base and frame-owned menu resources, 133 named generics and
-  forty-two generic SETF writers. The application-handler is a borrowed view; no
+- Current bridge ABI: 39. Public API: 202 exports, seventeen window wrapper classes
+  (fifteen concrete kinds plus WINDOW/DIALOG abstract bases) plus the event-handler base and frame-owned menu resources, 144 named generics and
+  forty-four generic SETF writers. The application-handler is a borrowed view; no
   native application construction or arbitrary-event class binding exists yet; built-ins plus registered command/notify names have
   observer/contextual bindings.
-- Latest implementation verification: all 56 GUI scenarios and native preflight
-  pass on local Apple Silicon macOS SBCL 2.6.9 and CCL 1.13. Final reports:
-  `evidence/list-box/{sbcl,ccl}-20261028-final/`. Native list/notebook event, text and
-  clipboard regressions pass with zero wx assertions; clipboard contents stay intact.
-  Five package checks pass in `evidence/packaging/list-box-20261028/`.
+- Latest implementation verification: all 57 GUI scenarios and native preflight
+  pass on local Apple Silicon macOS SBCL 2.6.9 and CCL 1.13. Reports:
+  `evidence/tree-navigation/{sbcl,ccl}-20261028-final/`. Post-Qt-gate native/focused
+  both-Lisp checks pass; wxQt trees are explicitly unavailable, not runtime-verified.
+  Five package checks pass in `evidence/packaging/tree-navigation-20261028-final/`.
   Hosted Linux/Windows GUI behavior and the graphical Cadre viewer remain open.
 
 ### Feature priorities and working order
 
 1. Preserve core ownership/invalidation, callbacks/main-thread rules, CLOS APIs
    and required documentation/examples/docset/testing for every delivered feature.
-2. Menus/actions and bounded text/single-choice dialogs extend the form/editor
-   slice. A persistent form now composes open/save workflows through generic
-   message/file dialogs and Lisp-native document IO. Text clipboard support now extends
-   the form/editor. Multiline text construction/editing now provides editor
-   primitives; notebook navigation adds fixed editor/settings pages.
-   Single-selection list boxes now extend the tree/list-manager slice. Next add
-   bounded tree navigation/item ownership; retain native OS dialog backends as unbound.
-   Add only necessary
-   timer/value/lifetime prerequisites; do not drain native ownership/utilities.
+2. Preserve the working form/editor slice: Lisp-native open/save, menus/dialogs,
+   multiline text, clipboard and notebooks. List boxes and checked tree items
+   extend the manager slice. Next add splitter windows for a two-pane tree/list
+   manager; retain native OS dialogs as unbound. Add only necessary timer/value/
+   lifetime prerequisites; do not drain native ownership/utilities.
 3. Expand controls/layout, navigation/notebooks, list/tree, clipboard and drawing
    against form/editor, tree/list manager and drawing/monitoring acceptance.
    Existing examples verify bounded behavior, not those whole applications.
@@ -1977,3 +1973,76 @@ Physical mouse/keyboard activation, scrolling/accessibility, hosted Windows/Linu
 graphical Cadre, full tree/list-manager workflows and external clipboard interop
 remain unverified. Next selected slice: bounded tree navigation and managed item
 ownership; deeper list/data-view/virtual models stay demand-driven.
+
+## Tree navigation and managed item views (2026-10-28, verified bounded scope)
+
+ABI39 adds TREE-CONTROL, borrowed TREE-ITEM views, MAKE-TREE-CONTROL, root/child
+creation, canonical root/parent/ordered child traversal, item text/expansion SETF,
+item liveness, subtree deletion and EVENT-TREE-ITEM. Native-backed widget CLOS
+construction/defaults/AFTER hooks/rollback remain; borrowed item construction rejects.
+Counts: 202 exports, 144 named generics, 44 SETF generics, 17 window wrapper classes
+(15 concrete+2 abstract) plus borrowed TREE-ITEM, 57 GUI scenarios, 38 examples,
+279 docset entries. Event snapshots/FFI records append one checked tree-item token;
+matching ABI39 library/FFI required. Native item pointers are never adopted/exposed.
+
+Native registries track owner/parent/children with monotonic checked tokens; explicit
+subtree invalidation, native delete hooks and early ManagedWindow destructor cleanup
+invalidate IDs before reuse. A live-owner registry suppresses native-base teardown
+callbacks. Lisp canonical views are session-rooted and revision-pruned after deletion/
+normal boundaries/rollback, then cleared on cleanup. Failed Lisp publication deletes
+the newly created node. Snapshot identity may outlive item validity/text: retain/copy
+labels while live, and query liveness only within an active session.
+
+Visible-root single selection only. AddRoot silently selects root; append preserves
+selection. Nonempty selection writes require a same-tree item; NIL is empty no-op
+only. Native notifying SelectItem is vetoable; silent default uses blockers. Collapse
+promotes a selected descendant to the collapsed node. Delete preserves outside
+selection or picks surviving parent/root; root deletion empties. No native clear/
+hidden-root/multiselect, images/item data, label editing/drag/drop, virtual model or
+all-tree-event depth. Item mutations from separate button callbacks are supported;
+same-tree writes and modal/clipboard/pump entry defer during selection callbacks.
+
+Independent review found missing session cache binding (fixed before item tests),
+and generic tree UnselectAll/current/deferred-idle selection differences. The bounded
+nonempty selection contract and synchronous valid fallback normalization eliminate
+wrapper-induced delayed idle notifications. Tests check collapse/deletion after
+PROCESS-EVENTS. The actual native wxTreeEvent + propagated parent probe checks item
+metadata, protected lifetime/mutation/native-loop gates and clone/synthetic rejection.
+Native raw arguments, cross-tree checks, native delete invalidation, non-reused bridge
+tokens and raw native-base teardown pass with zero wx assertions (quiet-run.cIMIOvYM).
+Focused SBCL+CCL tree/veto/ownership/idle/rollback tests pass (quiet-run.fLHGjdo3).
+An initial direct ASDF load command lacked system registration; normal example/test
+loading registers the local ASD before load. Final tests include immediate rollback
+cache pruning and the example's item-text edit.
+
+Two native notify kinds :TREE-SELECTION-CHANGING/:TREE-SELECTION-CHANGED carry managed
+view metadata. Only CHANGING veto affects navigation. EVENT-SELECTION remains NIL
+for tree kinds; old item/label events and owned/synthetic/clone support are unbound.
+There are 15 bindable built-ins, 11 constructible built-ins and seven command kinds;
+registered numbering starts after tree kinds. Inventory+13 checks and 279-entry
+zero-problem docset pass (quiet-run.bKdLJbq8). All 57 GUI scenarios plus native
+preflight pass both Lisps (quiet-run.bbsKvOUd):
+evidence/tree-navigation/{sbcl,ccl}-20261028-final/. Inventory+13 checks,
+279-entry zero-problem checker, isolated install/discovery/lookup, actual 202-export/
+class/SETF coverage on both Lisps and 16 Python unit checks pass (quiet-run.zn1Gf46J).
+The final port gate below was added afterward; host implementation behavior is
+unchanged and post-gate focused/native/package checks pass separately. No whole file-manager or virtual/deep-tree completeness claim is made.
+
+Physical tree mouse/keyboard/accessibility, large/deep/virtual trees, hosted Windows/
+Linux GUI, graphical Cadre, allocation/IO-race injection and clipboard interoperability
+remain unverified. Next selected slice: splitter windows for a two-pane tree/list
+manager, rather than exhaustive tree event/data/native pointer depth.
+
+Late port review found wxQt posts selection events asynchronously with raw item IDs.
+The reviewed synchronous token/event translation cannot safely cover delayed stale
+or recycled IDs, so wxQt TREE-CONTROL construction now rejects before allocation
+until generation-safe async translation is implemented. Native Qt test branch checks
+that explicit error when built there; Qt-hosted execution remains unrun. Current
+macOS/generic/GTK/MSW implementation paths retain scope; hosted GTK/MSW still need
+runtime verification. Post-gate main bridge/native harness, zero wx assertions,
+focused tree tests on both Lisps and five package checks pass (quiet-run.aoqjFBv1).
+Final package: dist/wxlambda-form-tree-navigation-final; evidence:
+evidence/packaging/tree-navigation-20261028-final/. This packages the existing form
+executable; new tree example/docs remain repository/docset deliverables. Final
+inventory+13 checks and docset checker pass (quiet-run.jKBReUdM), and the docset is
+rebuilt/installed after final session notes. Qt-hosted rejection is not claimed run.

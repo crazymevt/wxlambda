@@ -103,16 +103,17 @@ The scheduled-deletion ancestor gap is repaired: the bridge uses public wxApp
 scheduled-deletion state plus its pending markers. Native regressions, independent
 review and the full GUI/package checks below validate the corrected behavior.
 
-The current bridge is ABI 38, with 189 public Lisp exports. Single-selection list
-workflows pass all 56 GUI scenarios on local Apple Silicon macOS SBCL and CCL,
-five package checks and independent reviews. Native actual/propagated/convenience
-list callback, notebook, text and clipboard regressions pass with zero wx assertions;
-clipboard contents stay intact. Reports: `evidence/list-box/{sbcl,ccl}-20261028-final/`
-and `evidence/packaging/list-box-20261028/`. Docset checks pass with 264 entries and
-zero problems, including actual public-export/class/SETF coverage and isolated
-discovery/lookup. These checks do not validate physical list mouse/keyboard input,
-scrolling/accessibility, hosted Windows/Linux, live clipboard interoperability/exit
-persistence, real OS session delivery or the graphical Cadre viewer.
+The current bridge is ABI 39, with 202 public Lisp exports. The full 57-scenario
+suite passes on local Apple Silicon macOS SBCL and CCL, with independent reviews.
+Post-port-gate native/focused tests and five final package checks pass; wxQt tree
+creation is explicitly unavailable pending safe asynchronous translation. Reports:
+`evidence/tree-navigation/{sbcl,ccl}-20261028-final/` and
+`evidence/packaging/tree-navigation-20261028-final/`. Docset checks pass with 279
+entries and zero problems, including actual public-export/class/SETF coverage and
+isolated discovery/lookup. Native tree, list, notebook, text and clipboard tests pass
+with zero wx assertions. Physical tree input/accessibility, large/deep trees, hosted
+Windows/Linux/Qt, graphical Cadre and external clipboard interoperability remain
+unverified; the Qt constructor-gate test branch has not run on a Qt host.
 
 A milestone is accepted against its selected GUI scope and representative
 workflows, not declaration totals or completion of every pending native entry.
@@ -136,8 +137,8 @@ feature scope is accepted. Native missing APIs are not automatic release blocker
 modal dialogs with Lisp-native open/save IO. Text clipboard Copy/Paste now extends
 the form/editor; multiline text primitives now support editor UI construction.
 Notebook navigation now adds fixed editor/settings pages. Single-selection
-list boxes now extend the tree/list-manager slice; next add bounded tree
-navigation/item ownership with only its necessary prerequisites. Do not drain native ownership/utilities first.
+list boxes and checked tree navigation now extend the tree/list-manager slice.
+Next add splitter windows for a two-pane manager with only its necessary prerequisites. Do not drain native ownership/utilities first.
 
 ### Representative application acceptance
 
@@ -472,3 +473,18 @@ sorting, per-item client data, virtual/data-view models and native stable IDs re
 gaps. The 56-scenario/264-entry docset/package checks pass; evidence is recorded in
 IMPLEMENTATION.md. Next broaden tree/list-manager coverage with bounded tree
 navigation and managed item ownership.
+
+
+ABI39 adds [tree navigation and item ownership](TREE-NAVIGATION.md): a visible-root
+single-selection tree, checked canonical item views, root/child creation, ordered
+traversal, label/expansion, subtree invalidation and native selection/veto events.
+Snapshots retain possibly-invalidated views, not frozen text/native ownership.
+Native idle selection is normalized silently for structural edits. Tree-control,
+item-ID and event classes stay partial in regenerated C4 inventory; raw pointers,
+multiselect/hidden root, item data/images, label edit/drag/drop, virtual models,
+old-item and other/owned tree events remain gaps. The bounded 57-scenario/279-entry docset/
+final package checks pass; evidence is recorded in IMPLEMENTATION.md. Next add splitter windows for a
+two-pane tree/list-manager workflow.
+
+The wxQt tree backend is explicitly unavailable pending generation-safe async
+item-event translation; constructor rejection is part of this bounded scope.

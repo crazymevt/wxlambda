@@ -6,6 +6,7 @@
 #include <wx/menu.h>
 #include <wx/notebook.h>
 #include <wx/listbox.h>
+#include <wx/treectrl.h>
 #include <wx/textdlg.h>
 #include <wx/choicdlg.h>
 #include <wx/generic/msgdlgg.h>
@@ -78,6 +79,41 @@ public:
 thread_local std::string error;
 thread_local std::string label_result;
 thread_local std::string metadata_result;
+struct TreeNode {
+    wxl_handle owner, parent;
+    wxWindow* window;
+    wxTreeItemId native;
+    std::unordered_set<wxl_handle> children;
+};
+std::unordered_map<wxl_handle, TreeNode> tree_nodes;
+uint64_t tree_revision = 0;
+std::unordered_map<wxWindow*, wxl_handle> tree_owners;
+void forget_tree_nodes(wxWindow* object) {
+    tree_owners.erase(object); // Suppress callbacks during the native base destructor too.
+    bool removed = false;
+    for (auto it = tree_nodes.begin(); it != tree_nodes.end(); ) {
+        if (it->second.window == object) { it = tree_nodes.erase(it); removed = true; } else ++it;
+    }
+    if (removed) ++tree_revision;
+}
+void invalidate_tree_subtree(wxl_handle id) {
+    const auto found = tree_nodes.find(id);
+    if (found == tree_nodes.end()) return;
+    const auto parent = found->second.parent;
+    std::vector<wxl_handle> removed{id};
+    for (size_t i = 0; i < removed.size(); ++i) {
+        const auto node = tree_nodes.find(removed[i]);
+        if (node != tree_nodes.end()) removed.insert(removed.end(), node->second.children.begin(), node->second.children.end());
+    }
+    if (parent && tree_nodes.count(parent)) tree_nodes.at(parent).children.erase(id);
+    for (const auto item : removed) tree_nodes.erase(item);
+    ++tree_revision;
+}
+wxl_handle tree_token(wxWindow* owner, const wxTreeItemId& item) {
+    if (!item.IsOk()) return 0;
+    for (const auto& node : tree_nodes) if (node.second.window == owner && node.second.native == item) return node.first;
+    return 0;
+}
 std::unordered_map<wxl_handle, wxWeakRef<wxWindow>> windows;
 std::unordered_map<wxl_handle, std::unique_ptr<wxEvtHandler>> owned_handlers;
 struct PushedHandler { wxWeakRef<wxWindow> window; wxl_handle window_id; };
@@ -103,7 +139,7 @@ public: using wxMenuItem::wxMenuItem; wxl_handle identity = 0;
 };
 struct RegisteredEvent { wxEventType type; int family; };
 std::unordered_map<int, RegisteredEvent> registered_events;
-constexpr int first_registered_event_kind = WXL_EVENT_LISTBOX_DOUBLE_CLICK + 1;
+constexpr int first_registered_event_kind = WXL_EVENT_TREE_CHANGED + 1;
 int next_event_kind = first_registered_event_kind;
 wxWeakRef<wxDialog> active_modal;
 std::unordered_map<wxWindow*, size_t> dialog_choice_counts;
@@ -293,7 +329,7 @@ template<class T> class ManagedWindow final : public T, public ClientDataAccess 
 public:
     using T::T;
     wxClientDataType ClientStorageKind() const override { return this->m_clientDataType; }
-    ~ManagedWindow() override { dialog_choice_counts.erase(this); dialog_message_buttons.erase(this); dialog_file_filters.erase(this); detach_window_stack(this); }
+    ~ManagedWindow() override { forget_tree_nodes(this); dialog_choice_counts.erase(this); dialog_message_buttons.erase(this); dialog_file_filters.erase(this); detach_window_stack(this); }
 };
 void set_registered_type(wxEvent& event, int type) {
         const RegisteredEvent* source = nullptr;
@@ -370,6 +406,43 @@ struct ListCallbackOperation {
     }
     ~ListCallbackOperation() { if (added) list_callback_operations.pop_back(); }
 };
+std::vector<wxWeakRef<wxTreeCtrl>> tree_operations;
+bool protected_tree_ancestor(wxWindow* object) {
+    for (const auto& tree : tree_operations)
+        for (auto* node = static_cast<wxWindow*>(tree.get()); node; node = node->GetParent())
+            if (node == object) return true;
+    return false;
+}
+struct TreeOperation {
+    explicit TreeOperation(wxTreeCtrl* tree) {
+        for (const auto& active : tree_operations) require(active.get() != tree, "Defer tree mutation until its callback/operation returns");
+        tree_operations.emplace_back(tree);
+    }
+    ~TreeOperation() { tree_operations.pop_back(); }
+};
+struct TreeCallbackOperation {
+    bool added = false, allow = true;
+    explicit TreeCallbackOperation(wxEvent& event) {
+        if (event.GetEventType() != wxEVT_TREE_SEL_CHANGING && event.GetEventType() != wxEVT_TREE_SEL_CHANGED) return;
+        auto* tree = dynamic_cast<wxTreeCtrl*>(event.GetEventObject());
+        if (!tree || !tree_owners.count(tree) || window_destruction_pending(tree)) { allow = false; return; }
+        for (const auto& active : tree_operations) if (active.get() == tree) return;
+        tree_operations.emplace_back(tree); added = true;
+    }
+    ~TreeCallbackOperation() { if (added) tree_operations.pop_back(); }
+};
+wxl_handle event_tree_token(wxEvent& event) {
+    auto* tree_event = dynamic_cast<wxTreeEvent*>(&event);
+    auto* tree = dynamic_cast<wxTreeCtrl*>(event.GetEventObject());
+    return tree_event && tree ? tree_token(tree, tree_event->GetItem()) : 0;
+}
+TreeNode& tree_node(wxl_handle id) {
+    ready();
+    const auto found = tree_nodes.find(id);
+    require(found != tree_nodes.end(), "Invalid or deleted tree item");
+    require(as<wxTreeCtrl>(found->second.owner) == found->second.window, "Tree item owner is invalid");
+    return found->second;
+}
 int selected_event_index(wxEvent& event) {
     if (auto* book = dynamic_cast<wxBookCtrlEvent*>(&event)) return book->GetSelection();
     auto* command = dynamic_cast<wxCommandEvent*>(&event);
@@ -387,7 +460,7 @@ void invoke_callback(uint64_t token, const wxl_event& event) {
 }
 void require_dispatch_entry() {
     require(!active_modal.get() && actual_modals.empty(), "Cannot enter structural dispatch during a modal dialog");
-    require(notebook_operations.empty() && list_callback_operations.empty(), "Cannot enter structural dispatch during notebook/list callbacks");
+    require(notebook_operations.empty() && list_callback_operations.empty() && tree_operations.empty(), "Cannot enter structural dispatch during notebook/list/tree callbacks");
     require(!running, "Event loop is already running");
     require(!pumping && callback_depth == 0, "Cannot enter event dispatch from a pump or callback");
 }
@@ -413,6 +486,8 @@ wxEventTypeTag<wxEvent> native_event_type(int kind) {
         case WXL_EVENT_NOTEBOOK_CHANGED: return wxEventTypeTag<wxEvent>(wxEVT_NOTEBOOK_PAGE_CHANGED);
         case WXL_EVENT_LISTBOX_SELECTION: return wxEventTypeTag<wxEvent>(wxEVT_LISTBOX);
         case WXL_EVENT_LISTBOX_DOUBLE_CLICK: return wxEventTypeTag<wxEvent>(wxEVT_LISTBOX_DCLICK);
+        case WXL_EVENT_TREE_CHANGING: return wxEventTypeTag<wxEvent>(wxEVT_TREE_SEL_CHANGING);
+        case WXL_EVENT_TREE_CHANGED: return wxEventTypeTag<wxEvent>(wxEVT_TREE_SEL_CHANGED);
         default: {
             const auto it = registered_events.find(kind);
             require(it != registered_events.end(), "Unsupported event kind");
@@ -425,7 +500,7 @@ int native_event_family(int kind) {
     if (kind >= WXL_EVENT_CLOSE && kind <= WXL_EVENT_END_SESSION) return WXL_FAMILY_CLOSE;
     if (kind == WXL_EVENT_IDLE) return WXL_FAMILY_IDLE;
     if (kind == WXL_EVENT_MENU || kind == WXL_EVENT_LISTBOX_SELECTION || kind == WXL_EVENT_LISTBOX_DOUBLE_CLICK) return WXL_FAMILY_COMMAND;
-    if (kind == WXL_EVENT_NOTEBOOK_CHANGING || kind == WXL_EVENT_NOTEBOOK_CHANGED) return WXL_FAMILY_NOTIFY;
+    if (kind == WXL_EVENT_NOTEBOOK_CHANGING || kind == WXL_EVENT_NOTEBOOK_CHANGED || kind == WXL_EVENT_TREE_CHANGING || kind == WXL_EVENT_TREE_CHANGED) return WXL_FAMILY_NOTIFY;
     const auto it = registered_events.find(kind);
     require(it != registered_events.end(), "Unsupported event kind");
     return it->second.family;
@@ -442,8 +517,8 @@ bool event_vetoed(wxEvent& event) {
 std::unique_ptr<wxEvent> synthetic_event(wxEvtHandler* receiver, int kind, int event_id,
                                        const char* text, size_t length, int value,
                                        int can_veto, int vetoed, int logging_off) {
-    require(kind != WXL_EVENT_NOTEBOOK_CHANGING && kind != WXL_EVENT_NOTEBOOK_CHANGED,
-            "Notebook events require native navigation; synthetic construction is unsupported");
+    require(kind != WXL_EVENT_NOTEBOOK_CHANGING && kind != WXL_EVENT_NOTEBOOK_CHANGED && kind != WXL_EVENT_TREE_CHANGING && kind != WXL_EVENT_TREE_CHANGED,
+            "Notebook/tree events require native navigation; synthetic construction is unsupported");
     const auto type = native_event_type(kind);
     const int family = native_event_family(kind);
     require(text || length == 0, "Null event text");
@@ -480,7 +555,7 @@ std::unique_ptr<wxEvent> synthetic_event(wxEvtHandler* receiver, int kind, int e
     return event;
 }
 int kind_of(wxEvent& event) {
-    for (int kind = WXL_EVENT_CLICK; kind <= WXL_EVENT_LISTBOX_DOUBLE_CLICK; ++kind)
+    for (int kind = WXL_EVENT_CLICK; kind <= WXL_EVENT_TREE_CHANGED; ++kind)
         if (native_event_type(kind) == event.GetEventType()) return kind;
     for (const auto& item : registered_events)
         if (item.second.type == event.GetEventType()) return item.first;
@@ -609,7 +684,8 @@ struct Binding {
     void on_event(wxEvent& event) {
         NotebookCallbackOperation notebook_guard(event);
         ListCallbackOperation list_guard(event);
-        if (!notebook_guard.allow || !list_guard.allow) { event.Skip(); return; }
+        TreeCallbackOperation tree_guard(event);
+        if (!notebook_guard.allow || !list_guard.allow || !tree_guard.allow) { event.Skip(); return; }
         const auto found = bindings.find(token);
         if (found == bindings.end()) { event.Skip(); return; }
         // Keep the method receiver alive if this or another binding is removed.
@@ -633,7 +709,8 @@ struct Binding {
                                      event.GetTimestamp(), event.IsCommandEvent() ? 1 : 0, origin_id(event), static_cast<int>(event.GetEventCategory()),
                                      command ? command->GetExtraLong() : 0, command && command->IsSelection() ? 1 : 0,
                                      user_data && event.GetEventUserData() == user_data ? token : 0,
-                                     dynamic_cast<wxIdleEvent*>(&event) && static_cast<wxIdleEvent&>(event).MoreRequested() ? 1 : 0};
+                                     dynamic_cast<wxIdleEvent*>(&event) && static_cast<wxIdleEvent&>(event).MoreRequested() ? 1 : 0,
+                                     event_tree_token(event)};
             if (with_context) {
                 event.Skip(false);
                 EventScope scope(event, snapshot.user_data);
@@ -783,7 +860,7 @@ protected:
     int Enter(wxDialog* object) override {
         // Lisp may defer rethrow until its nearest notifying operation returns.
         // Do not open a new native prompt while its callback error is pending.
-        if (pending_callback_error || !notebook_operations.empty() || !list_callback_operations.empty()) return wxID_CANCEL;
+        if (pending_callback_error || !notebook_operations.empty() || !list_callback_operations.empty() || !tree_operations.empty()) return wxID_CANCEL;
         if (modal_cancel_requested && (active_modal.get() || !actual_modals.empty())) return wxID_CANCEL;
         // Native NSAlert modal loops cannot be aborted using wxDialog::EndModal.
         // Replace them before their platform ShowModal implementation is entered.
@@ -888,7 +965,7 @@ class ClipboardSession {
 public:
     ClipboardSession() {
         ready();
-        require(notebook_operations.empty() && list_callback_operations.empty(), "Defer clipboard operations until notebook/list callbacks return");
+        require(notebook_operations.empty() && list_callback_operations.empty() && tree_operations.empty(), "Defer clipboard operations until notebook/list/tree callbacks return");
         require(!clipboard_busy, "Clipboard operation is already in progress");
 #ifdef WXLAMBDA_NATIVE_TESTS
         clipboard = test_clipboard ? test_clipboard : wxTheClipboard;
@@ -919,7 +996,7 @@ public:
 
 }
 extern "C" {
-int wxl_abi_version() { return 38; }
+int wxl_abi_version() { return 39; }
 const char* wxl_last_error() { return error.c_str(); }
 int wxl_clipboard_text_available() {
     return boolean_result([&] {
@@ -1175,7 +1252,7 @@ int wxl_dialog_show(wxl_handle id, int* code) {
     return status([&] {
         auto* object = as<wxDialog>(id);
         require(code, "Missing modal result output");
-        require(notebook_operations.empty() && list_callback_operations.empty(), "Defer dialogs until notebook/list callbacks return");
+        require(notebook_operations.empty() && list_callback_operations.empty() && tree_operations.empty(), "Defer dialogs until notebook/list/tree callbacks return");
         require(!active_modal.get() && actual_modals.empty(), "Nested modal dialogs are not supported");
         require(!object->IsShown() && !object->IsModal(), "Dialog is already shown");
         struct ModalScope {
@@ -1647,7 +1724,7 @@ int wxl_context_set_logging_off(uint64_t token, int value) {
     });
 }
 int wxl_close(wxl_handle id, int force) {
-    return boolean_result([&] { auto* object = as<wxFrame>(id); require(!protected_modal_ancestor(object), "Cannot close an active modal dialog ancestor"); require(!protected_notebook_ancestor(object) && !protected_list_ancestor(object), "Cannot close a notebook/list callback ancestor"); return object->Close(force != 0); });
+    return boolean_result([&] { auto* object = as<wxFrame>(id); require(!protected_modal_ancestor(object), "Cannot close an active modal dialog ancestor"); require(!protected_notebook_ancestor(object) && !protected_list_ancestor(object) && !protected_tree_ancestor(object), "Cannot close a navigation callback ancestor"); return object->Close(force != 0); });
 }
 int wxl_context_resume_propagation(uint64_t token, int level) {
     return status([&] {
@@ -1920,6 +1997,138 @@ wxl_handle wxl_button(wxl_handle parent, const char* label) {
             event.Skip();
         });
         return id;
+    });
+}
+wxl_handle wxl_tree(wxl_handle parent) {
+    return create([&]() -> wxl_handle {
+#if defined(__WXQT__)
+        (void)parent;
+        throw std::runtime_error("Tree controls are unavailable on wxQt: asynchronous item events need generation-safe translation");
+#else
+        auto tree = std::make_unique<ManagedWindow<wxTreeCtrl>>(window(parent), wxID_ANY, wxDefaultPosition, wxDefaultSize,
+                                                             wxTR_HAS_BUTTONS | wxTR_LINES_AT_ROOT | wxTR_SINGLE);
+        const auto id = track(tree.get());
+        tree_owners.emplace(tree.get(), id);
+        tree->Bind(wxEVT_TREE_DELETE_ITEM, [id](wxTreeEvent& event) {
+            const auto found = windows.find(id);
+            if (found != windows.end()) invalidate_tree_subtree(tree_token(found->second.get(), event.GetItem()));
+            event.Skip();
+        });
+        tree.release(); return id;
+#endif
+    });
+}
+int wxl_tree_add(wxl_handle owner, wxl_handle parent, const char* value, size_t length, wxl_handle* result) {
+    return status([&] {
+        require(result != nullptr, "Null tree item output"); *result = 0;
+        auto* tree = as<wxTreeCtrl>(owner);
+        TreeOperation operation(tree);
+        const auto text = text_value(value, length);
+        wxTreeItemId native_parent;
+        if (parent) { const auto& node = tree_node(parent); require(node.owner == owner, "Item belongs to another tree"); native_parent = node.native; }
+        else require(!tree->GetRootItem().IsOk(), "Tree already has a root");
+        wxEventBlocker changing(tree, wxEVT_TREE_SEL_CHANGING), changed(tree, wxEVT_TREE_SEL_CHANGED);
+        const auto selected = tree->GetSelection();
+        const auto native = parent ? tree->AppendItem(native_parent, text) : tree->AddRoot(text);
+        require(native.IsOk(), "Unable to create tree item");
+        const auto id = next_handle++;
+        try {
+            tree_nodes.emplace(id, TreeNode{owner, parent, tree, native, {}});
+            if (parent) tree_nodes.at(parent).children.insert(id);
+            tree->SelectItem(parent && selected.IsOk() ? selected : tree->GetRootItem());
+        } catch (...) { if (parent && tree_nodes.count(parent)) tree_nodes.at(parent).children.erase(id); tree_nodes.erase(id); tree->Delete(native); throw; }
+        *result = id;
+    });
+}
+int wxl_tree_query(wxl_handle owner, int field, wxl_handle* result) {
+    return status([&] {
+        require(result && (field == 0 || field == 1), "Invalid tree query");
+        auto* tree = as<wxTreeCtrl>(owner);
+        const auto native = field == 0 ? tree->GetRootItem() : tree->GetSelection();
+        *result = tree_token(tree, native);
+        require(!native.IsOk() || *result, "Unmanaged native tree item");
+    });
+}
+int wxl_tree_relative(wxl_handle id, int field, wxl_handle* result) {
+    return status([&] {
+        require(result && field >= 0 && field <= 2, "Invalid tree relative query");
+        const auto& node = tree_node(id);
+        auto* tree = as<wxTreeCtrl>(node.owner);
+        wxTreeItemIdValue cookie;
+        const auto native = field == 0 ? tree->GetItemParent(node.native) : field == 1 ? tree->GetFirstChild(node.native, cookie) : node.parent ? tree->GetNextSibling(node.native) : wxTreeItemId();
+        *result = tree_token(tree, native);
+        require(!native.IsOk() || *result, "Unmanaged native tree item");
+    });
+}
+const char* wxl_tree_text(wxl_handle id, size_t* length) {
+    return metadata_string([&] { const auto& node = tree_node(id); return as<wxTreeCtrl>(node.owner)->GetItemText(node.native); }, length);
+}
+int wxl_set_tree_text(wxl_handle id, const char* value, size_t length) {
+    return status([&] {
+        const auto& node = tree_node(id); auto* tree = as<wxTreeCtrl>(node.owner); TreeOperation operation(tree);
+        const auto text = text_value(value, length);
+        wxEventBlocker changing(tree, wxEVT_TREE_SEL_CHANGING), changed(tree, wxEVT_TREE_SEL_CHANGED);
+        tree->SetItemText(node.native, text);
+    });
+}
+int wxl_tree_expanded(wxl_handle id) { return boolean_result([&] { const auto& node = tree_node(id); return as<wxTreeCtrl>(node.owner)->IsExpanded(node.native); }); }
+int wxl_set_tree_expanded(wxl_handle id, int expanded) {
+    return status([&] {
+        require(expanded == 0 || expanded == 1, "Invalid tree expansion flag");
+        const auto& node = tree_node(id); auto* tree = as<wxTreeCtrl>(node.owner); TreeOperation operation(tree);
+        wxEventBlocker changing(tree, wxEVT_TREE_SEL_CHANGING), changed(tree, wxEVT_TREE_SEL_CHANGED);
+        auto selected = tree->GetSelection();
+        auto cursor = tree_token(tree, selected);
+        while (!expanded && cursor && tree_nodes.count(cursor)) {
+            if (cursor == id) { selected = node.native; break; }
+            cursor = tree_nodes.at(cursor).parent;
+        }
+        if (expanded) tree->Expand(node.native); else tree->Collapse(node.native);
+        tree->SelectItem(selected.IsOk() ? selected : tree->GetRootItem());
+    });
+}
+int wxl_tree_delete(wxl_handle id) {
+    return status([&] {
+        const auto& node = tree_node(id); auto* tree = as<wxTreeCtrl>(node.owner); const auto native = node.native;
+        TreeOperation operation(tree);
+        wxEventBlocker changing(tree, wxEVT_TREE_SEL_CHANGING), changed(tree, wxEVT_TREE_SEL_CHANGED);
+        const auto selected = tree->GetSelection();
+        const auto selected_token = tree_token(tree, selected);
+        const auto parent = node.parent;
+        invalidate_tree_subtree(id);
+        tree->Delete(native);
+        if (selected_token && tree_nodes.count(selected_token)) tree->SelectItem(selected);
+        else if (parent && tree_nodes.count(parent)) tree->SelectItem(tree_nodes.at(parent).native);
+        else if (tree->GetRootItem().IsOk()) tree->SelectItem(tree->GetRootItem());
+        else tree->Unselect();
+    });
+}
+int wxl_tree_select(wxl_handle owner, wxl_handle item, int notify) {
+    return status([&] {
+        require(notify == 0 || notify == 1, "Invalid tree notification flag");
+        auto* tree = as<wxTreeCtrl>(owner); TreeOperation operation(tree);
+        require(item || !tree->GetRootItem().IsOk(), "Nonempty trees require a selected item");
+        if (!item) return;
+        const auto& node = tree_node(item); require(node.owner == owner, "Item belongs to another tree");
+        const auto native = node.native;
+        auto change = [&] { tree->SelectItem(native); };
+        if (notify) change(); else { wxEventBlocker changing(tree, wxEVT_TREE_SEL_CHANGING), changed(tree, wxEVT_TREE_SEL_CHANGED); change(); }
+    });
+}
+int wxl_tree_item_alive(wxl_handle id) {
+    return boolean_result([&] {
+        ready(); const auto node = tree_nodes.find(id); if (node == tree_nodes.end()) return false;
+        const auto owner = windows.find(node->second.owner);
+        return owner != windows.end() && owner->second.get() && !window_destruction_pending(owner->second.get());
+    });
+}
+int wxl_tree_revision(uint64_t* result) { return status([&] { ready(); require(result != nullptr, "Null tree revision output"); *result = tree_revision; }); }
+int wxl_event_tree_item(uint64_t source, int contextual, wxl_handle* result) {
+    return status([&] {
+        require(result, "Null event tree item output");
+        auto& event = contextual ? current_event(source) : owned_event(source);
+        require(dynamic_cast<wxTreeEvent*>(&event) != nullptr, "Tree item metadata requires a native tree event");
+        *result = event_tree_token(event);
     });
 }
 wxl_handle wxl_list_box(wxl_handle parent, const char** items, const size_t* lengths, size_t count, int selection) {
@@ -2326,7 +2535,7 @@ int wxl_destroy(wxl_handle id) {
     return status([&] {
         auto* object = window(id);
         require(!protected_modal_ancestor(object), "Cannot destroy an active modal dialog or its ancestor");
-        require(!protected_notebook_ancestor(object) && !protected_list_ancestor(object), "Cannot destroy a notebook/list operation receiver or its ancestor");
+        require(!protected_notebook_ancestor(object) && !protected_list_ancestor(object) && !protected_tree_ancestor(object), "Cannot destroy a navigation operation receiver or its ancestor");
         require(!attached_notebook_page(object), "Attached notebook pages are owned by the notebook");
         if (callback_depth) {
             wxWeakRef<wxWindow> weak(object);

@@ -204,3 +204,7 @@ metadata. Event field writes do not synchronize a managed menu item.
 ABI38 includes simple `:listbox-selection`/`:listbox-double-click` command events
 with explicit `:text`/`:selection` payloads, owned cloning and dispatch to arbitrary
 handlers. Payload mutation does not change list items/selection. See [lists](LIST-BOX.md).
+
+ABI39 tree selection events, like notebook derived events, are native-only and
+cannot be constructed, queued as owned events or contextually cloned. Snapshots
+can retain checked TREE-ITEM views; those references do not freeze native validity.

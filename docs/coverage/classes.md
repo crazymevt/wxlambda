@@ -577,7 +577,7 @@ Class/struct definitions: 0 complete; 14 partial; 97 pending. Partial and pendin
 
 ## C4: Models, complex controls, and document frameworks
 
-Class/struct definitions: 0 complete; 0 partial; 112 pending. Partial and pending classes remain open.
+Class/struct definitions: 0 complete; 3 partial; 109 pending. Partial and pending classes remain open.
 
 [Declaration counts and remaining work](README.md).
 
@@ -685,10 +685,10 @@ Class/struct definitions: 0 complete; 0 partial; 112 pending. Partial and pendin
 - [ ] `wxPersistentWindow` — [`wx/persist/window.h`](phase-c4.md), upstream line 21.
 - [ ] `wxPersistenceManager` — [`wx/persist.h`](phase-c4.md), upstream line 23.
 - [ ] `wxPersistentObject` — [`wx/persist.h`](phase-c4.md), upstream line 221.
-- [ ] `wxTreeItemId` — [`wx/treebase.h`](phase-c4.md), upstream line 18.
+- [~] `wxTreeItemId` — [`wx/treebase.h`](phase-c4.md), upstream line 18. — **Partial**: `tree-control`, `tree-item`, `make-tree-control`, `add-tree-root`, `append-tree-item`, `tree-root`, `tree-item-parent`, `tree-item-children`, `tree-item-text`, `tree-item-expanded-p`, `tree-item-alive-p`, `delete-tree-item`, `selection`; ABI: `wxl_tree`, `wxl_tree_add`, `wxl_tree_query`, `wxl_tree_relative`, `wxl_tree_text`, `wxl_set_tree_text`, `wxl_tree_expanded`, `wxl_set_tree_expanded`, `wxl_tree_delete`, `wxl_tree_select`, `wxl_tree_item_alive`. Managed visible-root single-selection TREE-CONTROL only. Checked owner/item tokens with canonical views, subtree/owner invalidation, silent selection normalization and native selection/veto guards. No raw IDs/adoption, other tree styles, multiselect, images/item data, label editing or full native class parity. wxQt unavailable pending generation-safe async item events; no full platform claim.
 - [ ] `wxTreeItemData` — [`wx/treebase.h`](phase-c4.md), upstream line 63.
-- [ ] `wxTreeCtrl` — [`wx/treectrl.h`](phase-c4.md), upstream line 183.
-- [ ] `wxTreeEvent` — [`wx/treectrl.h`](phase-c4.md), upstream line 1097.
+- [~] `wxTreeCtrl` — [`wx/treectrl.h`](phase-c4.md), upstream line 183. — **Partial**: `tree-control`, `tree-item`, `make-tree-control`, `add-tree-root`, `append-tree-item`, `tree-root`, `tree-item-parent`, `tree-item-children`, `tree-item-text`, `tree-item-expanded-p`, `tree-item-alive-p`, `delete-tree-item`, `selection`; ABI: `wxl_tree`, `wxl_tree_add`, `wxl_tree_query`, `wxl_tree_relative`, `wxl_tree_text`, `wxl_set_tree_text`, `wxl_tree_expanded`, `wxl_set_tree_expanded`, `wxl_tree_delete`, `wxl_tree_select`, `wxl_tree_item_alive`. Managed visible-root single-selection TREE-CONTROL only. Checked owner/item tokens with canonical views, subtree/owner invalidation, silent selection normalization and native selection/veto guards. No raw IDs/adoption, other tree styles, multiselect, images/item data, label editing or full native class parity. wxQt unavailable pending generation-safe async item events; no full platform claim.
+- [~] `wxTreeEvent` — [`wx/treectrl.h`](phase-c4.md), upstream line 1097. — **Partial**: `bind-event`, `event-tree-item`; ABI: `wxl_bind`, `wxl_event_tree_item`. Native derived selection events only, view identity snapshots/current contexts and CHANGING veto. No old-item/public event construction/owned/cloning/other tree events. wxQt unavailable pending generation-safe async item events; no full platform claim.
 - [ ] `wxTreeListItem` — [`wx/treelist.h`](phase-c4.md), upstream line 58.
 - [ ] `wxTreeListItemComparator` — [`wx/treelist.h`](phase-c4.md), upstream line 87.
 - [ ] `wxTreeListCtrl` — [`wx/treelist.h`](phase-c4.md), upstream line 265.

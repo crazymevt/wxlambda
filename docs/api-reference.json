@@ -267,14 +267,14 @@
   {
     "name": "selection",
     "kind": "generic-function",
-    "arguments": "CONTROL is a live CHOICE, LIST-BOX or NOTEBOOK; optional NOTIFY is meaningful for the writer only.",
-    "returns": "Zero-based selected index or NIL (none for choice/listbox; empty for notebook).",
-    "description": "Read selected index; NIL represents native no selection. ABI37 also reads NOTEBOOK native page index, NIL only when empty. The NOTEBOOK setter requires an existing integer index; silent ChangeSelection is default, :NOTIFY T uses vetoable SetSelection. It returns the requested index even if vetoed; query actual selection afterward. ABI38 also supports unsorted single-selection LIST-BOX; index/NIL with silent writes by default, :NOTIFY T emits a synthetic :LISTBOX-SELECTION after state change, including unchanged/NIL assignments.",
+    "arguments": "CONTROL is a live CHOICE, LIST-BOX, NOTEBOOK or TREE-CONTROL; NOTIFY is meaningful for the writer only.",
+    "returns": "Index/NIL for choice/listbox/notebook; canonical TREE-ITEM/NIL for tree-control.",
+    "description": "Read current selection: an index for CHOICE/LIST-BOX/NOTEBOOK, or a canonical managed TREE-ITEM view for TREE-CONTROL, with NIL when no selection exists. Reader NOTIFY is ignored. Writes are silent by default; notifying choice/list writes emit synthetic events, while notebook/tree writes use native vetoable selection. Return of a requested assignment does not prove native acceptance. Populated tree writes require a live same-tree item; NIL is empty-tree no-op only. Root creation and structural edits silently normalize valid selection before idle.",
     "scope": "Requires an active GUI session on the process main thread. Invalid/destroyed handles or unsupported native arguments signal NATIVE-ERROR; Lisp argument/type errors remain Lisp conditions. One GUI session per process. Widget behavior uses CLOS generic dispatch. Wrong receiver types signal Lisp dispatch conditions; native handle/state failures signal NATIVE-ERROR.",
-    "wxwidgets": "wxChoice/wxListBox::GetSelection/SetSelection; wxNotebook::GetSelection/ChangeSelection/SetSelection (wxWidgets 3.2.12).",
+    "wxwidgets": "wxChoice/wxListBox::GetSelection/SetSelection; wxNotebook::GetSelection/ChangeSelection/SetSelection (wxWidgets 3.2.12). wxTreeCtrl::GetSelection/SelectItem in ABI39.",
     "setf": {
-      "syntax": "(setf (wxlambda:selection choice :notify notify) new-value)",
-      "description": "For CHOICE: index or NIL for none; silent by default. :NOTIFY T emits one synthetic native choice selection event, including unchanged assignments. For NOTEBOOK: existing integer index only (no NIL); ChangeSelection is silent by default, :NOTIFY T uses native vetoable SetSelection. Same-page notification counts are native/port-dependent. Returns the requested value even when vetoed; read actual selection afterward. LIST-BOX mirrors CHOICE index/NIL behavior, with :LISTBOX-SELECTION text/index/action metadata. Item edits adjust selection silently per LIST-BOX.md."
+      "syntax": "(setf (wxlambda:selection control :notify nil) value)",
+      "description": "For CHOICE: index or NIL for none; silent by default. :NOTIFY T emits one synthetic native choice selection event, including unchanged assignments. For NOTEBOOK: existing integer index only (no NIL); ChangeSelection is silent by default, :NOTIFY T uses native vetoable SetSelection. Same-page notification counts are native/port-dependent. Returns the requested value even when vetoed; read actual selection afterward. LIST-BOX mirrors CHOICE index/NIL behavior, with :LISTBOX-SELECTION text/index/action metadata. Item edits adjust selection silently per LIST-BOX.md. TREE-CONTROL requires a same-tree TREE-ITEM, or NIL only when empty. Native SelectItem is silent by default; :NOTIFY T can be vetoed. Returns the requested view, not proof of acceptance."
     }
   },
   {
@@ -796,7 +796,7 @@
     "kind": "generic-function",
     "arguments": "HANDLER is an EVENT-HANDLER/window; KIND is :CLICK, :TEXT-CHANGE, :TOGGLE, :SELECTION, :CLOSE, :QUERY-END-SESSION, :END-SESSION, :IDLE, :MENU or a registered command/notify name. FUNCTION takes one immutable EVENT. ID defaults NIL (any); LAST-ID defaults NIL (exact ID when ID is given). WITH-CONTEXT defaults NIL; when true FUNCTION takes (EVENT CONTEXT) instead of just EVENT. USER-DATA defaults NIL and associates any EQ-preserved Lisp value with this registration; callback arity is unchanged.",
     "returns": "A new independent EVENT-BINDING.",
-    "description": "Register an observer without replacing any existing generic or control-specific registration. Signed 32-bit IDs are supported except -1 (reserved as native wxID_ANY; use NIL). LAST-ID requires ID and an ordered inclusive range. Observer bindings automatically Skip; contextual bindings start unskipped and control native Skip explicitly; relative callback order follows wxWidgets and is not a Lisp API guarantee. Failed registration releases temporary roots. Contextual access is limited to the innermost callback and expires at return, including on errors. A native entry-owned wxObject token adapter represents non-NIL user data without a Lisp/native pointer. EVENT-USER-DATA reads the per-binding value in snapshots/current contexts; there is no public mutation API for an existing association. ABI37 adds :NOTEBOOK-PAGE-CHANGING/:NOTEBOOK-PAGE-CHANGED notify-family observers/contexts. Only CHANGING veto affects navigation. Native page callbacks protect the originating book/ancestors and reject same-book recursive selection, modal and clipboard entry. ABI38 listbox selection/double-click command events carry cached string/index payloads; snapshots are independent of later item edits. Native list callback guards protect receiver/ancestors and defer modal/clipboard entry while allowing item edits.",
+    "description": "Register an observer without replacing any existing generic or control-specific registration. Signed 32-bit IDs are supported except -1 (reserved as native wxID_ANY; use NIL). LAST-ID requires ID and an ordered inclusive range. Observer bindings automatically Skip; contextual bindings start unskipped and control native Skip explicitly; relative callback order follows wxWidgets and is not a Lisp API guarantee. Failed registration releases temporary roots. Contextual access is limited to the innermost callback and expires at return, including on errors. A native entry-owned wxObject token adapter represents non-NIL user data without a Lisp/native pointer. EVENT-USER-DATA reads the per-binding value in snapshots/current contexts; there is no public mutation API for an existing association. ABI37 adds :NOTEBOOK-PAGE-CHANGING/:NOTEBOOK-PAGE-CHANGED notify-family observers/contexts. Only CHANGING veto affects navigation. Native page callbacks protect the originating book/ancestors and reject same-book recursive selection, modal and clipboard entry. ABI38 listbox selection/double-click command events carry cached string/index payloads; snapshots are independent of later item edits. Native list callback guards protect receiver/ancestors and defer modal/clipboard entry while allowing item edits. ABI39 tree selection changing/changed are native-only wxTreeEvent notify types. EVENT-TREE-ITEM captures canonical view identity, not frozen text/validity; same-tree writes and nested native loops defer until callback return.",
     "scope": "Active main-thread GUI session required; otherwise NATIVE-ERROR. Stale/deleting receivers reject registration/queuing. Invalid event kinds, IDs and payload options signal Lisp errors; wrong receiver types use CLOS dispatch errors. Built-ins and registered command/notify types. Contexts support scoped Skip/propagation and checked close/notify veto. Arbitrary native events, native control-specific notify subclasses, arbitrary native userData pointers, external handler adoption and worker-thread dispatch remain unbound. Session bindings accept only the borrowed application view or an isolated owned handler; windows reject. Real OS delivery remains unverified. Skipped application END_SESSION callbacks can reach process-exiting defaults. Session bindings on attached pushed handlers reject so a window tail cannot route them to app defaults. Callback-local roots preserve current user data after self/peer unbind until return. Snapshots preserve the EQ reference after unbind/session end, not a deep copy of mutable contents.",
     "wxwidgets": "wxEvtHandler::Bind member-method overload with wxEvent receiver and optional entry-owned numeric wxObject userData adapter; built-ins and registered command/notify tags (wxWidgets 3.2.12 baseline).",
     "syntax": "(wxlambda:bind-event handler kind function &key id last-id with-context user-data)"
@@ -825,7 +825,7 @@
     "arguments": "HANDLER is live; KIND is a built-in keyword or registered name. ID defaults 0; TEXT defaults empty. CHECKED-P is toggle/menu-only; SELECTION is NIL/nonnegative index for selection. CAN-VETO-P is close-family-only (default T). Registered types accept signed INTEGER (default 0) and copied TEXT; registered notify types accept initial VETOED-P (default NIL). LOGGING-OFF-P defaults NIL and is accepted only for :QUERY-END-SESSION/:END-SESSION; CAN-VETO-P applies to all close-family kinds. The second positional argument may instead be a live OWNED-EVENT, with no payload keyword overrides.",
     "returns": "The supplied handler.",
     "description": "Queue a copied synthetic event: wxCommandEvent for seven command kinds, wxCloseEvent for close/session kinds and wxIdleEvent for :IDLE. Ordinary control properties are not changed directly. A queued close on a frame may run its native default closing action; use CLOSE-WINDOW for a synchronous acceptance result. Explicit UTF-8 lengths preserve text. Close events take no command payload, may be vetoable or non-vetoable, and do not normally propagate to parents. Registry types create wxCommandEvent or wxNotifyEvent according to their declared family. Initial veto applies only to custom notify types. Queuing offers no final veto/handled result; use PROCESS-EVENT when a synchronous decision is required. Owned-event dispatch always clones, attaches the receiver as copy origin and never consumes or mutates the source. The original can be destroyed after queueing or inside callbacks. Processing returns final state from its copy; contextual CLONE-EVENT can retain changed state detached from origin.",
-    "scope": "Active main-thread GUI session required; otherwise NATIVE-ERROR. Stale/deleting receivers reject registration/queuing. Invalid event kinds, IDs and payload options signal Lisp errors; wrong receiver types use CLOS dispatch errors. Built-ins and registered command/notify types. Contexts support scoped Skip/propagation and checked close/notify veto. Arbitrary native events, native control-specific notify subclasses, arbitrary native userData pointers, external handler adoption and worker-thread dispatch remain unbound. Synthetic session kinds require isolated owned standalone handlers; application/window receivers reject before emission. Standalone session fallback to wxApp is suppressed even for skipped, disabled or unmatched delivery. Native application session bindings are distinct from synthetic probes. Owned session event copies retain isolated standalone-receiver guards. Copies carrying borrowed userdata/client pointers or unsupported exact native classes reject. Copied owned :TEXT-CHANGE delivery to text-entry receivers rejects before emission, preventing lazy GetString from shadowing the owned payload. Keyword synthetic behavior is unchanged. Managed standalone chains participate in native traversal; linking does not change pending queue ownership or introduce window/app pushed chains. Window receivers retain wxEvtHandler semantics and bypass pushed stacks; explicit PROCESS-WINDOW-EVENT/LOCALLY provide stack-aware synchronous routing. Synthetic session delivery to attached pushed handlers rejects before emission/transfer. Notebook native page events cannot be synthesized, queued, processed as owned events or contextually cloned in ABI37. ABI38 simple listbox command kinds support owned/synthetic dispatch and text/selection payloads; no automatic list-model mutation.",
+    "scope": "Active main-thread GUI session required; otherwise NATIVE-ERROR. Stale/deleting receivers reject registration/queuing. Invalid event kinds, IDs and payload options signal Lisp errors; wrong receiver types use CLOS dispatch errors. Built-ins and registered command/notify types. Contexts support scoped Skip/propagation and checked close/notify veto. Arbitrary native events, native control-specific notify subclasses, arbitrary native userData pointers, external handler adoption and worker-thread dispatch remain unbound. Synthetic session kinds require isolated owned standalone handlers; application/window receivers reject before emission. Standalone session fallback to wxApp is suppressed even for skipped, disabled or unmatched delivery. Native application session bindings are distinct from synthetic probes. Owned session event copies retain isolated standalone-receiver guards. Copies carrying borrowed userdata/client pointers or unsupported exact native classes reject. Copied owned :TEXT-CHANGE delivery to text-entry receivers rejects before emission, preventing lazy GetString from shadowing the owned payload. Keyword synthetic behavior is unchanged. Managed standalone chains participate in native traversal; linking does not change pending queue ownership or introduce window/app pushed chains. Window receivers retain wxEvtHandler semantics and bypass pushed stacks; explicit PROCESS-WINDOW-EVENT/LOCALLY provide stack-aware synchronous routing. Synthetic session delivery to attached pushed handlers rejects before emission/transfer. Notebook native page events cannot be synthesized, queued, processed as owned events or contextually cloned in ABI37. ABI38 simple listbox command kinds support owned/synthetic dispatch and text/selection payloads; no automatic list-model mutation. Derived tree selection kinds cannot be synthesized/owned/cloned in ABI39.",
     "wxwidgets": "wxEvtHandler::QueueEvent; wxCommandEvent, wxCloseEvent or wxIdleEvent construction, SetCanVeto at close-event creation only.",
     "syntax": "(wxlambda:queue-event handler kind &key id text checked-p selection can-veto-p integer vetoed-p logging-off-p)\n(wxlambda:queue-event handler owned-event)"
   },
@@ -931,9 +931,9 @@
     "kind": "function",
     "arguments": "KIND is a built-in event keyword or a name registered in this active session.",
     "returns": "The corresponding process-local native wxEventType integer.",
-    "description": "Look up a process-local native type ID. Thirteen built-in kinds plus registered command/notify names are supported. Registry names are session-scoped; saved snapshot native IDs remain plain data after cleanup. Borrowed application handler access is supported; arbitrary native event-class binding and OS session delivery remains unverified.",
+    "description": "Look up a process-local native type ID. Fifteen built-in kinds plus registered command/notify names are supported. Registry names are session-scoped; saved snapshot native IDs remain plain data after cleanup. Borrowed application handler access is supported; arbitrary native event-class binding and OS session delivery remains unverified.",
     "scope": "Active main-thread session required; inactive calls signal NATIVE-ERROR before native-library lookup. Native IDs are process-local and may change between runs.",
-    "wxwidgets": "wxEVT_BUTTON, wxEVT_TEXT, wxEVT_CHECKBOX, wxEVT_CHOICE, wxEVT_CLOSE_WINDOW, wxEVT_QUERY_END_SESSION, wxEVT_END_SESSION, wxEVT_IDLE, wxEVT_MENU, wxEVT_NOTEBOOK_PAGE_CHANGING, wxEVT_NOTEBOOK_PAGE_CHANGED, wxEVT_LISTBOX, wxEVT_LISTBOX_DCLICK; registered wxNewEventType values (wxWidgets 3.2.12)."
+    "wxwidgets": "wxEVT_BUTTON, wxEVT_TEXT, wxEVT_CHECKBOX, wxEVT_CHOICE, wxEVT_CLOSE_WINDOW, wxEVT_QUERY_END_SESSION, wxEVT_END_SESSION, wxEVT_IDLE, wxEVT_MENU, wxEVT_NOTEBOOK_PAGE_CHANGING, wxEVT_NOTEBOOK_PAGE_CHANGED, wxEVT_LISTBOX, wxEVT_LISTBOX_DCLICK; registered wxNewEventType values (wxWidgets 3.2.12). wxEVT_TREE_SEL_CHANGING and wxEVT_TREE_SEL_CHANGED in ABI39."
   },
   {
     "name": "event-family",
@@ -951,7 +951,7 @@
     "arguments": "EVENT is a saved snapshot or current event context. SETF requires a current close-family context; VALUE is a generalized boolean. A live OWNED-EVENT is also accepted for applicable operations.",
     "returns": "T for veto-capable captured/current close or notify events; NIL otherwise.",
     "description": "Snapshots read copied capability without a session. Current close contexts use CanVeto; current notify contexts always support Veto/Allow. Plain command contexts return NIL. Scope validation remains required for native access. Context SETF maps native SetCanVeto directly, including false to true. GetVeto hides a stored veto when CanVeto is false and reveals it again if re-enabled. Forced close starts false but explicit metadata mutation can affect native closing results; OS veto acceptance is not guaranteed.",
-    "scope": "Active main-thread session required for native context or frame operations. Expired/suspended contexts and invalid/deleting frames signal NATIVE-ERROR. Saved snapshots need no session. Close and registered notify families permit checked veto. Native control-specific notify subclasses, validated OS session delivery and arbitrary event classes remain open. Live OWNED-EVENT receivers are also supported under the same native field/family validation. They require an active main-thread session and remain mutable until destroyed; snapshots stay immutable.",
+    "scope": "Active main-thread session required for native context or frame operations. Expired/suspended contexts and invalid/deleting frames signal NATIVE-ERROR. Saved snapshots need no session. Close and registered notify families permit checked veto. Other native control-specific notify subclasses, validated OS session delivery and arbitrary event classes remain open. Live OWNED-EVENT receivers are also supported under the same native field/family validation. They require an active main-thread session and remain mutable until destroyed; snapshots stay immutable.",
     "wxwidgets": "wxCloseEvent::CanVeto / SetCanVeto; intrinsic wxNotifyEvent capability is read-only (wxWidgets 3.2.12 baseline).",
     "setf": {
       "syntax": "(setf (wxlambda:event-can-veto-p event-or-context) value)",
@@ -964,7 +964,7 @@
     "arguments": "EVENT is a saved snapshot or current close/notify context. SETF requires a current veto-capable context. A live OWNED-EVENT is also accepted for applicable operations.",
     "returns": "Copied/current veto state as T/NIL; SETF returns the supplied generalized boolean.",
     "description": "Snapshots retain pre-callback state. Close contexts use GetVeto / checked Veto(bool); notify contexts use NOT IsAllowed, Veto() for true, and Allow() for NIL. A close initialized non-vetoable rejects writes unless its current CanVeto flag was explicitly enabled through SETF EVENT-CAN-VETO-P. Plain command contexts reject live veto-state access. Snapshots stay immutable. Native GetVeto is CanVeto AND the stored veto bit; disabling capability hides the bit without clearing it.",
-    "scope": "Active main-thread session required for native context or frame operations. Expired/suspended contexts and invalid/deleting frames signal NATIVE-ERROR. Saved snapshots need no session. Close and registered notify families permit checked veto. Native control-specific notify subclasses, validated OS session delivery and arbitrary event classes remain open. Live OWNED-EVENT receivers are also supported under the same native field/family validation. They require an active main-thread session and remain mutable until destroyed; snapshots stay immutable.",
+    "scope": "Active main-thread session required for native context or frame operations. Expired/suspended contexts and invalid/deleting frames signal NATIVE-ERROR. Saved snapshots need no session. Close and registered notify families permit checked veto. Other native control-specific notify subclasses, validated OS session delivery and arbitrary event classes remain open. Live OWNED-EVENT receivers are also supported under the same native field/family validation. They require an active main-thread session and remain mutable until destroyed; snapshots stay immutable.",
     "wxwidgets": "wxCloseEvent::GetVeto / Veto(bool); wxNotifyEvent::IsAllowed / Veto / Allow. (wxWidgets 3.2.12 baseline).",
     "setf": {
       "syntax": "(setf (wxlambda:event-vetoed-p event-or-context) value)",
@@ -977,7 +977,7 @@
     "arguments": "FRAME is a live FRAME. Optional FORCE defaults NIL; true initializes native CanVeto false.",
     "returns": "Native close acceptance as T/NIL; not a destruction/liveness guarantee.",
     "description": "Synchronously generate the frame close request via wxWindow::Close(force). A vetoed request returns NIL. A consuming contextual callback may return acceptance T without deleting anything, even for FORCE. Set Skip true to delegate to native default closing when appropriate. Callback conditions re-signal at this Lisp boundary; a handled nested condition does not stop RUN. Use DESTROY-WINDOW for explicit destruction. A callback can explicitly mutate CanVeto through SETF EVENT-CAN-VETO-P; FORCE is not an immutable capability limit.",
-    "scope": "Active main-thread session required for native context or frame operations. Expired/suspended contexts and invalid/deleting frames signal NATIVE-ERROR. Saved snapshots need no session. Close and registered notify families permit checked veto. Native control-specific notify subclasses, validated OS session delivery and arbitrary event classes remain open. Closing a protected active-modal ancestor rejects until SHOW-MODAL returns; modal dialog close itself uses cancellation.",
+    "scope": "Active main-thread session required for native context or frame operations. Expired/suspended contexts and invalid/deleting frames signal NATIVE-ERROR. Saved snapshots need no session. Close and registered notify families permit checked veto. Other native control-specific notify subclasses, validated OS session delivery and arbitrary event classes remain open. Closing a protected active-modal ancestor rejects until SHOW-MODAL returns; modal dialog close itself uses cancellation.",
     "wxwidgets": "wxWindow::Close(bool), wxFrame receivers only (wxWidgets 3.2.12 baseline)."
   },
   {
@@ -995,7 +995,7 @@
     "arguments": "HANDLER is a live EVENT-HANDLER/window. KIND and keyword payloads match QUEUE-EVENT. LOGGING-OFF-P defaults NIL and is accepted only for :QUERY-END-SESSION/:END-SESSION; CAN-VETO-P applies to all close-family kinds. The second positional argument may instead be a live OWNED-EVENT, with no payload keyword overrides.",
     "returns": "Two values: native handled-p and final vetoed-p.",
     "description": "Synchronously dispatch a fresh owned synthetic event through ProcessEvent, copy final veto state and then delete the event. Observer callbacks may run while handled-p is NIL because they Skip; native consumption/default handling determines the first result. Final veto is independent of handled-p and may be true from initial VETOED-P even without a matching handler. Close dispatch can run frame defaults. Callback errors re-signal at the nearer Lisp boundary; handled nested errors do not stop RUN. No final values are returned when a condition escapes, and earlier callback mutations are not rolled back. Owned-event dispatch always clones, attaches the receiver as copy origin and never consumes or mutates the source. The original can be destroyed after queueing or inside callbacks. Processing returns final state from its copy; contextual CLONE-EVENT can retain changed state detached from origin.",
-    "scope": "Active main-thread session required for registration/dispatch and scoped native access; inactive calls signal NATIVE-ERROR before FFI. Wrong receiver types use CLOS dispatch errors. Registry metadata lasts until session cleanup; snapshot data is immutable. Borrowed application dispatch is supported; no worker dispatch, validated OS session delivery or arbitrary native class construction is provided. Synthetic session kinds require isolated owned standalone handlers; application/window receivers reject before emission. Standalone session fallback to wxApp is suppressed even for skipped, disabled or unmatched delivery. Native application session bindings are distinct from synthetic probes. Owned session event copies retain isolated standalone-receiver guards. Copies carrying borrowed userdata/client pointers or unsupported exact native classes reject. Copied owned :TEXT-CHANGE delivery to text-entry receivers rejects before emission, preventing lazy GetString from shadowing the owned payload. Keyword synthetic behavior is unchanged. Managed standalone chains participate in native traversal; linking does not change pending queue ownership or introduce window/app pushed chains. Window receivers retain wxEvtHandler semantics and bypass pushed stacks; explicit PROCESS-WINDOW-EVENT/LOCALLY provide stack-aware synchronous routing. Synthetic session delivery to attached pushed handlers rejects before emission/transfer. Notebook native page events cannot be synthesized, queued, processed as owned events or contextually cloned in ABI37. ABI38 simple listbox command kinds support owned/synthetic dispatch and text/selection payloads; no automatic list-model mutation.",
+    "scope": "Active main-thread session required for registration/dispatch and scoped native access; inactive calls signal NATIVE-ERROR before FFI. Wrong receiver types use CLOS dispatch errors. Registry metadata lasts until session cleanup; snapshot data is immutable. Borrowed application dispatch is supported; no worker dispatch, validated OS session delivery or arbitrary native class construction is provided. Synthetic session kinds require isolated owned standalone handlers; application/window receivers reject before emission. Standalone session fallback to wxApp is suppressed even for skipped, disabled or unmatched delivery. Native application session bindings are distinct from synthetic probes. Owned session event copies retain isolated standalone-receiver guards. Copies carrying borrowed userdata/client pointers or unsupported exact native classes reject. Copied owned :TEXT-CHANGE delivery to text-entry receivers rejects before emission, preventing lazy GetString from shadowing the owned payload. Keyword synthetic behavior is unchanged. Managed standalone chains participate in native traversal; linking does not change pending queue ownership or introduce window/app pushed chains. Window receivers retain wxEvtHandler semantics and bypass pushed stacks; explicit PROCESS-WINDOW-EVENT/LOCALLY provide stack-aware synchronous routing. Synthetic session delivery to attached pushed handlers rejects before emission/transfer. Notebook native page events cannot be synthesized, queued, processed as owned events or contextually cloned in ABI37. ABI38 simple listbox command kinds support owned/synthetic dispatch and text/selection payloads; no automatic list-model mutation. Derived tree selection kinds cannot be synthesized/owned/cloned in ABI39.",
     "wxwidgets": "wxEvtHandler::ProcessEvent; wxCloseEvent::GetVeto or NOT wxNotifyEvent::IsAllowed after dispatch. (wxWidgets 3.2.12 baseline).",
     "syntax": "(wxlambda:process-event handler kind &key id text checked-p selection can-veto-p integer vetoed-p logging-off-p)\n(wxlambda:process-event handler owned-event)"
   },
@@ -1123,7 +1123,7 @@
     "arguments": "Keyword initargs: CLASS defaults OWNED-EVENT; KIND defaults :CLICK. ID/TEXT/INTEGER/CHECKED-P/SELECTION/CAN-VETO-P/VETOED-P/LOGGING-OFF-P match synthetic payload rules. Optional CLONE-FROM accepts a live owned event/current context. Optional EXTRA-LONG accepts signed native LONG only for command/notify construction; explicit clone overrides reject. Optional MORE-REQUESTED-P applies only to idle construction; explicitly supplied non-idle values (including NIL) reject/rollback. Keyword synthetic queue/process do not add this option.",
     "returns": "A new OWNED-EVENT or validated subclass.",
     "description": "Thin class-validating CLOS factory with forwarded subclass initargs. Initial ID -1 remains reserved. Clone construction detaches origin and preserves native source state; factories reject explicit payload overrides while inherited defaults do not replace cloned values.",
-    "scope": "Active main-thread session required. Unknown/wrong-family options and invalid class construction reject. No arbitrary native class or raw handle. Explicit DESTROY-EVENT or session cleanup owns native lifetime. Notebook native page events cannot be synthesized, queued, processed as owned events or contextually cloned in ABI37. ABI38 simple listbox command kinds support owned/synthetic dispatch and text/selection payloads; no automatic list-model mutation.",
+    "scope": "Active main-thread session required. Unknown/wrong-family options and invalid class construction reject. No arbitrary native class or raw handle. Explicit DESTROY-EVENT or session cleanup owns native lifetime. Notebook native page events cannot be synthesized, queued, processed as owned events or contextually cloned in ABI37. ABI38 simple listbox command kinds support owned/synthetic dispatch and text/selection payloads; no automatic list-model mutation. Derived tree selection kinds cannot be synthesized/owned/cloned in ABI39.",
     "wxwidgets": "Bounded native event constructors / wxEvent::Clone (wxWidgets 3.2.12 baseline)."
   },
   {
@@ -1132,7 +1132,7 @@
     "arguments": "EVENT is a live OWNED-EVENT or current innermost EVENT-CONTEXT. CLASS and subclass slot initargs are forwarded; payload overrides reject.",
     "returns": "A new detached OWNED-EVENT or subclass.",
     "description": "Call native Clone for exact wxCommandEvent/wxNotifyEvent/wxCloseEvent/wxIdleEvent with supported tags, clear native origin, preserve supported values and reject borrowed userdata/client pointers. Source and clone are independently mutable/disposable. Capture effective command GetString before clearing origin, so lazy wxEVT_TEXT payload becomes detached value data.",
-    "scope": "Active main-thread session. Expired/suspended contexts and unsupported native classes reject. Snapshots have no method. No origin retention, arbitrary native ownership or source transfer. Non-NIL borrowed binding userData still rejects cloning, even after self-unbind; the presence guard does not dereference a freed native adapter. Notebook native page events cannot be synthesized, queued, processed as owned events or contextually cloned in ABI37. ABI38 simple listbox command kinds support owned/synthetic dispatch and text/selection payloads; no automatic list-model mutation.",
+    "scope": "Active main-thread session. Expired/suspended contexts and unsupported native classes reject. Snapshots have no method. No origin retention, arbitrary native ownership or source transfer. Non-NIL borrowed binding userData still rejects cloning, even after self-unbind; the presence guard does not dereference a freed native adapter. Notebook native page events cannot be synthesized, queued, processed as owned events or contextually cloned in ABI37. ABI38 simple listbox command kinds support owned/synthetic dispatch and text/selection payloads; no automatic list-model mutation. Derived tree selection kinds cannot be synthesized/owned/cloned in ABI39.",
     "wxwidgets": "wxEvent::Clone with bounded detached ownership (wxWidgets 3.2.12 baseline)."
   },
   {
@@ -1627,7 +1627,7 @@
     "arguments": "DIALOG is a live supported dialog, not already shown.",
     "returns": ":OK or :CANCEL; MESSAGE-DIALOG can also return offered :YES/:NO.",
     "description": "Run the native modal loop. Supported from menu/event callbacks, RUN or a pump; nested public SHOW-MODAL calls reject. Outer event contexts suspend during the modal call and become usable again after it returns; callbacks entered by the modal loop have their own valid innermost contexts. Bare callback errors cancel the modal operation and re-signal the primary condition after unwind. A nested notifying operation whose condition is handled locally can recover without cancelling. Manual RUN/pump/finish and structural menu edits remain guarded. Native close of the current dialog is consumed and cancels it; ancestor close events are consumed while modal. Public CLOSE-WINDOW on a protected ancestor rejects. Generic file UI prompts are redirected to guarded generic message dialogs. Internal prompts suspend borrowed contexts; errors or public cancellation unwind internal-to-outer sequentially. Cancelling an inner prompt normally returns to the outer dialog. Nested public SHOW-MODAL remains forbidden.",
-    "scope": "Requires an active main-thread GUI session and a live managed dialog. Invalid native handles/state signal NATIVE-ERROR; invalid Lisp types/receivers signal Lisp conditions. Modal-only text-entry/single-choice/generic-message/generic-file scope; no arbitrary native adoption, GC finalizer or native virtual Lisp overrides. Native validity includes the receiver and all native ancestors: bridge pending-destruction markers and the public wxApp scheduled-deletion list reject use even before IsBeingDeleted becomes true. SHOW-MODAL preflight must not enter a loop beneath an ancestor already queued for deletion. ABI37 rejects entry during notebook navigation/page callbacks; defer to later application work. ABI38 also rejects entry while a list-origin selection/activation callback is active.",
+    "scope": "Requires an active main-thread GUI session and a live managed dialog. Invalid native handles/state signal NATIVE-ERROR; invalid Lisp types/receivers signal Lisp conditions. Modal-only text-entry/single-choice/generic-message/generic-file scope; no arbitrary native adoption, GC finalizer or native virtual Lisp overrides. Native validity includes the receiver and all native ancestors: bridge pending-destruction markers and the public wxApp scheduled-deletion list reject use even before IsBeingDeleted becomes true. SHOW-MODAL preflight must not enter a loop beneath an ancestor already queued for deletion. ABI37 rejects entry during notebook navigation/page callbacks; defer to later application work. ABI38 also rejects entry while a list-origin selection/activation callback is active. ABI39 also defers entry during tree operations/selection callbacks.",
     "wxwidgets": "wxDialog::ShowModal with bounded callback/lifetime bridge.",
     "syntax": "(wxlambda:show-modal dialog)"
   },
@@ -1813,7 +1813,7 @@
     "arguments": "No arguments; standard system clipboard only.",
     "returns": "An independent Lisp string, including empty, or NIL when no native text format is available.",
     "description": "Briefly opens the clipboard, reads wxTextDataObject with Unicode/legacy text support, closes and restores PRIMARY preference. Availability can change; a supported-text transfer failure signals rather than returning NIL. Explicit UTF-8 lengths copy native storage. NUL text rejects.",
-    "scope": "Active main-thread session. Already-open/reentrant access rejects. Native callback conditions re-signal after cleanup; no native clipboard/data object receiver, selection ranges or binary formats. Native port conversion/line endings apply. ABI37 rejects entry during notebook navigation/page callbacks; defer to later application work. ABI38 also rejects entry while a list-origin selection/activation callback is active.",
+    "scope": "Active main-thread session. Already-open/reentrant access rejects. Native callback conditions re-signal after cleanup; no native clipboard/data object receiver, selection ranges or binary formats. Native port conversion/line endings apply. ABI37 rejects entry during notebook navigation/page callbacks; defer to later application work. ABI38 also rejects entry while a list-origin selection/activation callback is active. ABI39 also defers entry during tree operations/selection callbacks.",
     "wxwidgets": "wxClipboard::Get/Open/Close/IsSupported/GetData, wxTextDataObject::GetText (wxWidgets 3.2.12).",
     "setf": {
       "syntax": "(setf (wxlambda:clipboard-text) value)",
@@ -1826,7 +1826,7 @@
     "arguments": "No arguments.",
     "returns": "T when Unicode or legacy text is supported, NIL otherwise.",
     "description": "Advisory query on the standard clipboard; opens/closes and restores native PRIMARY preference. Does not read clipboard contents. A later read can differ.",
-    "scope": "Active main-thread session; unavailable/open/busy failures signal NATIVE-ERROR. Callback conditions take precedence after cleanup. No async format query. ABI37 rejects entry during notebook navigation/page callbacks; defer to later application work. ABI38 also rejects entry while a list-origin selection/activation callback is active.",
+    "scope": "Active main-thread session; unavailable/open/busy failures signal NATIVE-ERROR. Callback conditions take precedence after cleanup. No async format query. ABI37 rejects entry during notebook navigation/page callbacks; defer to later application work. ABI38 also rejects entry while a list-origin selection/activation callback is active. ABI39 also defers entry during tree operations/selection callbacks.",
     "wxwidgets": "wxClipboard::Get/Open/Close/IsSupported (wxWidgets 3.2.12)."
   },
   {
@@ -1835,7 +1835,7 @@
     "arguments": "No arguments.",
     "returns": "T when native Flush succeeds, NIL for unsupported/unsuccessful persistence.",
     "description": "Best-effort persistence after exit, on the standard clipboard. Does not set clipboard contents. A false native Flush result is normal; open/session failures signal NATIVE-ERROR.",
-    "scope": "Active main-thread session; brief scoped open/close and restored PRIMARY preference. Port-specific support; live exit persistence remains unverified. ABI37 rejects entry during notebook navigation/page callbacks; defer to later application work. ABI38 also rejects entry while a list-origin selection/activation callback is active.",
+    "scope": "Active main-thread session; brief scoped open/close and restored PRIMARY preference. Port-specific support; live exit persistence remains unverified. ABI37 rejects entry during notebook navigation/page callbacks; defer to later application work. ABI38 also rejects entry while a list-origin selection/activation callback is active. ABI39 also defers entry during tree operations/selection callbacks.",
     "wxwidgets": "wxClipboard::Flush (wxWidgets 3.2.12; pinned documentation identifies MSW/GTK support)."
   },
   {
@@ -2038,5 +2038,140 @@
     "description": "Clear all items/selection silently; allowed in list event callbacks. Temporary native event blocker restores managed pushed-handler stack.",
     "scope": "Active main-thread session, LIST-BOX receivers only. Unsorted single selection, native-owned text values; no item client data, multi-selection, sorting, arbitrary styles, virtual list/data-view/tree support. Invalid indices/types/handles signal.",
     "wxwidgets": "wxItemContainer::Clear (wxWidgets 3.2.12)."
+  },
+  {
+    "name": "tree-control",
+    "kind": "class",
+    "syntax": "wxlambda:tree-control",
+    "arguments": "Concrete WINDOW subclass with visible-root single-selection wxTreeCtrl.",
+    "returns": "Native-backed tree window.",
+    "description": "Managed item tokens and canonical views, native selection/veto and bounded structural navigation.",
+    "scope": "Active main-thread session; managed tree-control/items only. Native tokens validate owner/lifetime; no raw IDs/adoption, multiselect, item data, icons, label editing, sorting, drag/drop, virtual models or arbitrary styles. Same-tree writes and nested native loops defer during tree callbacks. wxQt tree construction is explicitly unavailable pending generation-safe asynchronous event translation.",
+    "wxwidgets": "wxTreeCtrl (wxWidgets 3.2.12).",
+    "construction": {
+      "syntax": "(make-instance 'wxlambda:tree-control :parent parent)",
+      "description": "PARENT required. Fixed single-selection/root-line/button styles, other native constructor defaults. Subclass slots/defaults/AFTER hooks and managed initialization rollback apply."
+    }
+  },
+  {
+    "name": "tree-item",
+    "kind": "class",
+    "syntax": "wxlambda:tree-item",
+    "arguments": "Borrowed canonical resource view, not a WINDOW.",
+    "returns": "View of a checked native tree item.",
+    "description": "Created by tree creation/traversal/selection APIs; EQ identity stable while native token is live. Retained views/snapshots can become invalid after subtree/owner deletion. Tokens are not raw native IDs.",
+    "scope": "Active main-thread session; managed tree-control/items only. Native tokens validate owner/lifetime; no raw IDs/adoption, multiselect, item data, icons, label editing, sorting, drag/drop, virtual models or arbitrary styles. Same-tree writes and nested native loops defer during tree callbacks. wxQt tree construction is explicitly unavailable pending generation-safe asynchronous event translation.",
+    "wxwidgets": "Checked wxTreeItemId adapter (wxWidgets 3.2.12); no raw pointer constructor.",
+    "construction": {
+      "syntax": "Obtain through ADD-TREE-ROOT, APPEND-TREE-ITEM, TREE-ROOT, traversal or selection.",
+      "description": "Direct MAKE-INSTANCE/subclass construction rejects; no native handle adoption. Internal allocation publishes a canonical base view, not a new native item. Use TREE-ITEM-ALIVE-P within the active session before dereferencing retained views."
+    }
+  },
+  {
+    "name": "make-tree-control",
+    "kind": "generic-function",
+    "arguments": "PARENT; :CLASS defaults TREE-CONTROL, forwarded initargs.",
+    "returns": "New TREE-CONTROL/subclass.",
+    "description": "Thin validated native-backed CLOS factory.",
+    "scope": "Active main-thread session; managed tree-control/items only. Native tokens validate owner/lifetime; no raw IDs/adoption, multiselect, item data, icons, label editing, sorting, drag/drop, virtual models or arbitrary styles. Same-tree writes and nested native loops defer during tree callbacks. wxQt tree construction is explicitly unavailable pending generation-safe asynchronous event translation.",
+    "wxwidgets": "wxTreeCtrl constructor (wxWidgets 3.2.12)."
+  },
+  {
+    "name": "add-tree-root",
+    "kind": "generic-function",
+    "arguments": "TREE control, VALUE string without NUL.",
+    "returns": "Canonical TREE-ITEM root view.",
+    "description": "Require empty tree; create/select root silently under native event blockers and publish checked token/view. Empty text valid. Failed Lisp view publication deletes new native item.",
+    "scope": "Active main-thread session; managed tree-control/items only. Native tokens validate owner/lifetime; no raw IDs/adoption, multiselect, item data, icons, label editing, sorting, drag/drop, virtual models or arbitrary styles. Same-tree writes and nested native loops defer during tree callbacks. wxQt tree construction is explicitly unavailable pending generation-safe asynchronous event translation.",
+    "wxwidgets": "wxTreeCtrl::AddRoot (wxWidgets 3.2.12)."
+  },
+  {
+    "name": "append-tree-item",
+    "kind": "generic-function",
+    "arguments": "PARENT live TREE-ITEM, VALUE string without NUL.",
+    "returns": "New canonical TREE-ITEM child view.",
+    "description": "Append in native order, preserving selection silently. Native parent owner is inferred and checked; empty/duplicate text valid.",
+    "scope": "Active main-thread session; managed tree-control/items only. Native tokens validate owner/lifetime; no raw IDs/adoption, multiselect, item data, icons, label editing, sorting, drag/drop, virtual models or arbitrary styles. Same-tree writes and nested native loops defer during tree callbacks. wxQt tree construction is explicitly unavailable pending generation-safe asynchronous event translation.",
+    "wxwidgets": "wxTreeCtrl::AppendItem (wxWidgets 3.2.12)."
+  },
+  {
+    "name": "tree-root",
+    "kind": "generic-function",
+    "arguments": "TREE control.",
+    "returns": "Canonical root view or NIL if empty.",
+    "description": "Read root identity without raw adoption.",
+    "scope": "Active main-thread session; managed tree-control/items only. Native tokens validate owner/lifetime; no raw IDs/adoption, multiselect, item data, icons, label editing, sorting, drag/drop, virtual models or arbitrary styles. Same-tree writes and nested native loops defer during tree callbacks. wxQt tree construction is explicitly unavailable pending generation-safe asynchronous event translation.",
+    "wxwidgets": "wxTreeCtrl::GetRootItem (wxWidgets 3.2.12)."
+  },
+  {
+    "name": "tree-item-parent",
+    "kind": "generic-function",
+    "arguments": "ITEM live TREE-ITEM.",
+    "returns": "Canonical parent view or NIL for root.",
+    "description": "Read native parent identity.",
+    "scope": "Active main-thread session; managed tree-control/items only. Native tokens validate owner/lifetime; no raw IDs/adoption, multiselect, item data, icons, label editing, sorting, drag/drop, virtual models or arbitrary styles. Same-tree writes and nested native loops defer during tree callbacks. wxQt tree construction is explicitly unavailable pending generation-safe asynchronous event translation.",
+    "wxwidgets": "wxTreeCtrl::GetItemParent (wxWidgets 3.2.12)."
+  },
+  {
+    "name": "tree-item-children",
+    "kind": "generic-function",
+    "arguments": "ITEM live TREE-ITEM.",
+    "returns": "Fresh ordered list of canonical child views.",
+    "description": "Iterate native first-child/next-sibling without exposing cookies or raw IDs.",
+    "scope": "Active main-thread session; managed tree-control/items only. Native tokens validate owner/lifetime; no raw IDs/adoption, multiselect, item data, icons, label editing, sorting, drag/drop, virtual models or arbitrary styles. Same-tree writes and nested native loops defer during tree callbacks. wxQt tree construction is explicitly unavailable pending generation-safe asynchronous event translation.",
+    "wxwidgets": "wxTreeCtrl::GetFirstChild/GetNextSibling (wxWidgets 3.2.12)."
+  },
+  {
+    "name": "tree-item-text",
+    "kind": "generic-function",
+    "arguments": "ITEM live TREE-ITEM.",
+    "returns": "Independent UTF-8 Lisp string.",
+    "description": "Read current native label, not historical snapshot contents.",
+    "scope": "Active main-thread session; managed tree-control/items only. Native tokens validate owner/lifetime; no raw IDs/adoption, multiselect, item data, icons, label editing, sorting, drag/drop, virtual models or arbitrary styles. Same-tree writes and nested native loops defer during tree callbacks. wxQt tree construction is explicitly unavailable pending generation-safe asynchronous event translation.",
+    "wxwidgets": "wxTreeCtrl::GetItemText/SetItemText (wxWidgets 3.2.12).",
+    "setf": {
+      "syntax": "(setf (wxlambda:tree-item-text item) value)",
+      "description": "String without NUL, empty allowed. Silent native label mutation; returns supplied VALUE. Rejects during same-tree callbacks."
+    }
+  },
+  {
+    "name": "tree-item-expanded-p",
+    "kind": "generic-function",
+    "arguments": "ITEM live TREE-ITEM.",
+    "returns": "Native expansion T/NIL.",
+    "description": "Read actual expansion; an expansion request may have no effect for leaves.",
+    "scope": "Active main-thread session; managed tree-control/items only. Native tokens validate owner/lifetime; no raw IDs/adoption, multiselect, item data, icons, label editing, sorting, drag/drop, virtual models or arbitrary styles. Same-tree writes and nested native loops defer during tree callbacks. wxQt tree construction is explicitly unavailable pending generation-safe asynchronous event translation.",
+    "wxwidgets": "wxTreeCtrl::IsExpanded/Expand/Collapse (wxWidgets 3.2.12).",
+    "setf": {
+      "syntax": "(setf (wxlambda:tree-item-expanded-p item) value)",
+      "description": "Generalized boolean request; returns VALUE. Collapse promotes selected descendant to collapsed ancestor. Expansion otherwise preserves selection. Supported selection events blocked and normalized before idle; query actual expansion, especially for leaves."
+    }
+  },
+  {
+    "name": "tree-item-alive-p",
+    "kind": "generic-function",
+    "arguments": "ITEM TREE-ITEM view.",
+    "returns": "T if token and owner live, NIL for deleted/deleting owner.",
+    "description": "Checks registry/owner, stronger than native IsOk non-null test. Active session required; stale views never revive on native address reuse.",
+    "scope": "Active main-thread session; managed tree-control/items only. Native tokens validate owner/lifetime; no raw IDs/adoption, multiselect, item data, icons, label editing, sorting, drag/drop, virtual models or arbitrary styles. Same-tree writes and nested native loops defer during tree callbacks. wxQt tree construction is explicitly unavailable pending generation-safe asynchronous event translation.",
+    "wxwidgets": "Checked wxTreeItemId/owner registry (wxWidgets 3.2.12)."
+  },
+  {
+    "name": "delete-tree-item",
+    "kind": "generic-function",
+    "arguments": "ITEM live TREE-ITEM.",
+    "returns": "T after success.",
+    "description": "Invalidate/delete whole subtree. Preserve an outside selection, otherwise choose surviving parent/root silently; deleting root leaves empty. Revision-prune invalid cached views.",
+    "scope": "Active main-thread session; managed tree-control/items only. Native tokens validate owner/lifetime; no raw IDs/adoption, multiselect, item data, icons, label editing, sorting, drag/drop, virtual models or arbitrary styles. Same-tree writes and nested native loops defer during tree callbacks. wxQt tree construction is explicitly unavailable pending generation-safe asynchronous event translation.",
+    "wxwidgets": "wxTreeCtrl::Delete and internal delete notifications (wxWidgets 3.2.12)."
+  },
+  {
+    "name": "event-tree-item",
+    "kind": "generic-function",
+    "arguments": "Immutable EVENT snapshot or current tree EVENT-CONTEXT.",
+    "returns": "Canonical TREE-ITEM view or NIL when no managed associated item.",
+    "description": "Snapshot retains view identity, not live validity or frozen label. Non-tree snapshots return NIL; non-tree contexts reject. No owned-event method/setter; associated item can be invalidated later. Copy text while live if needed.",
+    "scope": "Snapshot field access needs no session. Context access requires active main-thread exact borrowed context; dereferencing returned item requires live token/owner. Native derived selection events only, no synthetic/owned/cloning/old-item support. wxQt tree construction is explicitly unavailable pending generation-safe asynchronous event translation.",
+    "wxwidgets": "wxTreeEvent::GetItem (wxWidgets 3.2.12)."
   }
 ]

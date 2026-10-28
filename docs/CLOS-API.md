@@ -1,7 +1,7 @@
 # CLOS widget API
 
 Widgets are native-backed CLOS instances. The public classes are `window`,
-`frame`, `panel`, `notebook`, `list-box`, `button`, `text-control`, `label`, `checkbox`, `choice`,
+`frame`, `panel`, `notebook`, `list-box`, `tree-control`, `button`, `text-control`, `label`, `checkbox`, `choice`,
 `gauge`, abstract `dialog`, and its `text-entry-dialog`, `single-choice-dialog`,
 `message-dialog` and `file-dialog` concrete families.
 `window` inherits from `event-handler` and is abstract. Standalone `event-handler`
@@ -243,3 +243,7 @@ page self-attachment during initialization rejects. See [notebook navigation](NO
 `list-box` constructs an unsorted native single-selection list from `:items` and
 `:selection`; subclass AFTER hooks can query/edit it. Item text uses generic SETF.
 See [single-selection lists](LIST-BOX.md) for item and callback lifetime rules.
+
+`tree-control` is a concrete native-backed window. `tree-item` is a borrowed checked
+view, obtained from tree APIs rather than direct MAKE-INSTANCE. Canonical view
+identity can outlive native validity; see [tree ownership/navigation](TREE-NAVIGATION.md).

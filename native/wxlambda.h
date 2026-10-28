@@ -17,7 +17,7 @@ extern "C" {
 typedef uint64_t wxl_handle;
 enum wxl_alignment { WXL_ALIGN_START = 0, WXL_ALIGN_CENTER = 1, WXL_ALIGN_END = 2 };
 enum wxl_event_family { WXL_FAMILY_COMMAND = 0, WXL_FAMILY_CLOSE = 1, WXL_FAMILY_NOTIFY = 2, WXL_FAMILY_IDLE = 3 };
-enum wxl_event_kind { WXL_EVENT_CLICK = 1, WXL_EVENT_TEXT_CHANGE = 2, WXL_EVENT_TOGGLE = 3, WXL_EVENT_SELECTION = 4, WXL_EVENT_CLOSE = 5, WXL_EVENT_QUERY_END_SESSION = 6, WXL_EVENT_END_SESSION = 7, WXL_EVENT_IDLE = 8, WXL_EVENT_MENU = 9, WXL_EVENT_NOTEBOOK_CHANGING = 10, WXL_EVENT_NOTEBOOK_CHANGED = 11, WXL_EVENT_LISTBOX_SELECTION = 12, WXL_EVENT_LISTBOX_DOUBLE_CLICK = 13 };
+enum wxl_event_kind { WXL_EVENT_CLICK = 1, WXL_EVENT_TEXT_CHANGE = 2, WXL_EVENT_TOGGLE = 3, WXL_EVENT_SELECTION = 4, WXL_EVENT_CLOSE = 5, WXL_EVENT_QUERY_END_SESSION = 6, WXL_EVENT_END_SESSION = 7, WXL_EVENT_IDLE = 8, WXL_EVENT_MENU = 9, WXL_EVENT_NOTEBOOK_CHANGING = 10, WXL_EVENT_NOTEBOOK_CHANGED = 11, WXL_EVENT_LISTBOX_SELECTION = 12, WXL_EVENT_LISTBOX_DOUBLE_CLICK = 13, WXL_EVENT_TREE_CHANGING = 14, WXL_EVENT_TREE_CHANGED = 15 };
 typedef struct wxl_event {
     int kind;
     const char *text; /* UTF-8 for text changes, listbox events and registered command/notify tags. */
@@ -40,6 +40,7 @@ typedef struct wxl_event {
     int selection_action; /* Native IsSelection, not a predicate on the kind tag. */
     uint64_t user_data; /* Binding root token, zero for none; never a native pointer. */
     int more_requested; /* Native idle RequestMore state; false for other families. */
+    wxl_handle tree_item; /* Checked bridge item token, zero for none/unmanaged/non-tree. */
 } wxl_event;
 /* The record and its text are borrowed only until this callback returns.
    Callbacks must never unwind across this boundary. */
@@ -195,6 +196,21 @@ WXL_API int wxl_remove_handler(wxl_handle window, wxl_handle handler);
 WXL_API wxl_handle wxl_frame(const char *title, int width, int height);
 WXL_API wxl_handle wxl_panel(wxl_handle parent);
 WXL_API wxl_handle wxl_button(wxl_handle parent, const char *label);
+/* Managed tree item tokens are not raw wxTreeItemId pointers. Status: 0/-1.
+   wxQt tree creation is unavailable pending generation-safe async event translation. */
+WXL_API wxl_handle wxl_tree(wxl_handle parent);
+WXL_API int wxl_tree_add(wxl_handle tree, wxl_handle parent, const char *text, size_t length, wxl_handle *item);
+WXL_API int wxl_tree_query(wxl_handle tree, int field, wxl_handle *item); /* 0=root, 1=selection */
+WXL_API int wxl_tree_relative(wxl_handle item, int field, wxl_handle *relative); /* 0=parent, 1=first child, 2=next sibling */
+WXL_API const char* wxl_tree_text(wxl_handle item, size_t *length);
+WXL_API int wxl_set_tree_text(wxl_handle item, const char *text, size_t length);
+WXL_API int wxl_tree_expanded(wxl_handle item); /* boolean, -1 error */
+WXL_API int wxl_set_tree_expanded(wxl_handle item, int expanded);
+WXL_API int wxl_tree_delete(wxl_handle item);
+WXL_API int wxl_tree_select(wxl_handle tree, wxl_handle item, int notify);
+WXL_API int wxl_tree_item_alive(wxl_handle item); /* boolean, -1 error */
+WXL_API int wxl_tree_revision(uint64_t *revision);
+WXL_API int wxl_event_tree_item(uint64_t source, int contextual, wxl_handle *item);
 /* Unsorted single-selection text lists. Item operations are silent.
    Count/append: -1 error. Selection: -1 none, -2 error. Text: NULL error.
    Other item/selection status operations: 0 success, -1 error. */

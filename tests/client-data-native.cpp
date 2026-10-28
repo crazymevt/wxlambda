@@ -35,10 +35,11 @@ void inspect_binding(uint64_t token, const wxl_event* event) {
     saved_context = event->context;
     binding_called = true;
 }
-std::function<void(uint64_t, const wxl_event*)> notebook_probe, list_probe;
+std::function<void(uint64_t, const wxl_event*)> notebook_probe, list_probe, tree_probe;
 void ignore_event(uint64_t token, const wxl_event* event) {
     if ((token == 904 || token == 905) && notebook_probe) notebook_probe(token, event);
     if (token >= 906 && token <= 908 && list_probe) list_probe(token, event);
+    if ((token == 909 || token == 910) && tree_probe) tree_probe(token, event);
     if (token == 901) inspect_binding(token, event);
     if (token == 903) { ++menu_calls; menu_checked_payload = event->checked; menu_integer_payload = event->integer; menu_origin = event->origin_id; }
 }
@@ -717,6 +718,82 @@ void exercise_list_box() {
     expect(wxl_list_count(list) == -1 && wxl_list_append(list, "stale", 5) == -1, "Stale list handle must reject");
 }
 
+
+void exercise_tree() {
+    const auto frame = wxl_frame("Tree", 320, 280);
+#if defined(__WXQT__)
+    expect(!wxl_tree(frame) && std::string(wxl_last_error()).find("unavailable on wxQt") != std::string::npos,
+           "Qt tree construction must reject before publication");
+    delete window(frame); return;
+#endif
+    const auto tree = wxl_tree(frame), other = wxl_tree(frame);
+    auto add = [&](wxl_handle owner, wxl_handle parent, const char* text) {
+        wxl_handle item = 0; expect(wxl_tree_add(owner, parent, text, std::strlen(text), &item) == 0 && item, "Tree add failed"); return item;
+    };
+    const auto root = add(tree, 0, "Root"), branch = add(tree, root, "Branch"), leaf = add(tree, branch, "Leaf λ");
+    const auto other_root = add(other, 0, "Other");
+    wxl_handle item = 0;
+    expect(wxl_tree_query(tree, 0, &item) == 0 && item == root && wxl_tree_relative(leaf, 0, &item) == 0 && item == branch,
+           "Tree root/parent identity failed");
+    expect(wxl_tree_query(tree, 1, &item) == 0 && item == root && wxl_tree_select(tree, 0, 0) == -1, "Tree populated selection policy failed");
+    expect(wxl_tree_add(other, root, "Wrong", 5, &item) == -1 && wxl_tree_select(other, leaf, 0) == -1 &&
+           wxl_tree_add(tree, 0, "Duplicate", 9, &item) == -1, "Tree owner/root checks failed");
+    expect(wxl_tree_add(tree, root, "a\0b", 3, &item) == -1 && wxl_tree_add(tree, root, "\xff", 1, &item) == -1 &&
+           wxl_tree_add(tree, root, "x", 1, nullptr) == -1 && wxl_tree_relative(root, 3, &item) == -1 &&
+           wxl_tree_query(tree, 2, &item) == -1 && wxl_tree_query(tree, 0, nullptr) == -1,
+           "Tree raw input validation failed");
+    size_t length = 0;
+    expect(!wxl_tree_text(root, nullptr) && !wxl_tree_text(frame, &length) && wxl_set_tree_text(root, "\xff", 1) == -1 &&
+           wxl_set_tree_expanded(root, 2) == -1 && wxl_tree_select(tree, root, 2) == -1 && wxl_tree_revision(nullptr) == -1,
+           "Tree text/flags/output validation failed");
+    const auto dialog = wxl_message_dialog(frame, "Guard", 5, "Guard", 5, 0, 0);
+    expect(dialog, "Tree guard dialog setup failed");
+    unsigned calls = 0;
+    tree_probe = [&](uint64_t, const wxl_event* event) {
+        ++calls; wxl_handle selected = 0; int code = -1;
+        expect(event->tree_item == leaf && event->selection == -1 && event->family == WXL_FAMILY_NOTIFY &&
+               wxl_event_tree_item(event->context, 1, &selected) == 0 && selected == leaf, "Tree typed event item metadata failed");
+        expect(wxl_tree_delete(branch) == -1 && wxl_tree_add(tree, root, "Unsafe", 6, &selected) == -1 &&
+               wxl_set_tree_text(root, "Unsafe", 6) == -1 && wxl_set_tree_expanded(root, 0) == -1 &&
+               wxl_tree_select(tree, root, 0) == -1 && wxl_destroy(tree) == -1 && wxl_destroy(frame) == -1 &&
+               wxl_close(frame, 1) == -1 && wxl_dialog_show(dialog, &code) == -1 && wxl_clipboard_text_available() == -1,
+               "Actual tree callback bypassed mutation/lifetime/native-loop guards");
+        expect(!wxl_clone_event(event->context, 1) && wxl_context_set_skipped(event->context, 1) == 0,
+               "Tree cloning/propagation contract failed");
+    };
+    for (const int kind : {WXL_EVENT_TREE_CHANGING, WXL_EVENT_TREE_CHANGED}) {
+        expect(wxl_bind(tree, kind, 909, wxID_ANY, wxID_ANY, 1, 0) == 0 && wxl_bind(frame, kind, 910, wxID_ANY, wxID_ANY, 1, 0) == 0,
+               "Tree event binding failed");
+        wxTreeEvent event(native_event_type(kind), window(tree)->GetId());
+        event.SetEventObject(window(tree)); event.SetItem(tree_node(leaf).native);
+        window(tree)->GetEventHandler()->ProcessEvent(event); // Outside bridge navigation guard.
+        expect(wxl_unbind(909) == 1 && wxl_unbind(910) == 1 && tree_operations.empty(), "Tree callback guard did not unwind");
+        expect(!wxl_owned_event(kind, 1, "", 0, 0, 0, 0, 0), "Synthetic derived tree events must reject");
+    }
+    expect(calls == 4, "Native/propagated tree callback paths incomplete");
+    tree_probe = nullptr;
+    expect(wxl_set_tree_expanded(root, 1) == 0 && wxl_set_tree_expanded(branch, 1) == 0 && wxl_tree_select(tree, leaf, 0) == 0 &&
+           wxl_set_tree_expanded(branch, 0) == 0 && wxl_poll() == 0 && wxl_tree_query(tree, 1, &item) == 0 && item == branch,
+           "Tree collapse selection did not normalize across idle");
+    const auto old_native = tree_node(leaf).native;
+    expect(wxl_tree_delete(branch) == 0 && wxl_poll() == 0 && wxl_tree_item_alive(leaf) == 0 && wxl_tree_item_alive(branch) == 0 &&
+           wxl_tree_query(tree, 1, &item) == 0 && item == root && !wxl_tree_text(leaf, &length), "Tree subtree invalidation/selection failed");
+    const auto replacement = add(tree, root, "Replacement");
+    expect(replacement != leaf && tree_node(replacement).native.IsOk(), "Tree item token was reused");
+    (void)old_native; // Native allocators may reuse this address; bridge tokens never do.
+    as<wxTreeCtrl>(tree)->Delete(tree_node(replacement).native);
+    expect(wxl_tree_item_alive(replacement) == 0, "Native deletion notification did not invalidate item token");
+    unsigned teardown_calls = 0;
+    tree_probe = [&](uint64_t, const wxl_event*) { ++teardown_calls; };
+    expect(wxl_bind(tree, WXL_EVENT_TREE_CHANGED, 909, wxID_ANY, wxID_ANY, 1, 0) == 0 &&
+           wxl_bind(frame, WXL_EVENT_TREE_CHANGED, 910, wxID_ANY, wxID_ANY, 1, 0) == 0, "Tree teardown bindings failed");
+    delete window(tree); // Includes native base-destructor events after ManagedWindow cleanup.
+    expect(!teardown_calls && !wxl_tree_item_alive(root), "Tree teardown exposed a dying origin/item");
+    wxl_unbind(909); wxl_unbind(910); tree_probe = nullptr;
+    delete window(frame);
+    expect(wxl_tree_item_alive(other_root) == 0 && tree_nodes.empty() && tree_owners.empty(), "Tree owner teardown leaked item state");
+}
+
 int main() {
     std::thread([] { std::this_thread::sleep_for(std::chrono::seconds(10)); std::_Exit(124); }).detach();
     auto old_assert_handler = wxSetAssertHandler(capture_assert);
@@ -735,6 +812,7 @@ int main() {
         exercise_text_editing();
         exercise_notebook();
         exercise_list_box();
+        exercise_tree();
 #if wxUSE_CLIPBOARD
         exercise_clipboard();
 #endif

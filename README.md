@@ -781,3 +781,7 @@ for interactive tabs or EXERCISE for bounded navigation checks.
 [Single-selection list boxes](docs/LIST-BOX.md) add mutable text items, selection
 and activation events. The list-manager example wires append/rename/delete/clear
 actions; stable domain IDs remain Lisp application data.
+
+[Tree navigation and ownership](docs/TREE-NAVIGATION.md) add checked canonical
+item views, subtree invalidation, expansion and native selection/veto. The tree
+example demonstrates appends/deletes outside guarded selection callbacks.

@@ -146,5 +146,9 @@
   "list-manager.lisp": {
     "description": "Unsorted single-selection list manager with Append/Rename/Delete/Clear actions, native selection and activation feedback. Bounded EXERCISE tests silent item edits and selected-index adjustment without physical input.",
     "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/list-manager.lisp --eval '(wxlambda:with-application () (wxlambda-list-manager:exercise))'"
+  },
+  "tree-navigation.lisp": {
+    "description": "Visible-root single-selection managed tree, canonical item views, expand/collapse, native navigation veto and append/delete buttons. Bounded EXERCISE checks token ownership/subtree invalidation without physical input.",
+    "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/tree-navigation.lisp --eval '(wxlambda:with-application () (wxlambda-tree-navigation:exercise))'"
   }
 }

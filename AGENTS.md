@@ -120,7 +120,7 @@ session ownership; actual native window destruction pops managed stacks without
 deleting those handlers. Explicit stack-aware processing differs from generic
 window receiver dispatch, which retains native stack bypass. Public window wrapper
 classes are `window` (abstract), `frame`, `panel`, `button`,
-`text-control`, `label`, `checkbox`, `choice`, `gauge`, `notebook` and `list-box` (plus the
+`text-control`, `label`, `checkbox`, `choice`, `gauge`, `notebook`, `list-box` and `tree-control` (plus the
 DIALOG hierarchy described below). Lisp subclassing does not imply
 native C++ subclassing or virtual-method callbacks; those need separate bridge
 support. See `docs/CLOS-API.md`.
@@ -157,7 +157,7 @@ conversion. See `docs/DOCUMENT-FORM.md`. ABI35 adds bounded text
 clipboard support and form Edit Copy/Paste. Preserve isolated automatic transfer
 tests: do not overwrite/read system clipboard content in CI; live availability is
 the only automatic system query. See `docs/CLIPBOARD.md`. The next selected slice
-is bounded tree navigation/item ownership for the tree/list-manager slice. ABI36 multiline text/basic editing uses native
+is splitter windows for a two-pane tree/list manager. ABI36 multiline text/basic editing uses native
 offsets, never Lisp string indices; preserve explicit UTF-8 lengths, NUL validation,
 CLOS rollback and notifying Replace with callback/context protections. See
 `docs/TEXT-EDITING.md`. Do not drain wxDocument/native stream APIs.
@@ -175,3 +175,15 @@ handler-stack restoration, and actual list-origin generic/propagated/convenience
 callback lifetime guards. Item edits/nested selection are allowed; destruction/
 close and modal/clipboard entry defer until return. Simple list command events
 remain constructible/cloneable and can target non-list handlers. See `docs/LIST-BOX.md`.
+
+ABI39 tree items are borrowed canonical views backed by checked owner/item tokens,
+not raw wxTreeItemId pointers. Preserve subtree/owner invalidation, early native-base
+teardown suppression and revision-pruned session caches. Snapshot EVENT-TREE-ITEM
+freezes view identity only; text/validity remain live. Nonempty selection needs a
+same-tree item; normalize collapse/delete/root selection under blockers before idle.
+Same-tree writes and native-loop entry defer during native/propagated selection
+callbacks. No synthetic/owned/cloned tree events. See `docs/TREE-NAVIGATION.md`.
+
+Keep wxQt tree construction unavailable until asynchronous raw-item events have
+generation-safe translation; do not remove that gate based only on synchronous
+macOS/GTK/MSW tests. See the ABI39 handoff in `IMPLEMENTATION.md`.

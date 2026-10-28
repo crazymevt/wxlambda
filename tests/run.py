@@ -35,6 +35,7 @@ def scenarios():
     yield "text-editing", "text-editing.lisp", {}
     yield "notebook", "notebook.lisp", {}
     yield "list-box", "list-box.lisp", {}
+    yield "tree-navigation", "tree-navigation.lisp", {}
     yield "idle-events", "idle-events.lisp", {}
     yield "binding-user-data", "binding-user-data.lisp", {}
     yield "handler-client-data", "handler-client-data.lisp", {}
