@@ -1,6 +1,6 @@
 # Owned native events, detached clones and copied dispatch
 
-ABI 30 adds the native-backed `owned-event` CLOS class and `make-event`,
+ABI 31 adds the native-backed `owned-event` CLOS class and `make-event`,
 `clone-event`, `destroy-event` and `event-alive-p`. These are independently owned
 native resources, distinct from immutable `event` snapshots and borrowed
 callback-scoped `event-context` values. The baseline is wxWidgets 3.2.12.
@@ -24,7 +24,7 @@ allocation. These wrappers do not install native C++ virtual overrides.
       (wxlambda:destroy-event event))))
 ```
 
-`:kind` defaults to :CLICK and accepts the seven built-in kinds or a registered
+`:kind` defaults to :CLICK and accepts the eight built-in kinds or a registered
 command/notify name. The other base construction initargs match synthetic event
 payloads: `:id` defaults to 0, `:text` to an empty string, `:integer` to 0,
 `:checked-p` and `:selection` apply only to their built-in kinds, `:can-veto-p`
@@ -63,7 +63,7 @@ teardown.
 
 CLONE-EVENT accepts a live OWNED-EVENT or the current innermost EVENT-CONTEXT and
 returns a new OWNED-EVENT. It calls native Clone only for exact wxCommandEvent,
-wxNotifyEvent or wxCloseEvent classes with supported tags. Other native subclasses
+wxNotifyEvent, wxCloseEvent or wxIdleEvent classes with supported tags. Other native subclasses
 and events carrying borrowed native userData or command client pointers reject cloning. A saved
 snapshot is not a native event and has no CLONE-EVENT method.
 
@@ -103,7 +103,7 @@ EVENT-SELECTION snapshots normally contain an index, but explicitly mutated raw
 integers can be other signed values; -1 maps to NIL. No live item-list validation
 is implied by raw payload mutation.
 Live text reads return a string for command/notify events, including empty
-strings; close-family text reads return NIL and writes reject. Close-family
+strings; close/idle-family text reads return NIL and writes reject. Close/idle-family
 integer reads return zero and writes reject. Saved snapshots retain their
 existing kind-specific copied payload interpretation and have no SETF methods.
 
@@ -193,3 +193,7 @@ Lisp USER-DATA is separately supported.
 :USER-DATA and read-only snapshot/context association access, distinct from
 handler client data and native command/client/item pointers. Borrowed native
 userdata still prevents owned cloning; no mutable association API is added.
+
+[Idle events](IDLE-EVENTS.md) add family :IDLE, bounded RequestMore, global
+automatic policy and own-window opt-in metadata. The next GUI breadth slice is
+menus/actions plus standard dialogs, not exhaustive foundation parity.

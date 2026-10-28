@@ -110,5 +110,9 @@
   "binding-user-data.lisp": {
     "description": "Associate EQ Lisp state per binding, read it through snapshots/current contexts and preserve active data across unbinding without exposing native pointers.",
     "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/binding-user-data.lisp --eval '(wxlambda-binding-user-data:start)'"
+  },
+  "idle-events.lisp": {
+    "description": "Process a finite work list through native application idle callbacks, bound RequestMore, restore idle policy and dispose the window without inline wake pumping.",
+    "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/idle-events.lisp --eval '(wxlambda-idle-events:start)'"
   }
 }

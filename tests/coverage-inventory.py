@@ -78,6 +78,19 @@ class CoverageInventoryChecks(unittest.TestCase):
             self.assertEqual(hashlib.sha256((SOURCE / header['header']).read_bytes()).hexdigest(), header['sha256'])
             self.assertEqual(header['entries'], header['tasks'] + header['context_entries'])
 
+    def test_generated_text_separates_native_status_from_feature_priority(self):
+        self.build()
+        output = self.root / 'docs/coverage'
+        for name in ('README.md', 'classes.md', 'phase-c1.md'):
+            text = (output / name).read_text()
+            self.assertIn('broad GUI coverage with selective depth', text)
+            self.assertIn('not a delivery sequence', text)
+            self.assertNotIn('Every pending entry and the unsupported', text)
+            self.assertNotIn('The goal is complete wxWidgets coverage', text)
+        plan = (ROOT / 'docs/WXWIDGETS-COVERAGE.md').read_text()
+        for policy in ('Core', 'Planned', 'On-demand', 'Lisp-native', 'Deferred'):
+            self.assertIn(policy, plan)
+
     def test_source_identifiers_and_documentation_links_are_preserved(self):
         def identifiers(text):
             return Counter(word for word in re.findall(r'[A-Za-z_][A-Za-z_0-9]*', text)
@@ -124,7 +137,8 @@ class CoverageInventoryChecks(unittest.TestCase):
         self.assertEqual([int(value.strip()) for value in row.split('|')[2:-1]],
                          [398, sum(total[mark] for mark in ('x', '~', ' ')),
                           total['x'], total['~'], total[' '], total['context']])
-        self.assertIn('unsupported still prevent a full-coverage claim', summary)
+        self.assertIn('not automatic release blockers', summary)
+        self.assertNotIn('unsupported still prevent a full-coverage claim', summary)
 
     def test_multiline_macro_keeps_following_methods_separate(self):
         source = ("#define wxSTYLE (wxONE | \\" + "\n"
@@ -148,7 +162,7 @@ class CoverageInventoryChecks(unittest.TestCase):
             'wxEvtHandler::wxEvtHandler', 'wxEvtHandler::~wxEvtHandler',
             'wxEvtHandler::GetEvtHandlerEnabled', 'wxEvtHandler::SetEvtHandlerEnabled',
             'wxEvtHandler::Bind', 'wxEvtHandler::Unbind', 'wxEvtHandler::QueueEvent', 'wxEvent::GetId',
-            'wxEvent::GetEventUserData', 'wxObject::wxObject', 'wxObject::~wxObject', 'wxEvtHandler::GetClientObject', 'wxEvtHandler::SetClientObject', 'wxClientData::wxClientData', 'wxClientData::~wxClientData', 'wxCommandEvent::GetExtraLong', 'wxCommandEvent::SetExtraLong', 'wxCommandEvent::GetSelection', 'wxCommandEvent::IsChecked', 'wxCommandEvent::IsSelection', 'wxEvent::SetEventObject', 'wxWindow::GetEventHandler', 'wxWindow::ProcessWindowEvent', 'wxWindow::ProcessWindowEventLocally', 'wxWindow::PushEventHandler', 'wxWindow::PopEventHandler', 'wxWindow::RemoveEventHandler', 'wxEvtHandler::GetNextHandler', 'wxEvtHandler::GetPreviousHandler', 'wxEvtHandler::SetNextHandler', 'wxEvtHandler::SetPreviousHandler', 'wxEvtHandler::Unlink', 'wxEvtHandler::IsUnlinked', 'wxEvtHandler::AddPendingEvent', 'wxEvtHandler::ProcessEventLocally', 'wxEvtHandler::DeletePendingEvents', 'wxPostEvent', 'wxQueueEvent', 'wxEvent::Clone', 'wxEvent::SetEventType', 'wxEvent::GetEventCategory', 'wxEVT_CATEGORY_ALL', 'wxEventCategory', 'wxEvent::GetEventObject', 'wxEvent::SetId', 'wxEvent::GetTimestamp', 'wxEvent::SetTimestamp', 'wxEvent::IsCommandEvent', 'wxEvent::GetEventType', 'wxEvent::GetSkipped', 'wxEvent::Skip',
+            'wxIdleEvent::wxIdleEvent', 'wxIdleEvent::GetMode', 'wxIdleEvent::SetMode', 'wxIdleEvent::MoreRequested', 'wxIdleEvent::RequestMore', 'wxWakeUpIdle', 'wxEVT_IDLE', 'wxEvent::GetEventUserData', 'wxObject::wxObject', 'wxObject::~wxObject', 'wxEvtHandler::GetClientObject', 'wxEvtHandler::SetClientObject', 'wxClientData::wxClientData', 'wxClientData::~wxClientData', 'wxCommandEvent::GetExtraLong', 'wxCommandEvent::SetExtraLong', 'wxCommandEvent::GetSelection', 'wxCommandEvent::IsChecked', 'wxCommandEvent::IsSelection', 'wxEvent::SetEventObject', 'wxWindow::GetEventHandler', 'wxWindow::ProcessWindowEvent', 'wxWindow::ProcessWindowEventLocally', 'wxWindow::PushEventHandler', 'wxWindow::PopEventHandler', 'wxWindow::RemoveEventHandler', 'wxEvtHandler::GetNextHandler', 'wxEvtHandler::GetPreviousHandler', 'wxEvtHandler::SetNextHandler', 'wxEvtHandler::SetPreviousHandler', 'wxEvtHandler::Unlink', 'wxEvtHandler::IsUnlinked', 'wxEvtHandler::AddPendingEvent', 'wxEvtHandler::ProcessEventLocally', 'wxEvtHandler::DeletePendingEvents', 'wxPostEvent', 'wxQueueEvent', 'wxEvent::Clone', 'wxEvent::SetEventType', 'wxEvent::GetEventCategory', 'wxEVT_CATEGORY_ALL', 'wxEventCategory', 'wxEvent::GetEventObject', 'wxEvent::SetId', 'wxEvent::GetTimestamp', 'wxEvent::SetTimestamp', 'wxEvent::IsCommandEvent', 'wxEvent::GetEventType', 'wxEvent::GetSkipped', 'wxEvent::Skip',
             'wxEvent::ShouldPropagate', 'wxEvent::StopPropagation', 'wxEvent::ResumePropagation',
             'wxCloseEvent::wxCloseEvent', 'wxCloseEvent::CanVeto', 'wxCloseEvent::Veto',
             'wxCloseEvent::GetLoggingOff', 'wxCloseEvent::SetLoggingOff', 'wxEVT_END_SESSION', 'wxEVT_QUERY_END_SESSION', 'wxCloseEvent::GetVeto', 'wxCloseEvent::SetCanVeto', 'wxWindow::Close',
@@ -173,7 +187,7 @@ class CoverageInventoryChecks(unittest.TestCase):
         self.assertEqual(set(self.status['classes']), {
             'wxFrame', 'wxPanel', 'wxButton', 'wxTextCtrl', 'wxStaticText',
             'wxCheckBox', 'wxChoice', 'wxGauge', 'wxBoxSizer', 'wxWindow', 'wxTopLevelWindow',
-            'wxAppConsole', 'wxApp', 'wxEvtHandler', 'wxClientData', 'wxObject', 'wxEvent', 'wxCloseEvent', 'wxNotifyEvent', 'wxCommandEvent',
+            'wxAppConsole', 'wxApp', 'wxEvtHandler', 'wxClientData', 'wxObject', 'wxIdleEvent', 'wxEvent', 'wxCloseEvent', 'wxNotifyEvent', 'wxCommandEvent',
         })
 
     def test_compiler_scaffolding_is_context_but_public_macros_are_tasks(self):

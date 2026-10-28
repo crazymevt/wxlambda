@@ -5,7 +5,7 @@ This C1 slice extends bindings beyond command events with `:close`, backed by
 `event-family` classifies these snapshots as `:command` or `:close`;
 registered [notify events](NOTIFY-EVENTS.md) additionally use `:notify`; this is a portable
 supported-kind classification, not arbitrary native RTTI or event registration.
-The baseline is wxWidgets 3.2.12 and the native bridge is ABI 30.
+The baseline is wxWidgets 3.2.12 and the native bridge is ABI 31.
 
 The native type lookup is now **`event-type`**, replacing `command-event-type`
 without an alias. It accepts the seven built-in kinds and registered command/notify names. Native type IDs remain

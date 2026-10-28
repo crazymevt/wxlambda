@@ -1,6 +1,6 @@
 # Command payload views and bounded origin detachment
 
-ABI 30 adds EVENT-EXTRA-LONG and EVENT-SELECTION-P, extends EVENT-CHECKED-P and
+ABI 31 adds EVENT-EXTRA-LONG and EVENT-SELECTION-P, extends EVENT-CHECKED-P and
 EVENT-SELECTION to generic saved/current/owned readers with live SETF writers,
 and adds clear-only SETF EVENT-ORIGIN-ID. The baseline is wxWidgets 3.2.12.
 Snapshots remain immutable; current-context access remains innermost-callback

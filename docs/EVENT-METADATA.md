@@ -1,6 +1,6 @@
 # Event metadata and mutable CanVeto
 
-Native bridge ABI 30 adds EVENT-TIMESTAMP and EVENT-COMMAND-P readers for
+Native bridge ABI 31 adds EVENT-TIMESTAMP and EVENT-COMMAND-P readers for
 immutable snapshots and current innermost event contexts. EVENT-TIMESTAMP also
 has a context-only SETF writer. EVENT-CAN-VETO-P now has a context-only SETF
 writer for wxCloseEvent: window-close, query-end-session and end-session events.
@@ -71,7 +71,7 @@ Run the isolated synthetic example:
 sbcl --load ~/quicklisp/setup.lisp --load examples/event-metadata.lisp --eval '(wxlambda-event-metadata:start)'
 ```
 
-The regression covers all seven built-in and both registered families, native
+The regression covers all eight built-in and both registered families, native
 LONG extremes and negative timestamps, malformed/range errors, immutable
 snapshots, later snapshot capture, stored-veto hiding/restoration, non-close
 writer rejection and nested/expired context isolation. It does not emit real
@@ -101,3 +101,7 @@ origin retention and client/userData ownership remain open.
 [Command payload views](COMMAND-EVENT-PAYLOADS.md) distinguish raw extra-LONG
 selection-action metadata from kind-specific checked/selection views and add
 bounded clear-only native origin detachment without retaining objects.
+
+[Idle events](IDLE-EVENTS.md) add family :IDLE, bounded RequestMore, global
+automatic policy and own-window opt-in metadata. The next GUI breadth slice is
+menus/actions plus standard dialogs, not exhaustive foundation parity.

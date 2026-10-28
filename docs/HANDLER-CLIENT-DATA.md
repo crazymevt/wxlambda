@@ -1,6 +1,6 @@
 # Lisp client data attached to managed handlers
 
-ABI 30 adds EVENT-HANDLER-CLIENT-DATA and its generic SETF writer. The receiver
+ABI 31 adds EVENT-HANDLER-CLIENT-DATA and its generic SETF writer. The receiver
 is any current public EVENT-HANDLER wrapper: an owned standalone handler, a
 managed window/control or the borrowed managed APPLICATION-HANDLER. The baseline
 is wxWidgets 3.2.12. OWNED-EVENT and immutable event snapshots are different

@@ -1,24 +1,30 @@
 # wxlambda
 
 Common Lisp bindings for wxWidgets, using CFFI and a small C++ bridge with a
-versioned C ABI. This is an application lifecycle prototype, not a complete
-wxWidgets binding.
+versioned C ABI. The goal is broad GUI coverage with selective depth: common
+desktop workflows, reliable lifetime/event contracts and Lisp-friendly APIs.
+The current implementation is still an early GUI binding; exhaustive native
+wxWidgets parity is not the delivery objective.
 
-Implemented: application startup/shutdown, frames, panels, buttons, editable text,
-static labels, two-state checkboxes, dropdown choices, progress gauges, row/column layouts, spacers, text/state access,
-removable click/text/toggle/selection handlers, copied event payloads, queued clicks,
-and window visibility/input state.
-Lisp objects wrap checked integer handles; native pointers never escape the bridge.
+The current GUI baseline includes eight concrete widget kinds (frame, panel,
+button, text control, label, checkbox, choice and gauge), basic row/column layout
+and native-backed CLOS construction/SETF. The event foundation includes immutable
+snapshots, scoped contexts, owned native events, copied/posted/transferred
+pending delivery, managed handler chains/window stacks and rooted Lisp data.
+Idle support adds bounded idle scheduling and policy; menus/dialogs and broader
+GUI controls are planned, not already implemented.
 
-First-release lifecycle limits: **one GUI session per process**. Closing a window
-does not release its registered Lisp handlers; unbind them before destruction,
-or they remain rooted until session cleanup. Restart Lisp for a new GUI session.
+Native pointers never escape the bridge. Construction, callbacks and lifetime
+checks remain on the main GUI thread. There is one GUI session per process;
+restart Lisp for a new native session. Control-specific ON-* registrations should
+be unbound before window destruction; generic binding cleanup follows native
+lifetime/weak invalidation rules.
 
-The [CLOS widget API](docs/CLOS-API.md) provides direct native-backed
-`make-instance` construction, subclass initargs/defaults/hooks and thirteen generic
-`setf` accessors. The `make-*` conveniences forward to `make-instance` with
-`:class` support. The ground-up API has 55 named generic operations plus
-thirteen generic property writers. Native C++ virtual callbacks remain separate work.
+The [CLOS API](docs/CLOS-API.md) provides subclass initargs/defaults/AFTER hooks,
+thin :CLASS-validating factories and canonical generic SETF. The current public
+API has 131 exports, 92 named generic operations and 30 generic property writers.
+Native C++ virtual Lisp callbacks remain separate work. These counts describe
+public interfaces, not full native class coverage or completed platform validation.
 
 Progress controls support range/value properties, orientation and indeterminate
 pulsing; see [the gauge guide](docs/GAUGE.md) and runnable
@@ -35,8 +41,10 @@ kinds; see [binding and queue scope](docs/EVENT-BINDINGS.md). Optional [scoped c
 propagation while snapshots stay immutable. The [close family](docs/CLOSE-EVENTS.md) adds scoped veto, immutable close flags
 and frame close requests. `event-type` replaces the command-only lookup name.
 Registered [command/notify types](docs/NOTIFY-EVENTS.md) now support copied
-payloads and synchronous validation before applying a change. OS session routing
-needs an application handler view; native notify subclasses remain open C1 work.
+payloads and synchronous validation before applying a change. The borrowed
+application-handler view supports session bindings; real OS session delivery
+remains unverified. See [idle events](docs/IDLE-EVENTS.md) for bounded background
+work. Native notify subclasses remain an inventory gap.
 
 ## Documentation and examples
 
@@ -49,7 +57,7 @@ checkout is a build-tool dependency, separate from the GUI runtime. Read
 `shown-p`, `enable-window` and `enabled-p` query/control visibility and input.
 The runnable [window-state example](examples/window-state.lisp) demonstrates
 these operations through button callbacks.
-The next slice adds [window names and frame titles](docs/WINDOW-METADATA.md):
+[Window names and frame titles](docs/WINDOW-METADATA.md) use
 `window-name` and `frame-title` with their generic `setf` writers, with a
 [metadata callback example](examples/window-metadata.lisp) and copied Unicode
 string results.
@@ -83,7 +91,7 @@ application with `(wxlambda:load-native-library #P"C:/path/to/wxlambda.dll")`.
 Dependent wxWidgets DLLs must also be discoverable by the OS loader.
 
 The bridge normally loads from `build/`, then falls back to the system library
-search path. The Lisp/native ABI version (currently 30) is checked on load; rebuild
+search path. The Lisp/native ABI version (currently 31) is checked on load; rebuild
 the bridge after updating the bindings. Installing the bridge with CMake does not
 install the ASDF system.
 
@@ -605,7 +613,7 @@ Locally tested and intended combinations are distinct:
 
 | Platform | Lisp | Validation |
 | --- | --- | --- |
-| Apple Silicon macOS, wxWidgets 3.2.12 | SBCL 2.6.9, CCL 1.13 | Local preflight and 26-scenario GUI suites; dependency cache switching verified separately |
+| Apple Silicon macOS, wxWidgets 3.2.12 | SBCL 2.6.9, CCL 1.13 | Local preflight/GUI evidence recorded per batch in IMPLEMENTATION.md; dependency cache switching verified separately |
 | Linux | SBCL | Intended; hosted job configured, no hosted results recorded |
 | macOS hosted runner | SBCL | Intended; hosted job configured, no hosted results recorded |
 | Windows x64 | SBCL 2.6.9 intended, not validated | Native build, preflight, and GUI suite configured; no runtime results |
@@ -690,9 +698,11 @@ pinned Babel revision emits a warning about `HANDLE-ERROR` in its Korean codec;
 the UTF-8 paths exercised by these tests pass on both local Lisps.
 
 The [implementation roadmap](IMPLEMENTATION.md) now includes the
-[full wxWidgets coverage plan](docs/WXWIDGETS-COVERAGE.md) as Phase 6; release
+[native inventory and GUI feature roadmap](docs/WXWIDGETS-COVERAGE.md) as Phase 6; release
 preparation moves to Phase 7. The coverage plan checks off existing operations
-and groups remaining widgets and API declarations into coverage phases C1–C7.
+and groups native declarations into inventory categories C1–C7, not a required
+delivery sequence. Pending native entries do not automatically block a release;
+feature priorities and representative-app acceptance are documented separately.
 Hosted platform validation (including the configured Windows Lisp/GUI tests),
 packaging on additional platforms, and richer interactive development support
 remain open as described in the roadmap.
@@ -731,3 +741,6 @@ managed typed native adapters while rejecting foreign storage safely.
 
 [Binding Lisp user data](docs/BINDING-USER-DATA.md) adds per-registration EQ
 association reads with safe current-context and saved-snapshot lifetimes.
+
+[Idle events](docs/IDLE-EVENTS.md) support bounded work, RequestMore, native policy
+and own-window opt-in. Next planned breadth is menus/actions plus standard dialogs.

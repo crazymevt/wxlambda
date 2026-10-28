@@ -1,6 +1,6 @@
 # Event-category metadata
 
-ABI 30 adds EVENT-CATEGORY for saved immutable snapshots and current innermost
+ABI 31 adds EVENT-CATEGORY for saved immutable snapshots and current innermost
 contexts, plus EVENT-CATEGORY-MASK for compiled native category values. The
 coverage baseline is wxWidgets 3.2.12. Categories are numeric flags, not native
 type IDs, EVENT-ID routing values or EVENT-FAMILY keywords.
@@ -45,7 +45,7 @@ Run the isolated synthetic example:
 sbcl --load ~/quicklisp/setup.lisp --load examples/event-categories.lisp --eval '(wxlambda-event-categories:start)'
 ```
 
-Tests cover all seven built-in and registered command/notify kinds, each of the
+Tests cover all eight built-in and registered command/notify kinds, each of the
 four convenience snapshot paths, saved values, nested/expired context isolation,
 invalid mask names and public-bit inclusion in the native ALL mask. No native
 socket/timer/thread events or real OS session events are generated. Category
@@ -65,3 +65,7 @@ See [metadata](EVENT-METADATA.md), [origin/type readers](EVENT-ORIGINS.md) and
 [docset installation](DOCSET.md).
 
 [Registered-tag mutation](EVENT-TAGS.md) now supports same-family SETF with actual native class checks; built-in/session tags and origin writes remain excluded.
+
+[Idle events](IDLE-EVENTS.md) add family :IDLE, bounded RequestMore, global
+automatic policy and own-window opt-in metadata. The next GUI breadth slice is
+menus/actions plus standard dialogs, not exhaustive foundation parity.

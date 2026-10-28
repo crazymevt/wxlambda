@@ -2,11 +2,16 @@
 
 ## Long-term goal and session continuity
 
-The final goal is complete wxWidgets coverage, including required public APIs,
-overloads, inherited behavior, optional components and applicable platforms.
-A bounded first release is only an intermediate milestone. Pending, partial or
-explicitly unsupported required APIs remain gaps and prevent claiming completion.
-Prioritize unfinished C1 foundations before further C2 widget-family expansion.
+The goal is broad GUI coverage with selective depth, not exhaustive wxWidgets API
+parity. Prioritize reliable lifetimes/events, main-thread rules, Lisp ergonomics,
+documentation and tests while expanding everyday GUI features. C1–C7 are native
+inventory categories, not a delivery sequence: implement prerequisites needed by
+the selected feature, without exhausting C1 before controls, menus or dialogs.
+Use the feature policy in docs/WXWIDGETS-COVERAGE.md: core, planned, on-demand,
+Lisp-native and deferred. Native pending/partial statuses stay factual and are not
+automatic release blockers. Do not mark an unimplemented native API complete to
+represent a priority or intentional deferral. The earlier full-parity goal is
+superseded; historical checkpoints retain their original context.
 
 Read the session handoff in `IMPLEMENTATION.md` and `docs/WXWIDGETS-COVERAGE.md`
 when resuming. Keep the handoff current with completed slices, the next dependency,

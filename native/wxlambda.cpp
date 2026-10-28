@@ -78,7 +78,9 @@ std::unordered_map<uint64_t, std::shared_ptr<Binding>> bindings;
 std::unordered_set<wxl_handle> pending_destruction;
 struct RegisteredEvent { wxEventType type; int family; };
 std::unordered_map<int, RegisteredEvent> registered_events;
-int next_event_kind = 8;
+constexpr int first_registered_event_kind = WXL_EVENT_IDLE + 1;
+int next_event_kind = first_registered_event_kind;
+wxIdleMode initial_idle_mode = wxIDLE_PROCESS_ALL;
 wxl_handle next_handle = 1;
 wxl_handle application_handle = 0;
 wxl_callback dispatch = nullptr;
@@ -299,6 +301,7 @@ wxEventTypeTag<wxEvent> native_event_type(int kind) {
         case WXL_EVENT_CLOSE: return wxEventTypeTag<wxEvent>(wxEVT_CLOSE_WINDOW);
         case WXL_EVENT_QUERY_END_SESSION: return wxEventTypeTag<wxEvent>(wxEVT_QUERY_END_SESSION);
         case WXL_EVENT_END_SESSION: return wxEventTypeTag<wxEvent>(wxEVT_END_SESSION);
+        case WXL_EVENT_IDLE: return wxEventTypeTag<wxEvent>(wxEVT_IDLE);
         default: {
             const auto it = registered_events.find(kind);
             require(it != registered_events.end(), "Unsupported event kind");
@@ -309,6 +312,7 @@ wxEventTypeTag<wxEvent> native_event_type(int kind) {
 int native_event_family(int kind) {
     if (kind >= WXL_EVENT_CLICK && kind <= WXL_EVENT_SELECTION) return WXL_FAMILY_COMMAND;
     if (kind >= WXL_EVENT_CLOSE && kind <= WXL_EVENT_END_SESSION) return WXL_FAMILY_CLOSE;
+    if (kind == WXL_EVENT_IDLE) return WXL_FAMILY_IDLE;
     const auto it = registered_events.find(kind);
     require(it != registered_events.end(), "Unsupported event kind");
     return it->second.family;
@@ -332,7 +336,12 @@ std::unique_ptr<wxEvent> synthetic_event(wxEvtHandler* receiver, int kind, int e
     require(session_type(type) || logging_off == 0, "Logging-off applies only to session events");
     require(family == WXL_FAMILY_NOTIFY || vetoed == 0, "Initial veto applies only to notify types");
     std::unique_ptr<wxEvent> event;
-    if (family == WXL_FAMILY_CLOSE) {
+    if (family == WXL_FAMILY_IDLE) {
+        require(length == 0 && value == 0, "Idle events do not take command payloads");
+        auto idle = std::make_unique<wxIdleEvent>();
+        idle->SetId(event_id);
+        event = std::move(idle);
+    } else if (family == WXL_FAMILY_CLOSE) {
         require(length == 0 && value == 0, "Close events do not take command payloads");
         auto close = std::make_unique<wxCloseEvent>(type, event_id);
         close->SetCanVeto(can_veto != 0);
@@ -346,7 +355,7 @@ std::unique_ptr<wxEvent> synthetic_event(wxEvtHandler* receiver, int kind, int e
         event = std::move(notify);
     } else {
         auto command = std::make_unique<wxCommandEvent>(type, event_id);
-        if (kind == WXL_EVENT_TEXT_CHANGE || kind >= 8)
+        if (kind == WXL_EVENT_TEXT_CHANGE || kind >= first_registered_event_kind)
             command->SetString(wxString::FromUTF8(text ? text : "", length));
         command->SetInt(value);
         event = std::move(command);
@@ -355,7 +364,7 @@ std::unique_ptr<wxEvent> synthetic_event(wxEvtHandler* receiver, int kind, int e
     return event;
 }
 int kind_of(wxEvent& event) {
-    for (int kind = 1; kind <= 7; ++kind)
+    for (int kind = WXL_EVENT_CLICK; kind <= WXL_EVENT_IDLE; ++kind)
         if (native_event_type(kind) == event.GetEventType()) return kind;
     for (const auto& item : registered_events)
         if (item.second.type == event.GetEventType()) return item.first;
@@ -369,7 +378,7 @@ wxEvent& owned_event(wxl_handle id) {
 }
 std::unique_ptr<wxEvent> detached_clone(wxEvent& event) {
     require(typeid(event) == typeid(wxCommandEvent) || typeid(event) == typeid(wxNotifyEvent) ||
-            typeid(event) == typeid(wxCloseEvent), "Cloning this native event class is not supported");
+            typeid(event) == typeid(wxCloseEvent) || typeid(event) == typeid(wxIdleEvent), "Cloning this native event class is not supported");
     kind_of(event);
     require(event.GetEventUserData() == nullptr, "Cannot clone borrowed event userData");
     if (auto* command = dynamic_cast<wxCommandEvent*>(&event))
@@ -405,6 +414,7 @@ int64_t read_event_field(wxEvent& event, int field) {
         case 15: return command && event.GetEventType() == wxEVT_CHECKBOX && command->IsChecked();
         case 16: return command && event.GetEventType() == wxEVT_CHOICE ? command->GetSelection() : -1;
         case 17: return command && command->IsSelection();
+        case 18: { auto* idle = dynamic_cast<wxIdleEvent*>(&event); return idle && idle->MoreRequested(); }
         default: throw std::runtime_error("Unknown event field");
     }
 }
@@ -415,6 +425,11 @@ void write_event_field(wxEvent& event, int field, int64_t value) {
     if (field == 1 || field == 3 || field == 7 || field == 11)
         require(value >= std::numeric_limits<int>::min() && value <= std::numeric_limits<int>::max(), "Event integer outside signed int range");
     switch (field) {
+        case 18: {
+            auto* idle = dynamic_cast<wxIdleEvent*>(&event);
+            require(idle != nullptr, "RequestMore requires an idle event");
+            idle->RequestMore(value != 0); break;
+        }
         case 1: event.SetId(static_cast<int>(value)); break;
         case 2:
             require(value >= std::numeric_limits<long>::min() && value <= std::numeric_limits<long>::max(), "Timestamp outside native LONG range");
@@ -486,7 +501,7 @@ struct Binding {
             for (const auto& item : registered_events)
                 if (item.second.type == event.GetEventType()) { snapshot_kind = item.first; break; }
             const int family = native_event_family(snapshot_kind);
-            const bool carries_text = snapshot_kind == WXL_EVENT_TEXT_CHANGE || snapshot_kind >= 8;
+            const bool carries_text = snapshot_kind == WXL_EVENT_TEXT_CHANGE || snapshot_kind >= first_registered_event_kind;
             const auto text = command ? command->GetString() : wxString();
             const auto bytes = text.ToUTF8();
             wxl_event snapshot{snapshot_kind, carries_text ? (bytes.data() ? bytes.data() : "") : nullptr,
@@ -498,7 +513,8 @@ struct Binding {
                                      session_type(event.GetEventType()) ? (static_cast<wxCloseEvent&>(event).GetLoggingOff() ? 1 : 0) : 0,
                                      event.GetTimestamp(), event.IsCommandEvent() ? 1 : 0, origin_id(event), static_cast<int>(event.GetEventCategory()),
                                      command ? command->GetExtraLong() : 0, command && command->IsSelection() ? 1 : 0,
-                                     user_data && event.GetEventUserData() == user_data ? token : 0};
+                                     user_data && event.GetEventUserData() == user_data ? token : 0,
+                                     dynamic_cast<wxIdleEvent*>(&event) && static_cast<wxIdleEvent&>(event).MoreRequested() ? 1 : 0};
             if (with_context) {
                 event.Skip(false);
                 EventScope scope(event, snapshot.user_data);
@@ -572,7 +588,7 @@ wxString utf8(const char* value) {
 }
 }
 extern "C" {
-int wxl_abi_version() { return 30; }
+int wxl_abi_version() { return 31; }
 const char* wxl_last_error() { return error.c_str(); }
 int wxl_start(wxl_callback callback) {
     return status([&] {
@@ -580,6 +596,7 @@ int wxl_start(wxl_callback callback) {
         require(!used, "Only one application session is supported per process");
         require(wxApp::GetInstance() == nullptr, "A wxWidgets application already exists");
         require(callback != nullptr, "Missing event dispatcher");
+        initial_idle_mode = wxIdleEvent::GetMode();
         used = true;
         wxApp::SetInstance(new App);
         static char name[] = "wxlambda";
@@ -636,6 +653,9 @@ int wxl_finish() {
     return status([] {
         ready();
         require_dispatch_entry();
+        struct RestoreIdleMode {
+            ~RestoreIdleMode() { wxIdleEvent::SetMode(initial_idle_mode); }
+        } restore_idle_mode;
         while (!bindings.empty()) remove_binding(bindings.begin()->first);
         // Detach stacks before any native window/handler teardown.
         for (const auto& item : windows)
@@ -652,6 +672,28 @@ int wxl_finish() {
         windows.clear(); handlers.clear(); pending_destruction.clear(); registered_events.clear(); dispatch = nullptr; started = false;
     });
 }
+int wxl_idle_mode() {
+    int mode = -1;
+    const int result = status([&] { ready(); mode = wxIdleEvent::GetMode() == wxIDLE_PROCESS_SPECIFIED ? 1 : 0; });
+    return result == 0 ? mode : -1;
+}
+int wxl_set_idle_mode(int mode) {
+    return status([&] {
+        ready(); require(mode == 0 || mode == 1, "Invalid idle mode");
+        wxIdleEvent::SetMode(mode ? wxIDLE_PROCESS_SPECIFIED : wxIDLE_PROCESS_ALL);
+    });
+}
+int wxl_window_process_idle(wxl_handle id) {
+    return boolean_result([&] { return (window(id)->GetExtraStyle() & wxWS_EX_PROCESS_IDLE) != 0; });
+}
+int wxl_set_window_process_idle(wxl_handle id, int enabled) {
+    return status([&] {
+        auto* object = window(id);
+        const auto style = object->GetExtraStyle();
+        object->SetExtraStyle(enabled ? style | wxWS_EX_PROCESS_IDLE : style & ~wxWS_EX_PROCESS_IDLE);
+    });
+}
+int wxl_wake_up_idle() { return status([] { ready(); wxWakeUpIdle(); }); }
 wxl_handle wxl_application_handler() {
     return create([] { return application_handle; });
 }
@@ -1210,7 +1252,7 @@ wxl_handle wxl_button(wxl_handle parent, const char* label) {
         auto* control = new ManagedWindow<wxButton>(window(parent), wxID_ANY, utf8(label));
         auto id = track(control);
         control->Bind(wxEVT_BUTTON, [id](wxCommandEvent& event) {
-            emit_event(id, {WXL_EVENT_CLICK, nullptr, 0, -1, event.GetId(), 0, 0, event.GetEventType(), 0, 0, WXL_FAMILY_COMMAND, event.GetInt(), 0, event.GetTimestamp(), event.IsCommandEvent() ? 1 : 0, origin_id(event), static_cast<int>(event.GetEventCategory()), event.GetExtraLong(), event.IsSelection() ? 1 : 0, 0});
+            emit_event(id, {WXL_EVENT_CLICK, nullptr, 0, -1, event.GetId(), 0, 0, event.GetEventType(), 0, 0, WXL_FAMILY_COMMAND, event.GetInt(), 0, event.GetTimestamp(), event.IsCommandEvent() ? 1 : 0, origin_id(event), static_cast<int>(event.GetEventCategory()), event.GetExtraLong(), event.IsSelection() ? 1 : 0, 0, 0});
             event.Skip();
         });
         return id;
@@ -1227,7 +1269,7 @@ wxl_handle wxl_text(wxl_handle parent, const char* value) {
                 // Both objects must survive reentrant callbacks and conversion.
                 const auto text = event.GetString();
                 const auto bytes = text.ToUTF8();
-                const wxl_event payload{WXL_EVENT_TEXT_CHANGE, bytes.data() ? bytes.data() : "", 0, -1, event.GetId(), bytes.length(), 0, event.GetEventType(), 0, 0, WXL_FAMILY_COMMAND, event.GetInt(), 0, event.GetTimestamp(), event.IsCommandEvent() ? 1 : 0, origin_id(event), static_cast<int>(event.GetEventCategory()), event.GetExtraLong(), event.IsSelection() ? 1 : 0, 0};
+                const wxl_event payload{WXL_EVENT_TEXT_CHANGE, bytes.data() ? bytes.data() : "", 0, -1, event.GetId(), bytes.length(), 0, event.GetEventType(), 0, 0, WXL_FAMILY_COMMAND, event.GetInt(), 0, event.GetTimestamp(), event.IsCommandEvent() ? 1 : 0, origin_id(event), static_cast<int>(event.GetEventCategory()), event.GetExtraLong(), event.IsSelection() ? 1 : 0, 0, 0};
                 invoke_callback(token, payload);
             }
             event.Skip();
@@ -1299,7 +1341,7 @@ wxl_handle wxl_checkbox(wxl_handle parent, const char* label, int checked) {
         control->SetValue(checked != 0);
         const auto id = track(control);
         control->Bind(wxEVT_CHECKBOX, [id](wxCommandEvent& event) {
-            emit_event(id, {WXL_EVENT_TOGGLE, nullptr, event.IsChecked() ? 1 : 0, -1, event.GetId(), 0, 0, event.GetEventType(), 0, 0, WXL_FAMILY_COMMAND, event.GetInt(), 0, event.GetTimestamp(), event.IsCommandEvent() ? 1 : 0, origin_id(event), static_cast<int>(event.GetEventCategory()), event.GetExtraLong(), event.IsSelection() ? 1 : 0, 0});
+            emit_event(id, {WXL_EVENT_TOGGLE, nullptr, event.IsChecked() ? 1 : 0, -1, event.GetId(), 0, 0, event.GetEventType(), 0, 0, WXL_FAMILY_COMMAND, event.GetInt(), 0, event.GetTimestamp(), event.IsCommandEvent() ? 1 : 0, origin_id(event), static_cast<int>(event.GetEventCategory()), event.GetExtraLong(), event.IsSelection() ? 1 : 0, 0, 0});
             event.Skip();
         });
         return id;
@@ -1339,7 +1381,7 @@ wxl_handle wxl_choice(wxl_handle parent, const char** items, int count, int sele
         control->SetSelection(selection);
         const auto id = track(control);
         control->Bind(wxEVT_CHOICE, [id](wxCommandEvent& event) {
-            emit_event(id, {WXL_EVENT_SELECTION, nullptr, 0, event.GetSelection(), event.GetId(), 0, 0, event.GetEventType(), 0, 0, WXL_FAMILY_COMMAND, event.GetInt(), 0, event.GetTimestamp(), event.IsCommandEvent() ? 1 : 0, origin_id(event), static_cast<int>(event.GetEventCategory()), event.GetExtraLong(), event.IsSelection() ? 1 : 0, 0});
+            emit_event(id, {WXL_EVENT_SELECTION, nullptr, 0, event.GetSelection(), event.GetId(), 0, 0, event.GetEventType(), 0, 0, WXL_FAMILY_COMMAND, event.GetInt(), 0, event.GetTimestamp(), event.IsCommandEvent() ? 1 : 0, origin_id(event), static_cast<int>(event.GetEventCategory()), event.GetExtraLong(), event.IsSelection() ? 1 : 0, 0, 0});
             event.Skip();
         });
         return id;

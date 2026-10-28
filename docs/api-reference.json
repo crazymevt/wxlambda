@@ -392,7 +392,7 @@
     "name": "event-kind",
     "kind": "generic-function",
     "arguments": "EVENT is an immutable snapshot, current context or live OWNED-EVENT.",
-    "returns": ":CLICK, :TEXT-CHANGE, :TOGGLE, :SELECTION, :CLOSE, :QUERY-END-SESSION, :END-SESSION or a registered command/notify keyword name.",
+    "returns": ":CLICK, :TEXT-CHANGE, :TOGGLE, :SELECTION, :CLOSE, :QUERY-END-SESSION, :END-SESSION, :IDLE or a registered command/notify keyword name.",
     "description": "Read the event kind. The captured kind reflects the actual supported native tag at callback entry, even if an earlier callback changed it; binding registration identity does not change.",
     "scope": "Saved snapshots need no session. Owned/current native reads require the active main-thread session; contexts must be innermost. Registered names expire with the session for native resources; saved copied keywords remain readable.",
     "wxwidgets": "Lisp-owned wxCommandEvent snapshot.",
@@ -412,9 +412,9 @@
     "name": "event-text",
     "kind": "generic-function",
     "arguments": "EVENT is a snapshot, current context or live OWNED-EVENT. SETF VALUE is a string and requires native command/notify state.",
-    "returns": "Snapshot kind-specific copied string/NIL; live command/notify string (possibly empty), or NIL for close-family reads. SETF returns VALUE.",
+    "returns": "Snapshot kind-specific copied string/NIL; live command/notify string (possibly empty), or NIL for close/idle-family reads. SETF returns VALUE.",
     "description": "Read or copy native command string payload. Context/owned SETF uses explicit UTF-8 byte lengths, preserving embedded NULs. Saved snapshots stay immutable and retain their prior kind-specific payload interpretation.",
-    "scope": "Saved reads need no session. Live access requires active main-thread session and valid owned/innermost-context lifetime. Text writes to close-family events reject; non-string values signal TYPE-ERROR. Native wxEVT_TEXT with a tracked text-entry origin rejects context string SETF; unknown origins reject too. The control is not changed. Detached context clones freeze effective GetString before clearing origin.",
+    "scope": "Saved reads need no session. Live access requires active main-thread session and valid owned/innermost-context lifetime. Text writes to close/idle-family events reject; non-string values signal TYPE-ERROR. Native wxEVT_TEXT with a tracked text-entry origin rejects context string SETF; unknown origins reject too. The control is not changed. Detached context clones freeze effective GetString before clearing origin.",
     "wxwidgets": "wxCommandEvent::GetString / SetString, including wxNotifyEvent (wxWidgets 3.2.12 baseline).",
     "syntax": "(wxlambda:event-text event)",
     "setf": {
@@ -794,7 +794,7 @@
   {
     "name": "bind-event",
     "kind": "generic-function",
-    "arguments": "HANDLER is an EVENT-HANDLER/window; KIND is :CLICK, :TEXT-CHANGE, :TOGGLE, :SELECTION, :CLOSE, :QUERY-END-SESSION, :END-SESSION or a registered command/notify name. FUNCTION takes one immutable EVENT. ID defaults NIL (any); LAST-ID defaults NIL (exact ID when ID is given). WITH-CONTEXT defaults NIL; when true FUNCTION takes (EVENT CONTEXT) instead of just EVENT. USER-DATA defaults NIL and associates any EQ-preserved Lisp value with this registration; callback arity is unchanged.",
+    "arguments": "HANDLER is an EVENT-HANDLER/window; KIND is :CLICK, :TEXT-CHANGE, :TOGGLE, :SELECTION, :CLOSE, :QUERY-END-SESSION, :END-SESSION, :IDLE or a registered command/notify name. FUNCTION takes one immutable EVENT. ID defaults NIL (any); LAST-ID defaults NIL (exact ID when ID is given). WITH-CONTEXT defaults NIL; when true FUNCTION takes (EVENT CONTEXT) instead of just EVENT. USER-DATA defaults NIL and associates any EQ-preserved Lisp value with this registration; callback arity is unchanged.",
     "returns": "A new independent EVENT-BINDING.",
     "description": "Register an observer without replacing any existing generic or control-specific registration. Signed 32-bit IDs are supported except -1 (reserved as native wxID_ANY; use NIL). LAST-ID requires ID and an ordered inclusive range. Observer bindings automatically Skip; contextual bindings start unskipped and control native Skip explicitly; relative callback order follows wxWidgets and is not a Lisp API guarantee. Failed registration releases temporary roots. Contextual access is limited to the innermost callback and expires at return, including on errors. A native entry-owned wxObject token adapter represents non-NIL user data without a Lisp/native pointer. EVENT-USER-DATA reads the per-binding value in snapshots/current contexts; there is no public mutation API for an existing association.",
     "scope": "Active main-thread GUI session required; otherwise NATIVE-ERROR. Stale/deleting receivers reject registration/queuing. Invalid event kinds, IDs and payload options signal Lisp errors; wrong receiver types use CLOS dispatch errors. Built-ins and registered command/notify types. Contexts support scoped Skip/propagation and checked close/notify veto. Arbitrary native events, native control-specific notify subclasses, arbitrary native userData pointers, external handler adoption and worker-thread dispatch remain unbound. Session bindings accept only the borrowed application view or an isolated owned handler; windows reject. Real OS delivery remains unverified. Skipped application END_SESSION callbacks can reach process-exiting defaults. Session bindings on attached pushed handlers reject so a window tail cannot route them to app defaults. Callback-local roots preserve current user data after self/peer unbind until return. Snapshots preserve the EQ reference after unbind/session end, not a deep copy of mutable contents.",
@@ -824,9 +824,9 @@
     "kind": "generic-function",
     "arguments": "HANDLER is live; KIND is a built-in keyword or registered name. ID defaults 0; TEXT defaults empty. CHECKED-P is toggle-only; SELECTION is NIL/nonnegative index for selection. CAN-VETO-P is close-family-only (default T). Registered types accept signed INTEGER (default 0) and copied TEXT; registered notify types accept initial VETOED-P (default NIL). LOGGING-OFF-P defaults NIL and is accepted only for :QUERY-END-SESSION/:END-SESSION; CAN-VETO-P applies to all close-family kinds. The second positional argument may instead be a live OWNED-EVENT, with no payload keyword overrides.",
     "returns": "The supplied handler.",
-    "description": "Queue a copied synthetic event: wxCommandEvent for four command kinds, wxCloseEvent for :CLOSE. Ordinary control properties are not changed directly. A queued close on a frame may run its native default closing action; use CLOSE-WINDOW for a synchronous acceptance result. Explicit UTF-8 lengths preserve text. Close events take no command payload, may be vetoable or non-vetoable, and do not normally propagate to parents. Registry types create wxCommandEvent or wxNotifyEvent according to their declared family. Initial veto applies only to custom notify types. Queuing offers no final veto/handled result; use PROCESS-EVENT when a synchronous decision is required. Owned-event dispatch always clones, attaches the receiver as copy origin and never consumes or mutates the source. The original can be destroyed after queueing or inside callbacks. Processing returns final state from its copy; contextual CLONE-EVENT can retain changed state detached from origin.",
+    "description": "Queue a copied synthetic event: wxCommandEvent for four command kinds, wxCloseEvent for close/session kinds and wxIdleEvent for :IDLE. Ordinary control properties are not changed directly. A queued close on a frame may run its native default closing action; use CLOSE-WINDOW for a synchronous acceptance result. Explicit UTF-8 lengths preserve text. Close events take no command payload, may be vetoable or non-vetoable, and do not normally propagate to parents. Registry types create wxCommandEvent or wxNotifyEvent according to their declared family. Initial veto applies only to custom notify types. Queuing offers no final veto/handled result; use PROCESS-EVENT when a synchronous decision is required. Owned-event dispatch always clones, attaches the receiver as copy origin and never consumes or mutates the source. The original can be destroyed after queueing or inside callbacks. Processing returns final state from its copy; contextual CLONE-EVENT can retain changed state detached from origin.",
     "scope": "Active main-thread GUI session required; otherwise NATIVE-ERROR. Stale/deleting receivers reject registration/queuing. Invalid event kinds, IDs and payload options signal Lisp errors; wrong receiver types use CLOS dispatch errors. Built-ins and registered command/notify types. Contexts support scoped Skip/propagation and checked close/notify veto. Arbitrary native events, native control-specific notify subclasses, arbitrary native userData pointers, external handler adoption and worker-thread dispatch remain unbound. Synthetic session kinds require isolated owned standalone handlers; application/window receivers reject before emission. Standalone session fallback to wxApp is suppressed even for skipped, disabled or unmatched delivery. Native application session bindings are distinct from synthetic probes. Owned session event copies retain isolated standalone-receiver guards. Copies carrying borrowed userdata/client pointers or unsupported exact native classes reject. Copied owned :TEXT-CHANGE delivery to text-entry receivers rejects before emission, preventing lazy GetString from shadowing the owned payload. Keyword synthetic behavior is unchanged. Managed standalone chains participate in native traversal; linking does not change pending queue ownership or introduce window/app pushed chains. Window receivers retain wxEvtHandler semantics and bypass pushed stacks; explicit PROCESS-WINDOW-EVENT/LOCALLY provide stack-aware synchronous routing. Synthetic session delivery to attached pushed handlers rejects before emission/transfer.",
-    "wxwidgets": "wxEvtHandler::QueueEvent; wxCommandEvent or wxCloseEvent construction, SetCanVeto at close-event creation only.",
+    "wxwidgets": "wxEvtHandler::QueueEvent; wxCommandEvent, wxCloseEvent or wxIdleEvent construction, SetCanVeto at close-event creation only.",
     "syntax": "(wxlambda:queue-event handler kind &key id text checked-p selection can-veto-p integer vetoed-p logging-off-p)\n(wxlambda:queue-event handler owned-event)"
   },
   {
@@ -931,18 +931,18 @@
     "kind": "function",
     "arguments": "KIND is a built-in event keyword or a name registered in this active session.",
     "returns": "The corresponding process-local native wxEventType integer.",
-    "description": "Look up a process-local native type ID. Seven built-in kinds plus registered command/notify names are supported. Registry names are session-scoped; saved snapshot native IDs remain plain data after cleanup. Borrowed application handler access is supported; arbitrary native event-class binding and OS session delivery remains unverified.",
+    "description": "Look up a process-local native type ID. Eight built-in kinds plus registered command/notify names are supported. Registry names are session-scoped; saved snapshot native IDs remain plain data after cleanup. Borrowed application handler access is supported; arbitrary native event-class binding and OS session delivery remains unverified.",
     "scope": "Active main-thread session required; inactive calls signal NATIVE-ERROR before native-library lookup. Native IDs are process-local and may change between runs.",
-    "wxwidgets": "wxEVT_BUTTON / wxEVT_TEXT / wxEVT_CHECKBOX / wxEVT_CHOICE / wxEVT_CLOSE_WINDOW / wxEVT_QUERY_END_SESSION / wxEVT_END_SESSION; wxNewEventType for registered command/notify names (wxWidgets 3.2.12 baseline)."
+    "wxwidgets": "wxEVT_BUTTON / wxEVT_TEXT / wxEVT_CHECKBOX / wxEVT_CHOICE / wxEVT_CLOSE_WINDOW / wxEVT_QUERY_END_SESSION / wxEVT_END_SESSION / wxEVT_IDLE; wxNewEventType for registered command/notify names (wxWidgets 3.2.12 baseline)."
   },
   {
     "name": "event-family",
     "kind": "generic-function",
     "arguments": "EVENT is an immutable snapshot, current context or live OWNED-EVENT.",
-    "returns": "The portable family keyword :COMMAND, :CLOSE or :NOTIFY.",
-    "description": "Read captured/current supported native classification :COMMAND/:NOTIFY/:CLOSE, including owned event values and saved snapshots after registry cleanup. It is bounded class metadata, not arbitrary native RTTI.",
+    "returns": "The portable family keyword :COMMAND, :CLOSE, :NOTIFY or :IDLE.",
+    "description": "Read captured/current supported native classification :COMMAND/:NOTIFY/:CLOSE/:IDLE, including owned event values and saved snapshots after registry cleanup. It is bounded class metadata, not arbitrary native RTTI.",
     "scope": "Saved snapshots need no session. Owned/current reads require active main-thread session and valid native lifetime; contexts require the innermost callback.",
-    "wxwidgets": "Portable classification of supported wxCommandEvent/wxCloseEvent/wxNotifyEvent tags (wxWidgets 3.2.12 baseline).",
+    "wxwidgets": "Portable classification of supported wxCommandEvent/wxNotifyEvent/wxCloseEvent/wxIdleEvent classes (wxWidgets 3.2.12 baseline).",
     "syntax": "(wxlambda:event-family event)"
   },
   {
@@ -1003,7 +1003,7 @@
     "name": "event-integer",
     "kind": "generic-function",
     "arguments": "EVENT is a snapshot, current context or live OWNED-EVENT. SETF VALUE is signed32 and requires command/notify state.",
-    "returns": "Captured/current native command integer; zero for close-family reads. SETF returns VALUE.",
+    "returns": "Captured/current native command integer; zero for close/idle-family reads. SETF returns VALUE.",
     "description": "Read GetInt or change the native command payload with SETF. Built-in toggle/selection interpretations can reflect this underlying value. Earlier snapshots remain unchanged. Raw values can affect semantic checked/selection views; negative indices other than -1 remain visible through EVENT-SELECTION after raw writes. It does not alter EXTRA-LONG or raw IsSelection.",
     "scope": "Saved reads need no session. Live access requires active main-thread session and valid owned/innermost-context lifetime. Close-family writes reject; malformed/out-of-range values signal TYPE-ERROR.",
     "wxwidgets": "wxCommandEvent::GetInt / SetInt, including wxNotifyEvent (wxWidgets 3.2.12 baseline).",
@@ -1067,7 +1067,7 @@
     "name": "event-command-p",
     "kind": "generic-function",
     "arguments": "EVENT is an immutable snapshot or current event context. A live OWNED-EVENT is also accepted for applicable operations.",
-    "returns": "T for native command/notify-derived events; NIL for close-family events.",
+    "returns": "T for native command/notify-derived events; NIL for close/idle-family events.",
     "description": "Read captured/current native IsCommandEvent classification. No mutable classification or event replacement. Saved values remain independent of source lifetime.",
     "scope": "Saved snapshots need no session. Current-context access requires an active main-thread session and the innermost callback; stale/suspended contexts signal NATIVE-ERROR. No SETF writer. Live OWNED-EVENT receivers are also supported under the same native field/family validation. They require an active main-thread session and remain mutable until destroyed; snapshots stay immutable.",
     "wxwidgets": "wxEvent::IsCommandEvent copied or borrowed (wxWidgets 3.2.12 baseline)."
@@ -1090,7 +1090,7 @@
     "kind": "generic-function",
     "arguments": "EVENT is an immutable snapshot or current innermost event context. A live OWNED-EVENT is also accepted for applicable operations.",
     "returns": "Captured/current native wxEventCategory integer flags.",
-    "description": "Read virtual GetEventCategory: current supported command/notify-derived classes report USER_INPUT and close-family events report UI. Values are category flags, not event types/IDs/families; synthetic USER_INPUT is not proof of real user input. Snapshot values are captured before the callback.",
+    "description": "Read virtual GetEventCategory: current supported command/notify-derived classes report USER_INPUT and close/idle-family events report UI. Values are category flags, not event types/IDs/families; synthetic USER_INPUT is not proof of real user input. Snapshot values are captured before the callback.",
     "scope": "Saved snapshots need no native session. Context reads require active main-thread session and innermost callback; stale/suspended contexts signal NATIVE-ERROR. No category setter, native virtual override, selective YieldFor or socket/timer/thread event binding is supplied. Live OWNED-EVENT receivers are also supported under the same native field/family validation. They require an active main-thread session and remain mutable until destroyed; snapshots stay immutable.",
     "wxwidgets": "wxEvent::GetEventCategory; native wxCommandEvent override includes notify-derived events (wxWidgets 3.2.12 baseline)."
   },
@@ -1109,18 +1109,18 @@
     "arguments": "Construct with MAKE-INSTANCE or MAKE-EVENT; KIND/payload options match supported synthetic events. CLONE-FROM accepts an owned event/current context.",
     "returns": "A detached session-owned native event resource, not a snapshot or borrowed context.",
     "description": "Native-backed CLOS construction supports subclasses, slot initargs, defaults and AFTER hooks. Native origin is NIL. Mixed ancestry with EVENT-HANDLER/window is invalid. Explicit destruction or session cleanup owns deletion; there is no GC finalizer.",
-    "scope": "Exact supported command/notify/close native classes only; one active main-thread session. No native handle initarg, arbitrary derived event class, origin retention or userdata/client ownership. TRANSFER-EVENT supports bounded native ownership handoff of this resource; copy APIs preserve it.",
-    "wxwidgets": "wxCommandEvent / wxNotifyEvent / wxCloseEvent construction and wxEvent::Clone (wxWidgets 3.2.12 baseline).",
+    "scope": "Exact supported command/notify/close/idle native classes only; one active main-thread session. No native handle initarg, arbitrary derived event class, origin retention or userdata/client ownership. TRANSFER-EVENT supports bounded native ownership handoff of this resource; copy APIs preserve it.",
+    "wxwidgets": "wxCommandEvent / wxNotifyEvent / wxCloseEvent / wxIdleEvent construction and wxEvent::Clone (wxWidgets 3.2.12 baseline).",
     "construction": {
       "syntax": "(make-instance 'wxlambda:owned-event :kind :click)\n(wxlambda:make-event :kind registered-name :text \"payload\" :integer 1)",
-      "description": "Inherited native initialization runs before subclass AFTER hooks; managed failures roll back mixed native resources. Direct MAKE-INSTANCE :CLONE-FROM preserves source native state and ignores payload initargs/defaults. Factories reject explicit clone payload overrides. EXTRA-LONG initargs follow command/notify-only native LONG validation; inherited clone defaults never replace source values."
+      "description": "Inherited native initialization runs before subclass AFTER hooks; managed failures roll back mixed native resources. Direct MAKE-INSTANCE :CLONE-FROM preserves source native state and ignores payload initargs/defaults. Factories reject explicit clone payload overrides. EXTRA-LONG initargs follow command/notify-only native LONG validation; inherited clone defaults never replace source values. Idle construction supports MORE-REQUESTED-P; clones preserve source state over inherited defaults and factory explicit payload overrides reject."
     },
     "syntax": "wxlambda:owned-event"
   },
   {
     "name": "make-event",
     "kind": "function",
-    "arguments": "Keyword initargs: CLASS defaults OWNED-EVENT; KIND defaults :CLICK. ID/TEXT/INTEGER/CHECKED-P/SELECTION/CAN-VETO-P/VETOED-P/LOGGING-OFF-P match synthetic payload rules. Optional CLONE-FROM accepts a live owned event/current context. Optional EXTRA-LONG accepts signed native LONG only for command/notify construction; explicit clone overrides reject.",
+    "arguments": "Keyword initargs: CLASS defaults OWNED-EVENT; KIND defaults :CLICK. ID/TEXT/INTEGER/CHECKED-P/SELECTION/CAN-VETO-P/VETOED-P/LOGGING-OFF-P match synthetic payload rules. Optional CLONE-FROM accepts a live owned event/current context. Optional EXTRA-LONG accepts signed native LONG only for command/notify construction; explicit clone overrides reject. Optional MORE-REQUESTED-P applies only to idle construction; explicitly supplied non-idle values (including NIL) reject/rollback. Keyword synthetic queue/process do not add this option.",
     "returns": "A new OWNED-EVENT or validated subclass.",
     "description": "Thin class-validating CLOS factory with forwarded subclass initargs. Initial ID -1 remains reserved. Clone construction detaches origin and preserves native source state; factories reject explicit payload overrides while inherited defaults do not replace cloned values.",
     "scope": "Active main-thread session required. Unknown/wrong-family options and invalid class construction reject. No arbitrary native class or raw handle. Explicit DESTROY-EVENT or session cleanup owns native lifetime.",
@@ -1131,7 +1131,7 @@
     "kind": "generic-function",
     "arguments": "EVENT is a live OWNED-EVENT or current innermost EVENT-CONTEXT. CLASS and subclass slot initargs are forwarded; payload overrides reject.",
     "returns": "A new detached OWNED-EVENT or subclass.",
-    "description": "Call native Clone for exact wxCommandEvent/wxNotifyEvent/wxCloseEvent with supported tags, clear native origin, preserve supported values and reject borrowed userdata/client pointers. Source and clone are independently mutable/disposable. Capture effective command GetString before clearing origin, so lazy wxEVT_TEXT payload becomes detached value data.",
+    "description": "Call native Clone for exact wxCommandEvent/wxNotifyEvent/wxCloseEvent/wxIdleEvent with supported tags, clear native origin, preserve supported values and reject borrowed userdata/client pointers. Source and clone are independently mutable/disposable. Capture effective command GetString before clearing origin, so lazy wxEVT_TEXT payload becomes detached value data.",
     "scope": "Active main-thread session. Expired/suspended contexts and unsupported native classes reject. Snapshots have no method. No origin retention, arbitrary native ownership or source transfer. Non-NIL borrowed binding userData still rejects cloning, even after self-unbind; the presence guard does not dereference a freed native adapter.",
     "wxwidgets": "wxEvent::Clone with bounded detached ownership (wxWidgets 3.2.12 baseline)."
   },
@@ -1306,7 +1306,7 @@
     "kind": "generic-function",
     "syntax": "(wxlambda:event-extra-long event)",
     "arguments": "EVENT is an immutable snapshot, current context or live OWNED-EVENT. SETF VALUE must fit signed native C LONG for command/notify events.",
-    "returns": "Captured/current extra LONG integer; zero for close-family reads. SETF returns VALUE.",
+    "returns": "Captured/current extra LONG integer; zero for close/idle-family reads. SETF returns VALUE.",
     "description": "Read GetExtraLong or set native command/notify extra metadata. It is separate from signed32 EVENT-INTEGER and item indices. Raw EVENT-SELECTION-P reflects whether this field is nonzero. Snapshots preserve pre-callback values.",
     "scope": "Saved reads need no session; live access requires active main-thread session and valid owned/innermost-context lifetime. Close-family writes reject. Native LONG width/range are platform dependent; no snapshot writer or derived-control state update. Non-integer/out-of-range values signal TYPE-ERROR.",
     "wxwidgets": "wxCommandEvent::GetExtraLong / SetExtraLong, including notify-derived events (wxWidgets 3.2.12 baseline).",
@@ -1320,7 +1320,7 @@
     "kind": "generic-function",
     "syntax": "(wxlambda:event-selection-p event)",
     "arguments": "EVENT is an immutable snapshot, current context or live OWNED-EVENT.",
-    "returns": "Raw native IsSelection as T/NIL for command/notify events; NIL for close-family reads.",
+    "returns": "Raw native IsSelection as T/NIL for command/notify events; NIL for close/idle-family reads.",
     "description": "Read whether command extra LONG is nonzero. This is not a :SELECTION-kind predicate or index-validity test: normal choice metadata can have a valid index while this flag is NIL. Use EVENT-EXTRA-LONG to change the underlying field.",
     "scope": "Saved reads need no session. Live access requires active main-thread session and valid owned/innermost-context lifetime. No direct SETF, arbitrary derived event class or control-state operation is provided.",
     "wxwidgets": "wxCommandEvent::IsSelection (m_extraLong !=0), including notify-derived events (wxWidgets 3.2.12 baseline)."
@@ -1348,5 +1348,57 @@
     "description": "Read the snapshot-captured or callback-frame-retained binding association. No deep copy: mutable referent contents remain ordinary Lisp state. Snapshot reads survive unbind/receiver/session cleanup. Current frames retain values across self/peer unbind and nested dispatch restores outer context identity.",
     "scope": "Saved reads need no native session. Context/owned reads require active main-thread session and valid native lifetime; stale/suspended contexts signal NATIVE-ERROR. No SETF, mutable association API, owned constructor/queue payload, pointer adoption or convenience ON-* userdata keyword. General native client/userData ownership remains unbound.",
     "wxwidgets": "wxEvent::GetEventUserData via entry-owned numeric wxObject binding adapter and captured context identity (wxWidgets 3.2.12 baseline)."
+  },
+  {
+    "name": "event-more-requested-p",
+    "kind": "generic-function",
+    "syntax": "(wxlambda:event-more-requested-p event)",
+    "arguments": "EVENT is an immutable snapshot, current context or live OWNED-EVENT. SETF requires live idle state and accepts a generalized boolean.",
+    "returns": "Captured/current/owned MoreRequested as T/NIL; NIL on non-idle families. SETF returns VALUE.",
+    "description": "Read idle request-more metadata or call wxIdleEvent::RequestMore with SETF. Earlier snapshots stay unchanged. Bounded idle work may request another native idle pass; this is not a busy-loop, timer or immediate-delivery guarantee.",
+    "scope": "Saved reads need no session. Live access requires active main-thread session and valid owned/innermost-context lifetime. Non-idle writes and snapshot writers reject. Synthetic dispatch does not establish automatic native idle scheduling.",
+    "wxwidgets": "wxIdleEvent::MoreRequested / RequestMore (wxWidgets 3.2.12 baseline).",
+    "setf": {
+      "syntax": "(setf (wxlambda:event-more-requested-p event-or-context) value)",
+      "description": "Set a live idle request-more flag and return the generalized boolean. Bound work and clear when finished; no non-idle/snapshot writer or inline pump."
+    }
+  },
+  {
+    "name": "idle-mode",
+    "kind": "generic-function",
+    "syntax": "(wxlambda:idle-mode)",
+    "arguments": "No reader arguments. SETF VALUE is :ALL or :SPECIFIED.",
+    "returns": "Current native automatic-window idle policy; SETF returns VALUE.",
+    "description": "Read/change process-wide wxIdleEvent GetMode/SetMode in the managed GUI session. Save/restore pre-session native policy at finish, including error cleanup. This is not a synthetic event field or effective per-window eligibility query.",
+    "scope": "Active main-thread GUI session required. Unknown mode rejects. Automatic delivery also depends on window opt-in/visibility/native rules; explicit synthetic idle bypasses this policy. No worker policy access or arbitrary native event loop is supplied.",
+    "wxwidgets": "wxIdleEvent::GetMode / SetMode and wxIdleMode :ALL/:SPECIFIED mapping (wxWidgets 3.2.12 baseline).",
+    "setf": {
+      "syntax": "(setf (wxlambda:idle-mode) :specified)",
+      "description": "Change global automatic idle policy, returning VALUE. Restore temporary within-session changes with UNWIND-PROTECT; native finish restores the pre-session mode."
+    }
+  },
+  {
+    "name": "window-process-idle-p",
+    "kind": "generic-function",
+    "syntax": "(wxlambda:window-process-idle-p window)",
+    "arguments": "WINDOW is a live managed window. SETF VALUE is a generalized boolean.",
+    "returns": "Own wxWS_EX_PROCESS_IDLE bit as T/NIL; SETF returns VALUE.",
+    "description": "Read/write only the window own idle opt-in extra-style bit while preserving unrelated bits. It is not effective delivery eligibility, ancestor visibility, global mode or a command to run idle callbacks.",
+    "scope": "Active main-thread GUI session and valid non-deleting window required. :SPECIFIED uses this bit for native opt-in; :ALL/visibility/native rules also affect delivery. No raw arbitrary extra-style setter or synthetic delivery filter.",
+    "wxwidgets": "wxWindow::GetExtraStyle / SetExtraStyle for wxWS_EX_PROCESS_IDLE only (wxWidgets 3.2.12 baseline).",
+    "setf": {
+      "syntax": "(setf (wxlambda:window-process-idle-p window) value)",
+      "description": "Toggle only the own idle extra-style bit, preserve other bits and return VALUE. Does not pump, change global idle mode or guarantee delivery."
+    }
+  },
+  {
+    "name": "wake-up-idle",
+    "kind": "function",
+    "syntax": "(wxlambda:wake-up-idle)",
+    "arguments": "None.",
+    "returns": "T after scheduling the native idle wake.",
+    "description": "Wake the native idle system without pumping or invoking callbacks inline. Actual handling occurs at a later native idle opportunity, not a promised immediate time.",
+    "scope": "Active main-thread GUI session required. No worker wake/posting facility, timer, implicit RUN or direct pending/idle pump is added.",
+    "wxwidgets": "wxWakeUpIdle, managed GUI-thread mapping (wxWidgets 3.2.12 baseline)."
   }
 ]

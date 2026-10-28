@@ -25,7 +25,8 @@
   (category :int)
   (extra-long :int64)
   (selection-action :int)
-  (user-data-token :uint64))
+  (user-data-token :uint64)
+  (more-requested :int))
 
 (cffi:defcfun ("wxl_abi_version" %abi-version) :int)
 (cffi:defcfun ("wxl_last_error" %last-error) :string)
@@ -92,7 +93,7 @@
           (if (probe-file local)
               (cffi:load-foreign-library local)
               (cffi:use-foreign-library wxlambda-native))))
-    (unless (= 30 (%abi-version)) (error "Unsupported wxlambda native ABI"))
+    (unless (= 31 (%abi-version)) (error "Unsupported wxlambda native ABI"))
     (setf *native-loaded* t))
   t)
 
@@ -188,3 +189,9 @@
 
 (cffi:defcfun ("wxl_context_user_data" %context-user-data) :int (context :uint64) (token :pointer))
 (cffi:defcfun ("wxl_event_user_data" %event-user-data) :int (event :uint64) (token :pointer))
+
+(cffi:defcfun ("wxl_idle_mode" %idle-mode) :int)
+(cffi:defcfun ("wxl_set_idle_mode" %set-idle-mode) :int (mode :int))
+(cffi:defcfun ("wxl_window_process_idle" %window-process-idle) :int (window :uint64))
+(cffi:defcfun ("wxl_set_window_process_idle" %set-window-process-idle) :int (window :uint64) (enabled :int))
+(cffi:defcfun ("wxl_wake_up_idle" %wake-up-idle) :int)

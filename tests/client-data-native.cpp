@@ -48,6 +48,42 @@ void expect_rejected(wxl_handle id) {
     expect(wxl_set_handler_client_data(id, 41) == -1, "Foreign storage replacement must reject");
     expect(wxl_set_handler_client_data(id, 0) == -1, "Foreign storage clearing must reject");
 }
+void exercise_idle() {
+    expect(native_event_type(WXL_EVENT_IDLE) == wxEVT_IDLE && native_event_family(WXL_EVENT_IDLE) == WXL_FAMILY_IDLE,
+           "Idle builtin type/family mismatch");
+    auto event = synthetic_event(nullptr, WXL_EVENT_IDLE, 37, nullptr, 0, 0, 1, 0, 0);
+    expect(typeid(*event) == typeid(wxIdleEvent) && event->GetId() == 37 && kind_of(*event) == WXL_EVENT_IDLE,
+           "Synthetic idle class/ID mismatch");
+    expect(read_event_field(*event, 18) == 0, "Idle RequestMore must default false");
+    write_event_field(*event, 18, 1);
+    auto copy = detached_clone(*event);
+    expect(read_event_field(*copy, 18) == 1 && copy->GetEventObject() == nullptr,
+           "Idle Clone must preserve RequestMore independently");
+    write_event_field(*event, 18, 0);
+    expect(read_event_field(*copy, 18) == 1, "Idle clone must be independent");
+    wxCommandEvent command(wxEVT_BUTTON);
+    expect(read_event_field(command, 18) == 0, "Non-idle MoreRequested must be false");
+    expect(status([&] { write_event_field(command, 18, 1); }) == -1, "Non-idle RequestMore must reject");
+    expect(status([&] { synthetic_event(nullptr, WXL_EVENT_IDLE, 1, "x", 1, 0, 1, 0, 0); }) == -1,
+           "Idle command text must reject");
+    expect(status([&] { synthetic_event(nullptr, WXL_EVENT_IDLE, 1, nullptr, 0, 1, 1, 0, 0); }) == -1,
+           "Idle command integer must reject");
+    expect(wxl_set_idle_mode(1) == 0 && wxl_idle_mode() == 1, "Specified idle mode failed");
+    expect(wxl_set_idle_mode(2) == -1 && wxl_idle_mode() == 1, "Invalid mode must preserve old mode");
+    expect(wxl_set_idle_mode(0) == 0 && wxl_idle_mode() == 0, "All idle mode failed");
+    const auto frame = wxl_frame("Idle native regression", 200, 120);
+    auto* widget = window(frame);
+    const auto original = widget->GetExtraStyle() | wxWS_EX_BLOCK_EVENTS;
+    widget->SetExtraStyle(original);
+    expect(wxl_set_window_process_idle(frame, 1) == 0 && wxl_window_process_idle(frame) == 1,
+           "Window idle opt-in failed");
+    expect(widget->GetExtraStyle() == (original | wxWS_EX_PROCESS_IDLE), "Idle opt-in damaged other style bits");
+    expect(wxl_set_window_process_idle(frame, 0) == 0 && wxl_window_process_idle(frame) == 0,
+           "Window idle opt-out failed");
+    expect(widget->GetExtraStyle() == (original & ~wxWS_EX_PROCESS_IDLE), "Idle opt-out damaged other style bits");
+    expect(wxl_wake_up_idle() == 0, "WakeUpIdle failed");
+    expect(wxl_set_idle_mode(1) == 0, "Restore-check mode setup failed");
+}
 void exercise_binding_data() {
     const auto id = wxl_event_handler();
     expect(wxl_bind(id, WXL_EVENT_CLICK, 901, wxID_ANY, wxID_ANY, 1, 1) == 0,
@@ -140,17 +176,21 @@ int main() {
     unsigned foreign_destroyed = 0;
     bool active = false;
     try {
+        wxIdleEvent::SetMode(wxIDLE_PROCESS_ALL);
         expect(wxl_start(ignore_event) == 0, "Application startup failed");
         active = true;
         exercise_client_data(foreign_destroyed);
         exercise_binding_data();
+        exercise_idle();
         expect(wxl_finish() == 0, "Application cleanup failed");
         active = false;
+        expect(wxIdleEvent::GetMode() == wxIDLE_PROCESS_ALL, "Finish did not restore pre-session idle mode");
+        expect(wxl_idle_mode() == -1 && wxl_wake_up_idle() == -1, "Inactive idle APIs must reject");
         expect(wxl_client_data_active(31) == -1, "Inactive client-data scan must reject");
         expect(foreign_destroyed == 1, "Foreign data was deleted more than once");
         expect(assertion_count.load() == 0, "Client-data operations triggered a wx assertion");
         wxSetAssertHandler(old_assert_handler);
-        std::cout << "PASS: handler client data, binding user-data self-unbind/scoped lifetime, foreign guards and zero wx assertions\n";
+        std::cout << "PASS: handler client data, binding user-data lifetime, idle metadata/mode/style restoration, foreign guards and zero wx assertions\n";
         return 0;
     } catch (const std::exception& failure) {
         if (active) wxl_finish();

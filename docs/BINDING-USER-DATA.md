@@ -1,6 +1,6 @@
 # Rooted Lisp user data on individual bindings
 
-ABI 30 adds `:user-data` to BIND-EVENT and the read-only EVENT-USER-DATA generic.
+ABI 31 adds `:user-data` to BIND-EVENT and the read-only EVENT-USER-DATA generic.
 The baseline is wxWidgets 3.2.12. User data belongs to one registration, not to
 the receiving handler as a whole or to a reusable owned-event payload.
 

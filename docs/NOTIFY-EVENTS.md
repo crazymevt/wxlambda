@@ -2,7 +2,7 @@
 
 This C1 slice binds `wxNewEventType`, synthetic `wxCommandEvent`/`wxNotifyEvent`
 families and synchronous `wxEvtHandler::ProcessEvent`. The baseline is wxWidgets
-3.2.12 and the native bridge is ABI 30. It does not bind native control-specific
+3.2.12 and the native bridge is ABI 31. It does not bind native control-specific
 notify subclasses or OS session routing.
 
 ## Register a named native type

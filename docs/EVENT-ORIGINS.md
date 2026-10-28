@@ -1,6 +1,6 @@
 # Native event type and origin identity
 
-ABI 30 extends EVENT-NATIVE-TYPE to a generic reader for immutable snapshots and
+ABI 31 extends EVENT-NATIVE-TYPE to a generic reader for immutable snapshots and
 current innermost contexts. EVENT-ORIGIN-ID is a new generic reader with the same
 saved/current lifetime distinction. Baseline: wxWidgets 3.2.12.
 
@@ -75,3 +75,7 @@ See [contexts](EVENT-CONTEXTS.md), [ID routing](EVENT-ROUTING.md) and
 explicit disposal, mutable value fields and copied dispatch. Earlier immutable
 snapshots and scoped contexts keep their lifetime rules. Arbitrary native classes,
 origin retention and client/userData ownership remain open.
+
+[Idle events](IDLE-EVENTS.md) add family :IDLE, bounded RequestMore, global
+automatic policy and own-window opt-in metadata. The next GUI breadth slice is
+menus/actions plus standard dialogs, not exhaustive foundation parity.

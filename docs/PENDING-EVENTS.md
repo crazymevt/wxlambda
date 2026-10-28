@@ -1,6 +1,6 @@
 # Pending-event copies, transfer and local processing
 
-ABI 30 adds POST-EVENT, TRANSFER-EVENT, PROCESS-EVENT-LOCALLY and
+ABI 31 adds POST-EVENT, TRANSFER-EVENT, PROCESS-EVENT-LOCALLY and
 DELETE-PENDING-EVENTS as generic handler operations. They build on detached
 OWNED-EVENT resources and the wxWidgets 3.2.12 event-handler interface. This
 batch distinguishes copy delivery from genuine native ownership handoff.

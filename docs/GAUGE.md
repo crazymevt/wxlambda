@@ -58,7 +58,7 @@ position/size to native defaults and validator/name to native defaults; styles
 are limited to horizontal/vertical. Two-step creation, custom IDs, additional
 styles such as taskbar progress, and the remaining inherited API stay open.
 Gauge support was introduced in native ABI 10. Registered event dispatch now requires
-ABI 30; rebuild the bridge alongside the current Lisp bindings.
+ABI 31; rebuild the bridge alongside the current Lisp bindings.
 
 ## Example and verification
 

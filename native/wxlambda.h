@@ -16,8 +16,8 @@ extern "C" {
 #endif
 typedef uint64_t wxl_handle;
 enum wxl_alignment { WXL_ALIGN_START = 0, WXL_ALIGN_CENTER = 1, WXL_ALIGN_END = 2 };
-enum wxl_event_family { WXL_FAMILY_COMMAND = 0, WXL_FAMILY_CLOSE = 1, WXL_FAMILY_NOTIFY = 2 };
-enum wxl_event_kind { WXL_EVENT_CLICK = 1, WXL_EVENT_TEXT_CHANGE = 2, WXL_EVENT_TOGGLE = 3, WXL_EVENT_SELECTION = 4, WXL_EVENT_CLOSE = 5, WXL_EVENT_QUERY_END_SESSION = 6, WXL_EVENT_END_SESSION = 7 };
+enum wxl_event_family { WXL_FAMILY_COMMAND = 0, WXL_FAMILY_CLOSE = 1, WXL_FAMILY_NOTIFY = 2, WXL_FAMILY_IDLE = 3 };
+enum wxl_event_kind { WXL_EVENT_CLICK = 1, WXL_EVENT_TEXT_CHANGE = 2, WXL_EVENT_TOGGLE = 3, WXL_EVENT_SELECTION = 4, WXL_EVENT_CLOSE = 5, WXL_EVENT_QUERY_END_SESSION = 6, WXL_EVENT_END_SESSION = 7, WXL_EVENT_IDLE = 8 };
 typedef struct wxl_event {
     int kind;
     const char *text; /* UTF-8 for text changes; NULL otherwise. */
@@ -39,6 +39,7 @@ typedef struct wxl_event {
     int64_t extra_long; /* Native signed long, copied for command/notify events. */
     int selection_action; /* Native IsSelection, not a predicate on the kind tag. */
     uint64_t user_data; /* Binding root token, zero for none; never a native pointer. */
+    int more_requested; /* Native idle RequestMore state; false for other families. */
 } wxl_event;
 /* The record and its text are borrowed only until this callback returns.
    Callbacks must never unwind across this boundary. */
@@ -57,6 +58,11 @@ WXL_API int wxl_pending_events(void);
 WXL_API int wxl_process_pending_events(void);
 WXL_API int wxl_stop(void);
 WXL_API int wxl_finish(void);
+WXL_API int wxl_idle_mode(void);
+WXL_API int wxl_set_idle_mode(int mode);
+WXL_API int wxl_window_process_idle(wxl_handle window);
+WXL_API int wxl_set_window_process_idle(wxl_handle window, int enabled);
+WXL_API int wxl_wake_up_idle(void);
 /* Standalone handlers are session-owned; window handlers borrow window identity.
    Queries return 0/1, or -1 on failure. ALIVE returns 0 for stale/unknown IDs. */
 WXL_API wxl_handle wxl_application_handler(void);

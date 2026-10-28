@@ -1,11 +1,15 @@
 # wxWidgets coverage plan
 
-This is the deliverable for implementation **Phase 6**. The former release
-preparation phase is now **Phase 7** in [IMPLEMENTATION.md](../IMPLEMENTATION.md).
-The final goal is **complete wxWidgets coverage**. A bounded first release is
-an intermediate milestone; neither the plan nor individual implemented slices
-satisfy final acceptance. All required missing and partial APIs remain work. Coverage implementation
-has its own phases **C1–C7** below, distinct from release roadmap numbering.
+The goal is **broad GUI coverage with selective depth**: useful, reliable Lisp
+desktop applications rather than a literal wrapper for every wxWidgets API.
+This supersedes the earlier exhaustive-parity objective. The pinned native
+inventory remains factual: unbound/partial APIs stay visible even when deferred,
+served by Lisp-native alternatives or unnecessary for a selected milestone.
+
+C1–C7 are **inventory categories, not a delivery sequence**. Select feature work
+from the priorities below and implement its actual prerequisites. Exhausting C1
+is not required before everyday controls, menus, dialogs or navigation. Historical
+checkpoint notes retain their former goal language, explicitly superseded here.
 
 ## Scope and inventory
 
@@ -31,14 +35,14 @@ preprocessed away. Each entry links to its upstream source line.
 
 This is a complete inventory of the pinned **interface headers**, not proof
 that these documentation headers contain every public symbol in the full
-wxWidgets source tree. The final reconciliation task below must resolve any
-additional documented public API, generated declarations, port headers and
-inherited interfaces before claiming full wxWidgets support. Undocumented
+wxWidgets source tree. Reconcile additional documented public APIs, generated declarations, port
+headers and inherited interfaces when they affect selected features or any
+claim of native completeness. Undocumented
 implementation internals are not binding requirements. Deprecated public APIs
 remain visible; any decision to omit an API must be recorded explicitly rather
-than checked off as implemented. APIs unavailable on a particular port remain
-required on their supported ports. Optional components need selectable builds,
-feature detection and clear unavailable-feature errors.
+than checked off as implemented. Selected platform/optional features need explicit build selection, feature
+detection and unavailable-feature behavior; unselected ports/components are not
+automatic release requirements.
 
 ## Status rules
 
@@ -73,51 +77,80 @@ feature detection and clear unavailable-feature errors.
   scoped resource forms instead of literal C++ wrappers. Such equivalences
   require an explicit mapping, including Unicode, range and lifetime behavior.
 
-## Current gaps and final acceptance
+## Native status and GUI milestone acceptance
 
 Use the [generated phase/header backlog](coverage/README.md) for counts and the
 linked C1–C7 checklists for exact declarations. `[ ]` means no public binding is
-recorded; `[~]` means only the annotated scope exists, and its missing portion
-remains required. A class marked partial is not complete because its constructor
+recorded; `[~]` means only the annotated scope exists. Remaining native scope
+is scheduled by feature priority, not automatically required for a release. A class marked partial is not complete because its constructor
 works. Context, class-definition and declaration counts must not be interpreted
 as percentages of distinct wxWidgets APIs.
 
-Current implementation is limited to managed application/event-dispatch APIs,
-standalone event-handler ownership/state, command/close observer/contextual bindings
-and queuing, and eight concrete widget kinds with a subset of inherited/layout/control APIs.
-C1 remains the active priority: event-handler ownership/state now has bounded
-support. Generic bindings, scoped Skip/propagation and copied native type IDs
-cover command and close kinds. Checked close veto is implemented; registered notify support is also implemented. Native notify subclasses,
-the borrowed application handler view is implemented; session bindings/metadata and isolated synthetic routing are implemented; native OS delivery remains unverified, then timer/idle and worker dispatch, with required value and lifetime
-contracts first. C2 remains partial; C3–C7 have no public bindings recorded.
+The current baseline has eight concrete widgets, basic layout and a deeply tested
+managed lifetime/event layer, including command/notify/close/idle families, owned
+resources, pending delivery, handler chains/stacks and rooted Lisp associations.
+This foundation supports breadth; it is not a mandate to keep draining C1.
+Idle support is complete within its documented scope. Next deliver menus/actions
+plus standard dialogs for the form/editor, with only that slice's prerequisites.
+Native notify subclasses, retained origins and other unselected depth stay
+visible as native gaps without automatically blocking that GUI work.
 See the [C1 details](coverage/phase-c1.md), [C2 details](coverage/phase-c2.md) and
 [class index](coverage/classes.md) for the remaining work within bound families.
 
-The current bridge is ABI 30, with 127 public Lisp exports. The binding-user-data batch passes
-47 GUI scenarios on both local Apple Silicon macOS SBCL/CCL configurations and
+The current bridge is ABI 31, with 131 public Lisp exports. The idle batch passes
+48 GUI scenarios on both local Apple Silicon macOS SBCL/CCL configurations and
 five packaging checks. These are local results retained under
-`evidence/binding-user-data/{sbcl,ccl}-20261028-final/` and
-`evidence/packaging/binding-user-data-20261028/`;
-they do not validate Linux/Windows or the graphical Cadre viewer. The binding-user-data
+`evidence/idle-events/{sbcl,ccl}-20261028-final/` and
+`evidence/packaging/idle-events-20261028/`;
+they do not validate Linux/Windows or the graphical Cadre viewer. The idle
 implementation reruns the GUI suites; documentation-only
 updates must distinguish retained results from newly run checks.
 
-Full coverage is finished only when:
+A milestone is accepted against its selected GUI scope and representative
+workflows, not declaration totals or completion of every pending native entry.
 
-- All required C1–C7 declarations, constructor options, overloads, styles/events,
-  inherited APIs and native subclass/virtual-callback behavior are implemented
-  or covered by documented, verified equivalent Lisp mappings.
-- No required API remains pending, partial or explicitly unsupported. An
-  unsupported decision records a gap; it does not close one.
-- C7 reconciliation covers documented public APIs beyond these interface headers,
-  including generated declarations, port headers and optional build components.
-- Applicable platform/Lisp/backend combinations pass behavior, lifetime, callback,
-  Unicode and packaging checks; unavailable local runners do not close port work.
-- Public reference, guides, runnable examples and the Cadre docset match the
-  complete implementation, with zero docset checker problems and verified viewer
-  discovery, symbol lookup and guide/example navigation.
+### Feature policy and priorities
 
-## Already implemented: bounded baseline
+| Policy | Selection rule |
+| --- | --- |
+| Core | Reliable ownership/invalidation, events/callbacks, main-thread rules, CLOS construction/SETF, and documentation/examples/tests for every delivered API. Keep basic windows/controls/layout reliable. |
+| Planned | Everyday controls and layouts, menus/actions/toolbars/status bars, standard dialogs, navigation/notebooks, list/tree views, timers/idle, clipboard, drawing and necessary value adapters. |
+| On-demand | Specialized grid/data-view models, printing/document frameworks, AUI/ribbon, rich text/STC, web/media/OpenGL and platform integration when an application needs them. |
+| Lisp-native | Prefer Lisp strings, sequences, pathnames, hash tables, conditions, streams/configuration and utility libraries where literal native wrappers add no GUI value; document semantic differences. |
+| Deferred | Unused overloads/styles, deprecated/duplicate APIs, arbitrary pointer adoption, broad native virtual overrides and optional components without a current consumer. Revisit with demonstrated demand. |
+
+These are feature-level priorities, not native checkbox states. Do not bulk-mark
+status.json to represent deferral or assume a Lisp equivalent without checking
+its required semantics. A class can stay native-partial while its selected GUI
+feature scope is accepted. Native missing APIs are not automatic release blockers.
+
+**Next vertical slice after idle:** menus/actions plus standard dialogs for an
+everyday form/editor, adding only timer/value/lifetime prerequisites actually
+needed by that slice. Do not drain native ownership/utilities first.
+
+### Representative application acceptance
+
+- **Form/editor:** common controls and validation, flexible layouts, menu/action
+  and toolbar/status feedback, standard open/save/message dialogs, clipboard and
+  keyboard/navigation basics. Existing small form examples are a foundation,
+  not a claim that this complete workflow already exists.
+- **Tree/list manager:** useful tree/list selection and item/model adapters,
+  contextual/menu actions, navigation, dialogs and clipboard. Pick model depth
+  needed by the application before literal native container/document parity.
+- **Drawing/monitoring tool:** canvas, bitmap/text/geometry/font/colour adapters,
+  practical resize/DPI behavior and bounded timer/idle updates. Every renderer or
+  print backend is not a prerequisite for a usable first drawing workflow.
+
+For selected feature scopes, verify end-to-end examples, Unicode/bounds,
+callback errors, destruction/cleanup and packaging where applicable. Maintain
+complete public-export reference coverage and zero docset checker problems.
+Automated reader lookup remains separate from graphical Cadre verification.
+
+Cross-platform checks stay explicit: local Apple Silicon macOS SBCL/CCL results
+are recorded per batch; Linux/Windows Lisp/GUI/packaging work remains open until
+actual reports pass. A milestone may be scoped to verified targets, but must not
+advertise untested platforms or infer native parity from one backend. Record
+unavailable runners and feature gates rather than treating every port as complete.
 
 All entries here are checked only for the behavior stated. None of the eight
 widget classes has complete wxWidgets coverage yet.
@@ -175,6 +208,7 @@ widget classes has complete wxWidgets coverage yet.
 - [x] Native extra LONG and raw IsSelection metadata, kind-specific live checked/selection SETF and clear-only compatible registered origin detachment. Retained/new origins and full derived-class payload semantics remain open.
 - [x] Managed EVENT-HANDLER-CLIENT-DATA EQ Lisp storage through typed native root-token adapters, with foreign typed/untyped rejection. Generic wxClientData/container, untyped/event/item/userData ownership remain open.
 - [x] BIND-EVENT :USER-DATA and read-only EVENT-USER-DATA saved/current association access through native wxObject token adapters. Active self-unbind and snapshot lifetime are retained; arbitrary native userData/client/item pointers and association mutation remain open.
+- [x] :IDLE snapshots/current/owned resources, RequestMore, session-restored IDLE-MODE, own-window idle opt-in and GUI-thread wake scheduling. Explicit synthetic delivery is distinct from automatic policy; this does not imply full native idle/worker parity.
 - [x] Native errors translated to Lisp `native-error` conditions.
 - [x] Event snapshots: `event`, `event-p`, `event-kind`, `event-source`,
   `event-text`, `event-checked-p`, `event-selection` for four command kinds plus :close.
@@ -223,115 +257,66 @@ No APIs in C3–C7 currently have public bindings. Using wxWidgets types interna
 for conversions or implementation is not public API coverage.
 
 The widget-facing Lisp API has nine window wrapper classes plus the public event-handler base, direct native
-construction, 55 named generic functions and thirteen SETF generic functions; see [CLOS API](CLOS-API.md). This establishes Lisp dispatch
+construction and generic operations/SETF; see [CLOS API](CLOS-API.md). This establishes Lisp dispatch
 and method combination, not native C++ subclass/virtual-callback coverage.
 
-## Coverage implementation phases
+## Native inventory categories and feature selection
 
-These phases group **all** headers in the manifest; the linked lists are the
-individual widget/function work items, not examples of an unspecified larger set.
-Within a phase, implement prerequisite value types and base classes before their
-consumers. A cross-phase dependency can be pulled forward without marking the
-entire dependent phase complete.
+All 398 pinned headers remain in these source-linked categories. This is a
+native discovery/status index, not delivery order or a promise to bind every
+entry. Work across categories when selected GUI features need them; implement
+necessary value/lifetime prerequisites without wrapping every utility first.
 
 ### C1: Foundation, values, application, events, and base utilities
 
-[Full C1 declaration checklist](coverage/phase-c1.md)
-
-The next dependency chain starts with application dispatch boundaries (now
-implemented for the bridge session), then event-handler ownership/state (bounded support implemented) and generic
-binding (four-kind observer support implemented), then timer/idle/propagation support and worker-to-GUI dispatch.
-Prerequisite value and ownership contracts must precede each consumer.
-Application dispatch does not close the broader application or event checklist.
-
-- [ ] Complete application traits, initialization, event loops, generic
-  `wxEvtHandler` binding/unbinding, event filters,ok  event classes, propagation,
-  veto/skip, idle processing, timers and thread-to-GUI dispatch.
-- [ ] Complete object/type information, client data, strings/encodings, buffers,
-  arrays/containers, variants/any, numeric/date/time types and conversions.
-- [ ] Complete base utilities: files/directories/paths, streams, archives and
-  compression, configuration, persistence prerequisites, logging/debugging,
-  processes, dynamic libraries, environment/system utilities and command lines.
-- [ ] Complete networking, protocols, web requests, IPC, threading/synchronization,
-  translation/locales, regular expressions, security/secret storage and platform info.
-- [ ] Define ownership, borrowed values, invalidation, subclass/virtual dispatch,
-  callback lifetimes, thread restrictions and ABI compatibility for expanded APIs.
+[Complete C1 source inventory](coverage/phase-c1.md). Core event/lifetime/main-thread
+contracts support delivered features. Idle/timers and GUI value adapters are
+planned; filesystem/network/regex/container utilities normally use Lisp-native
+libraries unless native integration needs a bridge. Broad pointer adoption and
+virtual overrides remain on-demand/deferred.
 
 ### C2: Windows, layout, basic controls, and input
 
-[Full C2 declaration checklist](coverage/phase-c2.md)
-
-- [ ] Finish existing eight widget classes, all constructor options and inherited APIs.
-- [ ] Complete window/top-level/control bases: parenting, IDs, focus, capture,
-  enable/show/hide, sizing/positioning, scrolling, styles, colours/fonts, DPI,
-  tooltips, accessibility hooks and lifecycle notifications.
-- [x] Add bounded wxGauge construction, range/value properties, orientation query
-  and indeterminate pulsing; see [the gauge guide](GAUGE.md). Advanced gauge
-  constructor options and inherited interfaces remain open.
-- [ ] Bind every remaining C2 widget in the class index: bitmap/command-link/toggle
-  buttons, radio controls, combos, list/checklist boxes, sliders, spin
-  controls, pickers, date/time/calendar, search, static controls and other controls.
-- [ ] Complete all sizer families/items/flags, nested layouts, splitters,
-  scrolled/virtual windows, validators, keyboard/mouse and control-specific events.
+[Complete C2 source inventory](coverage/phase-c2.md). Plan useful radio/toggle/
+combo/list controls, sliders/spinners, scrolling, layouts, focus/keyboard and
+practical font/colour/DPI support. Deepen the existing eight widgets as workflows
+need; not every constructor option or inherited overload must precede the next
+useful control.
 
 ### C3: Dialogs, navigation, menus, and application services
 
-[Full C3 declaration checklist](coverage/phase-c3.md)
-
-- [ ] Complete modal/modeless and standard dialogs, custom file-dialog controls,
-  wizards, preferences and help APIs.
-- [ ] Complete menus/items, toolbars/status bars, books/notebooks, popups,
-  mini/MDI windows, notifications/taskbar and splash windows.
-- [ ] Complete clipboard/data formats, drag/drop, art/stock resources,
-  display/settings, accessibility and UI action simulation.
+[Complete C3 source inventory](coverage/phase-c3.md). Menus/actions, toolbar/status
+feedback, standard dialogs, books/notebooks and clipboard are everyday priorities.
+Drag/drop and specialized platform/help/wizard services follow concrete demand.
+The next post-idle batch is menus/actions plus standard dialogs.
 
 ### C4: Models, complex controls, and document frameworks
 
-[Full C4 declaration checklist](coverage/phase-c4.md)
-
-- [ ] Complete list/tree/tree-list/data-view/grid controls and all related models,
-  renderers, editors, selection, sorting, virtual data and event classes.
-- [ ] Complete headers/columns, image lists and item attributes.
-- [ ] Complete document/view, document MDI, command/undo and persistent-object APIs.
+[Complete C4 source inventory](coverage/phase-c4.md). Prioritize practical list/tree
+views and Lisp item/model adapters for the manager workflow. Full grid/data-view,
+native document/undo and persistence frameworks are on-demand; Lisp-native models
+may fit better than literal native containers.
 
 ### C5: Drawing, images, graphics, and printing
 
-[Full C5 declaration checklist](coverage/phase-c5.md)
-
-- [ ] Complete geometry/transforms, colours, pens/brushes/fonts, cursors/regions,
-  bitmap bundles/icons/images, image handlers, animation and raw pixel access.
-- [ ] Complete every DC/backend, graphics contexts/paths, overlays, native renderer,
-  text metrics, paint events and buffered drawing with scoped resource ownership.
-- [ ] Complete print/page setup/preview, print data and platform print integration.
+[Complete C5 source inventory](coverage/phase-c5.md). Plan practical canvas/drawing,
+bitmap/image, geometry, font and colour support. Choose useful rendering paths
+first; every DC/backend, metafile or print integration is on-demand.
 
 ### C6: Optional libraries, rich content, and integration
 
-[Full C6 declaration checklist](coverage/phase-c6.md)
+[Complete C6 source inventory](coverage/phase-c6.md). Select AUI/ribbon/property-grid,
+HTML/rich text/STC, web/media/OpenGL or XML/XRC when an application needs them.
+Chosen components require explicit build/availability behavior; unselected optional
+libraries do not block an everyday-GUI milestone.
 
-- [ ] Complete AUI docking, ribbons, property grids and related managers/events.
-- [ ] Complete HTML, rich text and Styled Text Control, including editing models,
-  commands, styles, printing and callbacks.
-- [ ] Complete XML/XRC resource loading and custom handlers.
-- [ ] Complete web views/handlers, media/sound, OpenGL contexts and rich tooltips.
-- [ ] Extend component selection/builds beyond current `core`/`base`, and document
-  native dependencies, backend availability and packaging for each optional library.
+### C7: Platform extensions and portability reconciliation
 
-### C7: Platform extensions and remaining portability APIs
-
-[Full C7 declaration checklist](coverage/phase-c7.md)
-
-- [ ] Complete Windows-specific interface declarations, native-window embedding,
-  DDE, dial-up, joystick and power APIs on their applicable platforms.
-- [ ] Reconcile the interface-header inventory against upstream public headers,
-  generated API documentation, event/style tables and build options; inventory
-  and phase any additional public widgets/functions discovered before closure.
-- [ ] Audit inherited APIs and all overloads, enum values, style combinations,
-  virtual overrides, callback signatures and ownership across every class.
-- [ ] Run binding, GUI, Unicode, callback/lifetime and packaged-application checks
-  on supported OS/Lisp combinations; record feature-specific skips and reasons.
-- [ ] Publish the supported API/feature matrix and resolve every remaining item
-  as implemented, equivalent Lisp mapping, or explicitly unsupported. Unsupported
-  required APIs prevent claiming full coverage; they are not completed bindings.
+[Complete C7 source inventory](coverage/phase-c7.md). Verify platforms/backends
+claimed by selected features and reconcile interface/implementation discrepancies
+that affect them. Native Windows embedding/DDE/power and other port extensions
+are on-demand. Preserve unbound facts without requiring every platform declaration
+before a core GUI release or claiming unsupported native completeness.
 
 ## Completion and maintenance
 
@@ -341,8 +326,8 @@ Focused generator/inventory verification (using the same extracted sources):
 python3 tests/coverage-inventory.py /path/to/wxWidgets-3.2.12/interface
 ```
 
-Each phase closes only when its detailed inventory is reviewed and its required
-bindings have public Lisp exports, native/FFI mappings, matching documentation,
+Each selected feature scope closes when its chosen bindings have public Lisp
+exports, native/FFI mappings and matching documentation,
 required runnable examples, docset updates, and focused positive/error/lifetime/
 event checks. Follow the [project implementation rule](../AGENTS.md) for every
 implementation change: build the Cadre-format version 1 docset in `docs/docset/`
@@ -354,7 +339,8 @@ symbol lookup and guide/example navigation. The docset is the primary
 documentation deliverable. The initial Phase 7 build prerequisite is implemented
 in [the docset tooling](DOCSET.md); maintain the generated artifact with each
 implementation change. Platform-only work must be verified on its supported
-platform; local macOS success cannot close Linux/Windows work. Existing Phase 3
+platform before advertising that support; local macOS success cannot close
+Linux/Windows verification work. Existing Phase 3
 hosted checks remain pending.
 
 To reproduce the baseline inventory, extract the pinned release's `interface/`
@@ -392,7 +378,6 @@ Protected wxEvtHandler storage-mode inspection avoids typed/untyped native
 assertions; it remains an implementation-header C7 dependency, not a public
 field/mode API.
 
-The ABI 30 binding-user-data batch expands the runner to 47 scenarios. Local
-GUI/package checks, the zero-assert native regression and independent reviews pass. Association snapshots preserve EQ values,
-not immutable copies of their contents; active contexts retain data through
-self-unbinding without adopting native pointers.
+The ABI 31 idle batch passes all 48 local GUI scenarios on both Lisps, five
+package checks and the zero-assert native regression; independent reviews pass. Automatic idle policy is separate from explicit synthetic
+delivery and own-window opt-in is not an effective eligibility predicate.

@@ -1,22 +1,22 @@
 # Implementation plan
 
-The final goal is complete wxWidgets coverage across C1–C7, including supported
-platforms, optional components and documented public interfaces. A usable first
-release with existing controls, reliable REPL-driven development and standalone
-packaging is an intermediate milestone. Phase 6 inventories the full scope;
-partial C1/C2 implementation is underway and does not complete that goal.
-This is a plan; unchecked steps are not claims of implemented or verified
-behavior.
+The goal is broad GUI coverage with selective depth: useful desktop workflows,
+reliable lifetime/event contracts and Lisp-friendly interfaces. Exhaustive native
+wxWidgets parity is no longer the delivery objective. C1–C7 inventories remain
+factual discovery records, not a required sequence or release gate.
 
-## Session handoff: full coverage work
+## Session handoff: broad GUI coverage
 
-The user has confirmed that **complete wxWidgets coverage is the final goal**.
-Keep every required missing/partial API open; a bounded release, working example,
-local test result or explicitly unsupported decision cannot close the final goal.
-Use the [coverage overview](docs/WXWIDGETS-COVERAGE.md), generated
-[phase/header backlog](docs/coverage/README.md), class index and exact C1–C7
-declaration checklists together. The pinned inventory is wxWidgets 3.2.12; C7
-must reconcile additional documented public interfaces beyond those headers.
+The user has superseded the earlier complete-wxWidgets objective. Follow the
+[feature policy and acceptance roadmap](docs/WXWIDGETS-COVERAGE.md): core, planned,
+on-demand, Lisp-native and deferred. Native pending/partial entries remain visible
+but are not automatic blockers. Expand everyday GUI breadth across categories,
+implementing actual prerequisites rather than exhausting C1 before other features.
+
+Historical roadmap/checkpoints below preserve their original goal and evidence.
+Where they call every pending API required or insist on complete C1 before C2,
+that scope is explicitly superseded here. Do not rewrite historical verification
+as if later features or platform checks already passed.
 
 ### Completed implementation checkpoints
 
@@ -76,58 +76,37 @@ must reconcile additional documented public interfaces beyond those headers.
 - Binding-user-data batch: per-registration EQ Lisp values, immutable captured
   associations and context-frame lifetime through self-unbind. Independent review
   and final verification pass.
-- Current bridge ABI: 30. Public API: 127 exports, nine window wrapper classes
-  (eight concrete widget kinds) plus the event-handler base, 89 named generics and
-  twenty-seven generic SETF writers. The application-handler is a borrowed view; no
+- Idle batch: :IDLE family/resources, bounded RequestMore, session-restored
+  automatic mode, own-window opt-in and native wake scheduling. Independent review
+  and final verification pass.
+- Current bridge ABI: 31. Public API: 131 exports, nine window wrapper classes
+  (eight concrete widget kinds) plus the event-handler base, 92 named generics and
+  thirty generic SETF writers. The application-handler is a borrowed view; no
   native application construction or arbitrary-event class binding exists yet; built-ins plus registered command/notify names have
   observer/contextual bindings.
-- Latest implementation verification: 47 GUI scenarios and native preflight
+- Latest implementation verification: 48 GUI scenarios and native preflight
   pass on local Apple Silicon macOS SBCL 2.6.9 and CCL 1.13. Final reports:
-  `evidence/binding-user-data/{sbcl,ccl}-20261028-final/`. Five package checks
-  pass in `evidence/packaging/binding-user-data-20261028/`.
+  `evidence/idle-events/{sbcl,ccl}-20261028-final/`. Five package checks
+  pass in `evidence/packaging/idle-events-20261028/`.
   Hosted Linux/Windows GUI behavior and the graphical Cadre viewer remain open.
 
-### Next dependency and working order
+### Feature priorities and working order
 
-1. Continue **C1**, before adding further C2 widget families. Application dispatch
-   boundaries are established only for the bridge-owned session.
-2. Reuse the implemented event-handler ownership/state base: standalone objects
-   are session-owned; windows borrow their existing native identity, with weak
-   tracking independent of destroy-event delivery. There is no pushed-handler
-   ownership transfer; managed window stack APIs preserve session ownership.
-   Standalone dispatch supports command observers and the close family.
-   Preserve native-backed subclass
-   initargs, defaults, AFTER hooks and mixed-resource rollback.
-3. Generic binding/unbinding supports command and close kinds with ID filters. Optional
-   borrowed contexts now control Skip/propagation in the innermost callback; saved
-   snapshots carry process-local native type IDs. Close veto and frame request
-   policy are implemented. Registered command/notify types and synchronous dispatch are implemented.
-   The borrowed application handler view and query/end-session metadata/bindings
-   are implemented, as are scoped CanVeto mutation, timestamp and command metadata.
-   Scoped native ID mutation and routing semantics are implemented. Managed
-   handler client data and per-binding Lisp user-data lifetimes are established.
-   Next define retained-origin, native command/client-item data and arbitrary
-   native object adoption contracts. Bounded origin detachment, command payloads,
-   managed stacks and owned/pending events are implemented. Bounded registered-tag mutation
-   with actual native class checks is implemented. Category metadata is implemented. Current type
-   reads and bounded origin identities are implemented; arbitrary native tag/origin
-   writers and general wxObject wrappers remain open. Native OS session delivery is unverified. Native session events are
-   wxApp-only, and default END_SESSION handling can exit the process: never
-   synthesize live application end-session events as an ordinary test. Use owned
-   handlers for synthetic family tests and distinguish OS validation from them.
-   Standalone native TryAfter must suppress app fallback for session kinds;
-   ordinary standalone wxEvtHandler dispatch can otherwise reach app defaults.
-   Native control-specific notify subclasses and remaining event ownership stay open. Preserve immutable
-   snapshots and opaque binding/context identities; never expose a native event
-   pointer after callback return. Arbitrary native event classes/userData adoption, session routing and
-   arbitrary borrowed/native stack adoption remains a gap.
-4. Build timer/idle, event propagation/skip/veto and worker-to-GUI dispatch on
-   those contracts, adding prerequisite value types before their consumers.
-   Existing immutable event snapshots do not provide mutable native event access
-   or native virtual overrides. Do not mark those capabilities complete.
-5. Continue all remaining C1 groups, then C2–C7, reviewing dependencies and
-   supported platform/build variants rather than treating the current slice
-   ordering as an exhaustive design for the rest of the project.
+1. Preserve core ownership/invalidation, callbacks/main-thread rules, CLOS APIs
+   and required documentation/examples/docset/testing for every delivered feature.
+2. Idle support is complete within its documented scope. Next implement
+   **menus/actions plus standard dialogs** for a form/editor. Add only necessary
+   timer/value/lifetime prerequisites; do not drain native ownership/utilities.
+3. Expand controls/layout, navigation/notebooks, list/tree, clipboard and drawing
+   against form/editor, tree/list manager and drawing/monitoring acceptance.
+   Existing examples verify bounded behavior, not those whole applications.
+4. Add specialized depth on demand. Prefer Lisp-native utility/model abstractions
+   where literal native strings/containers/files/network wrappers add little value.
+5. Keep native checkboxes factual and platform claims tied to reports. Retained
+   origins, external native adoption and unsupported derived classes stay gaps,
+   but need not precede unrelated menus/controls/dialogs. C1–C7 are inventory
+   categories, not a delivery sequence. Preserve isolated session rules; never
+   synthesize process-exiting live application END_SESSION in ordinary tests.
 
 ### Resume and verification checklist
 
@@ -162,8 +141,8 @@ python3 tools/docset.py check
   directories fresh; the GUI runner rejects reused report directories.
 - Distinguish local checks from hosted platform and graphical-viewer validation.
   For documentation-only changes, verify regeneration/links/docset; do not claim
-  GUI suites were rerun. Only close a phase when all its required scope and
-  verification are complete.
+  GUI suites were rerun. Close a selected feature scope only after its agreed
+  implementation and verification are complete; category-wide parity is not required.
 - For isolated docset installation checks, use a dedicated discovery parent such
   as `/path/to/isolated-docsets/wxlambda`, with only one copy of this docset ID.
   The reader deduplicates IDs across siblings; old test copies under a shared
@@ -393,18 +372,18 @@ does not establish release-wide platform support.
 **Acceptance:** The sample launches, processes events, and exits without relying
 on development paths or Quicklisp.
 
-## Phase 6: Create the full wxWidgets coverage plan
+## Phase 6: Maintain the native inventory and GUI feature roadmap
 
 - [x] Inventory the pinned wxWidgets API, including widgets, functions, overloads,
   events, styles, optional components and platform-specific declarations.
 - [x] Mark implemented and partial operations in the detailed lists and class
   index, preserving their scopes and Lisp/native mappings across regeneration.
-- [x] Group the remaining inventory into coverage implementation phases with
-  dependencies, verification requirements and completion rules.
+- [x] Group the native inventory into source-linked categories and separate
+  feature priorities, verification requirements and scoped acceptance.
 - [x] Preserve release preparation as Phase 7 and link the new coverage plan.
 
 The [wxWidgets coverage plan](docs/WXWIDGETS-COVERAGE.md) records the implemented
-baseline and coverage phases C1–C7. Its class index and per-header declaration
+baseline and inventory categories C1–C7. Its class index and per-header declaration
 checklists cover all 398 wxWidgets 3.2.12 interface headers, with source links
 and a hash manifest. A persistent status ledger retains checked/partial entries;
 compiler scaffolding is context rather than binding tasks. These are
@@ -412,10 +391,11 @@ source-inventory entries, not a count of distinct
 functions or a claim of full binding coverage. Final source/documentation and
 inherited-API reconciliation is an explicit remaining coverage task.
 
-**Acceptance:** Every pinned interface header has phased, source-linked work
-items; existing support is distinguished from complete class/API coverage.
+**Acceptance:** Every pinned interface header has categorized, source-linked
+entries; existing support is distinguished from complete class/API coverage.
 The inventory-plan deliverable is complete. C1/C2 implementation is underway;
-all remaining pending/partial scope across C1–C7 remains required for the final goal.
+remaining pending/partial scope stays visible for GUI feature selection. The
+original exhaustive-parity acceptance objective is superseded.
 
 ## Phase 7: Prepare the release
 
@@ -445,6 +425,12 @@ the built docset uses Cadre's format version 1 and includes the public wxlambda
 reference, project guides and example sources together. All three files are
 present; `docset:check-docset` reports zero problems; export coverage, links,
 example execution and Cadre discovery/lookup/navigation checks pass.
+
+## Historical implementation checkpoints (earlier goal superseded)
+
+These dated checkpoints retain original scope/evidence. Complete-parity or strict
+C1-before-C2 instructions below describe the former goal; the current handoff and
+feature policy supersede them without changing recorded implementation facts.
 
 ## Coverage implementation: first slice
 
@@ -1414,11 +1400,64 @@ delivery, graphical Cadre and prior inaccessible pointer/class-mismatch branches
 remain unverified. Continue C1 retained-origin/native client-item ownership
 or broader lifetime prerequisites without exposing arbitrary native pointers.
 
+## Broad GUI selective-depth scope and bounded idle (2026-10-28)
+
+The user explicitly replaced exhaustive wxWidgets parity with broad GUI coverage
+and selective depth. Current AGENTS/README/roadmap/generator text now separates
+native factual status from core/planned/on-demand/Lisp-native/deferred feature
+priorities. C1–C7 are inventory categories, not delivery order; pending native APIs
+are not automatic release blockers. Dated ledgers preserve earlier goal language
+as superseded history. Representative form/editor, tree/list manager and drawing/
+monitoring applications define acceptance; selected platform claims require reports.
+The immediate post-idle vertical slice is menus/actions plus standard dialogs,
+not additional ownership/utilities unless that GUI feature actually needs them.
+
+ABI 31 adds native :IDLE/family :IDLE snapshots/current/owned resources, idle-only
+RequestMore SETF, zero-argument global IDLE-MODE/SETF restored at finish, own-window
+wxWS_EX_PROCESS_IDLE property preserving other bits, and GUI-thread WAKE-UP-IDLE
+without inline pumping. Native mode/visibility/app rules control automatic idle;
+explicit synthetic delivery bypasses that policy. ProcessPendingEvents does not
+generate idle, while ProcessEvents can Yield/ProcessIdle. Bound work and stop
+RequestMore when finished; no timer/busy-loop/count guarantee. CanSend is absent
+from the pinned interface and is not mapped. Owned MORE-REQUESTED-P initargs are
+idle-only, source state wins clone defaults and keyword synthetic dispatch adds
+no new payload option.
+
+The inventory regression initially retained an assertion for the superseded
+full-parity requirement; it was replaced with feature-priority/status-separation
+checks before final validation.
+
+Verified counts: 131 exports, 92 named generics, 30 generic SETF writers,
+48 GUI scenarios, 190 docset entries and twenty-nine examples. Independent
+runtime/native-harness and roadmap/idle-documentation reviews pass. Documentation
+review found an omitted wxIdleEvent constructor attribution on OWNED-EVENT; fixed
+and rechecked. No runtime regression failures occurred.
+
+Both local full GUI suites and native preflights pass, including the final idle
+window-stack/user-data integration tests. Focused regressions/example pass on
+SBCL and CCL; native regression passes with zero wx assertions
+(quiet-run.e4oXnAfe). Mode restoration on ordinary finish is runtime-tested;
+exception-path restoration is statically reviewed rather than fault-injected.
+Thirteen inventory tests and sixteen Python tests pass. Five relocated package
+checks pass. Docset checking reports zero problems, with actual public-export
+and SETF coverage, isolated installation, discovery, symbol lookup and guide/example
+access verified. Reports: evidence/idle-events/{sbcl,ccl}-20261028-final/ and
+evidence/packaging/idle-events-20261028/; package: dist/wxlambda-form-idle-events.
+
+Hosted Windows/Linux GUI, real OS-session delivery, graphical Cadre and previous
+inaccessible pointer/class-mismatch branches remain unverified. Native omissions
+remain factual inventory entries, not automatic blockers for unrelated GUI work.
+**Next batch: menus/actions plus standard dialogs for the form/editor workflow,**
+with only the value/lifetime prerequisites that feature needs. The earlier saved
+native-only idle checkpoint is now integrated; do not reapply its patch.
+
 ## Decisions
 
-- D1 Keep a bounded first release as an intermediate milestone. The user has
-  clarified that the final goal is complete wxWidgets coverage through C1–C7;
-  the first release and individual slices do not satisfy final acceptance.
+- D1 (superseded) The former complete-wxWidgets objective treated bounded releases
+  as intermediate and every native gap as required; retained as historical context.
+- D8 Current goal is broad GUI coverage with selective depth. Feature policy and
+  representative-app acceptance govern delivery; C1–C7 are inventory categories
+  and native pending entries are not automatic release blockers.
 - D2 Gate editor support on prototype evidence because main-thread integration
   remains unproven; rejected: making release completion depend indefinitely on
   SLIME/SLY.
