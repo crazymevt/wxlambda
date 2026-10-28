@@ -2,7 +2,7 @@
 
 This C1 slice binds `wxNewEventType`, synthetic `wxCommandEvent`/`wxNotifyEvent`
 families and synchronous `wxEvtHandler::ProcessEvent`. The baseline is wxWidgets
-3.2.12 and the native bridge is ABI 23. It does not bind native control-specific
+3.2.12 and the native bridge is ABI 24. It does not bind native control-specific
 notify subclasses or OS session routing.
 
 ## Register a named native type
@@ -142,3 +142,8 @@ under `$XDG_DATA_HOME/docsets/wxlambda/` (default `~/.local/share/docsets/wxlamb
 Hosted GUI and graphical Cadre remain separate validation work.
 
 See the [borrowed application-handler view](APPLICATION-HANDLER.md) for managed wxApp identity, inherited dispatch and lifetime restrictions. Session-event routing remains unbound.
+
+[Owned events](OWNED-EVENTS.md) now provide detached native construction/cloning,
+explicit disposal, mutable value fields and copied dispatch. Earlier immutable
+snapshots and scoped contexts keep their lifetime rules. Arbitrary native classes,
+origin retention and client/userData ownership remain open.

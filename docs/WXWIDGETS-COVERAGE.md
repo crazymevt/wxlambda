@@ -93,11 +93,11 @@ contracts first. C2 remains partial; C3–C7 have no public bindings recorded.
 See the [C1 details](coverage/phase-c1.md), [C2 details](coverage/phase-c2.md) and
 [class index](coverage/classes.md) for the remaining work within bound families.
 
-The current bridge is ABI 23, with 104 public Lisp exports. The latest code passes
-40 GUI scenarios on both local Apple Silicon macOS SBCL/CCL configurations and
+The current bridge is ABI 24, with 109 public Lisp exports. The owned-event batch passes
+41 GUI scenarios on both local Apple Silicon macOS SBCL/CCL configurations and
 five packaging checks. These are local results retained under
-`evidence/event-tags/` and `evidence/packaging/event-tags-20261028/`;
-they do not validate Linux/Windows or the graphical Cadre viewer. The event-tags
+`evidence/owned-events/` and `evidence/packaging/owned-events-20261028/`;
+they do not validate Linux/Windows or the graphical Cadre viewer. The owned-event
 implementation reruns the GUI suites; documentation-only
 updates must distinguish retained results from newly run checks.
 
@@ -167,6 +167,7 @@ widget classes has complete wxWidgets coverage yet.
 - [x] Current native type reads and captured/current opaque origin IDs for registered bridge objects. Native origin/type writers, general wxObject wrappers and ownership remain open.
 - [x] Saved/current event category and compiled :UI/:USER-INPUT/:SOCKET/:TIMER/:THREAD/:ALL mask lookup. ALL includes actual native bits; category-specific families and YieldFor remain open.
 - [x] Registered same-family event-native-type SETF with actual native class checks; built-in/session/unknown tags reject. Origin retention and arbitrary tag mutation remain open.
+- [x] OWNED-EVENT construction/cloning/disposal/liveness, generic command text/integer SETF and copy-based native dispatch. Exact native classes and detached origins only; arbitrary classes, retained origin, source transfer and client/userData ownership remain open.
 - [x] Native errors translated to Lisp `native-error` conditions.
 - [x] Event snapshots: `event`, `event-p`, `event-kind`, `event-source`,
   `event-text`, `event-checked-p`, `event-selection` for four command kinds plus :close.
@@ -365,3 +366,7 @@ the same source version. Update `docs/coverage/status.json` when implementing
 bindings; regeneration preserves those marks in the function lists and class
 index. Do not edit generated checkboxes directly. A new upstream version requires
 reviewing and migrating the exact declaration mappings before regeneration.
+
+The larger ABI 24 owned-event batch expands the runner to 41 scenarios. Its final
+full-suite/package evidence is pending during implementation; do not infer hosted
+platform or native OS-session validation from the local owned-resource checks.

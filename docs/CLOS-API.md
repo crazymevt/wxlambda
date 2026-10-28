@@ -171,3 +171,8 @@ metadata; see [notify type scope](NOTIFY-EVENTS.md).
 See the [borrowed application-handler view](APPLICATION-HANDLER.md) for managed wxApp identity, inherited dispatch and lifetime restrictions. Session bindings and logging-off metadata are available; real OS delivery remains unverified.
 
 [Session events](SESSION-EVENTS.md) extend the close family with query/end-session kinds, scoped logging-off metadata and isolated synthetic dispatch. Native OS session delivery remains unverified.
+
+[Owned events](OWNED-EVENTS.md) now provide detached native construction/cloning,
+explicit disposal, mutable value fields and copied dispatch. Earlier immutable
+snapshots and scoped contexts keep their lifetime rules. Arbitrary native classes,
+origin retention and client/userData ownership remain open.

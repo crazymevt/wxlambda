@@ -55,15 +55,18 @@ must reconcile additional documented public interfaces beyond those headers.
   keyword mask lookup; selective YieldFor remains open.
 - Tag-mutation milestone: registered same-family native type SETF with actual
   native class checks; built-in/session tags remain excluded.
-- Current bridge ABI: 23. Public API: 104 exports, nine window wrapper classes
-  (eight concrete widget kinds) plus the event-handler base, 62 named generics and
-  eighteen generic SETF writers. The application-handler is a borrowed view; no
+- Owned-event batch: detached native-backed event construction, independent clone/
+  disposal/liveness, mutable command payloads and copy-based queue/process dispatch.
+  Final batch verification and independent review pass; exact classes and detached origins only.
+- Current bridge ABI: 24. Public API: 109 exports, nine window wrapper classes
+  (eight concrete widget kinds) plus the event-handler base, 69 named generics and
+  twenty generic SETF writers. The application-handler is a borrowed view; no
   native application construction or arbitrary-event class binding exists yet; built-ins plus registered command/notify names have
   observer/contextual bindings.
-- Latest implementation verification: 40 GUI scenarios and native preflight
+- Latest implementation verification: 41 GUI scenarios and native preflight
   pass on local Apple Silicon macOS SBCL 2.6.9 and CCL 1.13. Final reports:
-  `evidence/event-tags/{sbcl,ccl}-20261028/`. Five package checks
-  pass in `evidence/packaging/event-tags-20261028/`.
+  `evidence/owned-events/{sbcl,ccl}-20261028/`. Five package checks
+  pass in `evidence/packaging/owned-events-20261028/`.
   Hosted Linux/Windows GUI behavior and the graphical Cadre viewer remain open.
 
 ### Next dependency and working order
@@ -83,7 +86,8 @@ must reconcile additional documented public interfaces beyond those headers.
    The borrowed application handler view and query/end-session metadata/bindings
    are implemented, as are scoped CanVeto mutation, timestamp and command metadata.
    Scoped native ID mutation and routing semantics are implemented. Next define
-   origin retention/native ownership contracts. Bounded registered-tag mutation
+   remaining origin retention/native ownership contracts after the detached
+   owned-event batch. Bounded registered-tag mutation
    with actual native class checks is implemented. Category metadata is implemented. Current type
    reads and bounded origin identities are implemented; arbitrary native tag/origin
    writers and general wxObject wrappers remain open. Native OS session delivery is unverified. Native session events are
@@ -1058,6 +1062,56 @@ guide/example checks on both Lisps. Evidence paths are in the handoff. Hosted
 Windows/Linux GUI, actual OS session delivery and graphical Cadre remain
 unverified. Next define origin retention and persistent native event ownership
 contracts; preserve actual-class checks and isolated session fallback.
+
+## Larger owned-event construction, cloning and dispatch batch (2026-10-28)
+
+ABI 24 adds OWNED-EVENT, MAKE-EVENT, CLONE-EVENT, DESTROY-EVENT and EVENT-ALIVE-P.
+Native-backed CLOS initialization supports subclass slots/defaults/AFTER hooks
+and mixed-resource rollback. Clone construction preserves source state over
+inherited payload defaults; factory calls reject explicit payload overrides.
+Direct MAKE-INSTANCE :CLONE-FROM uses source state over all payload initargs.
+Owned objects remain session-registered until explicit destruction or cleanup;
+there is no GC finalizer. An independent clone, queue copy or processing copy
+survives disposal of its source. Snapshots remain immutable; contexts remain
+innermost-callback scoped. EVENT-KIND/FAMILY/TEXT/INTEGER are generic and native
+command text/integer SETF now accepts owned values and current contexts.
+
+Only exact wxCommandEvent/wxNotifyEvent/wxCloseEvent classes clone. Borrowed
+userdata/client pointers reject, native origin is detached, and effective string
+payload is captured before origin removal. Copy dispatch attaches its receiver
+as native origin; no source ownership is transferred. Native session event copies
+still require isolated standalone receivers. Arbitrary origin writes/retention,
+native derived classes, generic wxObject wrappers and direct transfer remain gaps.
+
+Implementation verification caught a renamed BOA snapshot field mismatch, an
+overstrict clone-payload check that rejected inherited default KIND, and a rollback
+test that needed to pump asynchronous wxFrame destruction. Independent review
+found mixed OWNED-EVENT/EVENT-HANDLER ancestry could overwrite handles; both
+construction paths now reject it before allocation. Review also found lazy
+wxEVT_TEXT GetString can read a text-entry origin instead of stored payload:
+context text SETF rejects tracked text-entry/unknown origin cases, detached clones
+freeze effective text, and owned text-change copies reject text-entry receivers
+before emission. Existing keyword synthetic behavior is unchanged.
+
+Docset generation initially caught a missing class syntax field; it was added
+before rebuilding.
+
+Final batch inventory: 109 exports, 69 named generics, 20 generic SETF writers,
+41 GUI scenarios, 154 docset entries and twenty-two example sources. Independent
+runtime and documentation reviews pass after resolving the findings above.
+All 41 local GUI scenarios and native preflight pass on SBCL and CCL. The five
+rebuilt relocated-package checks pass. Python/inventory regressions and actual
+export/SETF lookup checks pass; docset checker reports zero problems, with isolated
+installation, discovery and API/guide/example access verified on both Lisps.
+Evidence is in `evidence/owned-events/{sbcl,ccl}-20261028/` and
+`evidence/packaging/owned-events-20261028/`. Two user-authorized subagents handled
+documentation/coverage and expanded tests in parallel; independent review remained
+separate. One test-only STRING= arity error was corrected before passing checks.
+Hosted Windows/Linux GUI, real OS-session
+delivery and graphical Cadre remain unverified, as do safe-public-API-inaccessible
+null/untracked origins and incompatible actual-class rejection branches.
+Next define explicit origin retention/ownership or another prerequisite C1 slice
+before widening pointer-bearing native events; retain no unchecked native pointer.
 
 ## Decisions
 

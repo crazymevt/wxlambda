@@ -5,6 +5,7 @@
 #include <wx/gauge.h>
 #include <wx/weakref.h>
 #include <memory>
+#include <typeinfo>
 #include <unordered_set>
 #include <vector>
 #include <limits>
@@ -40,6 +41,7 @@ thread_local std::string label_result;
 thread_local std::string metadata_result;
 std::unordered_map<wxl_handle, wxWeakRef<wxWindow>> windows;
 std::unordered_map<wxl_handle, std::unique_ptr<wxEvtHandler>> owned_handlers;
+std::unordered_map<wxl_handle, std::unique_ptr<wxEvent>> owned_events;
 std::unordered_map<wxl_handle, uint64_t> handlers;
 struct Binding;
 std::unordered_map<uint64_t, std::shared_ptr<Binding>> bindings;
@@ -117,6 +119,22 @@ wxl_handle origin_id(const wxEvent& event) {
     for (const auto& item : windows)
         if (item.second.get() && origin == item.second.get()) return item.first;
     return 0;
+}
+void set_registered_type(wxEvent& event, int type) {
+        const RegisteredEvent* source = nullptr;
+        const RegisteredEvent* target = nullptr;
+        for (const auto& item : registered_events) {
+            if (item.second.type == event.GetEventType()) source = &item.second;
+            if (item.second.type == type) target = &item.second;
+        }
+        require(source && target, "Type mutation requires registered source and target tags");
+        require(source->family == target->family, "Type mutation cannot change event family");
+        auto* command = dynamic_cast<wxCommandEvent*>(&event);
+        auto* notify = dynamic_cast<wxNotifyEvent*>(&event);
+        require((source->family == WXL_FAMILY_COMMAND && command && !notify) ||
+                (source->family == WXL_FAMILY_NOTIFY && notify),
+                "Registered tag does not match the actual native event class");
+        event.SetEventType(type);
 }
 template<class T> T* as(wxl_handle id) {
     auto* object = dynamic_cast<T*>(window(id));
@@ -211,6 +229,81 @@ std::unique_ptr<wxEvent> synthetic_event(wxEvtHandler* receiver, int kind, int e
     }
     event->SetEventObject(receiver);
     return event;
+}
+int kind_of(wxEvent& event) {
+    for (int kind = 1; kind <= 7; ++kind)
+        if (native_event_type(kind) == event.GetEventType()) return kind;
+    for (const auto& item : registered_events)
+        if (item.second.type == event.GetEventType()) return item.first;
+    throw std::runtime_error("Unsupported native event type");
+}
+wxEvent& owned_event(wxl_handle id) {
+    ready();
+    const auto found = owned_events.find(id);
+    require(found != owned_events.end(), "Invalid or destroyed owned-event handle");
+    return *found->second;
+}
+std::unique_ptr<wxEvent> detached_clone(wxEvent& event) {
+    require(typeid(event) == typeid(wxCommandEvent) || typeid(event) == typeid(wxNotifyEvent) ||
+            typeid(event) == typeid(wxCloseEvent), "Cloning this native event class is not supported");
+    kind_of(event);
+    require(event.GetEventUserData() == nullptr, "Cannot clone borrowed event userData");
+    if (auto* command = dynamic_cast<wxCommandEvent*>(&event))
+        require(!command->GetClientData() && !command->GetClientObject(), "Cannot clone borrowed command client data");
+    // Freeze effective text before detachment: wxEVT_TEXT can lazily read its
+    // wxTextEntry origin instead of the stored m_cmdString.
+    auto* command = dynamic_cast<wxCommandEvent*>(&event);
+    const wxString text = command ? command->GetString() : wxString();
+    std::unique_ptr<wxEvent> result(event.Clone());
+    require(result != nullptr, "Native event clone failed");
+    if (command) static_cast<wxCommandEvent*>(result.get())->SetString(text);
+    result->SetEventObject(nullptr);
+    return result;
+}
+int64_t read_event_field(wxEvent& event, int field) {
+    auto* close = dynamic_cast<wxCloseEvent*>(&event);
+    auto* command = dynamic_cast<wxCommandEvent*>(&event);
+    switch (field) {
+        case 0: return kind_of(event);
+        case 1: return event.GetId();
+        case 2: return event.GetTimestamp();
+        case 3: return event.GetEventType();
+        case 4: return event_can_veto(event);
+        case 5: require(close || dynamic_cast<wxNotifyEvent*>(&event), "This event family has no veto state"); return event_vetoed(event);
+        case 6: require(close && session_type(event.GetEventType()), "Logging-off requires a session event"); return close->GetLoggingOff();
+        case 7: return command ? command->GetInt() : 0;
+        case 8: return event.GetEventCategory();
+        case 9: return event.IsCommandEvent();
+        case 10: return event.GetSkipped();
+        case 11: return event.ShouldPropagate();
+        case 12: return native_event_family(kind_of(event));
+        default: throw std::runtime_error("Unknown event field");
+    }
+}
+void write_event_field(wxEvent& event, int field, int64_t value) {
+    auto* close = dynamic_cast<wxCloseEvent*>(&event);
+    auto* notify = dynamic_cast<wxNotifyEvent*>(&event);
+    auto* command = dynamic_cast<wxCommandEvent*>(&event);
+    if (field == 1 || field == 3 || field == 7 || field == 11)
+        require(value >= std::numeric_limits<int>::min() && value <= std::numeric_limits<int>::max(), "Event integer outside signed int range");
+    switch (field) {
+        case 1: event.SetId(static_cast<int>(value)); break;
+        case 2:
+            require(value >= std::numeric_limits<long>::min() && value <= std::numeric_limits<long>::max(), "Timestamp outside native LONG range");
+            event.SetTimestamp(static_cast<long>(value)); break;
+        case 3: set_registered_type(event, static_cast<int>(value)); break;
+        case 4: require(close != nullptr, "CanVeto mutation requires a close-family event"); close->SetCanVeto(value != 0); break;
+        case 5:
+            if (close) { require(close->CanVeto(), "This close event cannot be vetoed"); close->Veto(value != 0); }
+            else if (notify) { if (value) notify->Veto(); else notify->Allow(); }
+            else throw std::runtime_error("This event family has no veto state");
+            break;
+        case 6: require(close && session_type(event.GetEventType()), "Logging-off requires a session event"); close->SetLoggingOff(value != 0); break;
+        case 7: require(command != nullptr, "Integer payload requires a command/notify event"); command->SetInt(static_cast<int>(value)); break;
+        case 10: event.Skip(value != 0); break;
+        case 11: require(value >= 0, "Propagation level must be nonnegative"); event.ResumePropagation(static_cast<int>(value)); break;
+        default: throw std::runtime_error("This event field is read-only or unknown");
+    }
 }
 struct Binding {
     wxWeakRef<wxEvtHandler> receiver;
@@ -318,7 +411,7 @@ wxString utf8(const char* value) {
 }
 }
 extern "C" {
-int wxl_abi_version() { return 23; }
+int wxl_abi_version() { return 24; }
 const char* wxl_last_error() { return error.c_str(); }
 int wxl_start(wxl_callback callback) {
     return status([&] {
@@ -386,6 +479,7 @@ int wxl_finish() {
         // Destroy remaining top-level windows before OnExit (also on setup failure).
         while (!wxTopLevelWindows.empty())
             delete wxTopLevelWindows.GetFirst()->GetData();
+        owned_events.clear();
         owned_handlers.clear();
         application_handle = 0;
         wxTheApp->OnExit();
@@ -495,23 +589,7 @@ int wxl_context_category(uint64_t token, int* value) {
     });
 }
 int wxl_context_set_native_type(uint64_t token, int type) {
-    return status([&] {
-        auto& event = current_event(token);
-        const RegisteredEvent* source = nullptr;
-        const RegisteredEvent* target = nullptr;
-        for (const auto& item : registered_events) {
-            if (item.second.type == event.GetEventType()) source = &item.second;
-            if (item.second.type == type) target = &item.second;
-        }
-        require(source && target, "Type mutation requires registered source and target tags");
-        require(source->family == target->family, "Type mutation cannot change event family");
-        auto* command = dynamic_cast<wxCommandEvent*>(&event);
-        auto* notify = dynamic_cast<wxNotifyEvent*>(&event);
-        require((source->family == WXL_FAMILY_COMMAND && command && !notify) ||
-                (source->family == WXL_FAMILY_NOTIFY && notify),
-                "Registered tag does not match the actual native event class");
-        event.SetEventType(type);
-    });
+    return status([&] { set_registered_type(current_event(token), type); });
 }
 int wxl_context_native_type(uint64_t token, int* value) {
     return status([&] {
@@ -664,6 +742,86 @@ int wxl_process_event(wxl_handle id, int kind, int event_id, const char* text, s
         auto event = synthetic_event(receiver, kind, event_id, text, length, value, can_veto, vetoed, logging_off);
         const bool handled = receiver->ProcessEvent(*event);
         *final_veto = event_vetoed(*event) ? 1 : 0;
+        return handled;
+    });
+}
+wxl_handle wxl_owned_event(int kind, int event_id, const char* text, size_t length,
+                            int value, int can_veto, int vetoed, int logging_off) {
+    return create([&] {
+        auto event = synthetic_event(nullptr, kind, event_id, text, length, value, can_veto, vetoed, logging_off);
+        const auto id = next_handle++;
+        owned_events.emplace(id, std::move(event));
+        return id;
+    });
+}
+wxl_handle wxl_clone_event(uint64_t source, int contextual) {
+    return create([&] {
+        auto copy = detached_clone(contextual ? current_event(source) : owned_event(source));
+        const auto id = next_handle++;
+        owned_events.emplace(id, std::move(copy));
+        return id;
+    });
+}
+int wxl_event_alive(wxl_handle id) {
+    return boolean_result([&] { ready(); return owned_events.count(id) != 0; });
+}
+int wxl_event_destroy(wxl_handle id) {
+    return status([&] { owned_event(id); owned_events.erase(id); });
+}
+int wxl_event_field(uint64_t source, int contextual, int field, int64_t* value) {
+    return status([&] {
+        require(value != nullptr, "Missing event field output");
+        *value = read_event_field(contextual ? current_event(source) : owned_event(source), field);
+    });
+}
+int wxl_set_event_field(uint64_t source, int contextual, int field, int64_t value) {
+    return status([&] { write_event_field(contextual ? current_event(source) : owned_event(source), field, value); });
+}
+const char* wxl_event_text(uint64_t source, int contextual, size_t* length) {
+    return metadata_string([&] {
+        auto& event = contextual ? current_event(source) : owned_event(source);
+        auto* command = dynamic_cast<wxCommandEvent*>(&event);
+        require(command != nullptr, "Text payload requires a command/notify event");
+        return command->GetString();
+    }, length);
+}
+int wxl_set_event_text(uint64_t source, int contextual, const char* text, size_t length) {
+    return status([&] {
+        auto& event = contextual ? current_event(source) : owned_event(source);
+        auto* command = dynamic_cast<wxCommandEvent*>(&event);
+        require(command != nullptr, "Text payload requires a command/notify event");
+        if (event.GetEventType() == wxEVT_TEXT && event.GetEventObject()) {
+            const auto origin = origin_id(event);
+            require(origin != 0, "Cannot mutate text with an untracked native origin");
+            const auto found = windows.find(origin);
+            auto* window = found == windows.end() ? nullptr : found->second.get();
+            require(!window || !window->WXGetTextEntry(),
+                    "Text-entry-origin text-change payloads are lazy and cannot be mutated");
+        }
+        require(text || length == 0, "Null event text");
+        command->SetString(wxString::FromUTF8(text ? text : "", length));
+    });
+}
+int wxl_owned_stop(wxl_handle id) {
+    int level = 0;
+    const auto result = status([&] { level = owned_event(id).StopPropagation(); });
+    return result == 0 ? level : -1;
+}
+int wxl_dispatch_owned(wxl_handle receiver_id, wxl_handle event_id, int queued, int* final_veto) {
+    return boolean_result([&] {
+        require(final_veto != nullptr, "Missing final veto output");
+        *final_veto = 0;
+        auto* receiver = event_handler(receiver_id);
+        auto copy = detached_clone(owned_event(event_id));
+        require(!session_type(copy->GetEventType()) || owned_handlers.count(receiver_id),
+                "Synthetic session events require an isolated owned standalone handler");
+        auto* window = dynamic_cast<wxWindow*>(receiver);
+        require(copy->GetEventType() != wxEVT_TEXT || !window || !window->WXGetTextEntry(),
+                "Owned text-change dispatch to text-entry receivers would shadow the payload");
+        copy->SetEventObject(receiver);
+        if (queued) { receiver->QueueEvent(copy.release()); return true; }
+        const bool handled = receiver->ProcessEvent(*copy);
+        *final_veto = event_vetoed(*copy) ? 1 : 0;
         return handled;
     });
 }

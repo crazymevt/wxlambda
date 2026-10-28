@@ -27,6 +27,7 @@ def scenarios():
     yield "event-bindings", "event-bindings.lisp", {}
     yield "event-contexts", "event-contexts.lisp", {}
     yield "close-events", "close-events.lisp", {}
+    yield "owned-events", "owned-events.lisp", {}
     yield "event-tags", "event-tags.lisp", {}
     yield "event-categories", "event-categories.lisp", {}
     yield "event-origins", "event-origins.lisp", {}

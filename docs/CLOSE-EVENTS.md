@@ -5,7 +5,7 @@ This C1 slice extends bindings beyond command events with `:close`, backed by
 `event-family` classifies these snapshots as `:command` or `:close`;
 registered [notify events](NOTIFY-EVENTS.md) additionally use `:notify`; this is a portable
 supported-kind classification, not arbitrary native RTTI or event registration.
-The baseline is wxWidgets 3.2.12 and the native bridge is ABI 23.
+The baseline is wxWidgets 3.2.12 and the native bridge is ABI 24.
 
 The native type lookup is now **`event-type`**, replacing `command-event-type`
 without an alias. It accepts the seven built-in kinds and registered command/notify names. Native type IDs remain
@@ -129,3 +129,8 @@ while RUN continues. These APIs, this guide and example are included in the
 remain separate from local shared-reader validation.
 
 [Session events](SESSION-EVENTS.md) extend the close family with query/end-session kinds, scoped logging-off metadata and isolated synthetic dispatch. Native OS session delivery remains unverified.
+
+[Owned events](OWNED-EVENTS.md) now provide detached native construction/cloning,
+explicit disposal, mutable value fields and copied dispatch. Earlier immutable
+snapshots and scoped contexts keep their lifetime rules. Arbitrary native classes,
+origin retention and client/userData ownership remain open.

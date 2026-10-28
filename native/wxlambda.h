@@ -101,6 +101,17 @@ WXL_API int wxl_binding_active(uint64_t token);
 WXL_API int wxl_register_event_type(int family);
 WXL_API int wxl_process_event(wxl_handle handler, int kind, int id, const char *text, size_t length, int value, int can_veto, int vetoed, int logging_off, int *final_veto);
 WXL_API int wxl_queue_event(wxl_handle handler, int kind, int id, const char *text, size_t length, int value, int can_veto, int vetoed, int logging_off);
+/* Owned event handles are independent resources. Dispatch always clones. */
+WXL_API wxl_handle wxl_owned_event(int kind, int id, const char *text, size_t length, int value, int can_veto, int vetoed, int logging_off);
+WXL_API wxl_handle wxl_clone_event(uint64_t source, int contextual);
+WXL_API int wxl_event_alive(wxl_handle event);
+WXL_API int wxl_event_destroy(wxl_handle event);
+WXL_API int wxl_event_field(uint64_t source, int contextual, int field, int64_t *value);
+WXL_API int wxl_set_event_field(uint64_t source, int contextual, int field, int64_t value);
+WXL_API const char *wxl_event_text(uint64_t source, int contextual, size_t *length);
+WXL_API int wxl_set_event_text(uint64_t source, int contextual, const char *text, size_t length);
+WXL_API int wxl_owned_stop(wxl_handle event);
+WXL_API int wxl_dispatch_owned(wxl_handle receiver, wxl_handle event, int queued, int *final_veto);
 WXL_API wxl_handle wxl_frame(const char *title, int width, int height);
 WXL_API wxl_handle wxl_panel(wxl_handle parent);
 WXL_API wxl_handle wxl_button(wxl_handle parent, const char *label);

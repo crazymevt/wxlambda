@@ -89,7 +89,7 @@
           (if (probe-file local)
               (cffi:load-foreign-library local)
               (cffi:use-foreign-library wxlambda-native))))
-    (unless (= 23 (%abi-version)) (error "Unsupported wxlambda native ABI"))
+    (unless (= 24 (%abi-version)) (error "Unsupported wxlambda native ABI"))
     (setf *native-loaded* t))
   t)
 
@@ -155,3 +155,14 @@
 (cffi:defcfun ("wxl_event_category_mask" %event-category-mask) :int (category :int))
 
 (cffi:defcfun ("wxl_context_set_native_type" %context-set-native-type) :int (context :uint64) (type :int))
+
+(cffi:defcfun ("wxl_owned_event" %owned-event) :uint64 (kind :int) (id :int) (text :pointer) (length :size) (value :int) (can-veto :int) (vetoed :int) (logging-off :int))
+(cffi:defcfun ("wxl_clone_event" %clone-event) :uint64 (source :uint64) (contextual :int))
+(cffi:defcfun ("wxl_event_alive" %event-alive) :int (event :uint64))
+(cffi:defcfun ("wxl_event_destroy" %event-destroy) :int (event :uint64))
+(cffi:defcfun ("wxl_event_field" %event-field) :int (source :uint64) (contextual :int) (field :int) (value :pointer))
+(cffi:defcfun ("wxl_set_event_field" %set-event-field) :int (source :uint64) (contextual :int) (field :int) (value :int64))
+(cffi:defcfun ("wxl_event_text" %event-text) :pointer (source :uint64) (contextual :int) (length :pointer))
+(cffi:defcfun ("wxl_set_event_text" %set-event-text) :int (source :uint64) (contextual :int) (text :pointer) (length :size))
+(cffi:defcfun ("wxl_owned_stop" %owned-stop) :int (event :uint64))
+(cffi:defcfun ("wxl_dispatch_owned" %dispatch-owned) :int (receiver :uint64) (event :uint64) (queued :int) (final-veto :pointer))

@@ -1,6 +1,6 @@
 # Native event type and origin identity
 
-ABI 23 extends EVENT-NATIVE-TYPE to a generic reader for immutable snapshots and
+ABI 24 extends EVENT-NATIVE-TYPE to a generic reader for immutable snapshots and
 current innermost contexts. EVENT-ORIGIN-ID is a new generic reader with the same
 saved/current lifetime distinction. Baseline: wxWidgets 3.2.12.
 
@@ -69,3 +69,8 @@ See [contexts](EVENT-CONTEXTS.md), [ID routing](EVENT-ROUTING.md) and
 [docset installation](DOCSET.md).
 
 [Event categories](EVENT-CATEGORIES.md) now provide saved/current native category flags and compiled keyword mask lookup, including the actual native ALL mask. Selective pumping remains unbound.
+
+[Owned events](OWNED-EVENTS.md) now provide detached native construction/cloning,
+explicit disposal, mutable value fields and copied dispatch. Earlier immutable
+snapshots and scoped contexts keep their lifetime rules. Arbitrary native classes,
+origin retention and client/userData ownership remain open.

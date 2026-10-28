@@ -82,5 +82,9 @@
   "event-tags.lisp": {
     "description": "Translate a registered command tag in a child callback, then verify payload-preserving parent delivery for synchronous and queued dispatch; clean up all resources.",
     "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/event-tags.lisp --eval '(wxlambda-event-tags:start)'"
+  },
+  "owned-events.lisp": {
+    "description": "Construct a reusable native message, mutate only a dispatch copy, retain a detached context clone, queue an independent copy and destroy its source before delivery.",
+    "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/owned-events.lisp --eval '(wxlambda-owned-events:start)'"
   }
 }

@@ -90,6 +90,13 @@ maps native metadata directly (including re-enabling); snapshots remain immutabl
 and metadata changes do not guarantee OS veto policy. Frame close acceptance is not
 a destruction guarantee. The type lookup is `event-type`, with no old-name alias.
 
+The native-backed `owned-event` resource supports detached command/notify/close
+construction, independent cloning/disposal and copied dispatch. Reject ancestry
+combining it with `event-handler`/window resources before native allocation.
+Direct clone construction uses source native state over payload defaults; factory
+clone calls reject explicit payload overrides. No raw origin retention or
+client/userData ownership is exposed.
+
 The native-backed `event-handler` base supports standalone session-owned handlers;
 windows borrow their existing native widget identity. Public window wrapper
 classes are `window` (abstract), `frame`, `panel`, `button`,

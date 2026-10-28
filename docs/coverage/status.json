@@ -911,12 +911,14 @@
       "symbol": "wxEvtHandler::QueueEvent",
       "status": "~",
       "lisp": [
-        "queue-event"
+        "queue-event",
+        "owned-event"
       ],
       "native": [
-        "wxl_queue_event"
+        "wxl_queue_event",
+        "wxl_dispatch_owned"
       ],
-      "scope": "Copied four-command or :CLOSE wxCloseEvent queues on exposed handlers, main-thread only. Kind-specific payloads and synthetic CanVeto option; queued frame close may run defaults. Arbitrary types, session events, native-origin override and worker dispatch remain open."
+      "scope": "Copied four-command or :CLOSE wxCloseEvent queues on exposed handlers, main-thread only. Kind-specific payloads and synthetic CanVeto option; queued frame close may run defaults. Arbitrary types, session events, native-origin override and worker dispatch remain open. OWNED-EVENT arguments dispatch independent detached clones, with receiver origin; source survives and may be destroyed after copying. Session receiver guards remain. Copied owned wxEVT_TEXT to text-entry receivers rejects before emission; keyword synthetic behavior is unchanged."
     },
     {
       "header": "wx/event.h",
@@ -929,9 +931,10 @@
       ],
       "native": [
         "wxl_bind",
-        "wxl_context_id"
+        "wxl_context_id",
+        "wxl_event_field"
       ],
-      "scope": "Immutable supported snapshots and current scoped native GetId. Signed32 including -1, status/output separated. No persistent native event wrapper."
+      "scope": "Immutable supported snapshots and current scoped native GetId. Signed32 including -1, status/output separated. No persistent native event wrapper. Live OWNED-EVENT receivers now support applicable field/family operations with independent native lifetime; snapshots remain immutable. Native current-context lifetime restrictions are unchanged."
     },
     {
       "header": "wx/event.h",
@@ -946,9 +949,10 @@
       "native": [
         "wxl_bind",
         "wxl_event_type",
-        "wxl_context_native_type"
+        "wxl_context_native_type",
+        "wxl_event_field"
       ],
-      "scope": "Immutable snapshot and current context process-local native type reads. No SETF type writer, native class replacement or stable serialized tag identity."
+      "scope": "Immutable snapshot and current context process-local native type reads. No SETF type writer, native class replacement or stable serialized tag identity. Live OWNED-EVENT receivers now support applicable field/family operations with independent native lifetime; snapshots remain immutable. Native current-context lifetime restrictions are unchanged."
     },
     {
       "header": "wx/event.h",
@@ -960,9 +964,10 @@
         "event-skipped-p"
       ],
       "native": [
-        "wxl_context_skipped"
+        "wxl_context_skipped",
+        "wxl_event_field"
       ],
-      "scope": "Scoped borrowed context from BIND-EVENT :WITH-CONTEXT T for supported command/close kinds; innermost callback validation, no stale/native pointer escape."
+      "scope": "Scoped borrowed context from BIND-EVENT :WITH-CONTEXT T for supported command/close kinds; innermost callback validation, no stale/native pointer escape. Live OWNED-EVENT receivers now support applicable field/family operations with independent native lifetime; snapshots remain immutable. Native current-context lifetime restrictions are unchanged."
     },
     {
       "header": "wx/event.h",
@@ -974,9 +979,11 @@
         "resume-event-propagation"
       ],
       "native": [
-        "wxl_context_resume_propagation"
+        "wxl_context_resume_propagation",
+        "wxl_event_field",
+        "wxl_set_event_field"
       ],
-      "scope": "Restore nonnegative signed-32-bit propagation level during the current contextual callback only; does not change Skip."
+      "scope": "Restore nonnegative signed-32-bit propagation level during the current contextual callback only; does not change Skip. Live OWNED-EVENT receivers now support applicable field/family operations with independent native lifetime; snapshots remain immutable. Native current-context lifetime restrictions are unchanged."
     },
     {
       "header": "wx/event.h",
@@ -988,9 +995,10 @@
         "event-propagates-p"
       ],
       "native": [
-        "wxl_context_propagates"
+        "wxl_context_propagates",
+        "wxl_event_field"
       ],
-      "scope": "Current scoped context query, independent of Skip; arbitrary event families remain unbound."
+      "scope": "Current scoped context query, independent of Skip; arbitrary event families remain unbound. Live OWNED-EVENT receivers now support applicable field/family operations with independent native lifetime; snapshots remain immutable. Native current-context lifetime restrictions are unchanged."
     },
     {
       "header": "wx/event.h",
@@ -1002,9 +1010,11 @@
         "(setf event-skipped-p)"
       ],
       "native": [
-        "wxl_context_set_skipped"
+        "wxl_context_set_skipped",
+        "wxl_event_field",
+        "wxl_set_event_field"
       ],
-      "scope": "Canonical generalized-boolean writer on current contextual command events. Contextual bindings default to consume; observer bindings still automatically Skip."
+      "scope": "Canonical generalized-boolean writer on current contextual command events. Contextual bindings default to consume; observer bindings still automatically Skip. Live OWNED-EVENT receivers now support applicable field/family operations with independent native lifetime; snapshots remain immutable. Native current-context lifetime restrictions are unchanged."
     },
     {
       "header": "wx/event.h",
@@ -1016,9 +1026,11 @@
         "stop-event-propagation"
       ],
       "native": [
-        "wxl_context_stop_propagation"
+        "wxl_context_stop_propagation",
+        "wxl_event_field",
+        "wxl_set_event_field"
       ],
-      "scope": "Current callback scope only. Returns previous level for restoration; no mutable access through saved snapshots."
+      "scope": "Current callback scope only. Returns previous level for restoration; no mutable access through saved snapshots. Live OWNED-EVENT receivers now support applicable field/family operations with independent native lifetime; snapshots remain immutable. Native current-context lifetime restrictions are unchanged."
     },
     {
       "header": "wx/event.h",
@@ -1028,12 +1040,15 @@
       "status": "~",
       "lisp": [
         "queue-event",
-        "event-logging-off-p"
+        "event-logging-off-p",
+        "owned-event",
+        "make-event"
       ],
       "native": [
-        "wxl_queue_event"
+        "wxl_queue_event",
+        "wxl_owned_event"
       ],
-      "scope": "Supported close/session snapshots and scoped contexts, including checked veto and logging-off metadata. Native app bindings exist; real OS session delivery is unverified. Synthetic session queue/process requires isolated owned handlers and blocks wxApp fallback. No persistent event ownership or arbitrary close types."
+      "scope": "Supported close/session snapshots and scoped contexts, including checked veto and logging-off metadata. Native app bindings exist; real OS session delivery is unverified. Synthetic session queue/process requires isolated owned handlers and blocks wxApp fallback. No persistent event ownership or arbitrary close types. Session-owned detached exact command/notify/close events now support native construction, cloning, disposal and copied dispatch; no arbitrary derived class, retained origin, client/userData ownership or source transfer. Native wxEVT_TEXT payload guards prevent lazy text-entry origin shadowing; detached clones freeze effective strings."
     },
     {
       "header": "wx/event.h",
@@ -1046,9 +1061,10 @@
         "event-logging-off-p"
       ],
       "native": [
-        "wxl_context_can_veto"
+        "wxl_context_can_veto",
+        "wxl_event_field"
       ],
-      "scope": "Supported close/session snapshots and scoped contexts, including checked veto and logging-off metadata. Native app bindings exist; real OS session delivery is unverified. Synthetic session queue/process requires isolated owned handlers and blocks wxApp fallback. No persistent event ownership or arbitrary close types."
+      "scope": "Supported close/session snapshots and scoped contexts, including checked veto and logging-off metadata. Native app bindings exist; real OS session delivery is unverified. Synthetic session queue/process requires isolated owned handlers and blocks wxApp fallback. No persistent event ownership or arbitrary close types. Live OWNED-EVENT receivers now support applicable field/family operations with independent native lifetime; snapshots remain immutable. Native current-context lifetime restrictions are unchanged."
     },
     {
       "header": "wx/event.h",
@@ -1064,9 +1080,11 @@
       "native": [
         "wxl_queue_event",
         "wxl_process_event",
-        "wxl_context_set_can_veto"
+        "wxl_context_set_can_veto",
+        "wxl_event_field",
+        "wxl_set_event_field"
       ],
-      "scope": "Synthetic construction and current close/session context SETF map native SetCanVeto directly, including re-enabling false. GetVeto hides stored veto while disabled. No persistent event wrapper; notify capability is intrinsic/read-only; OS veto acceptance unverified."
+      "scope": "Synthetic construction and current close/session context SETF map native SetCanVeto directly, including re-enabling false. GetVeto hides stored veto while disabled. No persistent event wrapper; notify capability is intrinsic/read-only; OS veto acceptance unverified. Live OWNED-EVENT receivers now support applicable field/family operations with independent native lifetime; snapshots remain immutable. Native current-context lifetime restrictions are unchanged."
     },
     {
       "header": "wx/event.h",
@@ -1079,9 +1097,11 @@
         "event-logging-off-p"
       ],
       "native": [
-        "wxl_context_set_vetoed"
+        "wxl_context_set_vetoed",
+        "wxl_event_field",
+        "wxl_set_event_field"
       ],
-      "scope": "Supported close/session snapshots and scoped contexts, including checked veto and logging-off metadata. Native app bindings exist; real OS session delivery is unverified. Synthetic session queue/process requires isolated owned handlers and blocks wxApp fallback. No persistent event ownership or arbitrary close types."
+      "scope": "Supported close/session snapshots and scoped contexts, including checked veto and logging-off metadata. Native app bindings exist; real OS session delivery is unverified. Synthetic session queue/process requires isolated owned handlers and blocks wxApp fallback. No persistent event ownership or arbitrary close types. Live OWNED-EVENT receivers now support applicable field/family operations with independent native lifetime; snapshots remain immutable. Native current-context lifetime restrictions are unchanged."
     },
     {
       "header": "wx/event.h",
@@ -1094,9 +1114,10 @@
         "event-logging-off-p"
       ],
       "native": [
-        "wxl_context_vetoed"
+        "wxl_context_vetoed",
+        "wxl_event_field"
       ],
-      "scope": "Supported close/session snapshots and scoped contexts, including checked veto and logging-off metadata. Native app bindings exist; real OS session delivery is unverified. Synthetic session queue/process requires isolated owned handlers and blocks wxApp fallback. No persistent event ownership or arbitrary close types."
+      "scope": "Supported close/session snapshots and scoped contexts, including checked veto and logging-off metadata. Native app bindings exist; real OS session delivery is unverified. Synthetic session queue/process requires isolated owned handlers and blocks wxApp fallback. No persistent event ownership or arbitrary close types. Live OWNED-EVENT receivers now support applicable field/family operations with independent native lifetime; snapshots remain immutable. Native current-context lifetime restrictions are unchanged."
     },
     {
       "header": "wx/window.h",
@@ -1133,12 +1154,14 @@
       "symbol": "wxEvtHandler::ProcessEvent",
       "status": "~",
       "lisp": [
-        "process-event"
+        "process-event",
+        "owned-event"
       ],
       "native": [
-        "wxl_process_event"
+        "wxl_process_event",
+        "wxl_dispatch_owned"
       ],
-      "scope": "Synchronous fresh supported synthetic event dispatch, native handled result plus copied final veto. Main thread, owned event lifetime and nearer Lisp callback-error boundary. Arbitrary existing native event objects and application session routing remain unbound."
+      "scope": "Synchronous fresh supported synthetic event dispatch, native handled result plus copied final veto. Main thread, owned event lifetime and nearer Lisp callback-error boundary. Arbitrary existing native event objects and application session routing remain unbound. OWNED-EVENT arguments dispatch independent detached clones, with receiver origin; source survives and may be destroyed after copying. Session receiver guards remain. Copied owned wxEVT_TEXT to text-entry receivers rejects before emission; keyword synthetic behavior is unchanged."
     },
     {
       "header": "wx/event.h",
@@ -1148,13 +1171,16 @@
       "status": "~",
       "lisp": [
         "queue-event",
-        "process-event"
+        "process-event",
+        "owned-event",
+        "make-event"
       ],
       "native": [
         "wxl_queue_event",
-        "wxl_process_event"
+        "wxl_process_event",
+        "wxl_owned_event"
       ],
-      "scope": "Registered custom notify tags only, copied ID/text/integer and optional initial veto. No native control-specific derived events or persistent event wrapper."
+      "scope": "Registered custom notify tags only, copied ID/text/integer and optional initial veto. No native control-specific derived events or persistent event wrapper. Session-owned detached exact command/notify/close events now support native construction, cloning, disposal and copied dispatch; no arbitrary derived class, retained origin, client/userData ownership or source transfer. Native wxEVT_TEXT payload guards prevent lazy text-entry origin shadowing; detached clones freeze effective strings."
     },
     {
       "header": "wx/event.h",
@@ -1166,9 +1192,11 @@
         "(setf event-vetoed-p)"
       ],
       "native": [
-        "wxl_context_set_vetoed"
+        "wxl_context_set_vetoed",
+        "wxl_event_field",
+        "wxl_set_event_field"
       ],
-      "scope": "Equivalent NIL assignment clears notify veto in the current context. Snapshots remain immutable."
+      "scope": "Equivalent NIL assignment clears notify veto in the current context. Snapshots remain immutable. Live OWNED-EVENT receivers now support applicable field/family operations with independent native lifetime; snapshots remain immutable. Native current-context lifetime restrictions are unchanged."
     },
     {
       "header": "wx/event.h",
@@ -1182,9 +1210,10 @@
       ],
       "native": [
         "wxl_context_vetoed",
-        "wxl_process_event"
+        "wxl_process_event",
+        "wxl_event_field"
       ],
-      "scope": "Equivalent NOT event-vetoed-p, or inverse final veto result from ProcessEvent. Supported notify family only."
+      "scope": "Equivalent NOT event-vetoed-p, or inverse final veto result from ProcessEvent. Supported notify family only. Live OWNED-EVENT receivers now support applicable field/family operations with independent native lifetime; snapshots remain immutable. Native current-context lifetime restrictions are unchanged."
     },
     {
       "header": "wx/event.h",
@@ -1196,9 +1225,11 @@
         "(setf event-vetoed-p)"
       ],
       "native": [
-        "wxl_context_set_vetoed"
+        "wxl_context_set_vetoed",
+        "wxl_event_field",
+        "wxl_set_event_field"
       ],
-      "scope": "True assignment vetoes the current notify event. Close-event CanVeto restrictions remain independently checked."
+      "scope": "True assignment vetoes the current notify event. Close-event CanVeto restrictions remain independently checked. Live OWNED-EVENT receivers now support applicable field/family operations with independent native lifetime; snapshots remain immutable. Native current-context lifetime restrictions are unchanged."
     },
     {
       "header": "wx/event.h",
@@ -1208,13 +1239,16 @@
       "status": "~",
       "lisp": [
         "queue-event",
-        "process-event"
+        "process-event",
+        "owned-event",
+        "make-event"
       ],
       "native": [
         "wxl_queue_event",
-        "wxl_process_event"
+        "wxl_process_event",
+        "wxl_owned_event"
       ],
-      "scope": "Built-in and registered command tags, copied ID/text/integer. Arbitrary native subclasses and persistent event objects are not exposed."
+      "scope": "Built-in and registered command tags, copied ID/text/integer. Arbitrary native subclasses and persistent event objects are not exposed. Session-owned detached exact command/notify/close events now support native construction, cloning, disposal and copied dispatch; no arbitrary derived class, retained origin, client/userData ownership or source transfer. Native wxEVT_TEXT payload guards prevent lazy text-entry origin shadowing; detached clones freeze effective strings."
     },
     {
       "header": "wx/event.h",
@@ -1227,9 +1261,10 @@
       ],
       "native": [
         "wxl_bind",
-        "wxl_process_event"
+        "wxl_process_event",
+        "wxl_event_field"
       ],
-      "scope": "Copied signed integer in supported command/notify snapshots. No native mutable GetInt view or arbitrary persistent event objects."
+      "scope": "Snapshots retain copied values. Owned/current command/notify values support generic event-integer reads; snapshots stay immutable. Signed32 integer or counted UTF-8 string transport; close-family reads are zero/NIL and writes reject. Native wxEVT_TEXT text-entry-origin SETF rejects; detached clones freeze effective native text. No client/userData ownership or arbitrary native classes."
     },
     {
       "header": "wx/event.h",
@@ -1241,9 +1276,10 @@
         "event-text"
       ],
       "native": [
-        "wxl_bind"
+        "wxl_bind",
+        "wxl_event_text"
       ],
-      "scope": "Copied strings for text-change and registered command/notify kinds, with explicit UTF-8 lengths. Other built-in snapshots retain their documented text scope."
+      "scope": "Snapshots retain copied values. Owned/current command/notify values support generic event-text reads; snapshots stay immutable. Signed32 integer or counted UTF-8 string transport; close-family reads are zero/NIL and writes reject. Native wxEVT_TEXT text-entry-origin SETF rejects; detached clones freeze effective native text. No client/userData ownership or arbitrary native classes."
     },
     {
       "header": "wx/event.h",
@@ -1253,13 +1289,15 @@
       "status": "~",
       "lisp": [
         "queue-event",
-        "process-event"
+        "process-event",
+        "(setf event-integer)"
       ],
       "native": [
         "wxl_queue_event",
-        "wxl_process_event"
+        "wxl_process_event",
+        "wxl_set_event_field"
       ],
-      "scope": "Synthetic payload initialization only: registered signed integer or built-in toggle/selection values. Existing scoped contexts cannot mutate integer fields."
+      "scope": "Snapshots retain copied values. Owned/current command/notify values support generic event-integer reads and SETF; snapshots stay immutable. Signed32 integer or counted UTF-8 string transport; close-family reads are zero/NIL and writes reject. Native wxEVT_TEXT text-entry-origin SETF rejects; detached clones freeze effective native text. No client/userData ownership or arbitrary native classes."
     },
     {
       "header": "wx/event.h",
@@ -1269,13 +1307,15 @@
       "status": "~",
       "lisp": [
         "queue-event",
-        "process-event"
+        "process-event",
+        "(setf event-text)"
       ],
       "native": [
         "wxl_queue_event",
-        "wxl_process_event"
+        "wxl_process_event",
+        "wxl_set_event_text"
       ],
-      "scope": "Copied synthetic text initialization for text-change or registered command/notify kinds. No mutable context string setter."
+      "scope": "Snapshots retain copied values. Owned/current command/notify values support generic event-text reads and SETF; snapshots stay immutable. Signed32 integer or counted UTF-8 string transport; close-family reads are zero/NIL and writes reject. Native wxEVT_TEXT text-entry-origin SETF rejects; detached clones freeze effective native text. No client/userData ownership or arbitrary native classes."
     },
     {
       "header": "wx/app.h",
@@ -1311,9 +1351,10 @@
         "wxl_queue_event",
         "wxl_process_event",
         "wxl_context_logging_off",
-        "wxl_context_set_logging_off"
+        "wxl_context_set_logging_off",
+        "wxl_event_field"
       ],
-      "scope": "Supported close/session snapshots and scoped contexts, including checked veto and logging-off metadata. Native app bindings exist; real OS session delivery is unverified. Synthetic session queue/process requires isolated owned handlers and blocks wxApp fallback. No persistent event ownership or arbitrary close types."
+      "scope": "Supported close/session snapshots and scoped contexts, including checked veto and logging-off metadata. Native app bindings exist; real OS session delivery is unverified. Synthetic session queue/process requires isolated owned handlers and blocks wxApp fallback. No persistent event ownership or arbitrary close types. Live OWNED-EVENT receivers now support applicable field/family operations with independent native lifetime; snapshots remain immutable. Native current-context lifetime restrictions are unchanged."
     },
     {
       "header": "wx/event.h",
@@ -1334,9 +1375,11 @@
         "wxl_queue_event",
         "wxl_process_event",
         "wxl_context_logging_off",
-        "wxl_context_set_logging_off"
+        "wxl_context_set_logging_off",
+        "wxl_event_field",
+        "wxl_set_event_field"
       ],
-      "scope": "Supported close/session snapshots and scoped contexts, including checked veto and logging-off metadata. Native app bindings exist; real OS session delivery is unverified. Synthetic session queue/process requires isolated owned handlers and blocks wxApp fallback. No persistent event ownership or arbitrary close types."
+      "scope": "Supported close/session snapshots and scoped contexts, including checked veto and logging-off metadata. Native app bindings exist; real OS session delivery is unverified. Synthetic session queue/process requires isolated owned handlers and blocks wxApp fallback. No persistent event ownership or arbitrary close types. Live OWNED-EVENT receivers now support applicable field/family operations with independent native lifetime; snapshots remain immutable. Native current-context lifetime restrictions are unchanged."
     },
     {
       "header": "wx/event.h",
@@ -1487,9 +1530,10 @@
       ],
       "native": [
         "wxl_bind",
-        "wxl_context_timestamp"
+        "wxl_context_timestamp",
+        "wxl_event_field"
       ],
-      "scope": "Supported immutable snapshots and current event contexts. Native signed LONG millisecond metadata; context-only timestamp SETF with platform bounds. IsCommandEvent includes notify-derived events. No persistent native event wrapper or timestamp construction keyword."
+      "scope": "Supported immutable snapshots and current event contexts. Native signed LONG millisecond metadata; context-only timestamp SETF with platform bounds. IsCommandEvent includes notify-derived events. No persistent native event wrapper or timestamp construction keyword. Live OWNED-EVENT receivers now support applicable field/family operations with independent native lifetime; snapshots remain immutable. Native current-context lifetime restrictions are unchanged."
     },
     {
       "header": "wx/event.h",
@@ -1502,9 +1546,10 @@
       ],
       "native": [
         "wxl_bind",
-        "wxl_context_command"
+        "wxl_context_command",
+        "wxl_event_field"
       ],
-      "scope": "Supported immutable snapshots and current event contexts. Native signed LONG millisecond metadata; context-only timestamp SETF with platform bounds. IsCommandEvent includes notify-derived events. No persistent native event wrapper or timestamp construction keyword."
+      "scope": "Supported immutable snapshots and current event contexts. Native signed LONG millisecond metadata; context-only timestamp SETF with platform bounds. IsCommandEvent includes notify-derived events. No persistent native event wrapper or timestamp construction keyword. Live OWNED-EVENT receivers now support applicable field/family operations with independent native lifetime; snapshots remain immutable. Native current-context lifetime restrictions are unchanged."
     },
     {
       "header": "wx/event.h",
@@ -1516,9 +1561,11 @@
         "(setf event-timestamp)"
       ],
       "native": [
-        "wxl_context_set_timestamp"
+        "wxl_context_set_timestamp",
+        "wxl_event_field",
+        "wxl_set_event_field"
       ],
-      "scope": "Supported immutable snapshots and current event contexts. Native signed LONG millisecond metadata; context-only timestamp SETF with platform bounds. IsCommandEvent includes notify-derived events. No persistent native event wrapper or timestamp construction keyword."
+      "scope": "Supported immutable snapshots and current event contexts. Native signed LONG millisecond metadata; context-only timestamp SETF with platform bounds. IsCommandEvent includes notify-derived events. No persistent native event wrapper or timestamp construction keyword. Live OWNED-EVENT receivers now support applicable field/family operations with independent native lifetime; snapshots remain immutable. Native current-context lifetime restrictions are unchanged."
     },
     {
       "header": "wx/event.h",
@@ -1530,9 +1577,11 @@
         "(setf event-id)"
       ],
       "native": [
-        "wxl_context_set_id"
+        "wxl_context_set_id",
+        "wxl_event_field",
+        "wxl_set_event_field"
       ],
-      "scope": "Current-context SETF for supported native families, signed32 including -1. Later native matching uses changed IDs; earlier snapshots, window IDs and filters do not change. No persistent native event wrapper."
+      "scope": "Current-context SETF for supported native families, signed32 including -1. Later native matching uses changed IDs; earlier snapshots, window IDs and filters do not change. No persistent native event wrapper. Live OWNED-EVENT receivers now support applicable field/family operations with independent native lifetime; snapshots remain immutable. Native current-context lifetime restrictions are unchanged."
     },
     {
       "header": "wx/event.h",
@@ -1547,7 +1596,7 @@
         "wxl_bind",
         "wxl_context_origin_id"
       ],
-      "scope": "Captured/current opaque bridge origin identity for registered app/owned handlers/tracked windows; null/untracked map to NIL. No native pointer dereference, generic wxObject wrapper, ownership transfer, historical lifetime guarantee or origin setter."
+      "scope": "Captured/current opaque bridge origin identity for registered app/owned handlers/tracked windows; null/untracked map to NIL. No native pointer dereference, generic wxObject wrapper, ownership transfer, historical lifetime guarantee or origin setter. Owned events and clones always detach native origin; copied dispatch attaches the receiver. No origin setter or retention/pinning is supplied."
     },
     {
       "header": "wx/event.h",
@@ -1560,9 +1609,10 @@
       ],
       "native": [
         "wxl_bind",
-        "wxl_context_category"
+        "wxl_context_category",
+        "wxl_event_field"
       ],
-      "scope": "Saved/current virtual category reads for supported native families: command/notify USER_INPUT, close-family UI. No native virtual overrides or arbitrary event classes. Interface docs omit wxCommandEvent override; retain for C7 reconciliation."
+      "scope": "Saved/current virtual category reads for supported native families: command/notify USER_INPUT, close-family UI. No native virtual overrides or arbitrary event classes. Interface docs omit wxCommandEvent override; retain for C7 reconciliation. Live OWNED-EVENT receivers now support applicable field/family operations with independent native lifetime; snapshots remain immutable. Native current-context lifetime restrictions are unchanged."
     },
     {
       "header": "wx/event.h",
@@ -1602,9 +1652,27 @@
         "(setf event-native-type)"
       ],
       "native": [
-        "wxl_context_set_native_type"
+        "wxl_context_set_native_type",
+        "wxl_event_field",
+        "wxl_set_event_field"
       ],
-      "scope": "Current registered source/target tags only, same command/notify family and actual native class checked. Built-in/session/arbitrary tags reject before mutation. Snapshot immutability and registration identity preserved; no dispatch restart or local callback-order guarantee."
+      "scope": "Current registered source/target tags only, same command/notify family and actual native class checked. Built-in/session/arbitrary tags reject before mutation. Snapshot immutability and registration identity preserved; no dispatch restart or local callback-order guarantee. Live OWNED-EVENT receivers now support applicable field/family operations with independent native lifetime; snapshots remain immutable. Native current-context lifetime restrictions are unchanged."
+    },
+    {
+      "header": "wx/event.h",
+      "line": 138,
+      "declaration": "virtual wxEvent* Clone() const = 0;",
+      "status": "~",
+      "symbol": "wxEvent::Clone",
+      "lisp": [
+        "owned-event",
+        "clone-event",
+        "make-event"
+      ],
+      "native": [
+        "wxl_clone_event"
+      ],
+      "scope": "Detached exact wxCommandEvent/wxNotifyEvent/wxCloseEvent clones from live owned resources or innermost contexts. Effective command text is frozen before clearing origin. Borrowed userdata/client pointers and arbitrary native subclasses reject; no general native ownership transfer or retained origin."
     }
   ],
   "classes": {
@@ -1746,7 +1814,7 @@
         "wxl_gauge_vertical",
         "wxl_gauge_pulse"
       ],
-      "scope": "Parent-owned progress gauge: positive range, value, horizontal/vertical orientation and pulsing. Constructor options, two-step creation and full inherited API remain open. Gauge support introduced in ABI 10; current bridge ABI 23; see docs/GAUGE.md and tests/gauge.lisp."
+      "scope": "Parent-owned progress gauge: positive range, value, horizontal/vertical orientation and pulsing. Constructor options, two-step creation and full inherited API remain open. Gauge support introduced in ABI 10; current bridge ABI 24; see docs/GAUGE.md and tests/gauge.lisp."
     },
     "wxAppConsole": {
       "status": "~",
@@ -1835,7 +1903,16 @@
         "event-origin-id",
         "event-category",
         "event-category-mask",
-        "(setf event-native-type)"
+        "(setf event-native-type)",
+        "owned-event",
+        "make-event",
+        "clone-event",
+        "destroy-event",
+        "event-alive-p",
+        "event-text",
+        "event-integer",
+        "(setf event-text)",
+        "(setf event-integer)"
       ],
       "native": [
         "wxl_bind",
@@ -1855,9 +1932,18 @@
         "wxl_context_native_type",
         "wxl_context_category",
         "wxl_event_category_mask",
-        "wxl_context_set_native_type"
+        "wxl_context_set_native_type",
+        "wxl_owned_event",
+        "wxl_clone_event",
+        "wxl_event_destroy",
+        "wxl_event_alive",
+        "wxl_dispatch_owned",
+        "wxl_event_field",
+        "wxl_set_event_field",
+        "wxl_event_text",
+        "wxl_set_event_text"
       ],
-      "scope": "Immutable supported command/close snapshots and current-callback wxEvent base views for Skip/propagation; close veto is checked through wxCloseEvent only. Arbitrary native construction/cloning, mutable type/origin, userData and broader families remain open. See docs/CLOSE-EVENTS.md. Timestamp/command classification snapshots and current reads, bounded native LONG timestamp SETF and close-only CanVeto SETF are implemented; snapshots stay immutable. Scoped ID reads/SETF are implemented; native routing after mutation is verified separately from snapshot immutability. Current native type and bounded registered-origin identity reads are implemented; native type/origin mutation and general wxObject wrappers remain open. Captured/current virtual category reads are supported; no selective pumping. Bounded registered same-family native type SETF is now supported with actual native class checks; arbitrary and built-in/session tag mutation remains open."
+      "scope": "Immutable supported command/close snapshots and current-callback wxEvent base views for Skip/propagation; close veto is checked through wxCloseEvent only. Arbitrary native construction/cloning, mutable type/origin, userData and broader families remain open. See docs/CLOSE-EVENTS.md. Timestamp/command classification snapshots and current reads, bounded native LONG timestamp SETF and close-only CanVeto SETF are implemented; snapshots stay immutable. Scoped ID reads/SETF are implemented; native routing after mutation is verified separately from snapshot immutability. Current native type and bounded registered-origin identity reads are implemented; native type/origin mutation and general wxObject wrappers remain open. Captured/current virtual category reads are supported; no selective pumping. Bounded registered same-family native type SETF is now supported with actual native class checks; arbitrary and built-in/session tag mutation remains open. Session-owned detached exact command/notify/close events now support native construction, cloning, disposal and copied dispatch; no arbitrary derived class, retained origin, client/userData ownership or source transfer. Native wxEVT_TEXT payload guards prevent lazy text-entry origin shadowing; detached clones freeze effective strings."
     },
     "wxCloseEvent": {
       "status": "~",
@@ -1875,7 +1961,16 @@
         "event-timestamp",
         "event-command-p",
         "(setf event-timestamp)",
-        "(setf event-can-veto-p)"
+        "(setf event-can-veto-p)",
+        "owned-event",
+        "make-event",
+        "clone-event",
+        "destroy-event",
+        "event-alive-p",
+        "event-text",
+        "event-integer",
+        "(setf event-text)",
+        "(setf event-integer)"
       ],
       "native": [
         "wxl_bind",
@@ -1890,9 +1985,18 @@
         "wxl_context_timestamp",
         "wxl_context_command",
         "wxl_context_set_timestamp",
-        "wxl_context_set_can_veto"
+        "wxl_context_set_can_veto",
+        "wxl_owned_event",
+        "wxl_clone_event",
+        "wxl_event_destroy",
+        "wxl_event_alive",
+        "wxl_dispatch_owned",
+        "wxl_event_field",
+        "wxl_set_event_field",
+        "wxl_event_text",
+        "wxl_set_event_text"
       ],
-      "scope": "Supported close/session snapshots and scoped contexts, including checked veto and logging-off metadata. Native app bindings exist; real OS session delivery is unverified. Synthetic session queue/process requires isolated owned handlers and blocks wxApp fallback. No persistent event ownership or arbitrary close types. Timestamp/command classification snapshots and current reads, bounded native LONG timestamp SETF and close-only CanVeto SETF are implemented; snapshots stay immutable."
+      "scope": "Supported close/session snapshots and scoped contexts, including checked veto and logging-off metadata. Native app bindings exist; real OS session delivery is unverified. Synthetic session queue/process requires isolated owned handlers and blocks wxApp fallback. No persistent event ownership or arbitrary close types. Timestamp/command classification snapshots and current reads, bounded native LONG timestamp SETF and close-only CanVeto SETF are implemented; snapshots stay immutable. Session-owned detached exact command/notify/close events now support native construction, cloning, disposal and copied dispatch; no arbitrary derived class, retained origin, client/userData ownership or source transfer. Native wxEVT_TEXT payload guards prevent lazy text-entry origin shadowing; detached clones freeze effective strings."
     },
     "wxNotifyEvent": {
       "status": "~",
@@ -1904,7 +2008,15 @@
         "event-family",
         "event-vetoed-p",
         "(setf event-vetoed-p)",
-        "event-integer"
+        "event-integer",
+        "owned-event",
+        "make-event",
+        "clone-event",
+        "destroy-event",
+        "event-alive-p",
+        "event-text",
+        "(setf event-text)",
+        "(setf event-integer)"
       ],
       "native": [
         "wxl_register_event_type",
@@ -1912,9 +2024,18 @@
         "wxl_queue_event",
         "wxl_process_event",
         "wxl_context_vetoed",
-        "wxl_context_set_vetoed"
+        "wxl_context_set_vetoed",
+        "wxl_owned_event",
+        "wxl_clone_event",
+        "wxl_event_destroy",
+        "wxl_event_alive",
+        "wxl_dispatch_owned",
+        "wxl_event_field",
+        "wxl_set_event_field",
+        "wxl_event_text",
+        "wxl_set_event_text"
       ],
-      "scope": "Registered synthetic notify types, immutable payload/family snapshots and scoped Veto/Allow. No native control-specific notify subclasses, persistent native event ownership/cloning, validated OS session delivery or userData. See docs/NOTIFY-EVENTS.md."
+      "scope": "Registered synthetic notify types, immutable payload/family snapshots and scoped Veto/Allow. No native control-specific notify subclasses, persistent native event ownership/cloning, validated OS session delivery or userData. See docs/NOTIFY-EVENTS.md. Session-owned detached exact command/notify/close events now support native construction, cloning, disposal and copied dispatch; no arbitrary derived class, retained origin, client/userData ownership or source transfer. Native wxEVT_TEXT payload guards prevent lazy text-entry origin shadowing; detached clones freeze effective strings."
     },
     "wxCommandEvent": {
       "status": "~",
@@ -1923,15 +2044,32 @@
         "register-event-type",
         "queue-event",
         "process-event",
-        "event-integer"
+        "event-integer",
+        "owned-event",
+        "make-event",
+        "clone-event",
+        "destroy-event",
+        "event-alive-p",
+        "event-text",
+        "(setf event-text)",
+        "(setf event-integer)"
       ],
       "native": [
         "wxl_register_event_type",
         "wxl_bind",
         "wxl_queue_event",
-        "wxl_process_event"
+        "wxl_process_event",
+        "wxl_owned_event",
+        "wxl_clone_event",
+        "wxl_event_destroy",
+        "wxl_event_alive",
+        "wxl_dispatch_owned",
+        "wxl_event_field",
+        "wxl_set_event_field",
+        "wxl_event_text",
+        "wxl_set_event_text"
       ],
-      "scope": "Built-in and registered command tags with copied string/integer payloads and scoped dispatch. Remaining native fields/mutators, arbitrary derived classes, persistent ownership/cloning and worker dispatch remain open."
+      "scope": "Built-in and registered command tags with copied string/integer payloads and scoped dispatch. Remaining native fields/mutators, arbitrary derived classes, persistent ownership/cloning and worker dispatch remain open. Session-owned detached exact command/notify/close events now support native construction, cloning, disposal and copied dispatch; no arbitrary derived class, retained origin, client/userData ownership or source transfer. Native wxEVT_TEXT payload guards prevent lazy text-entry origin shadowing; detached clones freeze effective strings."
     }
   }
 }

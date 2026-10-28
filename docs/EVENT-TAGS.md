@@ -1,6 +1,6 @@
 # Bounded registered event-tag mutation
 
-ABI 23 adds context-only SETF EVENT-NATIVE-TYPE. The reader still returns the
+ABI 24 adds context-only SETF EVENT-NATIVE-TYPE. The reader still returns the
 captured/current native type integer; assign an integer returned by EVENT-TYPE
 for a name registered in the active session. Baseline: wxWidgets 3.2.12.
 
@@ -73,3 +73,8 @@ Build/check with `python3 tools/docset.py build` and `check`; install with
 (default `~/.local/share/docsets/wxlambda/`) for Cadre discovery and lookup.
 See [type/origin readers](EVENT-ORIGINS.md), [ID routing](EVENT-ROUTING.md) and
 [docset installation](DOCSET.md).
+
+[Owned events](OWNED-EVENTS.md) now provide detached native construction/cloning,
+explicit disposal, mutable value fields and copied dispatch. Earlier immutable
+snapshots and scoped contexts keep their lifetime rules. Arbitrary native classes,
+origin retention and client/userData ownership remain open.
