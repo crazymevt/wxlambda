@@ -73,7 +73,7 @@ wxString utf8(const char* value) {
 }
 }
 extern "C" {
-int wxl_abi_version() { return 2; }
+int wxl_abi_version() { return 3; }
 const char* wxl_last_error() { return error.c_str(); }
 int wxl_start(wxl_callback callback) {
     return status([&] {
@@ -134,13 +134,27 @@ wxl_handle wxl_button(wxl_handle parent, const char* label) {
         auto id = track(control);
         control->Bind(wxEVT_BUTTON, [id](wxCommandEvent&) {
             const auto it = handlers.find(id);
-            if (it != handlers.end() && dispatch) dispatch(it->second);
+            if (it != handlers.end() && dispatch) dispatch(it->second, WXL_EVENT_CLICK, nullptr);
         });
         return id;
     });
 }
 wxl_handle wxl_text(wxl_handle parent, const char* value) {
-    return create([&] { return track(new wxTextCtrl(window(parent), wxID_ANY, utf8(value))); });
+    return create([&] {
+        auto* control = new wxTextCtrl(window(parent), wxID_ANY, utf8(value));
+        const auto id = track(control);
+        control->Bind(wxEVT_TEXT, [id](wxCommandEvent& event) {
+            const auto it = handlers.find(id);
+            if (it != handlers.end() && dispatch) {
+                const auto token = it->second;
+                // Both objects must survive reentrant callbacks and conversion.
+                const auto text = event.GetString();
+                const auto bytes = text.ToUTF8();
+                dispatch(token, WXL_EVENT_TEXT_CHANGE, bytes.data() ? bytes.data() : "");
+            }
+        });
+        return id;
+    });
 }
 int wxl_column(wxl_handle parent) {
     return status([&] {
@@ -162,7 +176,14 @@ int wxl_add(wxl_handle parent, wxl_handle child, int proportion) {
 }
 int wxl_show(wxl_handle id) { return status([&] { window(id)->Show(); }); }
 int wxl_destroy(wxl_handle id) { return status([&] { window(id)->Destroy(); }); }
-int wxl_set_text(wxl_handle id, const char* value) { return status([&] { as<wxTextCtrl>(id)->ChangeValue(utf8(value)); }); }
+int wxl_set_text(wxl_handle id, const char* value, int notify) {
+    return status([&] {
+        auto* control = as<wxTextCtrl>(id);
+        const auto text = utf8(value);
+        if (notify) control->SetValue(text);
+        else control->ChangeValue(text);
+    });
+}
 const char* wxl_get_text(wxl_handle id) {
     const int result = status([&] {
         // ToUTF8 may borrow storage from its wxString; keep the source alive.
@@ -171,6 +192,12 @@ const char* wxl_get_text(wxl_handle id) {
         text_result.assign(value.data() ? value.data() : "", value.length());
     });
     return result == 0 ? text_result.c_str() : nullptr;
+}
+int wxl_on_text_change(wxl_handle id, uint64_t token) {
+    return status([&] { as<wxTextCtrl>(id); handlers[id] = token; });
+}
+int wxl_off_text_change(wxl_handle id) {
+    return status([&] { as<wxTextCtrl>(id); handlers.erase(id); });
 }
 int wxl_off_click(wxl_handle id) {
     return status([&] { as<wxButton>(id); handlers.erase(id); });

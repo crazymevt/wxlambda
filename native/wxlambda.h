@@ -14,7 +14,10 @@
 extern "C" {
 #endif
 typedef uint64_t wxl_handle;
-typedef void (*wxl_callback)(uint64_t token);
+enum wxl_event_kind { WXL_EVENT_CLICK = 1, WXL_EVENT_TEXT_CHANGE = 2 };
+/* text is NULL for clicks, UTF-8 for text changes, and borrowed only until
+   this callback returns. Callbacks must never unwind across this boundary. */
+typedef void (*wxl_callback)(uint64_t token, int kind, const char *text);
 WXL_API int wxl_abi_version(void);
 /* Error text is borrowed until the next bridge call on this thread. */
 WXL_API const char *wxl_last_error(void);
@@ -30,10 +33,13 @@ WXL_API int wxl_column(wxl_handle parent);
 WXL_API int wxl_add(wxl_handle parent, wxl_handle child, int proportion);
 WXL_API int wxl_show(wxl_handle window);
 WXL_API int wxl_destroy(wxl_handle window);
-WXL_API int wxl_set_text(wxl_handle control, const char *value);
+/* notify=0 is silent; nonzero may synchronously invoke text-change callbacks. */
+WXL_API int wxl_set_text(wxl_handle control, const char *value, int notify);
 /* UTF-8 text borrowed until the next wxl_get_text call on this thread.
    NULL indicates failure; an empty string indicates a successful empty value. */
 WXL_API const char *wxl_get_text(wxl_handle control);
+WXL_API int wxl_on_text_change(wxl_handle control, uint64_t token);
+WXL_API int wxl_off_text_change(wxl_handle control);
 WXL_API int wxl_off_click(wxl_handle button);
 WXL_API int wxl_on_click(wxl_handle button, uint64_t token);
 /* Queue a normal button event; useful for lifecycle smoke tests. */

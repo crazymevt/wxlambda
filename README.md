@@ -5,8 +5,8 @@ versioned C ABI. This is an application lifecycle prototype, not a complete
 wxWidgets binding.
 
 Implemented: application startup/shutdown, frames, panels, buttons, editable text
-controls, vertical sizers, text reading/writing, removable click handlers, and
-programmatically queued clicks.
+controls, vertical sizers, text reading/writing, removable click and text-change
+handlers, copied event payloads, and programmatically queued clicks.
 Lisp objects wrap checked integer handles; native pointers never escape the bridge.
 
 ## Build
@@ -38,7 +38,7 @@ application with `(wxlambda:load-native-library #P"C:/path/to/wxlambda.dll")`.
 Dependent wxWidgets DLLs must also be discoverable by the OS loader.
 
 The bridge normally loads from `build/`, then falls back to the system library
-search path. The Lisp/native ABI version (currently 2) is checked on load; rebuild
+search path. The Lisp/native ABI version (currently 3) is checked on load; rebuild
 the bridge after updating the bindings. Installing the bridge with CMake does not
 install the ASDF system.
 
@@ -78,6 +78,49 @@ The basic API is:
     (wxlambda:run)))
 ```
 
+## Events
+
+Existing `(on-click button (lambda () ...))` handlers still take no arguments.
+Opt into an event argument with `:with-event t`:
+
+```lisp
+(wxlambda:on-click button
+  (lambda (event)
+    (format t "Clicked ~S~%" (wxlambda:event-source event)))
+  :with-event t)
+
+(wxlambda:on-text-change text
+  (lambda (event)
+    (format t "New text: ~A~%" (wxlambda:event-text event))))
+
+(wxlambda:set-text text "Silent update")
+(wxlambda:set-text text "Notify the handler" :notify t)
+(wxlambda:off-text-change text)
+```
+
+`event-p` recognizes event snapshots. Their read-only slots are exposed through:
+
+| Accessor | Click event | Text-change event |
+| --- | --- | --- |
+| `event-kind` | `:click` | `:text-change` |
+| `event-source` | Original button wrapper | Original text-control wrapper |
+| `event-text` | `nil` | Copied Lisp string, including `""` for empty text |
+
+Text-change handlers always take one event argument. Typing into the native text
+field emits events. `set-text` stays silent by default to avoid update loops;
+`:notify t` uses wxWidgets' notifying setter and may call the handler immediately,
+before the setter returns. Handlers can therefore run before `run` starts.
+
+The text payload describes that event, rather than a later read of the control.
+It remains valid across nested updates, handler unbinding, and window destruction.
+Event text is an independent Lisp string; callers can retain or modify their copy.
+The source wrapper remains available, but native operations on it fail after its
+window is destroyed. Event slots do not expose any borrowed native pointers.
+
+Use `off-click` or `off-text-change` to release a handler. Registering again
+replaces and releases the previous closure. Both removals are idempotent for a
+live control of the correct type and may be called inside the handler itself.
+
 ## Lifecycle contract
 
 - `with-application` initializes the toolkit and cleans up on normal return or a
@@ -92,18 +135,21 @@ The basic API is:
 - Parents own their children. Closing/destroying a parent invalidates child
   handles. Lisp wrapper objects may survive, but subsequent operations signal
   `native-error`. Destruction can be deferred by wxWidgets until event processing.
-- Handlers are zero-argument Lisp functions. `on-click` replaces a previous
-  handler and releases its closure. `off-click` removes the current handler and
-  releases its closure; repeating it on a live button is harmless. Queued clicks
-  use the handler present when they are dispatched, so unbinding suppresses queued
-  clicks and rebinding redirects them to the new handler. Unbinding from inside
-  the handler itself is supported. Closures for destroyed buttons remain rooted
-  until session cleanup unless explicitly unbound before destruction. There are
-  no GC-driven native destructors.
-- Handler errors stop the loop, are re-signaled in Lisp after the native loop
-  returns, and trigger application cleanup when they escape the application body.
-  Do not use `throw`, `return-from`, or other nonlocal exits across a callback's
-  foreign boundary. Handle expected conditions inside the handler.
+- Click handlers take zero arguments by default, or one event with
+  `:with-event t`. Text-change handlers take one event. Handler replacement or
+  explicit unbinding releases the registered closure. Queued clicks use the
+  handler present when they are dispatched, so unbinding suppresses queued clicks
+  and rebinding redirects them to the new handler. Closures for destroyed controls
+  remain rooted until session cleanup unless explicitly unbound before
+  destruction. There are no GC-driven native destructors.
+- Errors in synchronous text-change callbacks are saved until the notifying
+  setter returns to Lisp, then re-signaled so its caller can handle them without
+  stopping the loop. Errors escaping the outer event callback request a loop stop
+  and are re-signaled after the event loop returns. This also covers notifying
+  setters called before the event loop starts. Errors escaping the application
+  body trigger cleanup. Do not use `throw`, `return-from`, or other nonlocal exits
+  across a callback's foreign boundary. Handle expected conditions inside the
+  handler or around the notifying setter.
 - `get-text` returns an independent Lisp string containing the current text;
   `set-text` updates it. Both use UTF-8. The native `wxl_get_text` buffer is borrowed
   until the next getter call on that thread and is copied immediately by Lisp.
@@ -131,8 +177,12 @@ Coverage: callback dispatch and replacement, empty/long/Unicode text round trips
 independent text copies, explicit closure release, queued click suppression,
 rebinding and self-unbinding, parent/child invalidation, wrong-type handles,
 duplicate sizer insertion, cleanup on setup and callback errors, and rejection
-of a second session. Unicode rendering and manual
-mouse input have not been visually verified by these tests.
+of a second session. Event tests cover source/kind metadata, copied Unicode and
+empty text payloads, nested updates, silent versus notifying setters, self-unbinding,
+and text-handler errors before and during the loop, including caught errors that
+must leave the loop running. Unicode rendering, manual
+mouse input, and keyboard-generated text events have not been visually verified
+by these tests; text events are triggered using the native notifying setter.
 
 Validated locally on Apple Silicon macOS with wxWidgets 3.2.12, SBCL 2.6.9, and
 CCL 1.13. Windows and Linux are intended targets but have not been tested.
@@ -144,8 +194,8 @@ The configured jobs are:
 
 | Runner | Native build | Lisp GUI tests |
 | --- | --- | --- |
-| Ubuntu 24.04 | Distribution wxWidgets 3.2, GCC | SBCL, four scenarios under Xvfb |
-| macOS 15 | Homebrew wxWidgets 3.2, Clang | SBCL, four scenarios |
+| Ubuntu 24.04 | Distribution wxWidgets 3.2, GCC | SBCL, eight scenarios under Xvfb |
+| macOS 15 | Homebrew wxWidgets 3.2, Clang | SBCL, eight scenarios |
 | Windows Server 2022 x64 | wxWidgets 3.2.12 from source, MSVC | Not configured yet |
 
 These are configured checks, not a claim that the hosted jobs have passed. No
@@ -184,7 +234,7 @@ After deliberately changing a locked revision, remove the corresponding generate
 pinned Babel revision emits a warning about `HANDLE-ERROR` in its Korean codec;
 the UTF-8 paths exercised by these tests pass on both local Lisps.
 
-Next milestones: hosted platform validation, Windows Lisp/GUI testing, event
-payload access, more controls, standalone application packaging, and interactive
+Next milestones: hosted platform validation, Windows Lisp/GUI testing, more
+controls, standalone application packaging, and interactive
 development support. Establish those contracts before generating larger binding
 coverage.

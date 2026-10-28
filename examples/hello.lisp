@@ -11,9 +11,15 @@
     (wxlambda:make-column panel)
     (wxlambda:add-child panel text)
     (wxlambda:add-child panel button)
+    (wxlambda:on-text-change text
+      (lambda (event)
+        (format t "Text edited: ~A~%" (wxlambda:event-text event))))
     (wxlambda:on-click button
-      (lambda ()
+      (lambda (event)
+        (assert (eq button (wxlambda:event-source event)))
         (format t "Text before click: ~A~%" (wxlambda:get-text text))
-        (wxlambda:set-text text (format nil "Clicked ~D times" (incf clicks)))))
+        (wxlambda:set-text text (format nil "Clicked ~D times" (incf clicks))
+                           :notify t))
+      :with-event t)
     (wxlambda:show-window frame)
     (wxlambda:run)))
