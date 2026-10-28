@@ -817,13 +817,17 @@
   },
   {
     "name": "event-id",
-    "kind": "function",
-    "arguments": "EVENT is an immutable event snapshot.",
-    "returns": "The signed native event integer ID.",
-    "description": "Read the copied ID after callback/source destruction; no native session required. This identifies a command ID, not a globally unique event or source handle.",
-    "scope": "No active native session required for saved snapshots. Wrong argument types signal Lisp type errors.",
-    "wxwidgets": "wxEvent::GetId copied into a Lisp-owned command-event snapshot (wxWidgets 3.2.12 baseline).",
-    "syntax": "(wxlambda:event-id event)"
+    "kind": "generic-function",
+    "arguments": "EVENT is an immutable snapshot or current innermost context. SETF VALUE is a signed 32-bit integer, including -1.",
+    "returns": "Captured/current native integer ID; SETF returns VALUE.",
+    "description": "Read a saved pre-callback ID or current native GetId. Context SETF changes event metadata and later native ID matching, not the source window ID or binding filters. Earlier snapshots stay unchanged. No dispatch restart or callback-order guarantee.",
+    "scope": "Saved snapshots need no native session. Current reads/writes require an active main-thread session and innermost callback; stale/suspended contexts signal NATIVE-ERROR. Invalid SETF values signal TYPE-ERROR. Context SetId permits -1; binding filters/synthetic initial IDs still reserve it. Native types/origin mutation remain unbound.",
+    "wxwidgets": "wxEvent::GetId / SetId, signed native int (wxWidgets 3.2.12 baseline).",
+    "syntax": "(wxlambda:event-id event)",
+    "setf": {
+      "syntax": "(setf (wxlambda:event-id context) value)",
+      "description": "Assign current native ID and return VALUE. Later exact/range matching uses the changed ID; -1 remains literal event metadata and unfiltered bindings still match. No snapshot writer."
+    }
   },
   {
     "name": "event-context",

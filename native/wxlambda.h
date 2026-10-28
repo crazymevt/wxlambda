@@ -75,6 +75,8 @@ WXL_API int wxl_context_set_skipped(uint64_t context, int skip);
 WXL_API int wxl_context_propagates(uint64_t context);
 WXL_API int wxl_context_stop_propagation(uint64_t context);
 WXL_API int wxl_context_set_can_veto(uint64_t context, int value);
+WXL_API int wxl_context_id(uint64_t context, int *value);
+WXL_API int wxl_context_set_id(uint64_t context, int value);
 WXL_API int wxl_context_timestamp(uint64_t context, int64_t *value);
 WXL_API int wxl_context_set_timestamp(uint64_t context, int64_t value);
 WXL_API int wxl_context_command(uint64_t context);

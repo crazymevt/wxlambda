@@ -47,15 +47,17 @@ must reconcile additional documented public interfaces beyond those headers.
   Real OS session delivery remains unverified.
 - Metadata milestone: copied/current native timestamps and command classification,
   timestamp SETF with native LONG bounds and close-family CanVeto SETF.
-- Current bridge ABI: 19. Public API: 101 exports, nine window wrapper classes
-  (eight concrete widget kinds) plus the event-handler base, 58 named generics and
-  sixteen generic SETF writers. The application-handler is a borrowed view; no
+- Routing milestone: current event-ID reads/SETF, signed32 including native -1,
+  and parent exact/range/wildcard matching after mutation.
+- Current bridge ABI: 20. Public API: 101 exports, nine window wrapper classes
+  (eight concrete widget kinds) plus the event-handler base, 59 named generics and
+  seventeen generic SETF writers. The application-handler is a borrowed view; no
   native application construction or arbitrary-event class binding exists yet; built-ins plus registered command/notify names have
   observer/contextual bindings.
-- Latest implementation verification: 36 GUI scenarios and native preflight
+- Latest implementation verification: 37 GUI scenarios and native preflight
   pass on local Apple Silicon macOS SBCL 2.6.9 and CCL 1.13. Final reports:
-  `evidence/event-metadata/{sbcl,ccl}-20261028/`. Five package checks
-  pass in `evidence/packaging/event-metadata-20261028/`.
+  `evidence/event-routing/{sbcl,ccl}-20261028/`. Five package checks
+  pass in `evidence/packaging/event-routing-20261028/`.
   Hosted Linux/Windows GUI behavior and the graphical Cadre viewer remain open.
 
 ### Next dependency and working order
@@ -74,8 +76,8 @@ must reconcile additional documented public interfaces beyond those headers.
    policy are implemented. Registered command/notify types and synchronous dispatch are implemented.
    The borrowed application handler view and query/end-session metadata/bindings
    are implemented, as are scoped CanVeto mutation, timestamp and command metadata.
-   Next define scoped native ID mutation and routing semantics, before native
-   type/origin access and broader event ownership/families. Native OS session delivery is unverified. Native session events are
+   Scoped native ID mutation and routing semantics are implemented. Next define
+   safe native type/origin access and broader event ownership/families. Native OS session delivery is unverified. Native session events are
    wxApp-only, and default END_SESSION handling can exit the process: never
    synthesize live application end-session events as an ordinary test. Use owned
    handlers for synthetic family tests and distinguish OS validation from them.
@@ -942,6 +944,31 @@ access checks pass on both Lisps. No implementation test failures were observed.
 Hosted Windows/Linux GUI, actual OS session routing and graphical Cadre remain
 unverified; do not claim full native event class coverage. Continue C1 with scoped
 ID mutation/routing semantics, then native type/origin and ownership prerequisites.
+
+## Scoped event-ID mutation and routing (2026-10-28)
+
+ABI 20 extends EVENT-ID to a generic saved/current reader and context-only SETF.
+Signed32 bounds apply; native SetId permits -1 as literal metadata, while binding
+filters and synthetic initial IDs keep their existing -1 restriction. Status/output
+separation preserves negative IDs. Snapshot construction uses a private identifier
+slot; no mutable snapshot accessor is introduced.
+
+Native ID changes affect later exact/range matching without changing windows,
+filters or earlier snapshots, restarting dispatch or promising local callback
+order. Parent-routing tests establish order structurally and verify matching,
+Skip/consumption, wildcard behavior, queued delivery, signed bounds and current/
+nested/expired context isolation. The standalone example verifies original and
+forwarded snapshots and releases its resources.
+
+Independent review found no remaining actionable issues. Focused example/tests
+and all 37 GUI scenarios plus preflight pass locally on SBCL/CCL. Python and
+pinned inventory regressions and five rebuilt relocated-package checks pass.
+The 138-entry docset covers all 101 exports, guides and eighteen examples, with
+zero checker problems and actual export/SETF lookup, isolated-install discovery
+and guide/example navigation checks on both Lisps. Evidence paths are in the
+handoff. Hosted Windows/Linux GUI, real OS session delivery and graphical Cadre
+remain unverified. Next define native type/origin contracts without permitting
+tag mutation to authorize unsafe native casts; broader ownership remains C1 work.
 
 ## Decisions
 

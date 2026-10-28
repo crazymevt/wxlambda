@@ -83,9 +83,9 @@ shutdown is used in automated checks.
 [Event metadata](EVENT-METADATA.md) now adds timestamps, command classification
 and current close-family SetCanVeto, including explicit false-to-true changes.
 These do not grant OS shutdown cancellation. Persistent event objects/cloning,
-mutable native IDs/types/origin, derived notify classes, pushed handlers,
-timer/idle and worker dispatch remain required C1 work. Next define scoped ID
-mutation and routing semantics before broader event ownership/families.
+mutable native types/origin, derived notify classes, pushed handlers,
+timer/idle and worker dispatch remain required C1 work. Scoped ID mutation and routing are now implemented; next define native
+type/origin contracts before broader event ownership/families.
 
 Build/check using `python3 tools/docset.py build` and `check`. Install using
 `python3 tools/docset.py install` under `$XDG_DATA_HOME/docsets/wxlambda/`

@@ -66,5 +66,9 @@
   "event-metadata.lisp": {
     "description": "A synthetic close callback changes native CanVeto and timestamp metadata, applies checked veto and verifies the earlier snapshot remains unchanged. No real OS event is generated.",
     "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/event-metadata.lisp --eval '(wxlambda-event-metadata:start)'"
+  },
+  "event-routing.lisp": {
+    "description": "Rewrite a child command ID before parent delivery, verifying original and forwarded snapshot IDs and cleaning up bindings/windows.",
+    "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/event-routing.lisp --eval '(wxlambda-event-routing:start)'"
   }
 }

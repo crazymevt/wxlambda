@@ -1,6 +1,6 @@
 # Event metadata and mutable CanVeto
 
-Native bridge ABI 19 adds EVENT-TIMESTAMP and EVENT-COMMAND-P readers for
+Native bridge ABI 20 adds EVENT-TIMESTAMP and EVENT-COMMAND-P readers for
 immutable snapshots and current innermost event contexts. EVENT-TIMESTAMP also
 has a context-only SETF writer. EVENT-CAN-VETO-P now has a context-only SETF
 writer for wxCloseEvent: window-close, query-end-session and end-session events.
@@ -77,13 +77,14 @@ snapshots, later snapshot capture, stored-veto hiding/restoration, non-close
 writer rejection and nested/expired context isolation. It does not emit real
 OS session events or claim hosted Windows/Linux runtime verification.
 
-Native origin/ID/type mutation, persistent event ownership/cloning, userData,
+Native origin/type mutation, persistent event ownership/cloning, userData,
 derived notify classes, pushed handlers, mouse/key, timer/idle and worker dispatch
-remain required C1 work. Next consider scoped native ID mutation with routing
-semantics before native type/origin access and broader event ownership.
+remain required C1 work. Next consider native type/origin access and broader event ownership.
 
 Build/check with `python3 tools/docset.py build` and `check`. Install with
 `python3 tools/docset.py install` under `$XDG_DATA_HOME/docsets/wxlambda/`
 (default `~/.local/share/docsets/wxlambda/`) for Cadre discovery and lookup.
 See [contexts](EVENT-CONTEXTS.md), [session events](SESSION-EVENTS.md) and
 [docset installation](DOCSET.md).
+
+[Scoped event IDs](EVENT-ROUTING.md) now provide current ID reads/SETF and document effects on later matching. Snapshots remain immutable.

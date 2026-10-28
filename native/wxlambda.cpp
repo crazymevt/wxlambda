@@ -300,7 +300,7 @@ wxString utf8(const char* value) {
 }
 }
 extern "C" {
-int wxl_abi_version() { return 19; }
+int wxl_abi_version() { return 20; }
 const char* wxl_last_error() { return error.c_str(); }
 int wxl_start(wxl_callback callback) {
     return status([&] {
@@ -458,6 +458,15 @@ int wxl_context_set_can_veto(uint64_t token, int value) {
         require(close != nullptr, "CanVeto mutation requires a close-family event");
         close->SetCanVeto(value != 0);
     });
+}
+int wxl_context_id(uint64_t token, int* value) {
+    return status([&] {
+        require(value != nullptr, "Missing event ID output");
+        *value = current_event(token).GetId();
+    });
+}
+int wxl_context_set_id(uint64_t token, int value) {
+    return status([&] { current_event(token).SetId(value); });
 }
 int wxl_context_timestamp(uint64_t token, int64_t* value) {
     return status([&] {

@@ -83,7 +83,7 @@ application with `(wxlambda:load-native-library #P"C:/path/to/wxlambda.dll")`.
 Dependent wxWidgets DLLs must also be discoverable by the OS loader.
 
 The bridge normally loads from `build/`, then falls back to the system library
-search path. The Lisp/native ABI version (currently 19) is checked on load; rebuild
+search path. The Lisp/native ABI version (currently 20) is checked on load; rebuild
 the bridge after updating the bindings. Installing the bridge with CMake does not
 install the ASDF system.
 
@@ -702,3 +702,5 @@ The [borrowed application handler](docs/APPLICATION-HANDLER.md) supports applica
 [Session-event support](docs/SESSION-EVENTS.md) includes logging-off metadata and isolated synthetic policy probes; real OS delivery remains unverified.
 
 [Event metadata](docs/EVENT-METADATA.md) adds native timestamps, command classification and scoped CanVeto SETF while preserving immutable snapshots.
+
+[Scoped event-ID routing](docs/EVENT-ROUTING.md) supports context SETF and later native ID matching.

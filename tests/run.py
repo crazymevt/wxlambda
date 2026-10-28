@@ -27,6 +27,7 @@ def scenarios():
     yield "event-bindings", "event-bindings.lisp", {}
     yield "event-contexts", "event-contexts.lisp", {}
     yield "close-events", "close-events.lisp", {}
+    yield "event-routing", "event-routing.lisp", {}
     yield "event-metadata", "event-metadata.lisp", {}
     yield "session-events", "session-events.lisp", {}
     yield "application-handler", "application-handler.lisp", {}
