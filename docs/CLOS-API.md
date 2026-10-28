@@ -149,7 +149,7 @@ construction instructions on class pages and indexed SETF forms on property page
 
 The gauge scenario additionally verifies direct and factory subclass construction,
 subclass AFTER access, rollback, and the two gauge SETF writers. Across the public
-API there are now 54 named generic functions and thirteen generic SETF functions.
+API there are now 55 named generic functions and thirteen generic SETF functions.
 
 Independent `event-binding` values are immutable registration identities rather
 than native-backed CLOS resources. The generic `bind-event`, `unbind-event`,
@@ -163,3 +163,7 @@ does not change immutable snapshot semantics. See [context lifetime](EVENT-CONTE
 Close capability/veto readers accept immutable snapshots or current contexts;
 the veto SETF writer accepts only a current vetoable close context. Frame close
 requests use the generic `close-window`; see [close-family scope](CLOSE-EVENTS.md).
+
+`process-event` synchronously dispatches supported copied events and returns
+native handled/final-veto values. Registered custom families remain session-scoped
+metadata; see [notify type scope](NOTIFY-EVENTS.md).

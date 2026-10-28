@@ -2,9 +2,10 @@
 
 This C1 slice adds borrowed `event-context` values for native Skip and propagation
 control. Existing `event` snapshots remain immutable Lisp-owned data. The bridge
-is ABI 15, using the wxWidgets 3.2.12 inventory baseline. Supported events now include
+is ABI 16, using the wxWidgets 3.2.12 inventory baseline. Supported events now include
 four command kinds plus the [close family](CLOSE-EVENTS.md); arbitrary classes
-and notify/session families remain open.
+and native notify subclasses/session routing remain open. Registered
+[notify types](NOTIFY-EVENTS.md) now support scoped Veto/Allow.
 
 ## Opt into contextual callbacks
 
@@ -83,8 +84,8 @@ Keep the snapshot to inspect data after return. Do not keep a context expecting
 to mutate the event later. The snapshot's source remains the binding receiver,
 not necessarily the native originating child. Native origin-object access, ID/type
 mutation, timestamps, userData, arbitrary event classes and native virtual
-overrides remain open. Veto is available only for current close contexts that permit it; the four
-command kinds do not provide close-veto state. See [close semantics](CLOSE-EVENTS.md).
+overrides remain open. Veto is available for current vetoable close contexts and registered notify
+contexts; plain command kinds do not provide veto state. See [close semantics](CLOSE-EVENTS.md).
 
 ## Native event type values
 
@@ -97,7 +98,7 @@ supported snapshot, including observer/control-specific callbacks:
 ```
 
 The lookup accepts `:click`, `:text-change`, `:toggle`, `:selection` and `:close`,
-and requires an active main-thread session. Saved snapshot integers can be read without a
+or a registered command/notify name, and requires an active main-thread session. Saved snapshot integers can be read without a
 session. These are process-local runtime IDs; do not serialize them as stable
 type identifiers or compare IDs from different processes. `event-kind` retains
 the supported portable keywords. This is bounded native type-value introspection,

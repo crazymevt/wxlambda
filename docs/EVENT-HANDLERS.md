@@ -3,7 +3,7 @@
 This C1 foundation slice introduces `event-handler`, a native-backed CLOS wrapper
 for `wxEvtHandler` and the superclass of `window`. It establishes ownership and
 state before generic binding/unbinding, timers and broader event routing.
-The coverage baseline is wxWidgets 3.2.12; current native ABI is 15.
+The coverage baseline is wxWidgets 3.2.12; current native ABI is 16.
 Four command-event observer kinds now have [independent bindings](EVENT-BINDINGS.md).
 
 ## Owned standalone handlers
@@ -117,7 +117,7 @@ python3 tools/docset.py build
 python3 tools/docset.py check
 ```
 
-Use the project quiet-command wrapper in agent sessions. Rebuild the ABI 15
+Use the project quiet-command wrapper in agent sessions. Rebuild the ABI 16
 bridge alongside the bindings. The GUI runner includes this scenario; broader
 platform and graphical Cadre verification remain separate. The API, this guide
 and example are included in the [Cadre docset](DOCSET.md), installable under
@@ -125,3 +125,6 @@ and example are included in the [Cadre docset](DOCSET.md), installable under
 
 The non-command [close family](CLOSE-EVENTS.md) now supports checked scoped veto
 and real frame close requests; standalone handlers can receive synthetic close events.
+
+Registered command/notify names and synchronous `process-event` extend the
+standalone/window interface; see [notify payload and dispatch scope](NOTIFY-EVENTS.md).

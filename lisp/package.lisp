@@ -1,6 +1,7 @@
 (defpackage #:wxlambda
   (:use #:cl)
-  (:export #:event-family #:event-can-veto-p #:event-vetoed-p #:close-window
+  (:export #:register-event-type #:process-event #:event-integer
+           #:event-family #:event-can-veto-p #:event-vetoed-p #:close-window
            #:event-context #:event-context-p #:event-context-active-p #:event-skipped-p
            #:event-propagates-p #:stop-event-propagation #:resume-event-propagation
            #:event-native-type #:event-type

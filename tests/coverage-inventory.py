@@ -152,6 +152,8 @@ class CoverageInventoryChecks(unittest.TestCase):
             'wxEvent::ShouldPropagate', 'wxEvent::StopPropagation', 'wxEvent::ResumePropagation',
             'wxCloseEvent::wxCloseEvent', 'wxCloseEvent::CanVeto', 'wxCloseEvent::Veto',
             'wxCloseEvent::GetVeto', 'wxCloseEvent::SetCanVeto', 'wxWindow::Close',
+            'wxNewEventType', 'wxEvtHandler::ProcessEvent', 'wxCommandEvent::wxCommandEvent',
+            'wxNotifyEvent::wxNotifyEvent', 'wxNotifyEvent::Veto', 'wxNotifyEvent::Allow', 'wxNotifyEvent::IsAllowed',
             'wxTextCtrl::wxTextCtrl', 'wxStaticText::wxStaticText',
             'wxCheckBox::wxCheckBox', 'wxChoice::wxChoice',
             'wxGauge::wxGauge', 'wxGauge::GetValue', 'wxGauge::SetValue',
@@ -171,7 +173,7 @@ class CoverageInventoryChecks(unittest.TestCase):
         self.assertEqual(set(self.status['classes']), {
             'wxFrame', 'wxPanel', 'wxButton', 'wxTextCtrl', 'wxStaticText',
             'wxCheckBox', 'wxChoice', 'wxGauge', 'wxBoxSizer', 'wxWindow', 'wxTopLevelWindow',
-            'wxAppConsole', 'wxApp', 'wxEvtHandler', 'wxEvent', 'wxCloseEvent',
+            'wxAppConsole', 'wxApp', 'wxEvtHandler', 'wxEvent', 'wxCloseEvent', 'wxNotifyEvent', 'wxCommandEvent',
         })
 
     def test_compiler_scaffolding_is_context_but_public_macros_are_tasks(self):

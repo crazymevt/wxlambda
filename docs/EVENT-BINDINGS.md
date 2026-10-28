@@ -3,10 +3,12 @@
 This C1 slice adds independent observer bindings on standalone `event-handler`
 objects and borrowed window identities. It covers `:click` (`wxEVT_BUTTON`),
 `:text-change` (`wxEVT_TEXT`), `:toggle` (`wxEVT_CHECKBOX`) and `:selection`
-(`wxEVT_CHOICE`), using the wxWidgets 3.2.12 baseline. The bridge is ABI 15.
+(`wxEVT_CHOICE`), using the wxWidgets 3.2.12 baseline. The bridge is ABI 16.
 Optional [scoped contexts](EVENT-CONTEXTS.md) now support Skip/propagation;
 close-veto support is now available through the [close family](CLOSE-EVENTS.md).
-Notify/session and arbitrary native event families remain open.
+Registered [notify/command types](NOTIFY-EVENTS.md) now add named native tags and
+synchronous dispatch; native control-specific notify subclasses/session routing
+remain open.
 
 ## Register and remove independent observers
 
@@ -60,8 +62,8 @@ registrations coexist independently and are removed with `unbind-event`.
 
 The default observer policy is unchanged. Contextual bindings can now consume
 commands and control Skip/propagation levels through borrowed, callback-scoped
-access. Close veto is now supported only for current close contexts. Notify/session
-families and native virtual overrides remain missing; do not infer full wxEvent coverage from these command APIs.
+access. Veto is supported for current veto-capable close contexts and registered notify contexts. Native notify subclasses/session
+routing and native virtual overrides remain missing; do not infer full wxEvent coverage from these command APIs.
 `handler-enabled-p` still controls only the receiving handler's own processing.
 
 `event-source` is the **Lisp receiver on which that callback was registered**.

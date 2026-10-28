@@ -16,6 +16,7 @@ extern "C" {
 #endif
 typedef uint64_t wxl_handle;
 enum wxl_alignment { WXL_ALIGN_START = 0, WXL_ALIGN_CENTER = 1, WXL_ALIGN_END = 2 };
+enum wxl_event_family { WXL_FAMILY_COMMAND = 0, WXL_FAMILY_CLOSE = 1, WXL_FAMILY_NOTIFY = 2 };
 enum wxl_event_kind { WXL_EVENT_CLICK = 1, WXL_EVENT_TEXT_CHANGE = 2, WXL_EVENT_TOGGLE = 3, WXL_EVENT_SELECTION = 4, WXL_EVENT_CLOSE = 5 };
 typedef struct wxl_event {
     int kind;
@@ -26,8 +27,10 @@ typedef struct wxl_event {
     size_t text_length; /* Explicit UTF-8 bytes, kind 2 only. */
     uint64_t context; /* Scoped opaque token, zero for observers. */
     int native_type;
-    int can_veto; /* Close snapshots only. */
+    int can_veto; /* Close or notify capability. */
     int vetoed;
+    int family;
+    int integer;
 } wxl_event;
 /* The record and its text are borrowed only until this callback returns.
    Callbacks must never unwind across this boundary. */
@@ -74,7 +77,11 @@ WXL_API int wxl_close(wxl_handle frame, int force);
 WXL_API int wxl_context_resume_propagation(uint64_t context, int level);
 WXL_API int wxl_unbind(uint64_t token);
 WXL_API int wxl_binding_active(uint64_t token);
-WXL_API int wxl_queue_event(wxl_handle handler, int kind, int id, const char *text, size_t length, int value, int can_veto);
+/* Register returns private kind code or -1; process returns 0/1/-1 and copies
+   final veto separately. A false handled result does not mean no observer ran. */
+WXL_API int wxl_register_event_type(int family);
+WXL_API int wxl_process_event(wxl_handle handler, int kind, int id, const char *text, size_t length, int value, int can_veto, int vetoed, int *final_veto);
+WXL_API int wxl_queue_event(wxl_handle handler, int kind, int id, const char *text, size_t length, int value, int can_veto, int vetoed);
 WXL_API wxl_handle wxl_frame(const char *title, int width, int height);
 WXL_API wxl_handle wxl_panel(wxl_handle parent);
 WXL_API wxl_handle wxl_button(wxl_handle parent, const char *label);

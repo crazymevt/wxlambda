@@ -87,17 +87,17 @@ standalone event-handler ownership/state, command/close observer/contextual bind
 and queuing, and eight concrete widget kinds with a subset of inherited/layout/control APIs.
 C1 remains the active priority: event-handler ownership/state now has bounded
 support. Generic bindings, scoped Skip/propagation and copied native type IDs
-cover command and close kinds. Checked close veto is implemented; notify/session
-and broader native event families remain next, then timer/idle and worker dispatch, with required value and lifetime
+cover command and close kinds. Checked close veto is implemented; registered notify support is also implemented. Native notify subclasses,
+a borrowed application handler view and OS session routing remain next, then timer/idle and worker dispatch, with required value and lifetime
 contracts first. C2 remains partial; C3–C7 have no public bindings recorded.
 See the [C1 details](coverage/phase-c1.md), [C2 details](coverage/phase-c2.md) and
 [class index](coverage/classes.md) for the remaining work within bound families.
 
-The current bridge is ABI 15, with 93 public Lisp exports. The latest code passes
-32 GUI scenarios on both local Apple Silicon macOS SBCL/CCL configurations and
+The current bridge is ABI 16, with 96 public Lisp exports. The latest code passes
+33 GUI scenarios on both local Apple Silicon macOS SBCL/CCL configurations and
 five packaging checks. These are local results retained under
-`evidence/close-events/` and `evidence/packaging/close-events-20261028/`;
-they do not validate Linux/Windows or the graphical Cadre viewer. The close-family
+`evidence/notify-events/` and `evidence/packaging/notify-events-20261028/`;
+they do not validate Linux/Windows or the graphical Cadre viewer. The registered-notify
 implementation reruns the GUI suites; documentation-only
 updates must distinguish retained results from newly run checks.
 
@@ -156,6 +156,10 @@ widget classes has complete wxWidgets coverage yet.
   queues and frame-only `close-window` requests. `event-type` replaces the old
   command-only lookup. Notify/session events and arbitrary families remain open;
   see [close-event limits](CLOSE-EVENTS.md).
+- [x] `register-event-type` for unique session command/notify names, copied
+  `event-integer`/text metadata, scoped notify Veto/Allow and `process-event`
+  with native handled plus final-veto results. No unregister or type-declaration
+  rollback; session events need an application view. See [notify limits](NOTIFY-EVENTS.md).
 - [x] Native errors translated to Lisp `native-error` conditions.
 - [x] Event snapshots: `event`, `event-p`, `event-kind`, `event-source`,
   `event-text`, `event-checked-p`, `event-selection` for four command kinds plus :close.
@@ -204,7 +208,7 @@ No APIs in C3–C7 currently have public bindings. Using wxWidgets types interna
 for conversions or implementation is not public API coverage.
 
 The widget-facing Lisp API has nine window wrapper classes plus the public event-handler base, direct native
-construction, 54 named generic functions and thirteen SETF generic functions; see [CLOS API](CLOS-API.md). This establishes Lisp dispatch
+construction, 55 named generic functions and thirteen SETF generic functions; see [CLOS API](CLOS-API.md). This establishes Lisp dispatch
 and method combination, not native C++ subclass/virtual-callback coverage.
 
 ## Coverage implementation phases

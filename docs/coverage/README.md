@@ -18,18 +18,18 @@ public-header/documentation reconciliation and platform verification in C7.
 
 | Phase | Headers | Tasks | Implemented | Partial | Pending | Context |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| [C1: Foundation, values, application, events, and base utilities](phase-c1.md) | 119 | 5292 | 3 | 27 | 5262 | 26 |
+| [C1: Foundation, values, application, events, and base utilities](phase-c1.md) | 119 | 5292 | 3 | 40 | 5249 | 26 |
 | [C2: Windows, layout, basic controls, and input](phase-c2.md) | 82 | 2862 | 23 | 40 | 2799 | 0 |
 | [C3: Dialogs, navigation, menus, and application services](phase-c3.md) | 57 | 1875 | 0 | 0 | 1875 | 0 |
 | [C4: Models, complex controls, and document frameworks](phase-c4.md) | 20 | 2328 | 0 | 0 | 2328 | 4 |
 | [C5: Drawing, images, graphics, and printing](phase-c5.md) | 52 | 2245 | 0 | 0 | 2245 | 0 |
 | [C6: Optional libraries, rich content, and integration](phase-c6.md) | 57 | 8912 | 0 | 0 | 8912 | 380 |
 | [C7: Platform extensions and remaining portability APIs](phase-c7.md) | 11 | 279 | 0 | 0 | 279 | 3 |
-| Total | 398 | 23793 | 26 | 67 | 23700 | 413 |
+| Total | 398 | 23793 | 26 | 80 | 23687 | 413 |
 
 ## Classes and widgets
 
-1016 class/struct definitions: 0 complete; 16 partial; 1000 pending.
+1016 class/struct definitions: 0 complete; 18 partial; 998 pending.
 
 See the [complete class/widget index](classes.md) for partial scopes and missing
 types. An implemented constructor does not complete a class or its inherited API.
@@ -68,7 +68,7 @@ unreviewed inherited/platform behavior.
 | [wx/dynarray.h](phase-c1.md#wxdynarrayh) | 0 | 0 | 58 | 0 |
 | [wx/dynlib.h](phase-c1.md#wxdynlibh) | 0 | 0 | 34 | 0 |
 | [wx/encconv.h](phase-c1.md#wxencconvh) | 0 | 0 | 13 | 0 |
-| [wx/event.h](phase-c1.md#wxeventh) | 3 | 19 | 638 | 16 |
+| [wx/event.h](phase-c1.md#wxeventh) | 3 | 32 | 625 | 16 |
 | [wx/eventfilter.h](phase-c1.md#wxeventfilterh) | 0 | 0 | 6 | 0 |
 | [wx/evtloop.h](phase-c1.md#wxevtlooph) | 0 | 0 | 26 | 0 |
 | [wx/ffile.h](phase-c1.md#wxffileh) | 0 | 0 | 37 | 0 |

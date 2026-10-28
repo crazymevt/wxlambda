@@ -9,7 +9,7 @@ Forward declarations are represented in the per-header declaration inventories.
 
 ## C1: Foundation, values, application, events, and base utilities
 
-Class/struct definitions: 0 complete; 5 partial; 297 pending. Partial and pending classes remain open.
+Class/struct definitions: 0 complete; 7 partial; 295 pending. Partial and pending classes remain open.
 
 [Declaration counts and remaining work](README.md).
 
@@ -65,12 +65,12 @@ Class/struct definitions: 0 complete; 5 partial; 297 pending. Partial and pendin
 - [ ] `wxEventBlocker` — [`wx/event.h`](phase-c1.md), upstream line 310.
 - [ ] `wxPropagationDisabler` — [`wx/event.h`](phase-c1.md), upstream line 342.
 - [ ] `wxPropagateOnce` — [`wx/event.h`](phase-c1.md), upstream line 353.
-- [~] `wxEvtHandler` — [`wx/event.h`](phase-c1.md), upstream line 381. — **Partial**: `event-handler`, `make-event-handler`, `destroy-event-handler`, `handler-alive-p`, `handler-enabled-p`, `(setf handler-enabled-p)`, `bind-event`, `unbind-event`, `binding-active-p`, `queue-event`; ABI: `wxl_event_handler`, `wxl_handler_destroy`, `wxl_handler_alive`, `wxl_handler_enabled`, `wxl_set_handler_enabled`, `wxl_bind`, `wxl_unbind`, `wxl_binding_active`, `wxl_queue_event`. Owned/borrowed handler identities and command/close-family bindings with exact IDs/ranges, safe unbinding, copied queue payloads and weak invalidation. Callback-time receiver disposal is deferred; generic roots are reaped at Lisp boundaries. Optional contextual callbacks now control Skip/propagation for supported command/close kinds. Arbitrary event types/userData, notify/session families, pushed chains and worker dispatch remain open. See docs/EVENT-CONTEXTS.md.
+- [~] `wxEvtHandler` — [`wx/event.h`](phase-c1.md), upstream line 381. — **Partial**: `event-handler`, `make-event-handler`, `destroy-event-handler`, `handler-alive-p`, `handler-enabled-p`, `(setf handler-enabled-p)`, `bind-event`, `unbind-event`, `binding-active-p`, `queue-event`; ABI: `wxl_event_handler`, `wxl_handler_destroy`, `wxl_handler_alive`, `wxl_handler_enabled`, `wxl_set_handler_enabled`, `wxl_bind`, `wxl_unbind`, `wxl_binding_active`, `wxl_queue_event`. Owned/borrowed handler identities and command/close-family bindings with exact IDs/ranges, safe unbinding, copied queue payloads and weak invalidation. Callback-time receiver disposal is deferred; generic roots are reaped at Lisp boundaries. Optional contextual callbacks now control Skip/propagation for supported command/close kinds. Arbitrary event types/userData, notify/session families, pushed chains and worker dispatch remain open. See docs/EVENT-CONTEXTS.md. Registered command/notify names and synchronous ProcessEvent are now supported; application session routing remains unbound.
 - [ ] `wxKeyEvent` — [`wx/event.h`](phase-c1.md), upstream line 1509.
 - [ ] `wxJoystickEvent` — [`wx/event.h`](phase-c1.md), upstream line 1748.
 - [ ] `wxScrollWinEvent` — [`wx/event.h`](phase-c1.md), upstream line 1890.
 - [ ] `wxSysColourChangedEvent` — [`wx/event.h`](phase-c1.md), upstream line 1948.
-- [ ] `wxCommandEvent` — [`wx/event.h`](phase-c1.md), upstream line 2052.
+- [~] `wxCommandEvent` — [`wx/event.h`](phase-c1.md), upstream line 2052. — **Partial**: `event`, `register-event-type`, `queue-event`, `process-event`, `event-integer`; ABI: `wxl_register_event_type`, `wxl_bind`, `wxl_queue_event`, `wxl_process_event`. Built-in and registered command tags with copied string/integer payloads and scoped dispatch. Remaining native fields/mutators, arbitrary derived classes, persistent ownership/cloning and worker dispatch remain open.
 - [ ] `wxWindowCreateEvent` — [`wx/event.h`](phase-c1.md), upstream line 2176.
 - [ ] `wxPaintEvent` — [`wx/event.h`](phase-c1.md), upstream line 2264.
 - [ ] `wxMaximizeEvent` — [`wx/event.h`](phase-c1.md), upstream line 2302.
@@ -89,7 +89,7 @@ Class/struct definitions: 0 complete; 5 partial; 297 pending. Partial and pendin
 - [ ] `wxDPIChangedEvent` — [`wx/event.h`](phase-c1.md), upstream line 3482.
 - [ ] `wxPaletteChangedEvent` — [`wx/event.h`](phase-c1.md), upstream line 3531.
 - [ ] `wxQueryNewPaletteEvent` — [`wx/event.h`](phase-c1.md), upstream line 3541.
-- [ ] `wxNotifyEvent` — [`wx/event.h`](phase-c1.md), upstream line 3568.
+- [~] `wxNotifyEvent` — [`wx/event.h`](phase-c1.md), upstream line 3568. — **Partial**: `register-event-type`, `bind-event`, `queue-event`, `process-event`, `event-family`, `event-vetoed-p`, `(setf event-vetoed-p)`, `event-integer`; ABI: `wxl_register_event_type`, `wxl_bind`, `wxl_queue_event`, `wxl_process_event`, `wxl_context_vetoed`, `wxl_context_set_vetoed`. Registered synthetic notify types, immutable payload/family snapshots and scoped Veto/Allow. No native control-specific notify subclasses, persistent native event ownership/cloning, session application routing or userData. See docs/NOTIFY-EVENTS.md.
 - [ ] `wxThreadEvent` — [`wx/event.h`](phase-c1.md), upstream line 3620.
 - [ ] `wxHelpEvent` — [`wx/event.h`](phase-c1.md), upstream line 3740.
 - [ ] `wxScrollEvent` — [`wx/event.h`](phase-c1.md), upstream line 3880.
@@ -365,7 +365,7 @@ Class/struct definitions: 0 complete; 11 partial; 121 pending. Partial and pendi
 - [ ] `wxFontPickerCtrl` — [`wx/fontpicker.h`](phase-c2.md), upstream line 58.
 - [ ] `wxFontPickerEvent` — [`wx/fontpicker.h`](phase-c2.md), upstream line 191.
 - [~] `wxFrame` — [`wx/frame.h`](phase-c2.md), upstream line 163. — **Partial**: `frame`, `make-frame`, `close-window`; ABI: `wxl_frame`, `wxl_close`. Native-backed CLOS construction, including subclass initargs/defaults and managed rollback. Title, width and height; parent is NULL, ID is wxID_ANY, remaining options use defaults. Full class and inherited API coverage remain open. Frame-only synchronous close requests now preserve veto/force semantics and native acceptance; no destruction guarantee.
-- [~] `wxGauge` — [`wx/gauge.h`](phase-c2.md), upstream line 69. — **Partial**: `gauge`, `make-gauge`, `gauge-value`, `gauge-range`, `gauge-vertical-p`, `pulse-gauge`; ABI: `wxl_gauge`, `wxl_gauge_value`, `wxl_gauge_range`, `wxl_set_gauge_value`, `wxl_set_gauge_range`, `wxl_gauge_vertical`, `wxl_gauge_pulse`. Parent-owned progress gauge: positive range, value, horizontal/vertical orientation and pulsing. Constructor options, two-step creation and full inherited API remain open. Gauge support introduced in ABI 10; current bridge ABI 15; see docs/GAUGE.md and tests/gauge.lisp.
+- [~] `wxGauge` — [`wx/gauge.h`](phase-c2.md), upstream line 69. — **Partial**: `gauge`, `make-gauge`, `gauge-value`, `gauge-range`, `gauge-vertical-p`, `pulse-gauge`; ABI: `wxl_gauge`, `wxl_gauge_value`, `wxl_gauge_range`, `wxl_set_gauge_value`, `wxl_set_gauge_range`, `wxl_gauge_vertical`, `wxl_gauge_pulse`. Parent-owned progress gauge: positive range, value, horizontal/vertical orientation and pulsing. Constructor options, two-step creation and full inherited API remain open. Gauge support introduced in ABI 10; current bridge ABI 16; see docs/GAUGE.md and tests/gauge.lisp.
 - [ ] `wxGBPosition` — [`wx/gbsizer.h`](phase-c2.md), upstream line 17.
 - [ ] `wxGridBagSizer` — [`wx/gbsizer.h`](phase-c2.md), upstream line 73.
 - [ ] `wxGBSizerItem` — [`wx/gbsizer.h`](phase-c2.md), upstream line 234.

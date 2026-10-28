@@ -1102,6 +1102,171 @@
         "wxl_close"
       ],
       "scope": "wxFrame only. Synchronous close request with force flag; preserves native acceptance boolean, not a destruction guarantee. Callback errors have a Lisp boundary. Other window/top-level receivers remain open."
+    },
+    {
+      "header": "wx/event.h",
+      "line": 4972,
+      "declaration": "wxEventType wxNewEventType();",
+      "symbol": "wxNewEventType",
+      "status": "~",
+      "lisp": [
+        "register-event-type"
+      ],
+      "native": [
+        "wxl_register_event_type"
+      ],
+      "scope": "Unique session keyword names for custom command/notify families. Process-local native type IDs, no arbitrary native class registration or unregistration."
+    },
+    {
+      "header": "wx/event.h",
+      "line": 630,
+      "declaration": "virtual bool ProcessEvent(wxEvent& event);",
+      "symbol": "wxEvtHandler::ProcessEvent",
+      "status": "~",
+      "lisp": [
+        "process-event"
+      ],
+      "native": [
+        "wxl_process_event"
+      ],
+      "scope": "Synchronous fresh supported synthetic event dispatch, native handled result plus copied final veto. Main thread, owned event lifetime and nearer Lisp callback-error boundary. Arbitrary existing native event objects and application session routing remain unbound."
+    },
+    {
+      "header": "wx/event.h",
+      "line": 3574,
+      "declaration": "wxNotifyEvent(wxEventType eventType = wxEVT_NULL, int id = 0);",
+      "symbol": "wxNotifyEvent::wxNotifyEvent",
+      "status": "~",
+      "lisp": [
+        "queue-event",
+        "process-event"
+      ],
+      "native": [
+        "wxl_queue_event",
+        "wxl_process_event"
+      ],
+      "scope": "Registered custom notify tags only, copied ID/text/integer and optional initial veto. No native control-specific derived events or persistent event wrapper."
+    },
+    {
+      "header": "wx/event.h",
+      "line": 3582,
+      "declaration": "void Allow();",
+      "symbol": "wxNotifyEvent::Allow",
+      "status": "~",
+      "lisp": [
+        "(setf event-vetoed-p)"
+      ],
+      "native": [
+        "wxl_context_set_vetoed"
+      ],
+      "scope": "Equivalent NIL assignment clears notify veto in the current context. Snapshots remain immutable."
+    },
+    {
+      "header": "wx/event.h",
+      "line": 3588,
+      "declaration": "bool IsAllowed() const;",
+      "symbol": "wxNotifyEvent::IsAllowed",
+      "status": "~",
+      "lisp": [
+        "event-vetoed-p",
+        "process-event"
+      ],
+      "native": [
+        "wxl_context_vetoed",
+        "wxl_process_event"
+      ],
+      "scope": "Equivalent NOT event-vetoed-p, or inverse final veto result from ProcessEvent. Supported notify family only."
+    },
+    {
+      "header": "wx/event.h",
+      "line": 3597,
+      "declaration": "void Veto();",
+      "symbol": "wxNotifyEvent::Veto",
+      "status": "~",
+      "lisp": [
+        "(setf event-vetoed-p)"
+      ],
+      "native": [
+        "wxl_context_set_vetoed"
+      ],
+      "scope": "True assignment vetoes the current notify event. Close-event CanVeto restrictions remain independently checked."
+    },
+    {
+      "header": "wx/event.h",
+      "line": 2058,
+      "declaration": "wxCommandEvent(wxEventType commandEventType = wxEVT_NULL, int id = 0);",
+      "symbol": "wxCommandEvent::wxCommandEvent",
+      "status": "~",
+      "lisp": [
+        "queue-event",
+        "process-event"
+      ],
+      "native": [
+        "wxl_queue_event",
+        "wxl_process_event"
+      ],
+      "scope": "Built-in and registered command tags, copied ID/text/integer. Arbitrary native subclasses and persistent event objects are not exposed."
+    },
+    {
+      "header": "wx/event.h",
+      "line": 2092,
+      "declaration": "int GetInt() const;",
+      "symbol": "wxCommandEvent::GetInt",
+      "status": "~",
+      "lisp": [
+        "event-integer"
+      ],
+      "native": [
+        "wxl_bind",
+        "wxl_process_event"
+      ],
+      "scope": "Copied signed integer in supported command/notify snapshots. No native mutable GetInt view or arbitrary persistent event objects."
+    },
+    {
+      "header": "wx/event.h",
+      "line": 2106,
+      "declaration": "wxString GetString() const;",
+      "symbol": "wxCommandEvent::GetString",
+      "status": "~",
+      "lisp": [
+        "event-text"
+      ],
+      "native": [
+        "wxl_bind"
+      ],
+      "scope": "Copied strings for text-change and registered command/notify kinds, with explicit UTF-8 lengths. Other built-in snapshots retain their documented text scope."
+    },
+    {
+      "header": "wx/event.h",
+      "line": 2147,
+      "declaration": "void SetInt(int intCommand);",
+      "symbol": "wxCommandEvent::SetInt",
+      "status": "~",
+      "lisp": [
+        "queue-event",
+        "process-event"
+      ],
+      "native": [
+        "wxl_queue_event",
+        "wxl_process_event"
+      ],
+      "scope": "Synthetic payload initialization only: registered signed integer or built-in toggle/selection values. Existing scoped contexts cannot mutate integer fields."
+    },
+    {
+      "header": "wx/event.h",
+      "line": 2152,
+      "declaration": "void SetString(const wxString& string);",
+      "symbol": "wxCommandEvent::SetString",
+      "status": "~",
+      "lisp": [
+        "queue-event",
+        "process-event"
+      ],
+      "native": [
+        "wxl_queue_event",
+        "wxl_process_event"
+      ],
+      "scope": "Copied synthetic text initialization for text-change or registered command/notify kinds. No mutable context string setter."
     }
   ],
   "classes": {
@@ -1243,7 +1408,7 @@
         "wxl_gauge_vertical",
         "wxl_gauge_pulse"
       ],
-      "scope": "Parent-owned progress gauge: positive range, value, horizontal/vertical orientation and pulsing. Constructor options, two-step creation and full inherited API remain open. Gauge support introduced in ABI 10; current bridge ABI 15; see docs/GAUGE.md and tests/gauge.lisp."
+      "scope": "Parent-owned progress gauge: positive range, value, horizontal/vertical orientation and pulsing. Constructor options, two-step creation and full inherited API remain open. Gauge support introduced in ABI 10; current bridge ABI 16; see docs/GAUGE.md and tests/gauge.lisp."
     },
     "wxAppConsole": {
       "status": "~",
@@ -1304,7 +1469,7 @@
         "wxl_binding_active",
         "wxl_queue_event"
       ],
-      "scope": "Owned/borrowed handler identities and command/close-family bindings with exact IDs/ranges, safe unbinding, copied queue payloads and weak invalidation. Callback-time receiver disposal is deferred; generic roots are reaped at Lisp boundaries. Optional contextual callbacks now control Skip/propagation for supported command/close kinds. Arbitrary event types/userData, notify/session families, pushed chains and worker dispatch remain open. See docs/EVENT-CONTEXTS.md."
+      "scope": "Owned/borrowed handler identities and command/close-family bindings with exact IDs/ranges, safe unbinding, copied queue payloads and weak invalidation. Callback-time receiver disposal is deferred; generic roots are reaped at Lisp boundaries. Optional contextual callbacks now control Skip/propagation for supported command/close kinds. Arbitrary event types/userData, notify/session families, pushed chains and worker dispatch remain open. See docs/EVENT-CONTEXTS.md. Registered command/notify names and synchronous ProcessEvent are now supported; application session routing remains unbound."
     },
     "wxEvent": {
       "status": "~",
@@ -1350,6 +1515,45 @@
         "wxl_context_set_vetoed"
       ],
       "scope": ":CLOSE wxEVT_CLOSE_WINDOW snapshots/scoped views and copied synthetic construction. Checked veto, force-aware frame requests and immutable flags. No query/end-session tags, logging-off state, arbitrary close types, persistent event ownership or context SetCanVeto. wxNotifyEvent remains unbound. See docs/CLOSE-EVENTS.md."
+    },
+    "wxNotifyEvent": {
+      "status": "~",
+      "lisp": [
+        "register-event-type",
+        "bind-event",
+        "queue-event",
+        "process-event",
+        "event-family",
+        "event-vetoed-p",
+        "(setf event-vetoed-p)",
+        "event-integer"
+      ],
+      "native": [
+        "wxl_register_event_type",
+        "wxl_bind",
+        "wxl_queue_event",
+        "wxl_process_event",
+        "wxl_context_vetoed",
+        "wxl_context_set_vetoed"
+      ],
+      "scope": "Registered synthetic notify types, immutable payload/family snapshots and scoped Veto/Allow. No native control-specific notify subclasses, persistent native event ownership/cloning, session application routing or userData. See docs/NOTIFY-EVENTS.md."
+    },
+    "wxCommandEvent": {
+      "status": "~",
+      "lisp": [
+        "event",
+        "register-event-type",
+        "queue-event",
+        "process-event",
+        "event-integer"
+      ],
+      "native": [
+        "wxl_register_event_type",
+        "wxl_bind",
+        "wxl_queue_event",
+        "wxl_process_event"
+      ],
+      "scope": "Built-in and registered command tags with copied string/integer payloads and scoped dispatch. Remaining native fields/mutators, arbitrary derived classes, persistent ownership/cloning and worker dispatch remain open."
     }
   }
 }

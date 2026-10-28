@@ -16,7 +16,7 @@ class or constructor does not imply full upstream coverage.
 
 ## Current coverage and remaining work
 
-3 implemented; 27 partial; 5262 pending; 26 context entries. Partial and pending entries remain open.
+3 implemented; 40 partial; 5249 pending; 26 context entries. Partial and pending entries remain open.
 
 Counts describe inventory entries, not distinct APIs or percent completion.
 See the [coverage summary](README.md) for phase/header comparisons.
@@ -1475,7 +1475,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h)
 
-3 implemented; 19 partial; 638 pending; 16 context entries. Partial and pending entries remain open.
+3 implemented; 32 partial; 625 pending; 16 context entries. Partial and pending entries remain open.
 
 - **Context**: [L9](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L9) `#if wxUSE_BASE`
 - [ ] [L15](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L15) `enum wxEventPropagation {`
@@ -1516,14 +1516,14 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [ ] [L357](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L357) `~wxPropagateOnce();`
 - **Context**: [L360](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L360) `#endif`
 - **Context**: [L362](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L362) `#if wxUSE_BASE`
-- [~] [L381](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L381) `class wxEvtHandler : public wxObject, public wxTrackable {` — **Partial**: `event-handler`, `make-event-handler`, `destroy-event-handler`, `handler-alive-p`, `handler-enabled-p`, `(setf handler-enabled-p)`, `bind-event`, `unbind-event`, `binding-active-p`, `queue-event`; ABI: `wxl_event_handler`, `wxl_handler_destroy`, `wxl_handler_alive`, `wxl_handler_enabled`, `wxl_set_handler_enabled`, `wxl_bind`, `wxl_unbind`, `wxl_binding_active`, `wxl_queue_event`. Owned/borrowed handler identities and command/close-family bindings with exact IDs/ranges, safe unbinding, copied queue payloads and weak invalidation. Callback-time receiver disposal is deferred; generic roots are reaped at Lisp boundaries. Optional contextual callbacks now control Skip/propagation for supported command/close kinds. Arbitrary event types/userData, notify/session families, pushed chains and worker dispatch remain open. See docs/EVENT-CONTEXTS.md.
+- [~] [L381](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L381) `class wxEvtHandler : public wxObject, public wxTrackable {` — **Partial**: `event-handler`, `make-event-handler`, `destroy-event-handler`, `handler-alive-p`, `handler-enabled-p`, `(setf handler-enabled-p)`, `bind-event`, `unbind-event`, `binding-active-p`, `queue-event`; ABI: `wxl_event_handler`, `wxl_handler_destroy`, `wxl_handler_alive`, `wxl_handler_enabled`, `wxl_set_handler_enabled`, `wxl_bind`, `wxl_unbind`, `wxl_binding_active`, `wxl_queue_event`. Owned/borrowed handler identities and command/close-family bindings with exact IDs/ranges, safe unbinding, copied queue payloads and weak invalidation. Callback-time receiver disposal is deferred; generic roots are reaped at Lisp boundaries. Optional contextual callbacks now control Skip/propagation for supported command/close kinds. Arbitrary event types/userData, notify/session families, pushed chains and worker dispatch remain open. See docs/EVENT-CONTEXTS.md. Registered command/notify names and synchronous ProcessEvent are now supported; application session routing remains unbound.
 - [x] [L387](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L387) `wxEvtHandler();` — **Implemented**: `event-handler`, `make-event-handler`; ABI: `wxl_event_handler`. Native-backed standalone CLOS construction. Session-owned native object, explicit destruction or session cleanup; subclass initargs/defaults/AFTER hooks and rollback supported.
 - [~] [L395](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L395) `virtual ~wxEvtHandler();` — **Partial**: `destroy-event-handler`; ABI: `wxl_handler_destroy`. Owned standalone handlers only. Borrowed window identities must use window/parent destruction. Generic binding teardown and pushed-handler ownership remain open.
 - [~] [L463](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L463) `virtual void QueueEvent(wxEvent *event);` — **Partial**: `queue-event`; ABI: `wxl_queue_event`. Copied four-command or :CLOSE wxCloseEvent queues on exposed handlers, main-thread only. Kind-specific payloads and synthetic CanVeto option; queued frame close may run defaults. Arbitrary types, session events, native-origin override and worker dispatch remain open.
 - [ ] [L485](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L485) `virtual void AddPendingEvent(const wxEvent& event);`
 - [ ] [L535](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L535) `template<typename T, typename T1, ...> void CallAfter(void (T::*method)(T1, ...), T1 x1, ...);`
 - [ ] [L568](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L568) `template<typename T> void CallAfter(const T& functor);`
-- [ ] [L630](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L630) `virtual bool ProcessEvent(wxEvent& event);`
+- [~] [L630](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L630) `virtual bool ProcessEvent(wxEvent& event);` — **Partial**: `process-event`; ABI: `wxl_process_event`. Synchronous fresh supported synthetic event dispatch, native handled result plus copied final veto. Main thread, owned event lifetime and nearer Lisp callback-error boundary. Arbitrary existing native event objects and application session routing remain unbound.
 - [ ] [L656](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L656) `bool ProcessEventLocally(wxEvent& event);`
 - [ ] [L671](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L671) `bool SafelyProcessEvent(wxEvent& event);`
 - [ ] [L686](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L686) `void ProcessPendingEvents();`
@@ -1648,21 +1648,21 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [ ] [L2041](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L2041) `documented event: EVT_COMMAND_SET_FOCUS(id, func)`
 - [ ] [L2043](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L2043) `documented event: EVT_COMMAND_KILL_FOCUS(id, func)`
 - [ ] [L2045](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L2045) `documented event: EVT_COMMAND_ENTER(id, func)`
-- [ ] [L2052](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L2052) `class wxCommandEvent : public wxEvent {`
-- [ ] [L2058](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L2058) `wxCommandEvent(wxEventType commandEventType = wxEVT_NULL, int id = 0);`
+- [~] [L2052](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L2052) `class wxCommandEvent : public wxEvent {` — **Partial**: `event`, `register-event-type`, `queue-event`, `process-event`, `event-integer`; ABI: `wxl_register_event_type`, `wxl_bind`, `wxl_queue_event`, `wxl_process_event`. Built-in and registered command tags with copied string/integer payloads and scoped dispatch. Remaining native fields/mutators, arbitrary derived classes, persistent ownership/cloning and worker dispatch remain open.
+- [~] [L2058](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L2058) `wxCommandEvent(wxEventType commandEventType = wxEVT_NULL, int id = 0);` — **Partial**: `queue-event`, `process-event`; ABI: `wxl_queue_event`, `wxl_process_event`. Built-in and registered command tags, copied ID/text/integer. Arbitrary native subclasses and persistent event objects are not exposed.
 - [ ] [L2064](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L2064) `void* GetClientData() const;`
 - [ ] [L2070](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L2070) `wxClientData* GetClientObject() const;`
 - [ ] [L2081](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L2081) `long GetExtraLong() const;`
-- [ ] [L2092](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L2092) `int GetInt() const;`
+- [~] [L2092](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L2092) `int GetInt() const;` — **Partial**: `event-integer`; ABI: `wxl_bind`, `wxl_process_event`. Copied signed integer in supported command/notify snapshots. No native mutable GetInt view or arbitrary persistent event objects.
 - [ ] [L2098](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L2098) `int GetSelection() const;`
-- [ ] [L2106](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L2106) `wxString GetString() const;`
+- [~] [L2106](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L2106) `wxString GetString() const;` — **Partial**: `event-text`; ABI: `wxl_bind`. Copied strings for text-change and registered command/notify kinds, with explicit UTF-8 lengths. Other built-in snapshots retain their documented text scope.
 - [ ] [L2116](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L2116) `bool IsChecked() const;`
 - [ ] [L2123](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L2123) `bool IsSelection() const;`
 - [ ] [L2128](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L2128) `void SetClientData(void* clientData);`
 - [ ] [L2137](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L2137) `void SetClientObject(wxClientData* clientObject);`
 - [ ] [L2142](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L2142) `void SetExtraLong(long extraLong);`
-- [ ] [L2147](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L2147) `void SetInt(int intCommand);`
-- [ ] [L2152](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L2152) `void SetString(const wxString& string);`
+- [~] [L2147](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L2147) `void SetInt(int intCommand);` — **Partial**: `queue-event`, `process-event`; ABI: `wxl_queue_event`, `wxl_process_event`. Synthetic payload initialization only: registered signed integer or built-in toggle/selection values. Existing scoped contexts cannot mutate integer fields.
+- [~] [L2152](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L2152) `void SetString(const wxString& string);` — **Partial**: `queue-event`, `process-event`; ABI: `wxl_queue_event`, `wxl_process_event`. Copied synthetic text initialization for text-change or registered command/notify kinds. No mutable context string setter.
 - [ ] [L2167](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L2167) `documented event: EVT_WINDOW_CREATE(func)`
 - [ ] [L2176](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L2176) `class wxWindowCreateEvent : public wxCommandEvent {`
 - [ ] [L2182](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L2182) `wxWindowCreateEvent(wxWindow* win = NULL);`
@@ -1824,11 +1824,11 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [ ] [L3544](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L3544) `wxQueryNewPaletteEvent(wxWindowID winid = 0);`
 - [ ] [L3546](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L3546) `void SetPaletteRealized(bool realized);`
 - [ ] [L3547](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L3547) `bool GetPaletteRealized();`
-- [ ] [L3568](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L3568) `class wxNotifyEvent : public wxCommandEvent {`
-- [ ] [L3574](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L3574) `wxNotifyEvent(wxEventType eventType = wxEVT_NULL, int id = 0);`
-- [ ] [L3582](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L3582) `void Allow();`
-- [ ] [L3588](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L3588) `bool IsAllowed() const;`
-- [ ] [L3597](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L3597) `void Veto();`
+- [~] [L3568](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L3568) `class wxNotifyEvent : public wxCommandEvent {` — **Partial**: `register-event-type`, `bind-event`, `queue-event`, `process-event`, `event-family`, `event-vetoed-p`, `(setf event-vetoed-p)`, `event-integer`; ABI: `wxl_register_event_type`, `wxl_bind`, `wxl_queue_event`, `wxl_process_event`, `wxl_context_vetoed`, `wxl_context_set_vetoed`. Registered synthetic notify types, immutable payload/family snapshots and scoped Veto/Allow. No native control-specific notify subclasses, persistent native event ownership/cloning, session application routing or userData. See docs/NOTIFY-EVENTS.md.
+- [~] [L3574](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L3574) `wxNotifyEvent(wxEventType eventType = wxEVT_NULL, int id = 0);` — **Partial**: `queue-event`, `process-event`; ABI: `wxl_queue_event`, `wxl_process_event`. Registered custom notify tags only, copied ID/text/integer and optional initial veto. No native control-specific derived events or persistent event wrapper.
+- [~] [L3582](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L3582) `void Allow();` — **Partial**: `(setf event-vetoed-p)`; ABI: `wxl_context_set_vetoed`. Equivalent NIL assignment clears notify veto in the current context. Snapshots remain immutable.
+- [~] [L3588](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L3588) `bool IsAllowed() const;` — **Partial**: `event-vetoed-p`, `process-event`; ABI: `wxl_context_vetoed`, `wxl_process_event`. Equivalent NOT event-vetoed-p, or inverse final veto result from ProcessEvent. Supported notify family only.
+- [~] [L3597](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L3597) `void Veto();` — **Partial**: `(setf event-vetoed-p)`; ABI: `wxl_context_set_vetoed`. True assignment vetoes the current notify event. Close-event CanVeto restrictions remain independently checked.
 - [ ] [L3620](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L3620) `class wxThreadEvent : public wxEvent {`
 - [ ] [L3626](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L3626) `wxThreadEvent(wxEventType eventType = wxEVT_THREAD, int id = wxID_ANY);`
 - [ ] [L3633](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L3633) `virtual wxEvent *Clone() const;`
@@ -2008,7 +2008,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [ ] [L4956](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L4956) `typedef int wxEventType;`
 - [ ] [L4962](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L4962) `wxEventType wxEVT_NULL;`
 - [ ] [L4964](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L4964) `wxEventType wxEVT_ANY;`
-- [ ] [L4972](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L4972) `wxEventType wxNewEventType();`
+- [~] [L4972](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L4972) `wxEventType wxNewEventType();` — **Partial**: `register-event-type`; ABI: `wxl_register_event_type`. Unique session keyword names for custom command/notify families. Process-local native type IDs, no arbitrary native class registration or unregistration.
 - [ ] [L4990](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L4990) `#define wxDEFINE_EVENT(name, cls)`
 - [ ] [L5010](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L5010) `#define wxDECLARE_EVENT(name, cls)`
 - [ ] [L5021](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L5021) `#define wxDECLARE_EXPORTED_EVENT( expdecl, name, cls )`

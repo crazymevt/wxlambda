@@ -37,14 +37,18 @@ must reconcile additional documented public interfaces beyond those headers.
 - Close-family milestone: :close snapshots/contexts, CanVeto-guarded SETF veto,
   synthetic close queues and frame close requests; acceptance is not destruction.
   `event-type` replaces the command-only lookup without an alias.
-- Current bridge ABI: 15. Public API: 93 exports, nine window wrapper classes
-  (eight concrete widget kinds) plus the event-handler base, 54 named generics and
+- Registered-notify milestone: session keyword declarations for custom command/
+  notify types, copied text/integer payloads, scoped Veto/Allow and synchronous
+  dispatch with native handled/final-veto results. Session routing remains open.
+- Current bridge ABI: 16. Public API: 96 exports, nine window wrapper classes
+  (eight concrete widget kinds) plus the event-handler base, 55 named generics and
   thirteen generic SETF writers. No public application wrapper or arbitrary-event
-  binding exists yet; four command kinds plus the close family have observer/contextual bindings.
-- Latest implementation verification: 32 GUI scenarios and native preflight
+  class binding exists yet; built-ins plus registered command/notify names have
+  observer/contextual bindings.
+- Latest implementation verification: 33 GUI scenarios and native preflight
   pass on local Apple Silicon macOS SBCL 2.6.9 and CCL 1.13. Final reports:
-  `evidence/close-events/{sbcl,ccl}-20261028/`. Five package checks
-  pass in `evidence/packaging/close-events-20261028/`.
+  `evidence/notify-events/{sbcl,ccl}-20261028/`. Five package checks
+  pass in `evidence/packaging/notify-events-20261028/`.
   Hosted Linux/Windows GUI behavior and the graphical Cadre viewer remain open.
 
 ### Next dependency and working order
@@ -60,11 +64,15 @@ must reconcile additional documented public interfaces beyond those headers.
 3. Generic binding/unbinding supports command and close kinds with ID filters. Optional
    borrowed contexts now control Skip/propagation in the innermost callback; saved
    snapshots carry process-local native type IDs. Close veto and frame request
-   policy are implemented. Next extend family representation to notify/session
-   events and remaining native registration/ownership, with checked payload and
-   scope lifetimes before dependent families. Preserve immutable
+   policy are implemented. Registered command/notify types and synchronous dispatch are implemented.
+   Next define a borrowed application handler view and its lifetime, then native
+   query/end-session routing and logging-off state. Native session events are
+   wxApp-only, and default END_SESSION handling can exit the process: never
+   synthesize live application end-session events as an ordinary test. Use owned
+   handlers for synthetic family tests and distinguish OS validation from them.
+   Native control-specific notify subclasses and remaining event ownership stay open. Preserve immutable
    snapshots and opaque binding/context identities; never expose a native event
-   pointer after callback return. Arbitrary native events/userData, notify/session families and
+   pointer after callback return. Arbitrary native event classes/userData, session routing and
    linked/pushed handlers remain gaps.
 4. Build timer/idle, event propagation/skip/veto and worker-to-GUI dispatch on
    those contracts, adding prerequisite value types before their consumers.
@@ -813,6 +821,30 @@ dispatch remain required work. `wxWindow::Close` is mapped only for wxFrame;
 other receiver types are not complete. Hosted Linux/Windows GUI and graphical
 Cadre validation remain unverified. Continue C1 notify/session/event registration
 and ownership prerequisites before dependent event families or new widgets.
+
+## Registered command/notify types and synchronous dispatch (2026-10-28)
+
+Bridge ABI 16 adds session-scoped REGISTER-EVENT-TYPE declarations, copied
+command/notify text and integer snapshots, current-context notify Veto/Allow,
+and PROCESS-EVENT. Synchronous dispatch returns native handled-p and final
+vetoed-p independently: skipped observers can run while handled-p is NIL.
+Synthetic events remain owned through callbacks and deferred receiver disposal.
+Registration metadata expires with the session; saved snapshots remain readable.
+There is no unregister or rollback of a declaration after failed initialization.
+
+Both local SBCL and CCL pass native preflight and all 33 GUI scenarios, including
+the runnable notify example. Python and pinned inventory regressions pass.
+The docset contains 125 entries covering all 96 exports, guides and fourteen
+examples. Five relocated-package checks pass; evidence paths are in the handoff.
+Independent runtime and documentation review found no runtime issues; stale
+snapshot/type/veto reference descriptions identified in review were corrected.
+
+Native session routing is deliberately deferred: it requires a borrowed wxApp
+handler view with defined lifetime, and default END_SESSION handling can exit
+the process. Complete that prerequisite before query/end-session and logging-off
+support. Derived notify classes, broader event ownership and all remaining C1–C7
+backlog items remain open. Hosted Windows/Linux GUI and graphical Cadre checks
+remain unverified.
 
 ## Decisions
 

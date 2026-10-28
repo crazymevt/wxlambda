@@ -7,6 +7,7 @@
 #include <memory>
 #include <unordered_set>
 #include <vector>
+#include <limits>
 #include <algorithm>
 #include <stdexcept>
 #include <string>
@@ -30,6 +31,9 @@ std::unordered_map<wxl_handle, uint64_t> handlers;
 struct Binding;
 std::unordered_map<uint64_t, std::shared_ptr<Binding>> bindings;
 std::unordered_set<wxl_handle> pending_destruction;
+struct RegisteredEvent { wxEventType type; int family; };
+std::unordered_map<int, RegisteredEvent> registered_events;
+int next_event_kind = 8;
 wxl_handle next_handle = 1;
 wxl_callback dispatch = nullptr;
 bool started = false, used = false, running = false, pumping = false;
@@ -125,8 +129,58 @@ wxEventTypeTag<wxEvent> native_event_type(int kind) {
         case WXL_EVENT_TOGGLE: return wxEventTypeTag<wxEvent>(wxEVT_CHECKBOX);
         case WXL_EVENT_SELECTION: return wxEventTypeTag<wxEvent>(wxEVT_CHOICE);
         case WXL_EVENT_CLOSE: return wxEventTypeTag<wxEvent>(wxEVT_CLOSE_WINDOW);
-        default: throw std::runtime_error("Unsupported event kind");
+        default: {
+            const auto it = registered_events.find(kind);
+            require(it != registered_events.end(), "Unsupported event kind");
+            return wxEventTypeTag<wxEvent>(it->second.type);
+        }
     }
+}
+int native_event_family(int kind) {
+    if (kind >= WXL_EVENT_CLICK && kind <= WXL_EVENT_SELECTION) return WXL_FAMILY_COMMAND;
+    if (kind == WXL_EVENT_CLOSE) return WXL_FAMILY_CLOSE;
+    const auto it = registered_events.find(kind);
+    require(it != registered_events.end(), "Unsupported event kind");
+    return it->second.family;
+}
+bool event_can_veto(wxEvent& event) {
+    if (auto* close = dynamic_cast<wxCloseEvent*>(&event)) return close->CanVeto();
+    return dynamic_cast<wxNotifyEvent*>(&event) != nullptr;
+}
+bool event_vetoed(wxEvent& event) {
+    if (auto* close = dynamic_cast<wxCloseEvent*>(&event)) return close->GetVeto();
+    if (auto* notify = dynamic_cast<wxNotifyEvent*>(&event)) return !notify->IsAllowed();
+    return false;
+}
+std::unique_ptr<wxEvent> synthetic_event(wxEvtHandler* receiver, int kind, int event_id,
+                                       const char* text, size_t length, int value,
+                                       int can_veto, int vetoed) {
+    const auto type = native_event_type(kind);
+    const int family = native_event_family(kind);
+    require(text || length == 0, "Null event text");
+    require(kind != WXL_EVENT_SELECTION || value >= -1, "Invalid selection event index");
+    require(family == WXL_FAMILY_NOTIFY || vetoed == 0, "Initial veto applies only to notify types");
+    std::unique_ptr<wxEvent> event;
+    if (kind == WXL_EVENT_CLOSE) {
+        require(length == 0 && value == 0, "Close events do not take command payloads");
+        auto close = std::make_unique<wxCloseEvent>(type, event_id);
+        close->SetCanVeto(can_veto != 0);
+        event = std::move(close);
+    } else if (family == WXL_FAMILY_NOTIFY) {
+        auto notify = std::make_unique<wxNotifyEvent>(type, event_id);
+        notify->SetString(wxString::FromUTF8(text ? text : "", length));
+        notify->SetInt(value);
+        if (vetoed) notify->Veto();
+        event = std::move(notify);
+    } else {
+        auto command = std::make_unique<wxCommandEvent>(type, event_id);
+        if (kind == WXL_EVENT_TEXT_CHANGE || kind >= 8)
+            command->SetString(wxString::FromUTF8(text ? text : "", length));
+        command->SetInt(value);
+        event = std::move(command);
+    }
+    event->SetEventObject(receiver);
+    return event;
 }
 struct Binding {
     wxWeakRef<wxEvtHandler> receiver;
@@ -146,14 +200,16 @@ struct Binding {
         auto keep = found->second;
         if (live() && dispatch) {
             auto* command = dynamic_cast<wxCommandEvent*>(&event);
-            auto* close = dynamic_cast<wxCloseEvent*>(&event);
+            const int family = native_event_family(kind);
+            const bool carries_text = kind == WXL_EVENT_TEXT_CHANGE || kind >= 8;
             const auto text = command ? command->GetString() : wxString();
             const auto bytes = text.ToUTF8();
-            wxl_event snapshot{kind, kind == WXL_EVENT_TEXT_CHANGE ? (bytes.data() ? bytes.data() : "") : nullptr,
+            wxl_event snapshot{kind, carries_text ? (bytes.data() ? bytes.data() : "") : nullptr,
                                      kind == WXL_EVENT_TOGGLE && command && command->IsChecked() ? 1 : 0,
                                      kind == WXL_EVENT_SELECTION && command ? command->GetSelection() : -1,
-                                     event.GetId(), kind == WXL_EVENT_TEXT_CHANGE ? bytes.length() : 0,
-                                     0, event.GetEventType(), close && close->CanVeto() ? 1 : 0, close && close->GetVeto() ? 1 : 0};
+                                     event.GetId(), carries_text ? bytes.length() : 0,
+                                     0, event.GetEventType(), event_can_veto(event) ? 1 : 0, event_vetoed(event) ? 1 : 0,
+                                     family, command ? command->GetInt() : 0};
             if (with_context) {
                 event.Skip(false);
                 EventScope scope(event);
@@ -227,7 +283,7 @@ wxString utf8(const char* value) {
 }
 }
 extern "C" {
-int wxl_abi_version() { return 15; }
+int wxl_abi_version() { return 16; }
 const char* wxl_last_error() { return error.c_str(); }
 int wxl_start(wxl_callback callback) {
     return status([&] {
@@ -297,7 +353,7 @@ int wxl_finish() {
         owned_handlers.clear();
         wxTheApp->OnExit();
         wxEntryCleanup();
-        windows.clear(); handlers.clear(); pending_destruction.clear(); dispatch = nullptr; started = false;
+        windows.clear(); handlers.clear(); pending_destruction.clear(); registered_events.clear(); dispatch = nullptr; started = false;
     });
 }
 wxl_handle wxl_event_handler() {
@@ -369,23 +425,26 @@ int wxl_context_stop_propagation(uint64_t token) {
 }
 int wxl_context_can_veto(uint64_t token) {
     return boolean_result([&] {
-        auto* close = dynamic_cast<wxCloseEvent*>(&current_event(token));
-        return close && close->CanVeto();
+        return event_can_veto(current_event(token));
     });
 }
 int wxl_context_vetoed(uint64_t token) {
     return boolean_result([&] {
-        auto* close = dynamic_cast<wxCloseEvent*>(&current_event(token));
-        require(close != nullptr, "This event family has no close-veto state");
-        return close->GetVeto();
+        auto& event = current_event(token);
+        require(dynamic_cast<wxCloseEvent*>(&event) || dynamic_cast<wxNotifyEvent*>(&event),
+                "This event family has no veto state");
+        return event_vetoed(event);
     });
 }
 int wxl_context_set_vetoed(uint64_t token, int vetoed) {
     return status([&] {
-        auto* close = dynamic_cast<wxCloseEvent*>(&current_event(token));
-        require(close != nullptr, "This event family has no close-veto state");
-        require(close->CanVeto(), "This close event cannot be vetoed");
-        close->Veto(vetoed != 0);
+        auto& event = current_event(token);
+        if (auto* close = dynamic_cast<wxCloseEvent*>(&event)) {
+            require(close->CanVeto(), "This close event cannot be vetoed");
+            close->Veto(vetoed != 0);
+        } else if (auto* notify = dynamic_cast<wxNotifyEvent*>(&event)) {
+            if (vetoed) notify->Veto(); else notify->Allow();
+        } else throw std::runtime_error("This event family has no veto state");
     });
 }
 int wxl_close(wxl_handle id, int force) {
@@ -434,26 +493,35 @@ int wxl_binding_active(uint64_t token) {
         return false;
     });
 }
-int wxl_queue_event(wxl_handle id, int kind, int event_id, const char* text, size_t length, int value, int can_veto) {
+int wxl_register_event_type(int family) {
+    int kind = 0;
+    const int result = status([&] {
+        ready();
+        require(family == WXL_FAMILY_COMMAND || family == WXL_FAMILY_NOTIFY, "Unsupported custom event family");
+        require(next_event_kind < std::numeric_limits<int>::max(), "Event kind space exhausted");
+        kind = next_event_kind++;
+        registered_events.emplace(kind, RegisteredEvent{wxNewEventType(), family});
+    });
+    return result == 0 ? kind : -1;
+}
+int wxl_queue_event(wxl_handle id, int kind, int event_id, const char* text, size_t length,
+                    int value, int can_veto, int vetoed) {
     return status([&] {
         auto* receiver = event_handler(id);
-        const auto type = native_event_type(kind);
-        require(text || length == 0, "Null event text");
-        require(kind != WXL_EVENT_SELECTION || value >= -1, "Invalid selection event index");
-        std::unique_ptr<wxEvent> event;
-        if (kind == WXL_EVENT_CLOSE) {
-            require(length == 0 && value == 0, "Close events do not take command payloads");
-            auto close = std::make_unique<wxCloseEvent>(type, event_id);
-            close->SetCanVeto(can_veto != 0);
-            event = std::move(close);
-        } else {
-            auto command = std::make_unique<wxCommandEvent>(type, event_id);
-            if (kind == WXL_EVENT_TEXT_CHANGE) command->SetString(wxString::FromUTF8(text ? text : "", length));
-            if (kind == WXL_EVENT_TOGGLE || kind == WXL_EVENT_SELECTION) command->SetInt(value);
-            event = std::move(command);
-        }
-        event->SetEventObject(receiver);
+        auto event = synthetic_event(receiver, kind, event_id, text, length, value, can_veto, vetoed);
         receiver->QueueEvent(event.release());
+    });
+}
+int wxl_process_event(wxl_handle id, int kind, int event_id, const char* text, size_t length,
+                      int value, int can_veto, int vetoed, int* final_veto) {
+    return boolean_result([&] {
+        require(final_veto != nullptr, "Missing final veto output");
+        *final_veto = 0;
+        auto* receiver = event_handler(id);
+        auto event = synthetic_event(receiver, kind, event_id, text, length, value, can_veto, vetoed);
+        const bool handled = receiver->ProcessEvent(*event);
+        *final_veto = event_vetoed(*event) ? 1 : 0;
+        return handled;
     });
 }
 wxl_handle wxl_frame(const char* title, int width, int height) {
@@ -468,7 +536,7 @@ wxl_handle wxl_button(wxl_handle parent, const char* label) {
         auto* control = new wxButton(window(parent), wxID_ANY, utf8(label));
         auto id = track(control);
         control->Bind(wxEVT_BUTTON, [id](wxCommandEvent& event) {
-            emit_event(id, {WXL_EVENT_CLICK, nullptr, 0, -1, event.GetId(), 0, 0, event.GetEventType()});
+            emit_event(id, {WXL_EVENT_CLICK, nullptr, 0, -1, event.GetId(), 0, 0, event.GetEventType(), 0, 0, WXL_FAMILY_COMMAND, event.GetInt()});
             event.Skip();
         });
         return id;
@@ -485,7 +553,7 @@ wxl_handle wxl_text(wxl_handle parent, const char* value) {
                 // Both objects must survive reentrant callbacks and conversion.
                 const auto text = event.GetString();
                 const auto bytes = text.ToUTF8();
-                const wxl_event payload{WXL_EVENT_TEXT_CHANGE, bytes.data() ? bytes.data() : "", 0, -1, event.GetId(), bytes.length(), 0, event.GetEventType()};
+                const wxl_event payload{WXL_EVENT_TEXT_CHANGE, bytes.data() ? bytes.data() : "", 0, -1, event.GetId(), bytes.length(), 0, event.GetEventType(), 0, 0, WXL_FAMILY_COMMAND, event.GetInt()};
                 invoke_callback(token, payload);
             }
             event.Skip();
@@ -557,7 +625,7 @@ wxl_handle wxl_checkbox(wxl_handle parent, const char* label, int checked) {
         control->SetValue(checked != 0);
         const auto id = track(control);
         control->Bind(wxEVT_CHECKBOX, [id](wxCommandEvent& event) {
-            emit_event(id, {WXL_EVENT_TOGGLE, nullptr, event.IsChecked() ? 1 : 0, -1, event.GetId(), 0, 0, event.GetEventType()});
+            emit_event(id, {WXL_EVENT_TOGGLE, nullptr, event.IsChecked() ? 1 : 0, -1, event.GetId(), 0, 0, event.GetEventType(), 0, 0, WXL_FAMILY_COMMAND, event.GetInt()});
             event.Skip();
         });
         return id;
@@ -597,7 +665,7 @@ wxl_handle wxl_choice(wxl_handle parent, const char** items, int count, int sele
         control->SetSelection(selection);
         const auto id = track(control);
         control->Bind(wxEVT_CHOICE, [id](wxCommandEvent& event) {
-            emit_event(id, {WXL_EVENT_SELECTION, nullptr, 0, event.GetSelection(), event.GetId(), 0, 0, event.GetEventType()});
+            emit_event(id, {WXL_EVENT_SELECTION, nullptr, 0, event.GetSelection(), event.GetId(), 0, 0, event.GetEventType(), 0, 0, WXL_FAMILY_COMMAND, event.GetInt()});
             event.Skip();
         });
         return id;
