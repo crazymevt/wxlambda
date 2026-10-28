@@ -2,7 +2,7 @@
 
 This C1 slice adds borrowed `event-context` values for native Skip and propagation
 control. Existing `event` snapshots remain immutable Lisp-owned data. The bridge
-is ABI 27, using the wxWidgets 3.2.12 inventory baseline. Supported events now include
+is ABI 28, using the wxWidgets 3.2.12 inventory baseline. Supported events now include
 four command kinds plus the [close family](CLOSE-EVENTS.md); arbitrary classes
 and native notify subclasses/session routing remain open. Registered
 [notify types](NOTIFY-EVENTS.md) now support scoped Veto/Allow.
@@ -146,3 +146,7 @@ verification remain separate checks.
 explicit disposal, mutable value fields and copied dispatch. Earlier immutable
 snapshots and scoped contexts keep their lifetime rules. Arbitrary native classes,
 origin retention and client/userData ownership remain open.
+
+[Command payload views](COMMAND-EVENT-PAYLOADS.md) distinguish raw extra-LONG
+selection-action metadata from kind-specific checked/selection views and add
+bounded clear-only native origin detachment without retaining objects.

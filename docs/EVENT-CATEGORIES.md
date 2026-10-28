@@ -1,6 +1,6 @@
 # Event-category metadata
 
-ABI 27 adds EVENT-CATEGORY for saved immutable snapshots and current innermost
+ABI 28 adds EVENT-CATEGORY for saved immutable snapshots and current innermost
 contexts, plus EVENT-CATEGORY-MASK for compiled native category values. The
 coverage baseline is wxWidgets 3.2.12. Categories are numeric flags, not native
 type IDs, EVENT-ID routing values or EVENT-FAMILY keywords.

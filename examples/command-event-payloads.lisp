@@ -1,0 +1,31 @@
+;;; Load and call (wxlambda-command-event-payloads:start).
+(require :asdf)
+(load (merge-pathnames "../wxlambda.asd" *load-truename*))
+(asdf:load-system "wxlambda")
+(defpackage #:wxlambda-command-event-payloads (:use #:cl) (:export #:start #:exercise))
+(in-package #:wxlambda-command-event-payloads)
+(defun exercise ()
+  (wxlambda:register-event-type :payload-message :family :command)
+  (let* ((receiver (wxlambda:make-event-handler))
+         (message (wxlambda:make-event :kind :payload-message :extra-long 9))
+         (before nil) (clone nil)
+         (binding (wxlambda:bind-event receiver :payload-message
+                    (lambda (event context)
+                      (setf before event)
+                      (assert (wxlambda:event-selection-p event))
+                      (setf (wxlambda:event-extra-long context) 0
+                            (wxlambda:event-origin-id context) nil)
+                      (assert (null (wxlambda:event-origin-id context)))
+                      (setf clone (wxlambda:clone-event context))) :with-context t)))
+    (unwind-protect
+         (progn
+           (wxlambda:process-event receiver message)
+           (assert (= 9 (wxlambda:event-extra-long before) (wxlambda:event-extra-long message)))
+           (assert (zerop (wxlambda:event-extra-long clone)))
+           (assert (not (wxlambda:event-selection-p clone)))
+           (assert (wxlambda:event-origin-id before)))
+      (when clone (wxlambda:destroy-event clone))
+      (wxlambda:unbind-event binding)
+      (wxlambda:destroy-event message)
+      (wxlambda:destroy-event-handler receiver))))
+(defun start () (wxlambda:with-application () (exercise)))

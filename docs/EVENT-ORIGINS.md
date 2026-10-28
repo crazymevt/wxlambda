@@ -1,6 +1,6 @@
 # Native event type and origin identity
 
-ABI 27 extends EVENT-NATIVE-TYPE to a generic reader for immutable snapshots and
+ABI 28 extends EVENT-NATIVE-TYPE to a generic reader for immutable snapshots and
 current innermost contexts. EVENT-ORIGIN-ID is a new generic reader with the same
 saved/current lifetime distinction. Baseline: wxWidgets 3.2.12.
 
@@ -9,7 +9,7 @@ GetEventType. Compare it with EVENT-TYPE during the active session; registry
 names expire at cleanup, while saved integer metadata remains readable. Type
 numbers are not stable serialized IDs or authority to cast native objects.
 A bounded [registered-tag writer](EVENT-TAGS.md) now exists for native type;
-origin remains read-only. Changing a type tag does not
+origin now has bounded [clear-only detachment](COMMAND-EVENT-PAYLOADS.md). Changing a type tag does not
 change the native C++ event class, so unvalidated type mutation could make native
 handlers cast incompatible storage. Unrestricted mutation remains unbound; the registered-tag writer checks both
 registry families and actual native class.
@@ -36,7 +36,7 @@ cleanup. Saved integer type/origin metadata requires no GUI session.
 
 Context reads require an active main-thread session and the innermost callback.
 Expired or suspended outer contexts signal NATIVE-ERROR. No native event pointer
-escapes. There is no origin-object setter or retention/pinning protocol yet;
+escapes. There is no new-origin setter or retention/pinning protocol yet;
 using a borrowed object as native origin would require explicit lifetime rules.
 Unsupported/untracked objects remain a coverage gap, rather than being silently
 wrapped or adopted.
@@ -56,8 +56,9 @@ API always supplies a known receiver and cannot manufacture arbitrary native
 origin pointers. Real OS session events are not emitted.
 
 GetEventObject coverage is partial: generic wxObject wrappers, origin retention,
-SetEventObject, SetEventType, userData, persistent event ownership/cloning
-and broader native families remain C1 work. Category metadata is now bound.
+full SetEventObject, arbitrary SetEventType, userData and broader native event
+ownership/cloning remain C1 work. Bounded owned-event/cloning, registered tags,
+clear-only origins and category metadata are now bound.
 Next design typed mutation/ownership contracts that preserve
 native storage compatibility and session isolation. Existing read-only type
 lookups must not become an unchecked route to native tag mutation.

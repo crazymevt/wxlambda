@@ -2,7 +2,7 @@
 
 This C1 slice binds `wxNewEventType`, synthetic `wxCommandEvent`/`wxNotifyEvent`
 families and synchronous `wxEvtHandler::ProcessEvent`. The baseline is wxWidgets
-3.2.12 and the native bridge is ABI 27. It does not bind native control-specific
+3.2.12 and the native bridge is ABI 28. It does not bind native control-specific
 notify subclasses or OS session routing.
 
 ## Register a named native type
@@ -147,3 +147,7 @@ See the [borrowed application-handler view](APPLICATION-HANDLER.md) for managed 
 explicit disposal, mutable value fields and copied dispatch. Earlier immutable
 snapshots and scoped contexts keep their lifetime rules. Arbitrary native classes,
 origin retention and client/userData ownership remain open.
+
+[Command payload views](COMMAND-EVENT-PAYLOADS.md) distinguish raw extra-LONG
+selection-action metadata from kind-specific checked/selection views and add
+bounded clear-only native origin detachment without retaining objects.

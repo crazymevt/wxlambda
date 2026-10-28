@@ -118,7 +118,7 @@ python3 tools/docset.py build
 python3 tools/docset.py check
 ```
 
-Use the project quiet-command wrapper in agent sessions. Rebuild the ABI 27
+Use the project quiet-command wrapper in agent sessions. Rebuild the ABI 28
 bridge alongside the bindings. The GUI runner includes this scenario; broader
 platform and graphical Cadre verification remain separate. The API, this guide
 and example are included in the [Cadre docset](DOCSET.md), installable under

@@ -1,6 +1,6 @@
 # Owned native events, detached clones and copied dispatch
 
-ABI 27 adds the native-backed `owned-event` CLOS class and `make-event`,
+ABI 28 adds the native-backed `owned-event` CLOS class and `make-event`,
 `clone-event`, `destroy-event` and `event-alive-p`. These are independently owned
 native resources, distinct from immutable `event` snapshots and borrowed
 callback-scoped `event-context` values. The baseline is wxWidgets 3.2.12.
@@ -25,7 +25,7 @@ allocation. These wrappers do not install native C++ virtual overrides.
 ```
 
 `:kind` defaults to :CLICK and accepts the seven built-in kinds or a registered
-command/notify name. The other construction initargs match synthetic event
+command/notify name. The other base construction initargs match synthetic event
 payloads: `:id` defaults to 0, `:text` to an empty string, `:integer` to 0,
 `:checked-p` and `:selection` apply only to their built-in kinds, `:can-veto-p`
 defaults T for close-family construction, initial `:vetoed-p` applies only to
@@ -69,7 +69,7 @@ snapshot is not a native event and has no CLONE-EVENT method.
 
 Native origin is cleared on every clone: a clone never retains a borrowed
 GetEventObject pointer. EVENT-ORIGIN-ID on an owned event therefore returns NIL.
-No origin setter, arbitrary wxObject wrapper or origin pinning/retention protocol
+No new-origin setter, arbitrary wxObject wrapper or origin pinning/retention protocol
 is added. Clone preserves supported value metadata, payload, Skip/propagation and
 veto flags. Source and clone can be changed or destroyed independently.
 
@@ -179,3 +179,8 @@ standalone handlers without transferring native ownership, detach them on actual
 window destruction and provide explicit stack-aware copy processing. Standalone
 peer editing excludes attached nodes; arbitrary SetEventHandler/external adoption
 remain unbound.
+
+[Command payload views](COMMAND-EVENT-PAYLOADS.md) add native extra LONG, raw
+selection-action metadata, uniform checked/selection semantic SETF and clear-only
+origin detachment. Owned construction accepts command/notify :EXTRA-LONG; keyword
+synthetic queue/process calls do not add that option.

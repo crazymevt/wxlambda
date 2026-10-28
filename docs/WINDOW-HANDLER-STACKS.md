@@ -1,6 +1,6 @@
 # Managed window event-handler stacks
 
-ABI 27 adds WINDOW-EVENT-HANDLER, PUSH-EVENT-HANDLER, POP-EVENT-HANDLER,
+ABI 28 adds WINDOW-EVENT-HANDLER, PUSH-EVENT-HANDLER, POP-EVENT-HANDLER,
 REMOVE-EVENT-HANDLER, PROCESS-WINDOW-EVENT and PROCESS-WINDOW-EVENT-LOCALLY.
 The wxWidgets 3.2.12 mapping supports bridge-managed windows and session-owned
 standalone handlers, including Lisp subclasses. It adds no external handler

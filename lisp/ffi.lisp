@@ -22,7 +22,9 @@
   (timestamp :int64)
   (command :int)
   (origin-id :uint64)
-  (category :int))
+  (category :int)
+  (extra-long :int64)
+  (selection-action :int))
 
 (cffi:defcfun ("wxl_abi_version" %abi-version) :int)
 (cffi:defcfun ("wxl_last_error" %last-error) :string)
@@ -89,7 +91,7 @@
           (if (probe-file local)
               (cffi:load-foreign-library local)
               (cffi:use-foreign-library wxlambda-native))))
-    (unless (= 27 (%abi-version)) (error "Unsupported wxlambda native ABI"))
+    (unless (= 28 (%abi-version)) (error "Unsupported wxlambda native ABI"))
     (setf *native-loaded* t))
   t)
 

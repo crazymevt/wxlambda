@@ -36,6 +36,8 @@ typedef struct wxl_event {
     int command;
     wxl_handle origin_id; /* Known bridge identity only; zero for null/untracked. */
     int category;
+    int64_t extra_long; /* Native signed long, copied for command/notify events. */
+    int selection_action; /* Native IsSelection, not a predicate on the kind tag. */
 } wxl_event;
 /* The record and its text are borrowed only until this callback returns.
    Callbacks must never unwind across this boundary. */

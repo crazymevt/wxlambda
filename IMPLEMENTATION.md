@@ -67,15 +67,18 @@ must reconcile additional documented public interfaces beyond those headers.
 - Window-stack batch: managed Get/Push/Pop/Remove, preserving session-owned
   handler lifetime, and explicit stack-aware synchronous copy processing. Final
   verification and independent review pass.
-- Current bridge ABI: 27. Public API: 123 exports, nine window wrapper classes
-  (eight concrete widget kinds) plus the event-handler base, 83 named generics and
-  twenty-two generic SETF writers. The application-handler is a borrowed view; no
+- Command-payload batch: native extra LONG/raw selection-action metadata, uniform
+  kind-specific checked/selection SETF and bounded clear-only origin detachment.
+  Independent runtime and documentation review pass; final verification is recorded below.
+- Current bridge ABI: 28. Public API: 125 exports, nine window wrapper classes
+  (eight concrete widget kinds) plus the event-handler base, 87 named generics and
+  twenty-six generic SETF writers. The application-handler is a borrowed view; no
   native application construction or arbitrary-event class binding exists yet; built-ins plus registered command/notify names have
   observer/contextual bindings.
-- Latest implementation verification: 44 GUI scenarios and native preflight
+- Latest implementation verification: 45 GUI scenarios and native preflight
   pass on local Apple Silicon macOS SBCL 2.6.9 and CCL 1.13. Final reports:
-  `evidence/window-handler-stacks/{sbcl,ccl}-20261028/`. Five package checks
-  pass in `evidence/packaging/window-handler-stacks-20261028/`.
+  `evidence/command-event-payloads/{sbcl,ccl}-20261028-final/`. Five package checks
+  pass in `evidence/packaging/command-event-payloads-20261028/`.
   Hosted Linux/Windows GUI behavior and the graphical Cadre viewer remain open.
 
 ### Next dependency and working order
@@ -96,8 +99,8 @@ must reconcile additional documented public interfaces beyond those headers.
    The borrowed application handler view and query/end-session metadata/bindings
    are implemented, as are scoped CanVeto mutation, timestamp and command metadata.
    Scoped native ID mutation and routing semantics are implemented. Next define
-   remaining external/native stack adoption and origin retention after managed
-   window stacks, detached events, pending delivery and standalone chains. Bounded registered-tag mutation
+   retained origin/client/userData lifetime contracts after bounded origin
+   detachment, command payloads, managed stacks and owned/pending events. Bounded registered-tag mutation
    with actual native class checks is implemented. Category metadata is implemented. Current type
    reads and bounded origin identities are implemented; arbitrary native tag/origin
    writers and general wxObject wrappers remain open. Native OS session delivery is unverified. Native session events are
@@ -1268,6 +1271,49 @@ Hosted Windows/Linux GUI, native OS-session delivery, graphical Cadre and
 prior inaccessible pointer/class-mismatch branches remain unverified. Continue
 C1 external stack adoption/retained origin or other lifetime prerequisites before
 exposing arbitrary borrowed native chains.
+
+## Command payload views and bounded origin clearing (2026-10-28)
+
+ABI 28 adds EVENT-EXTRA-LONG and raw EVENT-SELECTION-P saved/current/owned readers;
+extra LONG SETF uses signed native LONG bounds, is independent of signed32 integer
+and drives raw IsSelection (nonzero extra flag). It is not a kind/index-validity
+predicate: a native choice event can have extra0 and flagfalse. Owned construction
+accepts command/notify-only :EXTRA-LONG; keyword synthetic dispatch does not. Clone
+source state wins defaults and factories reject explicit clone extra overrides.
+
+EVENT-CHECKED-P/EVENT-SELECTION become uniform kind-specific generic views while
+preserving snapshot meanings. Live checked SETF is :TOGGLE-only, generalized bool
+stored as 0/1; selection SETF is :SELECTION-only, NIL as -1 or nonnegative signed32
+index. Raw integer writes can expose other negatives; only -1 maps to NIL. Direct
+setters change event fields, not control setters/item lists; later handlers can
+react, so whole-dispatch control state is not guaranteed unchanged.
+
+Clear-only EVENT-ORIGIN-ID SETF accepts NIL. Owned/actual-null origins are idempotent;
+non-null current origins require registered compatible command/notify native class.
+Built-in/nonregistered non-null origins reject, even if the bounded reader returns
+NIL for untracked state. No object is dereferenced, retained or destroyed; source
+receiver and old snapshots stay unchanged, later snapshots can capture NIL.
+Arbitrary new origins, retained objects and user/client-data ownership remain gaps.
+
+Verified counts: 125 exports, 87 named generics, 26 generic SETF writers,
+45 GUI scenarios, 178 docset entries and twenty-six examples. Independent runtime,
+documentation and final test-adjustment reviews found no actionable issues. Both
+local Lisp GUI suites and native preflights pass, as do five relocated package
+checks, sixteen Python tests, twelve coverage-inventory tests, and the focused
+example/regressions on both Lisps. Docset checking reports zero problems; actual
+public exports/SETF coverage, isolated installation, discovery, symbol lookup and
+guide/example access pass. Reports: evidence/command-event-payloads/{sbcl,ccl}-20261028-final/
+and evidence/packaging/command-event-payloads-20261028/; package:
+dist/wxlambda-form-command-event-payloads.
+
+The initial full-suite run caught an obsolete origin test asserting no writer
+exists. Updated it to require the new live writer and verify saved snapshots
+remain immutable; independent review passed and both full suites were rerun.
+Hosted Windows/Linux GUI, actual OS
+session delivery, graphical Cadre and prior inaccessible pointer/class-mismatch
+branches remain unverified. Continue C1 retained origin/client/userData lifetime
+or broader native class prerequisites; do not equate raw flags with full derived
+payload semantics.
 
 ## Decisions
 

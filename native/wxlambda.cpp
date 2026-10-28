@@ -366,6 +366,10 @@ int64_t read_event_field(wxEvent& event, int field) {
         case 10: return event.GetSkipped();
         case 11: return event.ShouldPropagate();
         case 12: return native_event_family(kind_of(event));
+        case 14: return command ? command->GetExtraLong() : 0;
+        case 15: return command && event.GetEventType() == wxEVT_CHECKBOX && command->IsChecked();
+        case 16: return command && event.GetEventType() == wxEVT_CHOICE ? command->GetSelection() : -1;
+        case 17: return command && command->IsSelection();
         default: throw std::runtime_error("Unknown event field");
     }
 }
@@ -391,6 +395,30 @@ void write_event_field(wxEvent& event, int field, int64_t value) {
         case 7: require(command != nullptr, "Integer payload requires a command/notify event"); command->SetInt(static_cast<int>(value)); break;
         case 10: event.Skip(value != 0); break;
         case 11: require(value >= 0, "Propagation level must be nonnegative"); event.ResumePropagation(static_cast<int>(value)); break;
+        case 13:
+            require(value == 0, "Native event origin supports clearing only");
+            if (event.GetEventObject()) {
+                const RegisteredEvent* registered = nullptr;
+                for (const auto& item : registered_events)
+                    if (item.second.type == event.GetEventType()) { registered = &item.second; break; }
+                require(registered && ((registered->family == WXL_FAMILY_COMMAND && command && !notify) ||
+                                       (registered->family == WXL_FAMILY_NOTIFY && notify)),
+                        "Clearing a non-null origin requires a compatible registered command/notify tag");
+                event.SetEventObject(nullptr);
+            }
+            break;
+        case 14:
+            require(command != nullptr, "Extra-long payload requires a command/notify event");
+            require(value >= std::numeric_limits<long>::min() && value <= std::numeric_limits<long>::max(),
+                    "Extra-long payload outside native LONG range");
+            command->SetExtraLong(static_cast<long>(value)); break;
+        case 15:
+            require(command && event.GetEventType() == wxEVT_CHECKBOX, "Checked metadata requires a toggle event");
+            command->SetInt(value != 0 ? 1 : 0); break;
+        case 16:
+            require(command && event.GetEventType() == wxEVT_CHOICE, "Selection metadata requires a selection event");
+            require(value >= -1 && value <= std::numeric_limits<int>::max(), "Selection index outside supported range");
+            command->SetInt(static_cast<int>(value)); break;
         default: throw std::runtime_error("This event field is read-only or unknown");
     }
 }
@@ -426,7 +454,8 @@ struct Binding {
                                      0, event.GetEventType(), event_can_veto(event) ? 1 : 0, event_vetoed(event) ? 1 : 0,
                                      family, command ? command->GetInt() : 0,
                                      session_type(event.GetEventType()) ? (static_cast<wxCloseEvent&>(event).GetLoggingOff() ? 1 : 0) : 0,
-                                     event.GetTimestamp(), event.IsCommandEvent() ? 1 : 0, origin_id(event), static_cast<int>(event.GetEventCategory())};
+                                     event.GetTimestamp(), event.IsCommandEvent() ? 1 : 0, origin_id(event), static_cast<int>(event.GetEventCategory()),
+                                     command ? command->GetExtraLong() : 0, command && command->IsSelection() ? 1 : 0};
             if (with_context) {
                 event.Skip(false);
                 EventScope scope(event);
@@ -500,7 +529,7 @@ wxString utf8(const char* value) {
 }
 }
 extern "C" {
-int wxl_abi_version() { return 27; }
+int wxl_abi_version() { return 28; }
 const char* wxl_last_error() { return error.c_str(); }
 int wxl_start(wxl_callback callback) {
     return status([&] {
@@ -1080,7 +1109,7 @@ wxl_handle wxl_button(wxl_handle parent, const char* label) {
         auto* control = new ManagedWindow<wxButton>(window(parent), wxID_ANY, utf8(label));
         auto id = track(control);
         control->Bind(wxEVT_BUTTON, [id](wxCommandEvent& event) {
-            emit_event(id, {WXL_EVENT_CLICK, nullptr, 0, -1, event.GetId(), 0, 0, event.GetEventType(), 0, 0, WXL_FAMILY_COMMAND, event.GetInt(), 0, event.GetTimestamp(), event.IsCommandEvent() ? 1 : 0, origin_id(event), static_cast<int>(event.GetEventCategory())});
+            emit_event(id, {WXL_EVENT_CLICK, nullptr, 0, -1, event.GetId(), 0, 0, event.GetEventType(), 0, 0, WXL_FAMILY_COMMAND, event.GetInt(), 0, event.GetTimestamp(), event.IsCommandEvent() ? 1 : 0, origin_id(event), static_cast<int>(event.GetEventCategory()), event.GetExtraLong(), event.IsSelection() ? 1 : 0});
             event.Skip();
         });
         return id;
@@ -1097,7 +1126,7 @@ wxl_handle wxl_text(wxl_handle parent, const char* value) {
                 // Both objects must survive reentrant callbacks and conversion.
                 const auto text = event.GetString();
                 const auto bytes = text.ToUTF8();
-                const wxl_event payload{WXL_EVENT_TEXT_CHANGE, bytes.data() ? bytes.data() : "", 0, -1, event.GetId(), bytes.length(), 0, event.GetEventType(), 0, 0, WXL_FAMILY_COMMAND, event.GetInt(), 0, event.GetTimestamp(), event.IsCommandEvent() ? 1 : 0, origin_id(event), static_cast<int>(event.GetEventCategory())};
+                const wxl_event payload{WXL_EVENT_TEXT_CHANGE, bytes.data() ? bytes.data() : "", 0, -1, event.GetId(), bytes.length(), 0, event.GetEventType(), 0, 0, WXL_FAMILY_COMMAND, event.GetInt(), 0, event.GetTimestamp(), event.IsCommandEvent() ? 1 : 0, origin_id(event), static_cast<int>(event.GetEventCategory()), event.GetExtraLong(), event.IsSelection() ? 1 : 0};
                 invoke_callback(token, payload);
             }
             event.Skip();
@@ -1169,7 +1198,7 @@ wxl_handle wxl_checkbox(wxl_handle parent, const char* label, int checked) {
         control->SetValue(checked != 0);
         const auto id = track(control);
         control->Bind(wxEVT_CHECKBOX, [id](wxCommandEvent& event) {
-            emit_event(id, {WXL_EVENT_TOGGLE, nullptr, event.IsChecked() ? 1 : 0, -1, event.GetId(), 0, 0, event.GetEventType(), 0, 0, WXL_FAMILY_COMMAND, event.GetInt(), 0, event.GetTimestamp(), event.IsCommandEvent() ? 1 : 0, origin_id(event), static_cast<int>(event.GetEventCategory())});
+            emit_event(id, {WXL_EVENT_TOGGLE, nullptr, event.IsChecked() ? 1 : 0, -1, event.GetId(), 0, 0, event.GetEventType(), 0, 0, WXL_FAMILY_COMMAND, event.GetInt(), 0, event.GetTimestamp(), event.IsCommandEvent() ? 1 : 0, origin_id(event), static_cast<int>(event.GetEventCategory()), event.GetExtraLong(), event.IsSelection() ? 1 : 0});
             event.Skip();
         });
         return id;
@@ -1209,7 +1238,7 @@ wxl_handle wxl_choice(wxl_handle parent, const char** items, int count, int sele
         control->SetSelection(selection);
         const auto id = track(control);
         control->Bind(wxEVT_CHOICE, [id](wxCommandEvent& event) {
-            emit_event(id, {WXL_EVENT_SELECTION, nullptr, 0, event.GetSelection(), event.GetId(), 0, 0, event.GetEventType(), 0, 0, WXL_FAMILY_COMMAND, event.GetInt(), 0, event.GetTimestamp(), event.IsCommandEvent() ? 1 : 0, origin_id(event), static_cast<int>(event.GetEventCategory())});
+            emit_event(id, {WXL_EVENT_SELECTION, nullptr, 0, event.GetSelection(), event.GetId(), 0, 0, event.GetEventType(), 0, 0, WXL_FAMILY_COMMAND, event.GetInt(), 0, event.GetTimestamp(), event.IsCommandEvent() ? 1 : 0, origin_id(event), static_cast<int>(event.GetEventCategory()), event.GetExtraLong(), event.IsSelection() ? 1 : 0});
             event.Skip();
         });
         return id;

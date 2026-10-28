@@ -1,6 +1,6 @@
 # Event metadata and mutable CanVeto
 
-Native bridge ABI 27 adds EVENT-TIMESTAMP and EVENT-COMMAND-P readers for
+Native bridge ABI 28 adds EVENT-TIMESTAMP and EVENT-COMMAND-P readers for
 immutable snapshots and current innermost event contexts. EVENT-TIMESTAMP also
 has a context-only SETF writer. EVENT-CAN-VETO-P now has a context-only SETF
 writer for wxCloseEvent: window-close, query-end-session and end-session events.
@@ -97,3 +97,7 @@ See [contexts](EVENT-CONTEXTS.md), [session events](SESSION-EVENTS.md) and
 explicit disposal, mutable value fields and copied dispatch. Earlier immutable
 snapshots and scoped contexts keep their lifetime rules. Arbitrary native classes,
 origin retention and client/userData ownership remain open.
+
+[Command payload views](COMMAND-EVENT-PAYLOADS.md) distinguish raw extra-LONG
+selection-action metadata from kind-specific checked/selection views and add
+bounded clear-only native origin detachment without retaining objects.

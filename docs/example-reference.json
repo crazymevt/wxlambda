@@ -98,5 +98,9 @@
   "window-handler-stacks.lisp": {
     "description": "Push managed standalone handlers on a window, compare explicit stack-aware and generic bypass routing, then pop/remove without transferring native ownership.",
     "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/window-handler-stacks.lisp --eval '(wxlambda-window-handler-stacks:start)'"
+  },
+  "command-event-payloads.lisp": {
+    "description": "Compare semantic toggle/selection views with raw extra-LONG action metadata, mutate live owned/context payloads and safely detach a registered command origin.",
+    "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/command-event-payloads.lisp --eval '(wxlambda-command-event-payloads:start)'"
   }
 }

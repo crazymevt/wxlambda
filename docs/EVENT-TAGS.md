@@ -1,6 +1,6 @@
 # Bounded registered event-tag mutation
 
-ABI 27 adds context-only SETF EVENT-NATIVE-TYPE. The reader still returns the
+ABI 28 adds context-only SETF EVENT-NATIVE-TYPE. The reader still returns the
 captured/current native type integer; assign an integer returned by EVENT-TYPE
 for a name registered in the active session. Baseline: wxWidgets 3.2.12.
 

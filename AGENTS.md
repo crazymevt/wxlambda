@@ -95,7 +95,10 @@ construction, independent cloning/disposal and copied dispatch. Reject ancestry
 combining it with `event-handler`/window resources before native allocation.
 Direct clone construction uses source native state over payload defaults; factory
 clone calls reject explicit payload overrides. No raw origin retention or
-client/userData ownership is exposed.
+client/userData ownership is exposed. Origin SETF is clear-only NIL: non-null
+current origins require registered compatible command/notify classes; built-in
+non-null origins reject. Semantic checked/selection views remain kind-limited,
+while raw IsSelection is extra-LONG action metadata independent of kind/index.
 
 The native-backed `event-handler` base supports standalone session-owned handlers;
 windows borrow their existing native widget identity. Managed standalone chain

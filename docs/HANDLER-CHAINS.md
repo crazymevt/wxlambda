@@ -1,6 +1,6 @@
 # Managed standalone event-handler chains
 
-ABI 27 adds NEXT-HANDLER, PREVIOUS-HANDLER, HANDLER-UNLINKED-P and
+ABI 28 adds NEXT-HANDLER, PREVIOUS-HANDLER, HANDLER-UNLINKED-P and
 UNLINK-EVENT-HANDLER for session-owned standalone EVENT-HANDLER objects and
 subclasses. The two peer properties have generic SETF writers. The baseline is
 wxWidgets 3.2.12. Borrowed window/application sources and peers reject these
