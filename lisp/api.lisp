@@ -12,16 +12,20 @@
 (defclass text-control (window)
   ((handler-token :initform nil :accessor handler-token)))
 
+(defclass choice (window)
+  ((handler-token :initform nil :accessor handler-token)))
+
 (defclass label (window) ())
 (defclass checkbox (window)
   ((handler-token :initform nil :accessor handler-token)))
 
-(defstruct (event (:constructor %make-event (kind source text checked-p)))
+(defstruct (event (:constructor %make-event (kind source text checked-p selection)))
   "A Lisp-owned snapshot. Slots are read-only; TEXT is an independent string."
   (kind nil :read-only t)
   (source nil :read-only t)
   (text nil :read-only t)
-  (checked-p nil :read-only t))
+  (checked-p nil :read-only t)
+  (selection nil :read-only t))
 
 (defstruct handler source function)
 (defvar *active* nil)
@@ -46,14 +50,15 @@
         (let ((handler (gethash token *handlers*)))
           (when handler
             (when (cffi:null-pointer-p payload) (error "Missing event payload"))
-            (cffi:with-foreign-slots ((kind text checked) payload (:struct native-event))
-              (let* ((event-kind (ecase kind (1 :click) (2 :text-change) (3 :toggle)))
+            (cffi:with-foreign-slots ((kind text checked selection) payload (:struct native-event))
+              (let* ((event-kind (ecase kind (1 :click) (2 :text-change) (3 :toggle) (4 :selection)))
                      (value (when (= kind 2)
                               (when (cffi:null-pointer-p text)
                                 (error "Missing text-change payload"))
                               (cffi:foreign-string-to-lisp text :encoding :utf-8)))
                      (checked-p (and (= kind 3) (not (zerop checked))))
-                     (event (%make-event event-kind (handler-source handler) value checked-p)))
+                     (event (%make-event event-kind (handler-source handler) value checked-p
+                                         (when (= kind 4) (unless (= selection -1) selection)))))
                 (funcall (handler-function handler) event))))))
     (error (condition)
       (unless *callback-error* (setf *callback-error* condition))
@@ -301,3 +306,40 @@ live checkbox, including when called from inside its handler."
   (unregister-handler checkbox #'%off-toggle))
 
 (defun queue-click (button) (check-status (%click (handle button))))
+
+(defun make-choice (parent &key (items nil) selection)
+  "Create a dropdown from a list of strings. SELECTION is a zero-based index or NIL."
+  (check-type items list)
+  (check-type selection (or null (integer 0 2147483647)))
+  (dolist (item items) (check-type item string))
+  (let ((strings nil))
+    (unwind-protect
+         (progn
+           (dolist (item items)
+             (push (cffi:foreign-string-alloc item :encoding :utf-8) strings))
+           (setf strings (nreverse strings))
+           (cffi:with-foreign-object (array :pointer (max 1 (length strings)))
+             (loop for pointer in strings for i from 0 do
+               (setf (cffi:mem-aref array :pointer i) pointer))
+             (wrap-window 'choice (%choice (handle parent) array (length strings) (or selection -1)))))
+      (dolist (pointer strings) (cffi:foreign-string-free pointer)))))
+
+(defun selection (choice)
+  "Return the zero-based selected index, or NIL when nothing is selected."
+  (let ((index (%selection (handle choice))))
+    (when (= index -2) (error 'native-error :message (%last-error)))
+    (unless (= index -1) index)))
+
+(defun set-selection (choice index &key notify)
+  "Select INDEX (zero-based) or NIL. NOTIFY emits synchronously, even if unchanged.
+Return the requested index. Handler errors are re-signaled to the caller."
+  (check-type index (or null (integer 0 2147483647)))
+  (call-setter (lambda () (%set-selection (handle choice) (or index -1) (if notify 1 0))) notify)
+  index)
+
+(defun on-selection (choice function)
+  "Register a handler taking one :SELECTION event with an EVENT-SELECTION snapshot."
+  (register-handler choice function #'%on-selection))
+(defun off-selection (choice)
+  "Remove the selection handler and release its closure. Idempotent for a live choice."
+  (unregister-handler choice #'%off-selection))

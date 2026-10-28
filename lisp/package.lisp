@@ -8,4 +8,5 @@
            #:on-text-change #:off-text-change
            #:make-label #:get-label #:set-label
            #:make-checkbox #:checked-p #:set-checked #:on-toggle #:off-toggle
-           #:event #:event-p #:event-kind #:event-source #:event-text #:event-checked-p))
+           #:make-choice #:selection #:set-selection #:on-selection #:off-selection
+           #:event-selection #:event #:event-p #:event-kind #:event-source #:event-text #:event-checked-p))

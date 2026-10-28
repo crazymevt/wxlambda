@@ -15,11 +15,12 @@ extern "C" {
 #endif
 typedef uint64_t wxl_handle;
 enum wxl_alignment { WXL_ALIGN_START = 0, WXL_ALIGN_CENTER = 1, WXL_ALIGN_END = 2 };
-enum wxl_event_kind { WXL_EVENT_CLICK = 1, WXL_EVENT_TEXT_CHANGE = 2, WXL_EVENT_TOGGLE = 3 };
+enum wxl_event_kind { WXL_EVENT_CLICK = 1, WXL_EVENT_TEXT_CHANGE = 2, WXL_EVENT_TOGGLE = 3, WXL_EVENT_SELECTION = 4 };
 typedef struct wxl_event {
     int kind;
     const char *text; /* UTF-8 for text changes; NULL otherwise. */
     int checked;      /* Boolean snapshot for toggles; zero otherwise. */
+    int selection;    /* Zero-based index, -1 for none; kind 4 only. */
 } wxl_event;
 /* The record and its text are borrowed only until this callback returns.
    Callbacks must never unwind across this boundary. */
@@ -48,6 +49,14 @@ WXL_API int wxl_checked(wxl_handle checkbox);
 WXL_API int wxl_set_checked(wxl_handle checkbox, int checked, int notify);
 WXL_API int wxl_on_toggle(wxl_handle checkbox, uint64_t token);
 WXL_API int wxl_off_toggle(wxl_handle checkbox);
+/* Items are copied. selection=-1 means no selection. */
+WXL_API wxl_handle wxl_choice(wxl_handle parent, const char **items, int count, int selection);
+/* Returns -1 for no selection, -2 on error. */
+WXL_API int wxl_selection(wxl_handle choice);
+/* selection=-1 clears; notify!=0 emits synchronously, even if unchanged. */
+WXL_API int wxl_set_selection(wxl_handle choice, int selection, int notify);
+WXL_API int wxl_on_selection(wxl_handle choice, uint64_t token);
+WXL_API int wxl_off_selection(wxl_handle choice);
 WXL_API int wxl_column(wxl_handle parent);
 WXL_API int wxl_row(wxl_handle parent);
 /* Alignment is across the layout's minor axis. Non-start alignment requires

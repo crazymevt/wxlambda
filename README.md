@@ -5,8 +5,8 @@ versioned C ABI. This is an application lifecycle prototype, not a complete
 wxWidgets binding.
 
 Implemented: application startup/shutdown, frames, panels, buttons, editable text,
-static labels, two-state checkboxes, row/column layouts, spacers, text/state access,
-removable click/text/toggle handlers, copied event payloads, and queued clicks.
+static labels, two-state checkboxes, dropdown choices, row/column layouts, spacers, text/state access,
+removable click/text/toggle/selection handlers, copied event payloads, and queued clicks.
 Lisp objects wrap checked integer handles; native pointers never escape the bridge.
 
 ## Build
@@ -38,7 +38,7 @@ application with `(wxlambda:load-native-library #P"C:/path/to/wxlambda.dll")`.
 Dependent wxWidgets DLLs must also be discoverable by the OS loader.
 
 The bridge normally loads from `build/`, then falls back to the system library
-search path. The Lisp/native ABI version (currently 6) is checked on load; rebuild
+search path. The Lisp/native ABI version (currently 7) is checked on load; rebuild
 the bridge after updating the bindings. Installing the bridge with CMake does not
 install the ASDF system.
 
@@ -215,6 +215,34 @@ Use `off-click`, `off-text-change`, or `off-toggle` to release a handler. Regist
 replaces and releases the previous closure. Both removals are idempotent for a
 live control of the correct type and may be called inside the handler itself.
 
+## Dropdown choices
+
+```lisp
+(let ((choice (wxlambda:make-choice panel
+                :items '("Small" "Medium" "Large λ") :selection 1)))
+  (wxlambda:on-selection choice
+    (lambda (event)
+      (format t "Selected index: ~S~%" (wxlambda:event-selection event))))
+  (wxlambda:set-selection choice 2)           ; silent
+  (wxlambda:set-selection choice 0 :notify t) ; synchronous notification
+  (wxlambda:selection choice))               ; => 0
+```
+
+`make-choice` copies a list of strings in the supplied order. Items are fixed
+for the life of the control. Selection indices are zero-based; `nil` means no
+selection and is the default, including for a nonempty list. Empty lists are
+supported. An out-of-range index signals an error without changing the selection.
+The dropdown participates in layouts and parent ownership like other controls.
+
+User selection and `set-selection` with `:notify t` deliver one `:selection`
+event. `event-selection` is an immutable index snapshot (or `nil`), independent
+of later selection changes. Other event kinds have a `nil` selection slot.
+`set-selection` returns the requested index even if a handler changes it again;
+explicit notification also fires for an unchanged index. Handler errors are
+re-signaled at the setter boundary. `on-selection` replaces the previous handler;
+`off-selection` releases it and is idempotent for a live choice, including inside
+its callback. As with other strings, embedded NUL characters are unsupported.
+
 ## Lifecycle contract
 
 - `with-application` initializes the toolkit and cleans up on normal return or a
@@ -297,6 +325,9 @@ python3 tests/run.py
 python3 tests/run.py ccl --no-init --batch --load ~/quicklisp/setup.lisp
 ```
 
+Choice tests cover selection bounds, empty/Unicode item lists, nested selection
+snapshots, handler replacement/removal, callback errors, and stale handles.
+
 Coverage: callback dispatch and replacement, empty/long/Unicode text round trips,
 independent text copies, explicit closure release, queued click suppression,
 rebinding and self-unbinding, parent/child invalidation, wrong-type handles,
@@ -339,7 +370,9 @@ repositories; these native dependencies are not locked to an exact patch release
 
 CI uses the exact CFFI, Babel, Alexandria, and trivial-features commits in
 `ci/lisp-dependencies.json`, fetched over HTTPS into ignored `.ci-deps/`
-checkouts. `ci/setup.lisp` isolates ASDF's source registry from user installations.
+checkouts. `ci/setup.lisp` isolates ASDF's source registry from user installations
+and stores compiled output in `.ci-deps/fasl/`, separated by Lisp implementation.
+This keeps pinned CFFI callbacks separate from Quicklisp's compiled-file cache.
 This path requires Git and Python 3, and does not install or modify Quicklisp.
 To reproduce the CI Lisp environment locally after building the bridge:
 

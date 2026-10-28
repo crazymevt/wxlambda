@@ -8,7 +8,8 @@
 (cffi:defcstruct native-event
   (kind :int)
   (text :pointer)
-  (checked :int))
+  (checked :int)
+  (selection :int))
 
 (cffi:defcfun ("wxl_abi_version" %abi-version) :int)
 (cffi:defcfun ("wxl_last_error" %last-error) :string)
@@ -60,6 +61,12 @@
       (cond (path (cffi:load-foreign-library path))
             ((probe-file local) (cffi:load-foreign-library local))
             (t (cffi:use-foreign-library wxlambda-native)))
-      (unless (= 6 (%abi-version)) (error "Unsupported wxlambda native ABI"))
+      (unless (= 7 (%abi-version)) (error "Unsupported wxlambda native ABI"))
       (setf *native-loaded* t)))
   t)
+
+(cffi:defcfun ("wxl_choice" %choice) :uint64 (parent :uint64) (items :pointer) (count :int) (selection :int))
+(cffi:defcfun ("wxl_selection" %selection) :int (choice :uint64))
+(cffi:defcfun ("wxl_set_selection" %set-selection) :int (choice :uint64) (selection :int) (notify :int))
+(cffi:defcfun ("wxl_on_selection" %on-selection) :int (choice :uint64) (token :uint64))
+(cffi:defcfun ("wxl_off_selection" %off-selection) :int (choice :uint64))

@@ -1,6 +1,7 @@
 #include "wxlambda.h"
 #include <wx/wx.h>
 #include <wx/thread.h>
+#include <wx/choice.h>
 #include <stdexcept>
 #include <string>
 #include <unordered_map>
@@ -91,7 +92,7 @@ wxString utf8(const char* value) {
 }
 }
 extern "C" {
-int wxl_abi_version() { return 6; }
+int wxl_abi_version() { return 7; }
 const char* wxl_last_error() { return error.c_str(); }
 int wxl_start(wxl_callback callback) {
     return status([&] {
@@ -229,6 +230,47 @@ int wxl_on_toggle(wxl_handle id, uint64_t token) {
 }
 int wxl_off_toggle(wxl_handle id) {
     return status([&] { as<wxCheckBox>(id); handlers.erase(id); });
+}
+wxl_handle wxl_choice(wxl_handle parent, const char** items, int count, int selection) {
+    return create([&] {
+        auto* owner = window(parent);
+        require(count >= 0 && (count == 0 || items), "Invalid choice items");
+        require(selection >= -1 && selection < count, "Choice selection out of range");
+        wxArrayString strings;
+        for (int i = 0; i < count; ++i) strings.Add(utf8(items[i]));
+        auto* control = new wxChoice(owner, wxID_ANY, wxDefaultPosition, wxDefaultSize, strings);
+        control->SetSelection(selection);
+        const auto id = track(control);
+        control->Bind(wxEVT_CHOICE, [id](wxCommandEvent& event) {
+            emit_event(id, {WXL_EVENT_SELECTION, nullptr, 0, event.GetSelection()});
+        });
+        return id;
+    });
+}
+int wxl_selection(wxl_handle id) {
+    int selection = -1;
+    const int result = status([&] { selection = as<wxChoice>(id)->GetSelection(); });
+    return result == 0 ? selection : -2;
+}
+int wxl_set_selection(wxl_handle id, int selection, int notify) {
+    return status([&] {
+        auto* control = as<wxChoice>(id);
+        require(selection >= -1 && (selection == -1 || static_cast<unsigned>(selection) < control->GetCount()),
+                "Choice selection out of range");
+        control->SetSelection(selection);
+        if (notify) {
+            wxCommandEvent event(wxEVT_CHOICE, control->GetId());
+            event.SetEventObject(control);
+            event.SetInt(selection);
+            control->GetEventHandler()->ProcessEvent(event);
+        }
+    });
+}
+int wxl_on_selection(wxl_handle id, uint64_t token) {
+    return status([&] { as<wxChoice>(id); handlers[id] = token; });
+}
+int wxl_off_selection(wxl_handle id) {
+    return status([&] { as<wxChoice>(id); handlers.erase(id); });
 }
 int wxl_column(wxl_handle parent) {
     return status([&] { make_box(parent, wxVERTICAL); });
