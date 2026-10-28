@@ -9,13 +9,13 @@ Forward declarations are represented in the per-header declaration inventories.
 
 ## C1: Foundation, values, application, events, and base utilities
 
-Class/struct definitions: 0 complete; 2 partial; 300 pending. Partial and pending classes remain open.
+Class/struct definitions: 0 complete; 3 partial; 299 pending. Partial and pending classes remain open.
 
 [Declaration counts and remaining work](README.md).
 
 - [ ] `wxAny` — [`wx/any.h`](phase-c1.md), upstream line 60.
 - [ ] `wxAnyValueType` — [`wx/any.h`](phase-c1.md), upstream line 382.
-- [~] `wxAppConsole` — [`wx/app.h`](phase-c1.md), upstream line 39. — **Partial**: `call-with-application`, `run`, `stop`, `process-events`, `main-loop-running-p`, `pending-events-p`, `process-pending-events`; ABI: `wxl_start`, `wxl_run`, `wxl_stop`, `wxl_poll`, `wxl_main_loop_running`, `wxl_pending_events`, `wxl_process_pending_events`. Managed bridge application only: session lifetime, native main loop, polling, queued-event status/dispatch and callback/pump guards. No public application wrapper, application traits, arbitrary event loops, command-line hooks or native virtual overrides. Generic event-handler ownership/binding, filters, propagation, idle handlers, timers and worker dispatch remain open.
+- [~] `wxAppConsole` — [`wx/app.h`](phase-c1.md), upstream line 39. — **Partial**: `call-with-application`, `run`, `stop`, `process-events`, `main-loop-running-p`, `pending-events-p`, `process-pending-events`; ABI: `wxl_start`, `wxl_run`, `wxl_stop`, `wxl_poll`, `wxl_main_loop_running`, `wxl_pending_events`, `wxl_process_pending_events`. Managed bridge application only: session lifetime, native main loop, polling, queued-event status/dispatch and callback/pump guards. No public application wrapper, application traits, arbitrary event loops, command-line hooks or native virtual overrides. Generic event-handler binding, pushed-handler ownership, filters, propagation, idle handlers, timers and worker dispatch remain open.
 - [~] `wxApp` — [`wx/app.h`](phase-c1.md), upstream line 845. — **Partial**: `call-with-application`, `with-application`; ABI: `wxl_start`, `wxl_finish`. One managed GUI application per process on its main thread. Native initialization/cleanup only; application subclass hooks, traits, top-window APIs and remaining GUI-application interfaces are unbound. This is not a public CLOS application class.
 - [ ] `wxAppProgressIndicator` — [`wx/appprogress.h`](phase-c1.md), upstream line 22.
 - [ ] `wxAppTraits` — [`wx/apptrait.h`](phase-c1.md), upstream line 29.
@@ -65,7 +65,7 @@ Class/struct definitions: 0 complete; 2 partial; 300 pending. Partial and pendin
 - [ ] `wxEventBlocker` — [`wx/event.h`](phase-c1.md), upstream line 310.
 - [ ] `wxPropagationDisabler` — [`wx/event.h`](phase-c1.md), upstream line 342.
 - [ ] `wxPropagateOnce` — [`wx/event.h`](phase-c1.md), upstream line 353.
-- [ ] `wxEvtHandler` — [`wx/event.h`](phase-c1.md), upstream line 381.
+- [~] `wxEvtHandler` — [`wx/event.h`](phase-c1.md), upstream line 381. — **Partial**: `event-handler`, `make-event-handler`, `destroy-event-handler`, `handler-alive-p`, `handler-enabled-p`, `(setf handler-enabled-p)`; ABI: `wxl_event_handler`, `wxl_handler_destroy`, `wxl_handler_alive`, `wxl_handler_enabled`, `wxl_set_handler_enabled`. Session-owned standalone handlers and borrowed wxWindow base identities, native-backed CLOS construction/rollback, own enabled flag and weak window invalidation. No generic Bind/Unbind, event queues on standalone handlers, pushed/linked handler chains, filters, propagation/skip/veto or native virtual callbacks. See docs/EVENT-HANDLERS.md.
 - [ ] `wxKeyEvent` — [`wx/event.h`](phase-c1.md), upstream line 1509.
 - [ ] `wxJoystickEvent` — [`wx/event.h`](phase-c1.md), upstream line 1748.
 - [ ] `wxScrollWinEvent` — [`wx/event.h`](phase-c1.md), upstream line 1890.
@@ -365,7 +365,7 @@ Class/struct definitions: 0 complete; 11 partial; 121 pending. Partial and pendi
 - [ ] `wxFontPickerCtrl` — [`wx/fontpicker.h`](phase-c2.md), upstream line 58.
 - [ ] `wxFontPickerEvent` — [`wx/fontpicker.h`](phase-c2.md), upstream line 191.
 - [~] `wxFrame` — [`wx/frame.h`](phase-c2.md), upstream line 163. — **Partial**: `frame`, `make-frame`; ABI: `wxl_frame`. Native-backed CLOS construction, including subclass initargs/defaults and managed rollback. Title, width and height; parent is NULL, ID is wxID_ANY, remaining options use defaults. Full class and inherited API coverage remain open.
-- [~] `wxGauge` — [`wx/gauge.h`](phase-c2.md), upstream line 69. — **Partial**: `gauge`, `make-gauge`, `gauge-value`, `gauge-range`, `gauge-vertical-p`, `pulse-gauge`; ABI: `wxl_gauge`, `wxl_gauge_value`, `wxl_gauge_range`, `wxl_set_gauge_value`, `wxl_set_gauge_range`, `wxl_gauge_vertical`, `wxl_gauge_pulse`. Parent-owned progress gauge: positive range, value, horizontal/vertical orientation and pulsing. Constructor options, two-step creation and full inherited API remain open. Gauge support introduced in ABI 10; current bridge ABI 11; see docs/GAUGE.md and tests/gauge.lisp.
+- [~] `wxGauge` — [`wx/gauge.h`](phase-c2.md), upstream line 69. — **Partial**: `gauge`, `make-gauge`, `gauge-value`, `gauge-range`, `gauge-vertical-p`, `pulse-gauge`; ABI: `wxl_gauge`, `wxl_gauge_value`, `wxl_gauge_range`, `wxl_set_gauge_value`, `wxl_set_gauge_range`, `wxl_gauge_vertical`, `wxl_gauge_pulse`. Parent-owned progress gauge: positive range, value, horizontal/vertical orientation and pulsing. Constructor options, two-step creation and full inherited API remain open. Gauge support introduced in ABI 10; current bridge ABI 12; see docs/GAUGE.md and tests/gauge.lisp.
 - [ ] `wxGBPosition` — [`wx/gbsizer.h`](phase-c2.md), upstream line 17.
 - [ ] `wxGridBagSizer` — [`wx/gbsizer.h`](phase-c2.md), upstream line 73.
 - [ ] `wxGBSizerItem` — [`wx/gbsizer.h`](phase-c2.md), upstream line 234.

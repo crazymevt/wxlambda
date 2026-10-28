@@ -57,8 +57,8 @@ This slice binds `wxGauge` construction, `GetValue`, `SetValue`, `GetRange`,
 position/size to native defaults and validator/name to native defaults; styles
 are limited to horizontal/vertical. Two-step creation, custom IDs, additional
 styles such as taskbar progress, and the remaining inherited API stay open.
-Gauge support was introduced in native ABI 10. Application dispatch now requires
-ABI 11; rebuild the bridge alongside the current Lisp bindings.
+Gauge support was introduced in native ABI 10. Event-handler ownership now requires
+ABI 12; rebuild the bridge alongside the current Lisp bindings.
 
 ## Example and verification
 

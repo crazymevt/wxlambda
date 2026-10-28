@@ -15,10 +15,10 @@ does not release its registered Lisp handlers; unbind them before destruction,
 or they remain rooted until session cleanup. Restart Lisp for a new GUI session.
 
 The [CLOS widget API](docs/CLOS-API.md) provides direct native-backed
-`make-instance` construction, subclass initargs/defaults/hooks and ten generic
+`make-instance` construction, subclass initargs/defaults/hooks and eleven generic
 `setf` accessors. The `make-*` conveniences forward to `make-instance` with
-`:class` support. The ground-up API has 39 named generic widget operations plus
-ten generic property writers. Native C++ virtual callbacks remain separate work.
+`:class` support. The ground-up API has 42 named generic widget operations plus
+eleven generic property writers. Native C++ virtual callbacks remain separate work.
 
 Progress controls support range/value properties, orientation and indeterminate
 pulsing; see [the gauge guide](docs/GAUGE.md) and runnable
@@ -27,6 +27,10 @@ pulsing; see [the gauge guide](docs/GAUGE.md) and runnable
 The [application event guide](docs/APPLICATION-EVENTS.md) explains native
 main-loop and pending-event queries, explicit queued-event dispatch and the
 callback reentrancy boundary.
+
+The [event-handler foundation](docs/EVENT-HANDLERS.md) adds session-owned
+standalone handlers, borrowed window identities, liveness checks and a generic
+event-processing flag. Generic multi-event binding remains the next C1 slice.
 
 ## Documentation and examples
 
@@ -73,7 +77,7 @@ application with `(wxlambda:load-native-library #P"C:/path/to/wxlambda.dll")`.
 Dependent wxWidgets DLLs must also be discoverable by the OS loader.
 
 The bridge normally loads from `build/`, then falls back to the system library
-search path. The Lisp/native ABI version (currently 11) is checked on load; rebuild
+search path. The Lisp/native ABI version (currently 12) is checked on load; rebuild
 the bridge after updating the bindings. Installing the bridge with CMake does not
 install the ASDF system.
 

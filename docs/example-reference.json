@@ -34,5 +34,9 @@
   "application-events.lisp": {
     "description": "The same button callback reports native main-loop state when dispatched through the pending wx event queue and through RUN. The reusable exercise asserts both modes and cleans up handlers/windows.",
     "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/application-events.lisp --eval '(wxlambda-application-events:start)'"
+  },
+  "event-handlers.lisp": {
+    "description": "A standalone EVENT-HANDLER subclass reads native state in an AFTER hook. Separate window callbacks toggle event-handler processing without disabling window input. The exercise verifies queued callback gating and explicit owned-handler cleanup.",
+    "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/event-handlers.lisp --eval '(wxlambda-event-handlers:start)'"
   }
 }

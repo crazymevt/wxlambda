@@ -145,6 +145,8 @@ class CoverageInventoryChecks(unittest.TestCase):
             'wxFrame::wxFrame', 'wxPanel::wxPanel', 'wxButton::wxButton',
             'wxAppConsole::ProcessPendingEvents', 'wxAppConsole::HasPendingEvents',
             'wxAppConsole::IsMainLoopRunning',
+            'wxEvtHandler::wxEvtHandler', 'wxEvtHandler::~wxEvtHandler',
+            'wxEvtHandler::GetEvtHandlerEnabled', 'wxEvtHandler::SetEvtHandlerEnabled',
             'wxTextCtrl::wxTextCtrl', 'wxStaticText::wxStaticText',
             'wxCheckBox::wxCheckBox', 'wxChoice::wxChoice',
             'wxGauge::wxGauge', 'wxGauge::GetValue', 'wxGauge::SetValue',
@@ -164,7 +166,7 @@ class CoverageInventoryChecks(unittest.TestCase):
         self.assertEqual(set(self.status['classes']), {
             'wxFrame', 'wxPanel', 'wxButton', 'wxTextCtrl', 'wxStaticText',
             'wxCheckBox', 'wxChoice', 'wxGauge', 'wxBoxSizer', 'wxWindow', 'wxTopLevelWindow',
-            'wxAppConsole', 'wxApp',
+            'wxAppConsole', 'wxApp', 'wxEvtHandler',
         })
 
     def test_compiler_scaffolding_is_context_but_public_macros_are_tasks(self):

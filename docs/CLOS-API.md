@@ -2,8 +2,12 @@
 
 Widgets are native-backed CLOS instances. The public classes are `window`,
 `frame`, `panel`, `button`, `text-control`, `label`, `checkbox`, `choice` and `gauge`.
-`window` is abstract. Every concrete wrapper inherits from it and represents
-one native widget kind. Native handles remain private and validated.
+`window` inherits from `event-handler` and is abstract. Standalone `event-handler`
+instances are native-backed session-owned resources; window instances reuse their
+existing native widget as a borrowed handler identity. See [ownership and
+handler state](EVENT-HANDLERS.md). Every concrete window wrapper inherits from
+`window` and represents one native widget kind. Native handles remain private
+and validated.
 
 ## Construction
 
@@ -77,7 +81,7 @@ keep their separate roles.
 
 ## Generic properties
 
-Use these ten generic `setf` accessors:
+Use these eleven generic `setf` accessors:
 
 ```lisp
 (setf (wxlambda:text input) "Text")
@@ -90,6 +94,7 @@ Use these ten generic `setf` accessors:
 (setf (wxlambda:enabled-p window) t)
 (setf (wxlambda:gauge-value gauge) 25)
 (setf (wxlambda:gauge-range gauge) 100)
+(setf (wxlambda:handler-enabled-p handler) t)
 ```
 
 A writer's method lambda list starts with the new value, followed by the
@@ -142,4 +147,4 @@ construction instructions on class pages and indexed SETF forms on property page
 
 The gauge scenario additionally verifies direct and factory subclass construction,
 subclass AFTER access, rollback, and the two gauge SETF writers. Across the public
-API there are now 39 named generic functions and ten generic SETF functions.
+API there are now 42 named generic functions and eleven generic SETF functions.

@@ -25,24 +25,29 @@ must reconcile additional documented public interfaces beyond those headers.
 - `ed3ca87`: C1 application state and pending-event dispatch, callback/pump/
   cleanup reentrancy guards and fresh-load inactive-session regression;
   independent review finding resolved.
-- Current bridge ABI: 11. Public API: 68 exports, nine window wrapper classes
-  (eight concrete widget kinds), 39 named generics and ten generic SETF writers.
-  No public application wrapper or generic event-handler binding exists yet.
-- Latest implementation verification: 28 GUI scenarios and native preflight
+- Event-handler ownership milestone: native-backed standalone handlers, borrowed
+  window base identities, liveness and handler-enabled SETF state, plus weak native
+  window invalidation. See the latest commit and the C1 handler section below.
+- Current bridge ABI: 12. Public API: 73 exports, nine window wrapper classes
+  (eight concrete widget kinds) plus the event-handler base, 42 named generics and
+  eleven generic SETF writers. No public application wrapper or generic
+  multi-event handler binding exists yet.
+- Latest implementation verification: 29 GUI scenarios and native preflight
   pass on local Apple Silicon macOS SBCL 2.6.9 and CCL 1.13. Final reports:
-  `evidence/application-events/{sbcl,ccl}-review-fix-20261028/`. Five package checks
-  pass in `evidence/packaging/application-events-reviewed-20261028/`.
+  `evidence/event-handlers/{sbcl,ccl}-20261028/`. Five package checks
+  pass in `evidence/packaging/event-handlers-20261028/`.
   Hosted Linux/Windows GUI behavior and the graphical Cadre viewer remain open.
 
 ### Next dependency and working order
 
 1. Continue **C1**, before adding further C2 widget families. Application dispatch
    boundaries are established only for the bridge-owned session.
-2. Define native event-handler ownership, borrowed window handlers, invalidation,
-   callback roots and teardown. Review how standalone handlers and window-backed
-   handlers fit native-backed CLOS construction without allocating a second native
-   object. Preserve existing subclass initargs, defaults, AFTER hooks and rollback.
-3. Implement the required event-handler base and generic binding/unbinding with
+2. Reuse the implemented event-handler ownership/state base: standalone objects
+   are session-owned; windows borrow their existing native identity, with weak
+   tracking independent of destroy-event delivery. There is no pushed-handler
+   ownership or standalone event dispatch yet. Preserve native-backed subclass
+   initargs, defaults, AFTER hooks and mixed-resource rollback.
+3. Next implement generic binding/unbinding with
    positive, error, lifetime and callback tests. Account for multiple bindings,
    event/source/ID identity and safe unbinding during dispatch; the current
    control-specific single-handler slots are not full generic binding support.
@@ -597,6 +602,55 @@ isolation, relocation, REPL and missing-library checks; evidence is in
 `evidence/packaging/application-events-reviewed-20261028/`. Hosted Linux/Windows GUI
 execution and the graphical Cadre viewer remain unvalidated. The C1 inventory
 remains open, and no further C2 widget families were added.
+
+## C1 foundation: event-handler ownership and state
+
+- [x] Add native-backed `event-handler` construction, thin validated standalone
+  factory, explicit standalone destruction, liveness and generic enabled state.
+- [x] Make `window` inherit the event-handler interface while borrowing its existing
+  native widget identity; retain a single allocation per window and managed CLOS
+  subclass/default/initarg/AFTER semantics.
+- [x] Generalize initializer rollback across standalone handlers, nested windows
+  and callback roots; session cleanup frees remaining standalone handlers.
+- [x] Track windows weakly so disabling handler event processing cannot leave
+  dereferenceable dead pointers when destroy-event delivery is suppressed.
+- [x] Add standalone/subclass and window callback examples, focused ownership/
+  state/lifetime tests, API/guide/docset content and persistent C1 coverage.
+
+Native ABI 12 adds standalone handlers and own event-processing state.
+`handler-enabled-p` is distinct from window input `enabled-p`; native routing
+and parent propagation rules still apply. Native lifetime observation returns
+NIL for stale identities only within an active session. Borrowed window handlers
+reject standalone destruction. Dead weak registry entries can remain until
+session cleanup; they do not retain or dereference destroyed native windows.
+Legacy control callback roots still require explicit unbinding before window
+destruction or remain rooted until session cleanup. No generic binding, standalone
+event queues, pushed-handler ownership or native virtual overrides are implemented.
+
+Local Apple Silicon macOS native preflight and all 29 GUI scenarios pass on
+SBCL 2.6.9 and CCL 1.13, with evidence in
+`evidence/event-handlers/{sbcl,ccl}-20261028/`. Tests include the actual example
+callbacks, disabled-window/child destruction, owned/borrowed misuse, direct/factory
+class-object construction, native AFTER access, mixed-resource/callback-root
+rollback, invalid construction, stale identities and inactive sessions. The
+initial focused test mistakenly expected REINITIALIZE-INSTANCE to re-run native
+construction; it was corrected to test repeated INITIALIZE-INSTANCE, matching the
+existing construction contract. Both focused reruns and complete suites pass.
+
+Independent static review found no actionable correctness issues. Its wording
+nit about dead weak entries was corrected to state that entries can remain until
+session cleanup. Python and pinned-upstream inventory regressions pass.
+The generated docset contains 94 entries covering all 73 public exports, guides
+and ten example sources. Build/check reports zero problems and verifies links,
+shared-reader discovery and indexed guide/example access. Actual-package and
+isolated-install checks accompany this slice; graphical Cadre and hosted
+Linux/Windows GUI validation remain open.
+
+The rebuilt `dist/wxlambda-form-event-handlers` passes all five packaging
+isolation, relocation, REPL and missing-library checks, recorded in
+`evidence/packaging/event-handlers-20261028/`. The next C1 slice is generic
+multi-event/ID binding and safe unbinding, using the ownership base established
+here. Full event-handler and C1 coverage remain open.
 
 ## Decisions
 

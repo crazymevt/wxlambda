@@ -818,6 +818,63 @@
         "wxl_main_loop_running"
       ],
       "scope": "Active bridge application only. Native main-loop state; false during standalone pumps and the cooperative application REPL."
+    },
+    {
+      "header": "wx/event.h",
+      "line": 387,
+      "declaration": "wxEvtHandler();",
+      "status": "x",
+      "symbol": "wxEvtHandler::wxEvtHandler",
+      "lisp": [
+        "event-handler",
+        "make-event-handler"
+      ],
+      "native": [
+        "wxl_event_handler"
+      ],
+      "scope": "Native-backed standalone CLOS construction. Session-owned native object, explicit destruction or session cleanup; subclass initargs/defaults/AFTER hooks and rollback supported."
+    },
+    {
+      "header": "wx/event.h",
+      "line": 395,
+      "declaration": "virtual ~wxEvtHandler();",
+      "status": "~",
+      "symbol": "wxEvtHandler::~wxEvtHandler",
+      "lisp": [
+        "destroy-event-handler"
+      ],
+      "native": [
+        "wxl_handler_destroy"
+      ],
+      "scope": "Owned standalone handlers only. Borrowed window identities must use window/parent destruction. Generic binding teardown and pushed-handler ownership remain open."
+    },
+    {
+      "header": "wx/event.h",
+      "line": 1097,
+      "declaration": "bool GetEvtHandlerEnabled() const;",
+      "status": "x",
+      "symbol": "wxEvtHandler::GetEvtHandlerEnabled",
+      "lisp": [
+        "handler-enabled-p"
+      ],
+      "native": [
+        "wxl_handler_enabled"
+      ],
+      "scope": "Own event-processing flag for exposed standalone handlers and native wxWindow base identities; separate from window input state."
+    },
+    {
+      "header": "wx/event.h",
+      "line": 1127,
+      "declaration": "void SetEvtHandlerEnabled(bool enabled);",
+      "status": "x",
+      "symbol": "wxEvtHandler::SetEvtHandlerEnabled",
+      "lisp": [
+        "(setf handler-enabled-p)"
+      ],
+      "native": [
+        "wxl_set_handler_enabled"
+      ],
+      "scope": "Canonical generalized-boolean SETF writer for exposed handlers; native dispatch/propagation semantics, no synthetic events. Weak window tracking preserves invalidation when destroy-event delivery is disabled."
     }
   ],
   "classes": {
@@ -957,7 +1014,7 @@
         "wxl_gauge_vertical",
         "wxl_gauge_pulse"
       ],
-      "scope": "Parent-owned progress gauge: positive range, value, horizontal/vertical orientation and pulsing. Constructor options, two-step creation and full inherited API remain open. Gauge support introduced in ABI 10; current bridge ABI 11; see docs/GAUGE.md and tests/gauge.lisp."
+      "scope": "Parent-owned progress gauge: positive range, value, horizontal/vertical orientation and pulsing. Constructor options, two-step creation and full inherited API remain open. Gauge support introduced in ABI 10; current bridge ABI 12; see docs/GAUGE.md and tests/gauge.lisp."
     },
     "wxAppConsole": {
       "status": "~",
@@ -979,7 +1036,7 @@
         "wxl_pending_events",
         "wxl_process_pending_events"
       ],
-      "scope": "Managed bridge application only: session lifetime, native main loop, polling, queued-event status/dispatch and callback/pump guards. No public application wrapper, application traits, arbitrary event loops, command-line hooks or native virtual overrides. Generic event-handler ownership/binding, filters, propagation, idle handlers, timers and worker dispatch remain open."
+      "scope": "Managed bridge application only: session lifetime, native main loop, polling, queued-event status/dispatch and callback/pump guards. No public application wrapper, application traits, arbitrary event loops, command-line hooks or native virtual overrides. Generic event-handler binding, pushed-handler ownership, filters, propagation, idle handlers, timers and worker dispatch remain open."
     },
     "wxApp": {
       "status": "~",
@@ -992,6 +1049,25 @@
         "wxl_finish"
       ],
       "scope": "One managed GUI application per process on its main thread. Native initialization/cleanup only; application subclass hooks, traits, top-window APIs and remaining GUI-application interfaces are unbound. This is not a public CLOS application class."
+    },
+    "wxEvtHandler": {
+      "status": "~",
+      "lisp": [
+        "event-handler",
+        "make-event-handler",
+        "destroy-event-handler",
+        "handler-alive-p",
+        "handler-enabled-p",
+        "(setf handler-enabled-p)"
+      ],
+      "native": [
+        "wxl_event_handler",
+        "wxl_handler_destroy",
+        "wxl_handler_alive",
+        "wxl_handler_enabled",
+        "wxl_set_handler_enabled"
+      ],
+      "scope": "Session-owned standalone handlers and borrowed wxWindow base identities, native-backed CLOS construction/rollback, own enabled flag and weak window invalidation. No generic Bind/Unbind, event queues on standalone handlers, pushed/linked handler chains, filters, propagation/skip/veto or native virtual callbacks. See docs/EVENT-HANDLERS.md."
     }
   }
 }

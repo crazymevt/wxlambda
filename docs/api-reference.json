@@ -503,9 +503,9 @@
     "name": "window",
     "kind": "class",
     "syntax": "wxlambda:window",
-    "arguments": "Superclass: STANDARD-OBJECT.",
+    "arguments": "Superclass: WXLAMBDA:EVENT-HANDLER. WINDOW is abstract.",
     "returns": "A native-backed instance of this class or a subclass (WINDOW itself is abstract).",
-    "description": "Base CLOS class of the bound window wrappers; common window operations specialize on it.",
+    "description": "Abstract CLOS base of the bound window wrappers. Reuses its wxWindow as a borrowed wxEvtHandler; construction creates one native widget, not a second handler.",
     "scope": "Construction requires an active main-thread application session. Concrete classes create their native widgets in inherited INITIALIZE-INSTANCE methods; subclass AFTER hooks can use them. Native handles cannot be supplied as initargs. Lisp subclassing does not imply native C++ virtual callbacks.",
     "wxwidgets": "wxWindow (wxWidgets 3.2); this is a Lisp wrapper, not a native subclass.",
     "construction": {
@@ -704,5 +704,59 @@
     "description": "Dispatch queued wx events for all pending handlers of the bridge application via ProcessPendingEvents. Does not yield to OS input or run ProcessIdle. Does not wait for new events; callback duration and continuously requeued work may delay return. Callback conditions are contained at the native boundary and re-signaled afterwards.",
     "scope": "Requires an active main-thread GUI session; use before startup or after cleanup signals NATIVE-ERROR. This API is scoped to the bridge application, not arbitrary wxApp instances. Forbidden inside RUN, either pump or any native-to-Lisp callback (NATIVE-ERROR), and inside the application REPL debugger (Lisp error). Dispatch guards recover on callback failure. Synchronous notifying setters remain supported.",
     "wxwidgets": "wxAppConsole::ProcessPendingEvents (wxWidgets 3.2.12 baseline)."
+  },
+  {
+    "name": "event-handler",
+    "kind": "class",
+    "arguments": "Superclass STANDARD-OBJECT. No native initargs; subclasses may add slot initargs and defaults.",
+    "returns": "A native-backed owned standalone handler, or the base identity of an existing window subclass.",
+    "description": "Concrete standalone wxEvtHandler wrapper and superclass of WINDOW. Standalone native objects are owned by the application session, explicitly destroyed or automatically freed at session cleanup, without a Lisp GC finalizer. Windows borrow their own native wxWindow base identity and retain window/parent lifetime. Neither case exposes an arbitrary GetEventHandler chain or permits user-supplied native handles.",
+    "scope": "Active main-thread GUI session required; otherwise NATIVE-ERROR, including after cleanup. Invalid/stale native handles signal NATIVE-ERROR except HANDLER-ALIVE-P, which returns NIL for destroyed/unknown IDs during an active session. Unsupported Lisp receivers use CLOS dispatch errors. No generic binding, pushed handler chains or native virtual overrides in this slice.",
+    "wxwidgets": "wxEvtHandler constructor/destructor (wxWidgets 3.2.12 baseline); window identity uses wxWindow inheritance.",
+    "syntax": "wxlambda:event-handler",
+    "construction": {
+      "syntax": "(make-instance 'wxlambda:event-handler)",
+      "description": "Subclass slot initargs and :DEFAULT-INITARGS are forwarded. Native state exists in subclass AFTER hooks. Failed managed initialization rolls back nested handlers/windows and callback roots through the shared construction context. WINDOW stays abstract; concrete windows allocate only their native widget."
+    }
+  },
+  {
+    "name": "make-event-handler",
+    "kind": "function",
+    "arguments": "Keyword :CLASS is an EVENT-HANDLER subclass symbol or class object, default EVENT-HANDLER. Additional initargs are forwarded.",
+    "returns": "A new owned standalone handler instance of CLASS.",
+    "description": "Thin MAKE-INSTANCE factory. Rejects WINDOW subclasses and non-handler classes before construction; no parent or native-enabled initarg is provided.",
+    "scope": "Active main-thread GUI session required; otherwise NATIVE-ERROR, including after cleanup. Invalid/stale native handles signal NATIVE-ERROR except HANDLER-ALIVE-P, which returns NIL for destroyed/unknown IDs during an active session. Unsupported Lisp receivers use CLOS dispatch errors. No generic binding, pushed handler chains or native virtual overrides in this slice.",
+    "wxwidgets": "wxEvtHandler::wxEvtHandler (wxWidgets 3.2.12 baseline)."
+  },
+  {
+    "name": "destroy-event-handler",
+    "kind": "generic-function",
+    "arguments": "HANDLER is an owned standalone EVENT-HANDLER.",
+    "returns": "T after successful native deletion.",
+    "description": "Immediately destroy an owned standalone native handler. A second destruction is an error. Window identities are borrowed and reject this operation; use DESTROY-WINDOW, respecting parent ownership. No generic standalone callback registration exists yet.",
+    "scope": "Active main-thread GUI session required; otherwise NATIVE-ERROR, including after cleanup. Invalid/stale native handles signal NATIVE-ERROR except HANDLER-ALIVE-P, which returns NIL for destroyed/unknown IDs during an active session. Unsupported Lisp receivers use CLOS dispatch errors. No generic binding, pushed handler chains or native virtual overrides in this slice.",
+    "wxwidgets": "wxEvtHandler::~wxEvtHandler (wxWidgets 3.2.12 baseline), owned standalone handlers only."
+  },
+  {
+    "name": "handler-alive-p",
+    "kind": "generic-function",
+    "arguments": "HANDLER is an EVENT-HANDLER or a WINDOW subclass.",
+    "returns": "T if native identity exists and is not being deleted; NIL for stale/destroyed identity during an active session.",
+    "description": "Observe native lifetime without dereferencing dead windows. Native weak tracking makes window destruction safe even with event processing disabled. A failed/uninitialized Lisp wrapper has no handle and signals NATIVE-ERROR. Session cleanup invalidates every identity; outside a session this query signals NATIVE-ERROR.",
+    "scope": "Active main-thread GUI session required; otherwise NATIVE-ERROR, including after cleanup. Invalid/stale native handles signal NATIVE-ERROR except HANDLER-ALIVE-P, which returns NIL for destroyed/unknown IDs during an active session. Unsupported Lisp receivers use CLOS dispatch errors. No generic binding, pushed handler chains or native virtual overrides in this slice.",
+    "wxwidgets": "Bridge lifetime predicate using native registries and wxWeakRef<wxWindow>/IsBeingDeleted; no standalone public wxWeakRef wrapper."
+  },
+  {
+    "name": "handler-enabled-p",
+    "kind": "generic-function",
+    "arguments": "HANDLER is an EVENT-HANDLER or WINDOW subclass; SETF VALUE is a generalized boolean.",
+    "returns": "T/NIL for the own native handler flag; SETF returns the supplied value.",
+    "description": "Read or write the native wxEvtHandler event-processing flag. Separate from window ENABLED-P/input state: disabled handlers can skip callbacks without greying the control. Native propagation rules still apply. Does not implement arbitrary pushed handlers or mutable event contexts.",
+    "scope": "Active main-thread GUI session required; otherwise NATIVE-ERROR, including after cleanup. Invalid/stale native handles signal NATIVE-ERROR except HANDLER-ALIVE-P, which returns NIL for destroyed/unknown IDs during an active session. Unsupported Lisp receivers use CLOS dispatch errors. No generic binding, pushed handler chains or native virtual overrides in this slice.",
+    "wxwidgets": "wxEvtHandler::GetEvtHandlerEnabled / SetEvtHandlerEnabled (wxWidgets 3.2.12 baseline).",
+    "setf": {
+      "syntax": "(setf (wxlambda:handler-enabled-p handler) value)",
+      "description": "Normalize a generalized boolean to the native flag and return the original supplied value. No command event is synthesized."
+    }
   }
 ]

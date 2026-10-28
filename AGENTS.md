@@ -82,7 +82,9 @@ compatibility. Keep native handle/type checks and callback/lifetime protections.
 Application lifecycle functions, keyword-only factories, macros and the FFI can
 remain ordinary functions/macros. Event snapshots remain immutable structures.
 
-Public wrapper classes are `window` (abstract), `frame`, `panel`, `button`,
+The native-backed `event-handler` base supports standalone session-owned handlers;
+windows borrow their existing native widget identity. Public window wrapper
+classes are `window` (abstract), `frame`, `panel`, `button`,
 `text-control`, `label`, `checkbox`, `choice` and `gauge`. Lisp subclassing does not imply
 native C++ subclassing or virtual-method callbacks; those need separate bridge
 support. See `docs/CLOS-API.md`.

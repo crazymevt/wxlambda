@@ -16,7 +16,7 @@ class or constructor does not imply full upstream coverage.
 
 ## Current coverage and remaining work
 
-0 implemented; 8 partial; 5284 pending; 26 context entries. Partial and pending entries remain open.
+3 implemented; 10 partial; 5279 pending; 26 context entries. Partial and pending entries remain open.
 
 Counts describe inventory entries, not distinct APIs or percent completion.
 See the [coverage summary](README.md) for phase/header comparisons.
@@ -96,7 +96,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 
 0 implemented; 8 partial; 96 pending; 0 context entries. Partial and pending entries remain open.
 
-- [~] [L39](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L39) `class wxAppConsole : public wxEvtHandler, public wxEventFilter {` — **Partial**: `call-with-application`, `run`, `stop`, `process-events`, `main-loop-running-p`, `pending-events-p`, `process-pending-events`; ABI: `wxl_start`, `wxl_run`, `wxl_stop`, `wxl_poll`, `wxl_main_loop_running`, `wxl_pending_events`, `wxl_process_pending_events`. Managed bridge application only: session lifetime, native main loop, polling, queued-event status/dispatch and callback/pump guards. No public application wrapper, application traits, arbitrary event loops, command-line hooks or native virtual overrides. Generic event-handler ownership/binding, filters, propagation, idle handlers, timers and worker dispatch remain open.
+- [~] [L39](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L39) `class wxAppConsole : public wxEvtHandler, public wxEventFilter {` — **Partial**: `call-with-application`, `run`, `stop`, `process-events`, `main-loop-running-p`, `pending-events-p`, `process-pending-events`; ABI: `wxl_start`, `wxl_run`, `wxl_stop`, `wxl_poll`, `wxl_main_loop_running`, `wxl_pending_events`, `wxl_process_pending_events`. Managed bridge application only: session lifetime, native main loop, polling, queued-event status/dispatch and callback/pump guards. No public application wrapper, application traits, arbitrary event loops, command-line hooks or native virtual overrides. Generic event-handler binding, pushed-handler ownership, filters, propagation, idle handlers, timers and worker dispatch remain open.
 - [ ] [L48](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L48) `virtual wxAppTraits* CreateTraits();`
 - [ ] [L55](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L55) `virtual ~wxAppConsole();`
 - [ ] [L72](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L72) `virtual int MainLoop();`
@@ -1475,7 +1475,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h)
 
-0 implemented; 0 partial; 660 pending; 16 context entries. Partial and pending entries remain open.
+3 implemented; 2 partial; 655 pending; 16 context entries. Partial and pending entries remain open.
 
 - **Context**: [L9](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L9) `#if wxUSE_BASE`
 - [ ] [L15](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L15) `enum wxEventPropagation {`
@@ -1516,9 +1516,9 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [ ] [L357](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L357) `~wxPropagateOnce();`
 - **Context**: [L360](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L360) `#endif`
 - **Context**: [L362](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L362) `#if wxUSE_BASE`
-- [ ] [L381](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L381) `class wxEvtHandler : public wxObject, public wxTrackable {`
-- [ ] [L387](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L387) `wxEvtHandler();`
-- [ ] [L395](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L395) `virtual ~wxEvtHandler();`
+- [~] [L381](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L381) `class wxEvtHandler : public wxObject, public wxTrackable {` — **Partial**: `event-handler`, `make-event-handler`, `destroy-event-handler`, `handler-alive-p`, `handler-enabled-p`, `(setf handler-enabled-p)`; ABI: `wxl_event_handler`, `wxl_handler_destroy`, `wxl_handler_alive`, `wxl_handler_enabled`, `wxl_set_handler_enabled`. Session-owned standalone handlers and borrowed wxWindow base identities, native-backed CLOS construction/rollback, own enabled flag and weak window invalidation. No generic Bind/Unbind, event queues on standalone handlers, pushed/linked handler chains, filters, propagation/skip/veto or native virtual callbacks. See docs/EVENT-HANDLERS.md.
+- [x] [L387](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L387) `wxEvtHandler();` — **Implemented**: `event-handler`, `make-event-handler`; ABI: `wxl_event_handler`. Native-backed standalone CLOS construction. Session-owned native object, explicit destruction or session cleanup; subclass initargs/defaults/AFTER hooks and rollback supported.
+- [~] [L395](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L395) `virtual ~wxEvtHandler();` — **Partial**: `destroy-event-handler`; ABI: `wxl_handler_destroy`. Owned standalone handlers only. Borrowed window identities must use window/parent destruction. Generic binding teardown and pushed-handler ownership remain open.
 - [ ] [L463](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L463) `virtual void QueueEvent(wxEvent *event);`
 - [ ] [L485](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L485) `virtual void AddPendingEvent(const wxEvent& event);`
 - [ ] [L535](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L535) `template<typename T, typename T1, ...> void CallAfter(void (T::*method)(T1, ...), T1 x1, ...);`
@@ -1542,10 +1542,10 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [ ] [L1057](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L1057) `wxClientData* GetClientObject() const;`
 - [ ] [L1072](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L1072) `void SetClientData(void* data);`
 - [ ] [L1079](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L1079) `void SetClientObject(wxClientData* data);`
-- [ ] [L1097](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L1097) `bool GetEvtHandlerEnabled() const;`
+- [x] [L1097](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L1097) `bool GetEvtHandlerEnabled() const;` — **Implemented**: `handler-enabled-p`; ABI: `wxl_handler_enabled`. Own event-processing flag for exposed standalone handlers and native wxWindow base identities; separate from window input state.
 - [ ] [L1105](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L1105) `wxEvtHandler* GetNextHandler() const;`
 - [ ] [L1113](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L1113) `wxEvtHandler* GetPreviousHandler() const;`
-- [ ] [L1127](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L1127) `void SetEvtHandlerEnabled(bool enabled);`
+- [x] [L1127](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L1127) `void SetEvtHandlerEnabled(bool enabled);` — **Implemented**: `(setf handler-enabled-p)`; ABI: `wxl_set_handler_enabled`. Canonical generalized-boolean SETF writer for exposed handlers; native dispatch/propagation semantics, no synthetic events. Weak window tracking preserves invalidation when destroy-event delivery is disabled.
 - [ ] [L1149](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L1149) `virtual void SetNextHandler(wxEvtHandler* handler);`
 - [ ] [L1161](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L1161) `virtual void SetPreviousHandler(wxEvtHandler* handler);`
 - [ ] [L1175](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L1175) `void Unlink();`

@@ -3,6 +3,8 @@
 #include <wx/thread.h>
 #include <wx/choice.h>
 #include <wx/gauge.h>
+#include <wx/weakref.h>
+#include <memory>
 #include <algorithm>
 #include <stdexcept>
 #include <string>
@@ -20,7 +22,8 @@ thread_local std::string error;
 thread_local std::string text_result;
 thread_local std::string label_result;
 thread_local std::string metadata_result;
-std::unordered_map<wxl_handle, wxWindow*> windows;
+std::unordered_map<wxl_handle, wxWeakRef<wxWindow>> windows;
+std::unordered_map<wxl_handle, std::unique_ptr<wxEvtHandler>> owned_handlers;
 std::unordered_map<wxl_handle, uint64_t> handlers;
 wxl_handle next_handle = 1;
 wxl_callback dispatch = nullptr;
@@ -49,8 +52,17 @@ wxWindow* window(wxl_handle id) {
     ready();
     const auto it = windows.find(id);
     require(it != windows.end(), "Invalid or destroyed window handle");
-    require(!it->second->IsBeingDeleted(), "Window is being destroyed");
-    return it->second;
+    auto* object = it->second.get();
+    require(object != nullptr, "Invalid or destroyed window handle");
+    require(!object->IsBeingDeleted(), "Window is being destroyed");
+    return object;
+}
+wxEvtHandler* event_handler(wxl_handle id) {
+    ready();
+    if (windows.find(id) != windows.end()) return window(id);
+    const auto it = owned_handlers.find(id);
+    require(it != owned_handlers.end(), "Invalid or destroyed event-handler handle");
+    return it->second.get();
 }
 template<class T> T* as(wxl_handle id) {
     auto* object = dynamic_cast<T*>(window(id));
@@ -131,7 +143,7 @@ wxString utf8(const char* value) {
 }
 }
 extern "C" {
-int wxl_abi_version() { return 11; }
+int wxl_abi_version() { return 12; }
 const char* wxl_last_error() { return error.c_str(); }
 int wxl_start(wxl_callback callback) {
     return status([&] {
@@ -197,9 +209,44 @@ int wxl_finish() {
         // Destroy remaining top-level windows before OnExit (also on setup failure).
         while (!wxTopLevelWindows.empty())
             delete wxTopLevelWindows.GetFirst()->GetData();
+        owned_handlers.clear();
         wxTheApp->OnExit();
         wxEntryCleanup();
         windows.clear(); handlers.clear(); dispatch = nullptr; started = false;
+    });
+}
+wxl_handle wxl_event_handler() {
+    return create([] {
+        auto object = std::make_unique<wxEvtHandler>();
+        const auto id = next_handle++;
+        owned_handlers.emplace(id, std::move(object));
+        return id;
+    });
+}
+int wxl_handler_alive(wxl_handle id) {
+    return boolean_result([&] {
+        ready();
+        const auto it = windows.find(id);
+        if (it != windows.end()) {
+            auto* object = it->second.get();
+            return object && !object->IsBeingDeleted();
+        }
+        return owned_handlers.find(id) != owned_handlers.end();
+    });
+}
+int wxl_handler_enabled(wxl_handle id) {
+    return boolean_result([&] { return event_handler(id)->GetEvtHandlerEnabled(); });
+}
+int wxl_set_handler_enabled(wxl_handle id, int enabled) {
+    return status([&] { event_handler(id)->SetEvtHandlerEnabled(enabled != 0); });
+}
+int wxl_handler_destroy(wxl_handle id) {
+    return status([&] {
+        ready();
+        require(windows.find(id) == windows.end(), "Window event handlers are borrowed; use destroy-window");
+        const auto it = owned_handlers.find(id);
+        require(it != owned_handlers.end(), "Invalid or destroyed event-handler handle");
+        owned_handlers.erase(it);
     });
 }
 wxl_handle wxl_frame(const char* title, int width, int height) {
