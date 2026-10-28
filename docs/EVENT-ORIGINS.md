@@ -1,6 +1,6 @@
 # Native event type and origin identity
 
-ABI 21 extends EVENT-NATIVE-TYPE to a generic reader for immutable snapshots and
+ABI 22 extends EVENT-NATIVE-TYPE to a generic reader for immutable snapshots and
 current innermost contexts. EVENT-ORIGIN-ID is a new generic reader with the same
 saved/current lifetime distinction. Baseline: wxWidgets 3.2.12.
 
@@ -54,9 +54,9 @@ API always supplies a known receiver and cannot manufacture arbitrary native
 origin pointers. Real OS session events are not emitted.
 
 GetEventObject coverage is partial: generic wxObject wrappers, origin retention,
-SetEventObject, SetEventType, event categories/userData, persistent event
-ownership/cloning and broader native families remain C1 work. Next add event
-category metadata, then design typed mutation/ownership contracts that preserve
+SetEventObject, SetEventType, userData, persistent event ownership/cloning
+and broader native families remain C1 work. Category metadata is now bound.
+Next design typed mutation/ownership contracts that preserve
 native storage compatibility and session isolation. Existing read-only type
 lookups must not become an unchecked route to native tag mutation.
 
@@ -65,3 +65,5 @@ Build/check with `python3 tools/docset.py build` and `check`; install with
 (default `~/.local/share/docsets/wxlambda/`) for Cadre lookup and examples.
 See [contexts](EVENT-CONTEXTS.md), [ID routing](EVENT-ROUTING.md) and
 [docset installation](DOCSET.md).
+
+[Event categories](EVENT-CATEGORIES.md) now provide saved/current native category flags and compiled keyword mask lookup, including the actual native ALL mask. Selective pumping remains unbound.

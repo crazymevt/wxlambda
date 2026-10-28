@@ -2,7 +2,7 @@
 
 This C1 slice adds borrowed `event-context` values for native Skip and propagation
 control. Existing `event` snapshots remain immutable Lisp-owned data. The bridge
-is ABI 21, using the wxWidgets 3.2.12 inventory baseline. Supported events now include
+is ABI 22, using the wxWidgets 3.2.12 inventory baseline. Supported events now include
 four command kinds plus the [close family](CLOSE-EVENTS.md); arbitrary classes
 and native notify subclasses/session routing remain open. Registered
 [notify types](NOTIFY-EVENTS.md) now support scoped Veto/Allow.
@@ -137,3 +137,5 @@ verification remain separate checks.
 [Scoped event IDs](EVENT-ROUTING.md) now provide current ID reads/SETF and document effects on later matching. Snapshots remain immutable.
 
 [Native origin/type readers](EVENT-ORIGINS.md) now distinguish captured origin identity from binding receiver and provide current native type access; writers and arbitrary wxObject wrappers remain open.
+
+[Event categories](EVENT-CATEGORIES.md) now provide saved/current native category flags and compiled keyword mask lookup, including the actual native ALL mask. Selective pumping remains unbound.

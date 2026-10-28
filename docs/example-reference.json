@@ -74,5 +74,9 @@
   "event-origins.lisp": {
     "description": "Compare child and parent native origin identities while binding receivers differ; check current/saved native type and release resources.",
     "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/event-origins.lisp --eval '(wxlambda-event-origins:start)'"
+  },
+  "event-categories.lisp": {
+    "description": "Compare current/saved native category for a synthetic registered command and test USER_INPUT membership; no selective pumping or OS events.",
+    "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/event-categories.lisp --eval '(wxlambda-event-categories:start)'"
   }
 }

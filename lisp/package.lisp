@@ -1,6 +1,7 @@
 (defpackage #:wxlambda
   (:use #:cl)
-  (:export #:event-origin-id #:event-timestamp #:event-command-p #:event-logging-off-p #:application-handler #:current-application-handler #:register-event-type #:process-event #:event-integer
+  (:export #:event-category #:event-category-mask
+           #:event-origin-id #:event-timestamp #:event-command-p #:event-logging-off-p #:application-handler #:current-application-handler #:register-event-type #:process-event #:event-integer
            #:event-family #:event-can-veto-p #:event-vetoed-p #:close-window
            #:event-context #:event-context-p #:event-context-active-p #:event-skipped-p
            #:event-propagates-p #:stop-event-propagation #:resume-event-propagation

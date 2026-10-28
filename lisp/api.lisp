@@ -36,7 +36,7 @@
 (defclass checkbox (window)
   ((handler-token :initform nil :accessor handler-token)))
 
-(defstruct (event (:constructor %make-event (kind source text checked-p selection identifier native-type-code can-veto veto family-code integer logging-off time-stamp command origin-code)))
+(defstruct (event (:constructor %make-event (kind source text checked-p selection identifier native-type-code can-veto veto family-code integer logging-off time-stamp command origin-code category-code)))
   "A Lisp-owned snapshot. Slots are read-only; TEXT is an independent string."
   (kind nil :read-only t)
   (source nil :read-only t)
@@ -52,7 +52,8 @@
   (logging-off nil :read-only t)
   (time-stamp 0 :read-only t)
   (command nil :read-only t)
-  (origin-code 0 :read-only t))
+  (origin-code 0 :read-only t)
+  (category-code 0 :read-only t))
 
 (defstruct (event-binding (:constructor %make-event-binding (source kind token)))
   (source nil :read-only t) (kind nil :read-only t) (token 0 :read-only t))
@@ -84,7 +85,7 @@
         (let ((handler (gethash token *handlers*)))
           (when handler
             (when (cffi:null-pointer-p payload) (error "Missing event payload"))
-            (cffi:with-foreign-slots ((kind text checked selection id text-length context native-type can-veto vetoed family integer logging-off timestamp command origin-id) payload (:struct native-event))
+            (cffi:with-foreign-slots ((kind text checked selection id text-length context native-type can-veto vetoed family integer logging-off timestamp command origin-id category) payload (:struct native-event))
               (let* ((event-kind (or (case kind (1 :click) (2 :text-change) (3 :toggle) (4 :selection) (5 :close) (6 :query-end-session) (7 :end-session))
                                      (gethash kind *registered-event-kinds*)
                                      (error "Unregistered native event kind ~S" kind)))
@@ -96,7 +97,7 @@
                      (checked-p (and (= kind 3) (not (zerop checked))))
                      (event (%make-event event-kind (handler-source handler) value checked-p
                                          (when (= kind 4) (unless (= selection -1) selection)) id native-type
-                                         (not (zerop can-veto)) (not (zerop vetoed)) family integer (not (zerop logging-off)) timestamp (not (zerop command)) origin-id)))
+                                         (not (zerop can-veto)) (not (zerop vetoed)) family integer (not (zerop logging-off)) timestamp (not (zerop command)) origin-id category)))
                 (if (handler-with-context handler)
                     (funcall (handler-function handler) event (%make-event-context context))
                     (funcall (handler-function handler) event)))))))
@@ -1024,3 +1025,20 @@ live checkbox, including when called from inside its handler."
   (cffi:with-foreign-object (value :uint64)
     (check-status (%context-origin-id (event-context-token context) value))
     (let ((id (cffi:mem-ref value :uint64))) (unless (zerop id) id))))
+
+(defun event-category-mask (category)
+  "Read a compiled native category mask; ALL may include internal category bits."
+  (let ((code (position category '(:ui :user-input :socket :timer :thread :all))))
+    (unless code (error "Unknown event category ~S" category))
+    (load-native-library)
+    (let ((value (%event-category-mask code)))
+      (when (minusp value) (error 'native-error :message "Invalid native category mask"))
+      value)))
+(defgeneric event-category (event)
+  (:documentation "Read captured/current native category flags; no category setter or selective pump is supplied."))
+(defmethod event-category ((event event)) (event-category-code event))
+(defmethod event-category ((context event-context))
+  (require-active-application)
+  (cffi:with-foreign-object (value :int)
+    (check-status (%context-category (event-context-token context) value))
+    (cffi:mem-ref value :int)))

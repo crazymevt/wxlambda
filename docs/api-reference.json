@@ -1057,5 +1057,23 @@
     "description": "Copy/read GetEventObject identity only when it matches a registered application, owned handler or tracked window. This differs from EVENT-SOURCE (binding receiver) and EVENT-ID (routing metadata). Pointer identity is compared without dereferencing the origin; no native pointer or wrapper reconstruction is exposed.",
     "scope": "Saved values need no native session and imply no current liveness. Context reads require active main-thread session and innermost callback; expired/suspended contexts signal NATIVE-ERROR. Null and untracked origins both map to NIL. Registry lookup is at capture/read time, not a historical pointer-lifetime guarantee. No SETF writer, generic wxObject wrapper, origin retention or native ownership transfer.",
     "wxwidgets": "wxEvent::GetEventObject, bounded bridge-identity mapping (wxWidgets 3.2.12 baseline)."
+  },
+  {
+    "name": "event-category",
+    "kind": "generic-function",
+    "arguments": "EVENT is an immutable snapshot or current innermost event context.",
+    "returns": "Captured/current native wxEventCategory integer flags.",
+    "description": "Read virtual GetEventCategory: current supported command/notify-derived classes report USER_INPUT and close-family events report UI. Values are category flags, not event types/IDs/families; synthetic USER_INPUT is not proof of real user input. Snapshot values are captured before the callback.",
+    "scope": "Saved snapshots need no native session. Context reads require active main-thread session and innermost callback; stale/suspended contexts signal NATIVE-ERROR. No category setter, native virtual override, selective YieldFor or socket/timer/thread event binding is supplied.",
+    "wxwidgets": "wxEvent::GetEventCategory; native wxCommandEvent override includes notify-derived events (wxWidgets 3.2.12 baseline)."
+  },
+  {
+    "name": "event-category-mask",
+    "kind": "function",
+    "arguments": "CATEGORY is :UI, :USER-INPUT, :SOCKET, :TIMER, :THREAD or :ALL.",
+    "returns": "Compiled native category bit/mask integer.",
+    "description": "Load the bridge and return its compiled wxEventCategory constant without initializing a GUI session. Combine with LOGIOR/test with LOGTEST. ALL can include implementation category bits and is not restricted to the public five-bit union.",
+    "scope": "No active GUI session required; normal native library/ABI load errors apply. Unknown names signal a Lisp error before FFI. No event pumping or event-family construction. Pinned interface ALL31 differs from local3.2.12 compiled ALL127; preserve actual compiled value.",
+    "wxwidgets": "wxEVT_CATEGORY_UI, USER_INPUT, SOCKET, TIMER, THREAD and ALL (wxWidgets 3.2.12 baseline)."
   }
 ]

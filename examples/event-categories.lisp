@@ -1,0 +1,22 @@
+;;; Load and call (wxlambda-event-categories:start).
+(require :asdf)
+(load (merge-pathnames "../wxlambda.asd" *load-truename*))
+(asdf:load-system "wxlambda")
+(defpackage #:wxlambda-event-categories (:use #:cl) (:export #:start #:exercise))
+(in-package #:wxlambda-event-categories)
+(defun exercise ()
+  (wxlambda:register-event-type :category-message :family :command)
+  (let* ((receiver (wxlambda:make-event-handler)) (saved nil)
+         (binding (wxlambda:bind-event receiver :category-message
+                    (lambda (event context)
+                      (setf saved event)
+                      (assert (= (wxlambda:event-category event) (wxlambda:event-category context)))
+                      (assert (logtest (wxlambda:event-category-mask :user-input) (wxlambda:event-category event))))
+                    :with-context t)))
+    (unwind-protect
+         (progn (wxlambda:process-event receiver :category-message)
+                (assert (= (wxlambda:event-category-mask :user-input) (wxlambda:event-category saved)))
+                saved)
+      (wxlambda:unbind-event binding)
+      (wxlambda:destroy-event-handler receiver))))
+(defun start () (wxlambda:with-application () (exercise)))

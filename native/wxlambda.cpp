@@ -17,6 +17,10 @@
 #endif
 
 namespace {
+static_assert(wxEVT_CATEGORY_UI == 1 && wxEVT_CATEGORY_USER_INPUT == 2 &&
+              wxEVT_CATEGORY_SOCKET == 4 && wxEVT_CATEGORY_TIMER == 8 &&
+              wxEVT_CATEGORY_THREAD == 16,
+              "Review the pinned public event-category baseline for this wxWidgets build");
 bool session_type(wxEventType type) {
     return type == wxEVT_QUERY_END_SESSION || type == wxEVT_END_SESSION;
 }
@@ -237,7 +241,7 @@ struct Binding {
                                      0, event.GetEventType(), event_can_veto(event) ? 1 : 0, event_vetoed(event) ? 1 : 0,
                                      family, command ? command->GetInt() : 0,
                                      session_type(event.GetEventType()) ? (static_cast<wxCloseEvent&>(event).GetLoggingOff() ? 1 : 0) : 0,
-                                     event.GetTimestamp(), event.IsCommandEvent() ? 1 : 0, origin_id(event)};
+                                     event.GetTimestamp(), event.IsCommandEvent() ? 1 : 0, origin_id(event), static_cast<int>(event.GetEventCategory())};
             if (with_context) {
                 event.Skip(false);
                 EventScope scope(event);
@@ -311,7 +315,7 @@ wxString utf8(const char* value) {
 }
 }
 extern "C" {
-int wxl_abi_version() { return 21; }
+int wxl_abi_version() { return 22; }
 const char* wxl_last_error() { return error.c_str(); }
 int wxl_start(wxl_callback callback) {
     return status([&] {
@@ -468,6 +472,23 @@ int wxl_context_set_can_veto(uint64_t token, int value) {
         auto* close = dynamic_cast<wxCloseEvent*>(&current_event(token));
         require(close != nullptr, "CanVeto mutation requires a close-family event");
         close->SetCanVeto(value != 0);
+    });
+}
+int wxl_event_category_mask(int category) {
+    switch (category) {
+        case 0: return wxEVT_CATEGORY_UI;
+        case 1: return wxEVT_CATEGORY_USER_INPUT;
+        case 2: return wxEVT_CATEGORY_SOCKET;
+        case 3: return wxEVT_CATEGORY_TIMER;
+        case 4: return wxEVT_CATEGORY_THREAD;
+        case 5: return wxEVT_CATEGORY_ALL;
+        default: return -1;
+    }
+}
+int wxl_context_category(uint64_t token, int* value) {
+    return status([&] {
+        require(value != nullptr, "Missing event category output");
+        *value = static_cast<int>(current_event(token).GetEventCategory());
     });
 }
 int wxl_context_native_type(uint64_t token, int* value) {
@@ -636,7 +657,7 @@ wxl_handle wxl_button(wxl_handle parent, const char* label) {
         auto* control = new wxButton(window(parent), wxID_ANY, utf8(label));
         auto id = track(control);
         control->Bind(wxEVT_BUTTON, [id](wxCommandEvent& event) {
-            emit_event(id, {WXL_EVENT_CLICK, nullptr, 0, -1, event.GetId(), 0, 0, event.GetEventType(), 0, 0, WXL_FAMILY_COMMAND, event.GetInt(), 0, event.GetTimestamp(), event.IsCommandEvent() ? 1 : 0, origin_id(event)});
+            emit_event(id, {WXL_EVENT_CLICK, nullptr, 0, -1, event.GetId(), 0, 0, event.GetEventType(), 0, 0, WXL_FAMILY_COMMAND, event.GetInt(), 0, event.GetTimestamp(), event.IsCommandEvent() ? 1 : 0, origin_id(event), static_cast<int>(event.GetEventCategory())});
             event.Skip();
         });
         return id;
@@ -653,7 +674,7 @@ wxl_handle wxl_text(wxl_handle parent, const char* value) {
                 // Both objects must survive reentrant callbacks and conversion.
                 const auto text = event.GetString();
                 const auto bytes = text.ToUTF8();
-                const wxl_event payload{WXL_EVENT_TEXT_CHANGE, bytes.data() ? bytes.data() : "", 0, -1, event.GetId(), bytes.length(), 0, event.GetEventType(), 0, 0, WXL_FAMILY_COMMAND, event.GetInt(), 0, event.GetTimestamp(), event.IsCommandEvent() ? 1 : 0, origin_id(event)};
+                const wxl_event payload{WXL_EVENT_TEXT_CHANGE, bytes.data() ? bytes.data() : "", 0, -1, event.GetId(), bytes.length(), 0, event.GetEventType(), 0, 0, WXL_FAMILY_COMMAND, event.GetInt(), 0, event.GetTimestamp(), event.IsCommandEvent() ? 1 : 0, origin_id(event), static_cast<int>(event.GetEventCategory())};
                 invoke_callback(token, payload);
             }
             event.Skip();
@@ -725,7 +746,7 @@ wxl_handle wxl_checkbox(wxl_handle parent, const char* label, int checked) {
         control->SetValue(checked != 0);
         const auto id = track(control);
         control->Bind(wxEVT_CHECKBOX, [id](wxCommandEvent& event) {
-            emit_event(id, {WXL_EVENT_TOGGLE, nullptr, event.IsChecked() ? 1 : 0, -1, event.GetId(), 0, 0, event.GetEventType(), 0, 0, WXL_FAMILY_COMMAND, event.GetInt(), 0, event.GetTimestamp(), event.IsCommandEvent() ? 1 : 0, origin_id(event)});
+            emit_event(id, {WXL_EVENT_TOGGLE, nullptr, event.IsChecked() ? 1 : 0, -1, event.GetId(), 0, 0, event.GetEventType(), 0, 0, WXL_FAMILY_COMMAND, event.GetInt(), 0, event.GetTimestamp(), event.IsCommandEvent() ? 1 : 0, origin_id(event), static_cast<int>(event.GetEventCategory())});
             event.Skip();
         });
         return id;
@@ -765,7 +786,7 @@ wxl_handle wxl_choice(wxl_handle parent, const char** items, int count, int sele
         control->SetSelection(selection);
         const auto id = track(control);
         control->Bind(wxEVT_CHOICE, [id](wxCommandEvent& event) {
-            emit_event(id, {WXL_EVENT_SELECTION, nullptr, 0, event.GetSelection(), event.GetId(), 0, 0, event.GetEventType(), 0, 0, WXL_FAMILY_COMMAND, event.GetInt(), 0, event.GetTimestamp(), event.IsCommandEvent() ? 1 : 0, origin_id(event)});
+            emit_event(id, {WXL_EVENT_SELECTION, nullptr, 0, event.GetSelection(), event.GetId(), 0, 0, event.GetEventType(), 0, 0, WXL_FAMILY_COMMAND, event.GetInt(), 0, event.GetTimestamp(), event.IsCommandEvent() ? 1 : 0, origin_id(event), static_cast<int>(event.GetEventCategory())});
             event.Skip();
         });
         return id;
