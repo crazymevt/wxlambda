@@ -54,7 +54,7 @@
 (defvar *recovered* nil)
 (let* ((output (make-string-output-stream))
        (input nil))
-  (wxlambda:with-repl-application (:input input :output output)
+  (wxlambda:with-repl-application (:input input :output output :on-error :report)
     (let* ((frame (wxlambda:make-frame :title "Delayed REPL input"))
            (panel (wxlambda:make-panel frame)))
       (setf *button* (wxlambda:make-button panel))

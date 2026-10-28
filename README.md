@@ -299,13 +299,32 @@ used by callbacks, or replace handlers without closing the application. Evaluate
 `(wxlambda:stop)` or send EOF to leave and clean up. Closing the last window
 keeps this REPL available so you can create another frame in the same session.
 `run` signals an error inside this REPL because events are already being processed.
-Errors are printed and the application REPL continues. This small REPL prints
-all returned values; it does not provide the host REPL's history variables or
-editor integration. Optional `:input` and `:output` streams default to standard I/O.
+Errors enter the host Lisp debugger by default (`:on-error :debug`). Evaluation
+conditions reach it before unwinding, preserving their local restarts. Choose
+`wxlambda:return-to-application-repl` to abandon the current operation and keep
+the session, or use an available evaluation restart to resume the form. Debugger
+I/O uses the host's `*debug-io*`; `:input` and `:output` configure only application
+REPL I/O. Setup-body errors propagate to the caller and clean up the session.
+
+For scripts or a host with debugging disabled, use
+`(wxlambda:with-repl-application (:on-error :report) ...)`. This prints the
+condition type/message and up to 20 backtrace frames on SBCL/CCL before abandoning
+the operation and continuing. Other Lisps report that a backtrace is unavailable;
+they are not validated platforms. The debugger policy respects the host's
+debugger hooks and batch-mode restrictions; it does not override them.
+
+Callback errors are delivered to this policy only after returning safely from
+the native callback. Their original condition is preserved, but callback-local
+restarts and callback stack frames have already unwound. Debugger backtraces for
+these errors show their Lisp delivery boundary. This small REPL prints all
+returned values; it does not provide the host REPL's history variables or editor
+integration. Optional `:input` and `:output` streams default to standard I/O.
 
 Events are pumped while waiting for input. Incomplete forms, long evaluations,
-and debugger stops pause GUI processing; call `process-events` explicitly during
-long interactive work when useful. The main-thread requirements above still
+and debugger stops pause GUI processing. `process-events` is rejected while the
+application REPL's debugger is active; queued events resume after recovery.
+During long evaluations outside the debugger, call `process-events` explicitly
+when useful. The main-thread requirements above still
 apply. Editor REPLs such as SLIME and SLY are unsupported by this helper; use
 a terminal Lisp REPL. In particular, SBCL worker-thread startup is rejected. After leaving,
 start a fresh Lisp process for another session.
@@ -318,7 +337,7 @@ operation on the same thread. See `native/wxlambda.h` for the C interface.
 
 These tests briefly open real windows, queue a button event, then exit. They need
 an interactive graphical session (or a suitable display server on Linux).
-The 19 scenarios each run in a fresh process with a 30-second timeout:
+The 20 scenarios each run in a fresh process with a 30-second timeout:
 
 ```sh
 python3 tests/run.py
@@ -343,7 +362,14 @@ and caught/uncaught toggle errors. A timed Gray input stream tests delayed
 whitespace/CRLF, GUI callback dispatch while input is unavailable, separate
 evaluation/callback error recovery, and delayed EOF cleanup on SBCL and CCL.
 This simulates delayed terminal input; it does not validate an actual terminal
-or editor transport. Unicode rendering, manual mouse/keyboard input,
+or editor transport.
+Debugger tests verify original condition identity, live evaluation restarts,
+abandon-form recovery, safe delivery of callback errors, and paused GUI dispatch.
+They install automated debugger hooks on the GUI thread. A separate SBCL
+pseudo-terminal check entered the debugger, selected the application REPL
+restart, evaluated another form, and stopped cleanly. CCL terminal debugger I/O
+has not been verified.
+Unicode rendering, manual mouse/keyboard input,
 and user-generated toggle events have not been visually verified; automated text
 and toggle events use notifying setters.
 
@@ -363,8 +389,8 @@ The configured jobs are:
 
 | Runner | Native build | Lisp GUI tests |
 | --- | --- | --- |
-| Ubuntu 24.04 | Distribution wxWidgets 3.2, GCC | SBCL, 19 scenarios under Xvfb |
-| macOS 15 | Homebrew wxWidgets 3.2, Clang | SBCL, 19 scenarios |
+| Ubuntu 24.04 | Distribution wxWidgets 3.2, GCC | SBCL, 20 scenarios under Xvfb |
+| macOS 15 | Homebrew wxWidgets 3.2, Clang | SBCL, 20 scenarios |
 | Windows Server 2022 x64 | wxWidgets 3.2.12 from source, MSVC | Not configured yet |
 
 These are configured checks, not a claim that the hosted jobs have passed. No
@@ -411,7 +437,7 @@ then Quicklisp, then pinned dependencies again in fresh processes. It checks
 CFFI source locations and the compiled output destination as well as actual
 native callback dispatch. Quicklisp must already be installed; set
 `QUICKLISP_SETUP` if its setup file is not `~/quicklisp/setup.lisp`.
-These three-process regressions are separate from the 19-scenario GUI suite
+These three-process regressions are separate from the 20-scenario GUI suite
 and are local checks, not configured hosted jobs.
 
 The fetcher verifies existing checkouts and refuses modified or mismatched ones.

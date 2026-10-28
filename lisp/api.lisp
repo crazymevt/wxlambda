@@ -30,6 +30,7 @@
 (defstruct handler source function)
 (defvar *active* nil)
 (defvar *repl-running* nil)
+(defvar *repl-debugging* nil)
 (defvar *handlers* nil)
 (defvar *callback-error* nil)
 (defvar *in-notifying-setter* nil)
@@ -115,6 +116,8 @@ while native GUI code runs. The REPL blocks until FUNCTION returns."
 
 (defun process-events ()
   "Process pending GUI events on the application thread without blocking."
+  (when *repl-debugging*
+    (error "GUI event processing is paused in the application REPL debugger"))
   (check-status (%poll))
   (check-callback-error))
 
@@ -128,38 +131,72 @@ while native GUI code runs. The REPL blocks until FUNCTION returns."
             (t (unread-char character input)
                (return (values t nil)))))))
 
-(defun application-repl (input output)
+(defun report-repl-error (condition output)
+  "Report before unwinding so the fallback backtrace retains evaluation frames."
+  (format output "~&~A: ~A~%" (type-of condition) condition)
+  (format output "Backtrace (up to 20 frames):~%")
+  (let ((*print-level* 4) (*print-length* 8))
+    (unless (ignore-errors
+              #+sbcl (sb-debug:print-backtrace :stream output :count 20)
+              #+ccl (ccl:print-call-history :stream output :count 20)
+              #+(or sbcl ccl) t
+              #-(or sbcl ccl) nil)
+      (format output "Backtrace unavailable on this Lisp.~%")))
+  (finish-output output))
+
+(defun call-with-repl-recovery (function on-error output)
+  (restart-case
+      (handler-bind
+          ((error (lambda (condition)
+                    ;; This handler is reached only at a Lisp boundary, after
+                    ;; foreign callbacks have returned. Do not pump GUI events
+                    ;; during diagnosis, including explicit PROCESS-EVENTS calls.
+                    (let ((*repl-debugging* t))
+                      (ecase on-error
+                        (:debug (invoke-debugger condition))
+                        (:report
+                         (report-repl-error condition output)
+                         (invoke-restart 'return-to-application-repl)))))))
+        (funcall function))
+    (return-to-application-repl ()
+      :report "Abandon the current operation and return to the application REPL."
+      nil)))
+
+(defun application-repl (input output on-error)
+  (check-type on-error (member :debug :report))
   (let ((*repl-running* t)
         (eof (gensym "EOF")))
     (loop while *repl-running* do
-      (handler-case
-          (progn
-            (process-events)
-            (unless *repl-running* (return))
-            (multiple-value-bind (ready-p eof-p) (repl-input-ready-p input)
-              (when eof-p (return))
-              (when ready-p
-                (let ((form (read input nil eof)))
-                  (when (eq form eof) (return))
-                  (dolist (value (multiple-value-list (eval form)))
-                    (prin1 value output)
-                    (terpri output))
-                  (finish-output output)))))
-        (error (condition)
-          (format output "~&~A~%" condition)
-          (finish-output output)))
+      (call-with-repl-recovery
+       (lambda ()
+         (process-events)
+         (unless *repl-running* (return))
+         (multiple-value-bind (ready-p eof-p) (repl-input-ready-p input)
+           (when eof-p (return))
+           (when ready-p
+             (let ((form (read input nil eof)))
+               (when (eq form eof) (return))
+               (dolist (value (multiple-value-list (eval form)))
+                 (prin1 value output)
+                 (terpri output))
+               (finish-output output)))))
+       on-error output)
       (unless *repl-running* (return))
       (sleep 0.01))))
 
 (defmacro with-repl-application ((&key (input '*standard-input*)
-                                     (output '*standard-output*)) &body body)
+                                     (output '*standard-output*)
+                                     (on-error :debug)) &body body)
   "Run BODY, then a cooperative terminal REPL in the same GUI session.
 Use STOP or EOF to leave. Live objects can be kept in special variables.
-Incomplete input, evaluation, and the debugger suspend event processing."
+Incomplete input, evaluation, and the debugger suspend event processing.
+ON-ERROR is :DEBUG (the default), preserving evaluation restarts, or :REPORT,
+printing a backtrace and abandoning the operation. The debugger offers the
+RETURN-TO-APPLICATION-REPL restart. Setup errors propagate to the caller."
   `(call-with-application
     (lambda ()
       ,@body
-      (application-repl ,input ,output))))
+      (application-repl ,input ,output ,on-error))))
 (defun make-frame (&key (title "wxlambda") (width 480) (height 240))
   (wrap-window 'frame (%frame title width height)))
 (defun make-panel (parent) (wrap-window 'panel (%panel (handle parent))))

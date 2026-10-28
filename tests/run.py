@@ -45,6 +45,10 @@ print(f"Testing delayed application REPL input: {command[0]}", flush=True)
 subprocess.run(command + ["--load", str(root / "tests/repl-delayed.lisp")],
                cwd=root, check=True, timeout=30)
 
+print(f"Testing application REPL debugger: {command[0]}", flush=True)
+subprocess.run(command + ["--load", str(root / "tests/repl-debugger.lisp")],
+               cwd=root, check=True, timeout=30)
+
 for mode in ("normal", "error-before-run", "error-in-loop"):
     print(f"Testing choices {mode}: {command[0]}", flush=True)
     subprocess.run(command + ["--load", str(root / "tests/choice.lisp")],

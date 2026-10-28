@@ -7,7 +7,7 @@ implemented or verified behavior.
 
 ## Phase 1: Establish the release baseline
 
-- [x] Correct README coverage and CI counts to 19 scenarios.
+- [x] Correct README coverage and CI counts to match the GUI runner.
 - [x] Record tested and intended OS/Lisp combinations separately.
 - [x] Run the pinned-dependency suite and cache-switch regression checks.
 
@@ -29,16 +29,28 @@ failures.
 
   `tests/repl-delayed.lisp` uses a timed Gray stream on SBCL/CCL. It verifies
   callback dispatch while input is unavailable, separate evaluation/callback
-  error recovery under the current message-only policy, and EOF cleanup. It
+  error recovery under the explicit `:on-error :report` policy, and EOF cleanup. It
   rejects blocking reads during whitespace-only waits. Actual terminal/editor
-  transport and the debugger policy below still need validation.
-- [ ] Replace message-only error handling for interactive use with a debugger
+  transport still needs broader validation.
+- [x] Replace message-only error handling for interactive use with a debugger
   policy. Preserve the original condition and its available restarts; provide a
   restart that abandons the current form and returns to the application REPL.
   Investigate a backtrace fallback where debugger integration is unavailable.
-- [ ] Define GUI processing as paused while the debugger is active, resuming
+- [x] Define GUI processing as paused while the debugger is active, resuming
   after recovery. Never unwind through a foreign callback.
-- [ ] Test recovery from evaluation errors and callback errors separately.
+- [x] Test recovery from evaluation errors and callback errors separately.
+
+  Verified locally on 2026-10-28: both pinned-dependency SBCL/CCL suites pass all
+  20 scenarios. `tests/repl-debugger.lisp` checks original condition identity,
+  live evaluation restarts, abandonment without losing the session, callback
+  delivery after returning through the foreign boundary, and paused/resumed GUI dispatch.
+  Callback-local restarts cannot survive that safe boundary; this is documented.
+  The `:report` fallback prints bounded SBCL/CCL backtraces before unwinding;
+  tests confirm real stack output. A live SBCL pseudo-terminal check entered
+  the debugger, selected `RETURN-TO-APPLICATION-REPL`, evaluated another form,
+  and stopped cleanly. CCL terminal debugger I/O remains unverified; its tests
+  install hooks on the initial process because the adapter does not transfer
+  dynamic bindings. Editor integration remains open below.
 - [ ] Prototype SBCL Swank with `:communication-style nil` and `:fd-handler`,
   checking where forms actually execute. These are candidates requiring
   verification, not supported configurations yet.
@@ -118,6 +130,9 @@ workflow.
   rejected: silently expanding their scope.
 - D4 Pause GUI processing during debugging because nested event dispatch adds
   reentrancy risks; rejected: implicitly pumping events inside the debugger.
+- D5 Default the application REPL to the host debugger and require explicit
+  `:on-error :report` for automatic recovery because interactive diagnosis needs
+  live evaluation restarts; rejected: silently discarding restarts by default.
 
 Implement these as separate reviewable changes, beginning with baseline
 corrections and REPL regression tests. Platform work can proceed alongside local

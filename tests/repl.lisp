@@ -2,8 +2,21 @@
 (load (merge-pathnames "../wxlambda.asd" *load-truename*))
 (asdf:load-system "wxlambda")
 
+(defun check-report-backtrace ()
+  (let ((output (make-string-output-stream)))
+    (wxlambda::report-repl-error
+     (make-condition 'simple-error :format-control "Backtrace probe") output)
+    (let ((printed (get-output-stream-string output)))
+      #+(or sbcl ccl)
+      (progn
+        (assert (not (search "Backtrace unavailable" printed)))
+        (assert (search "REPORT-REPL-ERROR" printed :test #'char-equal))))))
+
+(check-report-backtrace)
+
 (defvar *live-text*)
 (defvar *clicks* 0)
+(defvar *after-stop* nil)
 (let ((output (make-string-output-stream)))
   (wxlambda:with-repl-application
       (:input (make-string-input-stream
@@ -13,8 +26,8 @@
 (assert (string= (wxlambda:get-text *live-text*) \"Changed live\"))
 (values :first :second)
 (wxlambda:stop)
-(error \"Must not execute after stop\")")
-       :output output)
+(setf *after-stop* t)")
+       :output output :on-error :report)
     (let* ((frame (wxlambda:make-frame :title "REPL test"))
            (panel (wxlambda:make-panel frame))
            (button (wxlambda:make-button panel)))
@@ -29,7 +42,8 @@
     (assert (search "RUN is unavailable inside the application REPL" printed))
     (assert (search ":FIRST" printed))
     (assert (search ":SECOND" printed))
-    (assert (not (search "Must not execute" printed))))
+    #+(or sbcl ccl) (assert (search "Backtrace" printed :test #'char-equal))
+    (assert (not *after-stop*)))
   (assert (not wxlambda::*active*))
   (assert (handler-case (progn (wxlambda:get-text *live-text*) nil)
             (wxlambda:native-error () t))))
