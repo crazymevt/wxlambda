@@ -55,14 +55,18 @@
 (defun load-native-library (&optional path)
   "Load PATH, or the bridge in build/, falling back to the system loader."
   (unless *native-loaded*
-    (let* ((name #+darwin "libwxlambda.dylib" #+win32 "wxlambda.dll"
-                 #-(or darwin win32) "libwxlambda.so")
-           (local (asdf:system-relative-pathname "wxlambda" (concatenate 'string "build/" name))))
-      (cond (path (cffi:load-foreign-library path))
-            ((probe-file local) (cffi:load-foreign-library local))
-            (t (cffi:use-foreign-library wxlambda-native)))
-      (unless (= 7 (%abi-version)) (error "Unsupported wxlambda native ABI"))
-      (setf *native-loaded* t)))
+    ;; An explicit application-relative path must not consult development ASDF
+    ;; metadata: saved applications may have no source tree or registered system.
+    (if path
+        (cffi:load-foreign-library path)
+        (let* ((name #+darwin "libwxlambda.dylib" #+win32 "wxlambda.dll"
+                     #-(or darwin win32) "libwxlambda.so")
+               (local (asdf:system-relative-pathname "wxlambda" (concatenate 'string "build/" name))))
+          (if (probe-file local)
+              (cffi:load-foreign-library local)
+              (cffi:use-foreign-library wxlambda-native))))
+    (unless (= 7 (%abi-version)) (error "Unsupported wxlambda native ABI"))
+    (setf *native-loaded* t))
   t)
 
 (cffi:defcfun ("wxl_choice" %choice) :uint64 (parent :uint64) (items :pointer) (count :int) (selection :int))

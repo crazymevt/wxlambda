@@ -416,6 +416,71 @@ The bridge catches native exceptions at exported operation boundaries and expose
 error text through `wxl_last_error`. Its text is borrowed until the next bridge
 operation on the same thread. See `native/wxlambda.h` for the C interface.
 
+## Standalone application (macOS SBCL)
+
+The form has a standalone packaging recipe, locally verified on Apple Silicon
+macOS with SBCL 2.6.9. It uses [SBCL's saved-core support](https://www.sbcl.org/manual/index.html#Saving-a-Core-Image)
+and ships its own runtime. Python, Quicklisp, Lisp sources, and a system SBCL
+installation are not needed to run the result.
+
+Build the native bridge first using the instructions above. Packaging also
+requires Python 3 and the macOS command-line developer tools (`otool`, `lipo`,
+`install_name_tool`, and `codesign`):
+
+```sh
+python3 ci/fetch-deps.py
+python3 packaging/build-form.py
+python3 tests/package.py --report evidence/packaging/my-run
+./dist/wxlambda-form/wxlambda-form
+```
+
+The builder refuses to overwrite an existing output directory. Use
+`--output /absolute/path/to/a/new-package` for another build; the verifier takes
+that directory as its positional argument. Its `--report` directory must also
+be new. `--sbcl /path/to/sbcl` and `--bridge /path/to/libwxlambda.dylib` select
+build inputs explicitly. The recipe is repeatable, not a promise of byte-identical
+cores or locked native package versions. `manifest.json` records SBCL's version
+and source/staged native-file hashes to identify the inputs and results.
+
+Copy the entire output directory to another location and run its `wxlambda-form`
+launcher from any working directory. `--repl` selects the terminal application
+REPL; `--self-test` exercises queued callbacks, Unicode values, window recreation,
+and clean exit automatically. Each launch is a fresh process and one GUI session.
+The package contains:
+
+```text
+wxlambda-form        shell launcher
+runtime/sbcl        copied SBCL runtime
+app.core            saved application and Lisp dependencies
+lib/*.dylib         bridge and recursive non-system native dependencies
+manifest.json       versions, origins, and hashes
+licenses/           available installed native/runtime notices
+```
+
+No wxWidgets application or native bridge is initialized before saving. The
+delivered image has no Quicklisp package or registered wxlambda ASDF system.
+At startup it loads the bridge relative to the running packaged runtime using
+the public explicit-path loader, which no longer consults ASDF for that path.
+The staged native load commands use `@loader_path`; this includes SBCL's own
+dependencies, such as zstd, and wxWidgets' image-library dependencies. System
+frameworks remain provided by macOS. Modified native files receive ad-hoc
+signatures. This is a command-line package, not a notarized Finder `.app`.
+
+`tests/package.py` copies the package to a temporary path containing spaces,
+uses a different working directory and empty HOME, and denies checkout,
+Quicklisp, compiled-cache, and Homebrew reads with `sandbox-exec`. A denied-read
+control verifies that isolation is active. Both the GUI self-test and packaged
+REPL pass there; removing either the staged bridge or wxWidgets core must report
+the expected load failure instead of falling back to development libraries.
+The test retains its manifest, sandbox profile, logs, and summary. Local evidence
+is in `evidence/packaging/macos-sbcl-isolated/`.
+
+The recipe requires matching macOS architectures and was tested only on this
+Apple Silicon host. Linux/Windows packaging is not implemented; Intel macOS,
+other macOS versions, and distribution/signing behavior on another machine are
+not validated. These local packaging results do not close Phase 3's hosted
+platform checks. Release preparation remains open.
+
 ## Verification
 
 These tests briefly open real windows, queue a button event, then exit. They need
@@ -579,7 +644,6 @@ pinned Babel revision emits a warning about `HANDLE-ERROR` in its Korean codec;
 the UTF-8 paths exercised by these tests pass on both local Lisps.
 
 Next milestones: hosted platform validation (including the configured Windows
-Lisp/GUI tests), more
-controls, standalone application packaging, and richer interactive
-development support. Establish those contracts before generating larger binding
-coverage.
+Lisp/GUI tests), release preparation, packaging on additional platforms, and
+richer interactive development support. Establish those contracts before
+generating larger binding coverage.

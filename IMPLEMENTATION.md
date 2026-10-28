@@ -173,11 +173,44 @@ with the accepted lifecycle limits visible.
 
 ## Phase 5: Implement standalone packaging
 
-- [ ] Create a reproducible SBCL packaging example.
-- [ ] Resolve native libraries relative to the packaged application.
-- [ ] Stage required runtime libraries.
-- [ ] Test outside the checkout, from another working directory and without a
+- [x] Create a reproducible SBCL packaging example.
+- [x] Resolve native libraries relative to the packaged application.
+- [x] Stage required runtime libraries.
+- [x] Test outside the checkout, from another working directory and without a
   development Quicklisp installation.
+
+The completed example is scoped to macOS SBCL, locally verified on Apple Silicon
+with SBCL 2.6.9. `packaging/build-form.py` saves the form and pinned Lisp
+dependencies without initializing wxWidgets, copies the SBCL runtime, and stages
+the bridge plus recursive non-system dylibs. It rewrites native paths relative
+to each image, audits their resolution, and ad-hoc signs the copied images.
+This host's package contains 10 native objects, including the runtime, wxWidgets,
+its image dependencies, and zstd. Native inputs/hashes are recorded in a manifest;
+the recipe is repeatable, not a byte-identical or fully native-version-locked
+build. Linux/Windows packaging is not implemented, and Intel macOS is unvalidated.
+
+The public explicit-path native loader no longer consults ASDF. The delivered
+core deliberately has no registered wxlambda ASDF system or Quicklisp package,
+and resolves its bridge beside the packaged runtime. A launcher supports normal
+startup, `--repl`, and `--self-test`. Interactive mode restores SBCL's debugger
+after the non-interactive image build.
+
+Verified locally on 2026-10-28: build and five packaging checks pass. The verifier
+copies the package outside the checkout to a path with spaces, uses an unrelated
+working directory and empty HOME/SBCL_HOME, and denies checkout, Quicklisp,
+compiled-cache, and Homebrew reads. A denied-read control proves the sandbox is
+active. Packaged Unicode callbacks, window recreation, cleanup, and REPL
+startup/recreation/exit pass. Withholding the staged bridge or wxWidgets core
+produces the expected explicit load error and exit 1; those expected failures
+are not application passes or unexpected failed checks. Evidence is retained in
+`evidence/packaging/macos-sbcl-isolated/`. Both regular pinned SBCL/CCL suites
+also pass preflight and 23 GUI scenarios after the loader change, with reports
+in `evidence/phase5/{sbcl,ccl}-20261028/`.
+
+The result is a command-line directory package, not a notarized Finder `.app`.
+Other machines/OS versions and manual UI input remain unvalidated. Phase 3's
+hosted checks and Phase 6's release preparation remain open; this local sample
+does not establish release-wide platform support.
 
 **Acceptance:** The sample launches, processes events, and exits without relying
 on development paths or Quicklisp.
@@ -211,6 +244,10 @@ workflow.
 - D6 Defer editor integration and scheduling for the first release because thread
   probes do not establish a persistent editor/debugger workflow; rejected:
   advertising SLIME/SLY support from single-request thread checks.
+- D7 Ship the packaging example as a separate SBCL runtime/core with sibling
+  native libraries because relocation can patch/sign the runtime without
+  modifying an appended Lisp core; rejected: a single Mach-O/core executable
+  for this first packaging example.
 
 Implement these as separate reviewable changes, beginning with baseline
 corrections and REPL regression tests. Platform work can proceed alongside local
