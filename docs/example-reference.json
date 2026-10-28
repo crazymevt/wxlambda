@@ -128,7 +128,11 @@
     "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/message-file-dialogs.lisp --eval '(wxlambda:with-application () (wxlambda-message-file-dialogs:exercise))'"
   },
   "document-form.lisp": {
-    "description": "Interactive persistent form with File Open/Save/Save As/Close, dirty baseline, save/discard/cancel prompts and staged UTF-8 Lisp file IO. Bounded active-session EXERCISE cancels a scripted save. Native OS panels and multiline editing remain outside this example.",
+    "description": "Interactive persistent form with File Open/Save/Save As/Close, dirty baseline, save/discard/cancel prompts and staged UTF-8 Lisp file IO. Bounded active-session EXERCISE cancels a scripted save. Native OS panels and multiline editing remain outside this example. Edit Copy/Paste name composes text clipboard access; its tests isolate system clipboard writes.",
     "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/document-form.lisp --eval '(wxlambda:with-application () (wxlambda-document-form:exercise))'"
+  },
+  "clipboard.lisp": {
+    "description": "Interactive START copies/replaces a whole single-line field through the standard text clipboard with best-effort flush; automatic EXERCISE only queries availability and never reads/replaces system clipboard content.",
+    "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/clipboard.lisp --eval '(wxlambda:with-application () (wxlambda-clipboard:exercise))'"
   }
 }

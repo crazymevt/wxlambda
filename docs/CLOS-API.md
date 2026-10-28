@@ -224,3 +224,7 @@ keyword-only ordinary factories and Construction entries. Their fixed generic
 wxWidgets backend preserves eager native properties for subclass AFTER hooks,
 explicit parent normalization and managed invalidation. Native OS dialog
 implementations remain unbound. See [message/file workflows](MESSAGE-FILE-DIALOGS.md).
+
+The singleton `clipboard-text` property uses a zero-argument generic reader and
+a generic SETF writer specialized on STRING, without a public clipboard class.
+See [text clipboard](CLIPBOARD.md) for transfer, errors and persistence scope.

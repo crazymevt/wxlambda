@@ -1,0 +1,46 @@
+;;; START is interactive. EXERCISE only queries clipboard availability.
+(require :asdf)
+(load (merge-pathnames "../wxlambda.asd" *load-truename*))
+(asdf:load-system "wxlambda")
+(defpackage #:wxlambda-clipboard (:use #:cl) (:export #:start #:exercise))
+(in-package #:wxlambda-clipboard)
+
+(defun exercise ()
+  ;; Do not read or replace clipboard contents during an automatic example run.
+  (assert (typep (wxlambda:clipboard-text-available-p) 'boolean))
+  t)
+
+(defun start ()
+  (wxlambda:with-application ()
+    (let* ((frame (wxlambda:make-frame :title "Text clipboard"))
+           (panel (wxlambda:make-panel frame))
+           (text (wxlambda:make-text panel :value "Copy this name"))
+           (copy (wxlambda:make-button panel :label "Copy whole field"))
+           (paste (wxlambda:make-button panel :label "Replace field from clipboard"))
+           (status (wxlambda:make-label panel :label "Ready")))
+      (labels ((report (function)
+                 (handler-case (funcall function)
+                   (error (condition) (setf (wxlambda:label-text status) (princ-to-string condition))))))
+        (wxlambda:make-column frame)
+        (wxlambda:add-child frame panel :proportion 1 :border 0)
+        (wxlambda:make-column panel)
+        (dolist (child (list text copy paste status)) (wxlambda:add-child panel child))
+        (wxlambda:on-click copy
+          (lambda ()
+            (report (lambda ()
+                      (setf (wxlambda:clipboard-text) (wxlambda:text text))
+                      (setf (wxlambda:label-text status)
+                            (if (wxlambda:flush-clipboard) "Copied" "Copied; persistence unavailable"))))))
+        (wxlambda:on-click paste
+          (lambda ()
+            (report (lambda ()
+                      (let ((value (wxlambda:clipboard-text)))
+                        (cond ((null value) (setf (wxlambda:label-text status) "No clipboard text"))
+                              ((find-if (lambda (char) (find char '(#\Newline #\Return))) value)
+                               (error "This field accepts a single line."))
+                              (t (setf (wxlambda:text text) value
+                                       (wxlambda:label-text status) "Pasted"))))))))
+        (unwind-protect
+             (progn (wxlambda:show-window frame) (wxlambda:run))
+          (when (wxlambda:handler-alive-p frame) (wxlambda:destroy-window frame))
+          (wxlambda:process-events))))))

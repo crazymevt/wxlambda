@@ -3271,6 +3271,197 @@
         "wxl_dialog_abort"
       ],
       "scope": "Internal sequential prompt-to-outer cancellation and scoped modal cleanup, not a Lisp virtual hook. Explicit wxGeneric GUI implementation only; native OS NSAlert/NSPanel variants unbound, no backend selector. Modal/context/lifetime/ancestor guards apply; no raw adoption or full native class parity."
+    },
+    {
+      "header": "wx/clipbrd.h",
+      "line": 12,
+      "declaration": "#define wxTheClipboard",
+      "status": "~",
+      "symbol": "wxTheClipboard",
+      "lisp": [
+        "clipboard-text",
+        "clipboard-text-available-p",
+        "flush-clipboard"
+      ],
+      "native": [
+        "wxl_clipboard_text",
+        "wxl_clipboard_text_available",
+        "wxl_flush_clipboard"
+      ],
+      "scope": "Standard singleton clipboard text only; scoped internal Open/Close and PRIMARY restoration, no public clipboard/data-object wrapper or raw ownership. Unicode/legacy text, empty-vs-absent, NUL rejection and error containment. Native write replaces all formats; persistence is separate best effort. Other payloads, PRIMARY access and async clipboard services remain unbound."
+    },
+    {
+      "header": "wx/clipbrd.h",
+      "line": 98,
+      "declaration": "virtual void Close();",
+      "status": "~",
+      "symbol": "wxClipboard::Close",
+      "lisp": [
+        "clipboard-text"
+      ],
+      "native": [
+        "wxl_clipboard_text",
+        "wxl_set_clipboard_text"
+      ],
+      "scope": "Standard singleton clipboard text only; scoped internal Open/Close and PRIMARY restoration, no public clipboard/data-object wrapper or raw ownership. Unicode/legacy text, empty-vs-absent, NUL rejection and error containment. Native write replaces all formats; persistence is separate best effort. Other payloads, PRIMARY access and async clipboard services remain unbound."
+    },
+    {
+      "header": "wx/clipbrd.h",
+      "line": 115,
+      "declaration": "virtual bool Flush();",
+      "status": "~",
+      "symbol": "wxClipboard::Flush",
+      "lisp": [
+        "flush-clipboard"
+      ],
+      "native": [
+        "wxl_flush_clipboard"
+      ],
+      "scope": "Standard singleton clipboard text only; scoped internal Open/Close and PRIMARY restoration, no public clipboard/data-object wrapper or raw ownership. Unicode/legacy text, empty-vs-absent, NUL rejection and error containment. Native write replaces all formats; persistence is separate best effort. Other payloads, PRIMARY access and async clipboard services remain unbound."
+    },
+    {
+      "header": "wx/clipbrd.h",
+      "line": 121,
+      "declaration": "virtual bool GetData(wxDataObject& data);",
+      "status": "~",
+      "symbol": "wxClipboard::GetData",
+      "lisp": [
+        "clipboard-text"
+      ],
+      "native": [
+        "wxl_clipboard_text"
+      ],
+      "scope": "Standard singleton clipboard text only; scoped internal Open/Close and PRIMARY restoration, no public clipboard/data-object wrapper or raw ownership. Unicode/legacy text, empty-vs-absent, NUL rejection and error containment. Native write replaces all formats; persistence is separate best effort. Other payloads, PRIMARY access and async clipboard services remain unbound."
+    },
+    {
+      "header": "wx/clipbrd.h",
+      "line": 126,
+      "declaration": "virtual bool IsOpened() const;",
+      "status": "~",
+      "symbol": "wxClipboard::IsOpened",
+      "lisp": [
+        "clipboard-text"
+      ],
+      "native": [
+        "wxl_clipboard_text"
+      ],
+      "scope": "Standard singleton clipboard text only; scoped internal Open/Close and PRIMARY restoration, no public clipboard/data-object wrapper or raw ownership. Unicode/legacy text, empty-vs-absent, NUL rejection and error containment. Native write replaces all formats; persistence is separate best effort. Other payloads, PRIMARY access and async clipboard services remain unbound."
+    },
+    {
+      "header": "wx/clipbrd.h",
+      "line": 135,
+      "declaration": "virtual bool IsSupported(const wxDataFormat& format);",
+      "status": "~",
+      "symbol": "wxClipboard::IsSupported",
+      "lisp": [
+        "clipboard-text",
+        "clipboard-text-available-p"
+      ],
+      "native": [
+        "wxl_clipboard_text",
+        "wxl_clipboard_text_available"
+      ],
+      "scope": "Standard singleton clipboard text only; scoped internal Open/Close and PRIMARY restoration, no public clipboard/data-object wrapper or raw ownership. Unicode/legacy text, empty-vs-absent, NUL rejection and error containment. Native write replaces all formats; persistence is separate best effort. Other payloads, PRIMARY access and async clipboard services remain unbound."
+    },
+    {
+      "header": "wx/clipbrd.h",
+      "line": 143,
+      "declaration": "bool IsUsingPrimarySelection() const;",
+      "status": "~",
+      "symbol": "wxClipboard::IsUsingPrimarySelection",
+      "lisp": [
+        "clipboard-text"
+      ],
+      "native": [
+        "wxl_clipboard_text"
+      ],
+      "scope": "Standard singleton clipboard text only; scoped internal Open/Close and PRIMARY restoration, no public clipboard/data-object wrapper or raw ownership. Unicode/legacy text, empty-vs-absent, NUL rejection and error containment. Native write replaces all formats; persistence is separate best effort. Other payloads, PRIMARY access and async clipboard services remain unbound."
+    },
+    {
+      "header": "wx/clipbrd.h",
+      "line": 155,
+      "declaration": "virtual bool Open();",
+      "status": "~",
+      "symbol": "wxClipboard::Open",
+      "lisp": [
+        "clipboard-text"
+      ],
+      "native": [
+        "wxl_clipboard_text",
+        "wxl_set_clipboard_text"
+      ],
+      "scope": "Standard singleton clipboard text only; scoped internal Open/Close and PRIMARY restoration, no public clipboard/data-object wrapper or raw ownership. Unicode/legacy text, empty-vs-absent, NUL rejection and error containment. Native write replaces all formats; persistence is separate best effort. Other payloads, PRIMARY access and async clipboard services remain unbound."
+    },
+    {
+      "header": "wx/clipbrd.h",
+      "line": 170,
+      "declaration": "virtual bool SetData(wxDataObject* data);",
+      "status": "~",
+      "symbol": "wxClipboard::SetData",
+      "lisp": [
+        "clipboard-text"
+      ],
+      "native": [
+        "wxl_set_clipboard_text"
+      ],
+      "scope": "Standard singleton clipboard text only; scoped internal Open/Close and PRIMARY restoration, no public clipboard/data-object wrapper or raw ownership. Unicode/legacy text, empty-vs-absent, NUL rejection and error containment. Native write replaces all formats; persistence is separate best effort. Other payloads, PRIMARY access and async clipboard services remain unbound."
+    },
+    {
+      "header": "wx/clipbrd.h",
+      "line": 187,
+      "declaration": "virtual void UsePrimarySelection(bool primary = false);",
+      "status": "~",
+      "symbol": "wxClipboard::UsePrimarySelection",
+      "lisp": [
+        "clipboard-text"
+      ],
+      "native": [
+        "wxl_clipboard_text"
+      ],
+      "scope": "Standard singleton clipboard text only; scoped internal Open/Close and PRIMARY restoration, no public clipboard/data-object wrapper or raw ownership. Unicode/legacy text, empty-vs-absent, NUL rejection and error containment. Native write replaces all formats; persistence is separate best effort. Other payloads, PRIMARY access and async clipboard services remain unbound."
+    },
+    {
+      "header": "wx/clipbrd.h",
+      "line": 192,
+      "declaration": "static wxClipboard *Get();",
+      "status": "~",
+      "symbol": "wxClipboard::Get",
+      "lisp": [
+        "clipboard-text"
+      ],
+      "native": [
+        "wxl_clipboard_text"
+      ],
+      "scope": "Standard singleton clipboard text only; scoped internal Open/Close and PRIMARY restoration, no public clipboard/data-object wrapper or raw ownership. Unicode/legacy text, empty-vs-absent, NUL rejection and error containment. Native write replaces all formats; persistence is separate best effort. Other payloads, PRIMARY access and async clipboard services remain unbound."
+    },
+    {
+      "header": "wx/dataobj.h",
+      "line": 735,
+      "declaration": "wxTextDataObject(const wxString& text = wxEmptyString);",
+      "status": "~",
+      "symbol": "wxTextDataObject::wxTextDataObject",
+      "lisp": [
+        "clipboard-text"
+      ],
+      "native": [
+        "wxl_clipboard_text",
+        "wxl_set_clipboard_text"
+      ],
+      "scope": "Standard singleton clipboard text only; scoped internal Open/Close and PRIMARY restoration, no public clipboard/data-object wrapper or raw ownership. Unicode/legacy text, empty-vs-absent, NUL rejection and error containment. Native write replaces all formats; persistence is separate best effort. Other payloads, PRIMARY access and async clipboard services remain unbound."
+    },
+    {
+      "header": "wx/dataobj.h",
+      "line": 743,
+      "declaration": "virtual wxString GetText() const;",
+      "status": "~",
+      "symbol": "wxTextDataObject::GetText",
+      "lisp": [
+        "clipboard-text"
+      ],
+      "native": [
+        "wxl_clipboard_text"
+      ],
+      "scope": "Standard singleton clipboard text only; scoped internal Open/Close and PRIMARY restoration, no public clipboard/data-object wrapper or raw ownership. Unicode/legacy text, empty-vs-absent, NUL rejection and error containment. Native write replaces all formats; persistence is separate best effort. Other payloads, PRIMARY access and async clipboard services remain unbound."
     }
   ],
   "classes": {
@@ -3959,6 +4150,30 @@
         "wxl_dialog_depth"
       ],
       "scope": "Prerequisite native workflow hook only: prompt substitution/depth/context/cancellation. No public hook class/factory, arbitrary replacement or Lisp virtual callbacks. Explicit wxGeneric GUI implementation only; native OS NSAlert/NSPanel variants unbound, no backend selector. Modal/context/lifetime/ancestor guards apply; no raw adoption or full native class parity. Private modal-depth ABI supports depth-aware Lisp notifier containment; same-depth handled errors can recover, newly entered modal-boundary errors cancel workflow."
+    },
+    "wxClipboard": {
+      "status": "~",
+      "lisp": [
+        "clipboard-text",
+        "clipboard-text-available-p",
+        "flush-clipboard"
+      ],
+      "native": [
+        "wxl_clipboard_text",
+        "wxl_set_clipboard_text"
+      ],
+      "scope": "Standard singleton clipboard text only; scoped internal Open/Close and PRIMARY restoration, no public clipboard/data-object wrapper or raw ownership. Unicode/legacy text, empty-vs-absent, NUL rejection and error containment. Native write replaces all formats; persistence is separate best effort. Other payloads, PRIMARY access and async clipboard services remain unbound."
+    },
+    "wxTextDataObject": {
+      "status": "~",
+      "lisp": [
+        "clipboard-text"
+      ],
+      "native": [
+        "wxl_clipboard_text",
+        "wxl_set_clipboard_text"
+      ],
+      "scope": "Standard singleton clipboard text only; scoped internal Open/Close and PRIMARY restoration, no public clipboard/data-object wrapper or raw ownership. Unicode/legacy text, empty-vs-absent, NUL rejection and error containment. Native write replaces all formats; persistence is separate best effort. Other payloads, PRIMARY access and async clipboard services remain unbound."
     }
   }
 }

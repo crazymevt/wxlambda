@@ -152,5 +152,9 @@ file validation or accepted selection.
 The persistent form workflow in `examples/document-form.lisp` composes existing
 menus/dialogs with Lisp-native UTF-8 document IO; it adds no native bindings.
 Preserve cancellation/failed-save close veto, dirty baselines and native filename
-conversion. See `docs/DOCUMENT-FORM.md`. The next selected slice is bounded text
-clipboard support for the form/editor; do not drain wxDocument/native stream APIs.
+conversion. See `docs/DOCUMENT-FORM.md`. ABI35 adds bounded text
+clipboard support and form Edit Copy/Paste. Preserve isolated automatic transfer
+tests: do not overwrite/read system clipboard content in CI; live availability is
+the only automatic system query. See `docs/CLIPBOARD.md`. The next selected slice
+is bounded multiline text-control construction/editing semantics for the editor;
+do not drain wxDocument/native stream APIs.

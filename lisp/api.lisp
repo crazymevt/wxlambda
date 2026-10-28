@@ -1830,3 +1830,56 @@ live checkbox, including when called from inside its handler."
 (defmethod (setf file-dialog-filter-index) (value (dialog file-dialog))
   (require-active-application) (check-type value (integer 0 2147483647))
   (call-setter (lambda () (%set-file-dialog-filter-index (handle dialog) value)) t) value)
+
+(defun clipboard-text-available-p ()
+  "Query text availability on the standard clipboard, opening and closing it briefly."
+  (require-active-application)
+  (check-callback-error)
+  (let* ((result (with-native-notifier (%clipboard-text-available)))
+         (failure (when (minusp result) (%last-error))))
+    (check-callback-error)
+    (when failure (error 'native-error :message failure))
+    (plusp result)))
+
+(defgeneric clipboard-text ()
+  (:documentation "Read standard clipboard text, or NIL when no text is available."))
+(defmethod clipboard-text ()
+  "Return an independent text string (including empty), or NIL when no text is available."
+  (require-active-application)
+  (check-callback-error)
+  (cffi:with-foreign-objects ((length :size) (available :int))
+    (let* ((pointer (with-native-notifier (%clipboard-text length available)))
+           ;; Copy borrowed result/error storage before any other bridge call.
+           (failure (when (cffi:null-pointer-p pointer) (%last-error)))
+           (result (unless failure
+                     (when (plusp (cffi:mem-ref available :int))
+                       (cffi:foreign-string-to-lisp pointer :count (cffi:mem-ref length :size)
+                                                   :encoding :utf-8)))))
+      (check-callback-error)
+      (when failure (error 'native-error :message failure))
+      result)))
+
+(defgeneric (setf clipboard-text) (value)
+  (:documentation "Replace standard clipboard content with a string; persistence is separate."))
+(defmethod (setf clipboard-text) ((value string))
+  "Replace standard clipboard content with VALUE. Return VALUE; persistence is separate."
+  (require-active-application)
+  (check-type value string)
+  (when (find (code-char 0) value) (error "Clipboard text cannot contain NUL"))
+  (check-callback-error)
+  (cffi:with-foreign-string ((pointer bytes) value :encoding :utf-8)
+    (let* ((status (with-native-notifier (%set-clipboard-text pointer (1- bytes))))
+           (failure (unless (zerop status) (%last-error))))
+      (check-callback-error)
+      (when failure (error 'native-error :message failure))))
+  value)
+
+(defun flush-clipboard ()
+  "Request persistence after exit. Return T on success, NIL when not supported/fulfilled."
+  (require-active-application)
+  (check-callback-error)
+  (let* ((result (with-native-notifier (%flush-clipboard)))
+         (failure (when (minusp result) (%last-error))))
+    (check-callback-error)
+    (when failure (error 'native-error :message failure))
+    (plusp result)))

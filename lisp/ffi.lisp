@@ -93,7 +93,7 @@
           (if (probe-file local)
               (cffi:load-foreign-library local)
               (cffi:use-foreign-library wxlambda-native))))
-    (unless (= 34 (%abi-version)) (error "Unsupported wxlambda native ABI"))
+    (unless (= 35 (%abi-version)) (error "Unsupported wxlambda native ABI"))
     (setf *native-loaded* t))
   t)
 
@@ -237,3 +237,8 @@
 (cffi:defcfun ("wxl_set_file_dialog_filter_index" %set-file-dialog-filter-index) :int (dialog :uint64) (index :int))
 (cffi:defcfun ("wxl_dialog_depth" %dialog-depth) :int)
 (cffi:defcfun ("wxl_callback_error_pending" %callback-error-pending) :int (pending :int))
+
+(cffi:defcfun ("wxl_clipboard_text_available" %clipboard-text-available) :int)
+(cffi:defcfun ("wxl_clipboard_text" %clipboard-text) :pointer (length :pointer) (available :pointer))
+(cffi:defcfun ("wxl_set_clipboard_text" %set-clipboard-text) :int (text :pointer) (length :size))
+(cffi:defcfun ("wxl_flush_clipboard" %flush-clipboard) :int)

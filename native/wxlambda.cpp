@@ -11,6 +11,8 @@
 #include <wx/modalhook.h>
 #include <wx/filename.h>
 #include <wx/weakref.h>
+#include <wx/clipbrd.h>
+#include <wx/dataobj.h>
 #include <memory>
 #include <typeinfo>
 #include <unordered_set>
@@ -787,10 +789,123 @@ size_t menu_position(wxMenuBar* bar, wxMenu* menu) {
     throw std::runtime_error("Menu is not attached to its managed bar");
 }
 
+#if wxUSE_CLIPBOARD
+#ifdef WXLAMBDA_NATIVE_TESTS
+// Native regression executable only: never exported or compiled into the bridge.
+wxClipboardBase* test_clipboard = nullptr;
+#endif
+// MSW/OLE keeps caller ownership on failure despite the broad header contract.
+bool transfer_clipboard_data(wxClipboardBase& clipboard, std::unique_ptr<wxDataObject> data,
+                             bool owns_failed_transfer) {
+    if (owns_failed_transfer) return clipboard.SetData(data.release());
+    const bool success = clipboard.SetData(data.get());
+    if (success) data.release();
+    return success;
+}
+bool clipboard_busy = false;
+class ClipboardSession {
+    wxClipboardBase* clipboard;
+    bool primary;
+    CallbackScope borrowed_context_suspension;
+public:
+    ClipboardSession() {
+        ready();
+        require(!clipboard_busy, "Clipboard operation is already in progress");
+#ifdef WXLAMBDA_NATIVE_TESTS
+        clipboard = test_clipboard ? test_clipboard : wxTheClipboard;
+#else
+        clipboard = wxTheClipboard;
+#endif
+        require(clipboard != nullptr, "Clipboard is unavailable");
+        require(!clipboard->IsOpened(), "Clipboard is already open");
+        primary = clipboard->IsUsingPrimarySelection();
+        clipboard_busy = true;
+        try {
+            clipboard->UsePrimarySelection(false);
+            require(clipboard->Open(), "Unable to open clipboard");
+        } catch (...) {
+            clipboard->UsePrimarySelection(primary);
+            clipboard_busy = false;
+            throw;
+        }
+    }
+    ~ClipboardSession() {
+        clipboard->Close();
+        clipboard->UsePrimarySelection(primary);
+        clipboard_busy = false;
+    }
+    wxClipboardBase* operator->() { return clipboard; }
+};
+#endif
+
 }
 extern "C" {
-int wxl_abi_version() { return 34; }
+int wxl_abi_version() { return 35; }
 const char* wxl_last_error() { return error.c_str(); }
+int wxl_clipboard_text_available() {
+    return boolean_result([&] {
+        ready();
+#if wxUSE_CLIPBOARD
+        ClipboardSession clipboard;
+        return clipboard->IsSupported(wxDF_UNICODETEXT) || clipboard->IsSupported(wxDF_TEXT);
+#else
+        throw std::runtime_error("Clipboard support is unavailable in this wxWidgets build");
+        return false;
+#endif
+    });
+}
+const char* wxl_clipboard_text(size_t* length, int* available) {
+    return metadata_string([&]() -> wxString {
+        ready();
+        require(available != nullptr, "Clipboard availability output must not be null");
+        *available = 0;
+#if wxUSE_CLIPBOARD
+        ClipboardSession clipboard;
+        if (!clipboard->IsSupported(wxDF_UNICODETEXT) && !clipboard->IsSupported(wxDF_TEXT)) return {};
+        wxTextDataObject data;
+        require(clipboard->GetData(data), "Unable to retrieve clipboard text");
+        const auto text = data.GetText();
+        require(text.find(wxUniChar(0)) == wxString::npos, "Clipboard text cannot contain NUL");
+        *available = 1;
+        return text;
+#else
+        throw std::runtime_error("Clipboard support is unavailable in this wxWidgets build");
+#endif
+    }, length);
+}
+int wxl_set_clipboard_text(const char* value, size_t length) {
+    return status([&] {
+        ready();
+        require(value || length == 0, "Null clipboard text");
+        require(!length || !std::memchr(value, 0, length), "Clipboard text cannot contain NUL");
+        const auto text = wxString::FromUTF8(value ? value : "", length);
+        require(!length || !text.empty(), "Invalid UTF-8 clipboard text");
+#if wxUSE_CLIPBOARD
+        ClipboardSession clipboard;
+#if defined(__WXMSW__) && wxUSE_OLE_CLIPBOARD
+        constexpr bool owns_failed_transfer = false;
+#else
+        constexpr bool owns_failed_transfer = true;
+#endif
+        require(transfer_clipboard_data(*clipboard.operator->(), std::make_unique<wxTextDataObject>(text),
+                                        owns_failed_transfer), "Unable to set clipboard text");
+#else
+        throw std::runtime_error("Clipboard support is unavailable in this wxWidgets build");
+#endif
+    });
+}
+int wxl_flush_clipboard() {
+    return boolean_result([&] {
+        ready();
+#if wxUSE_CLIPBOARD
+        ClipboardSession clipboard;
+        return clipboard->Flush();
+#else
+        throw std::runtime_error("Clipboard support is unavailable in this wxWidgets build");
+        return false;
+#endif
+    });
+}
 int wxl_start(wxl_callback callback) {
     return status([&] {
         main_thread();

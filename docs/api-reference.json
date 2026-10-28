@@ -1806,5 +1806,36 @@
       "syntax": "(setf (wxlambda:file-dialog-filter-index dialog) value)",
       "description": "Select an existing filter pair and return VALUE; no wildcard mutation or acceptance claim. Uses the notifying boundary for native prompt/callback safety."
     }
+  },
+  {
+    "name": "clipboard-text",
+    "kind": "generic-function",
+    "arguments": "No arguments; standard system clipboard only.",
+    "returns": "An independent Lisp string, including empty, or NIL when no native text format is available.",
+    "description": "Briefly opens the clipboard, reads wxTextDataObject with Unicode/legacy text support, closes and restores PRIMARY preference. Availability can change; a supported-text transfer failure signals rather than returning NIL. Explicit UTF-8 lengths copy native storage. NUL text rejects.",
+    "scope": "Active main-thread session. Already-open/reentrant access rejects. Native callback conditions re-signal after cleanup; no native clipboard/data object receiver, selection ranges or binary formats. Native port conversion/line endings apply.",
+    "wxwidgets": "wxClipboard::Get/Open/Close/IsSupported/GetData, wxTextDataObject::GetText (wxWidgets 3.2.12).",
+    "setf": {
+      "syntax": "(setf (wxlambda:clipboard-text) value)",
+      "description": "Generic writer specialized on STRING. Rejects NUL; replaces all previous formats with text and returns the same VALUE object. SetData ownership/failure cleanup accounts for MSW/OLE. Does not flush automatically. Native write failures/callback conditions do not imply rollback of prior clipboard state. See FLUSH-CLIPBOARD for persistence."
+    }
+  },
+  {
+    "name": "clipboard-text-available-p",
+    "kind": "function",
+    "arguments": "No arguments.",
+    "returns": "T when Unicode or legacy text is supported, NIL otherwise.",
+    "description": "Advisory query on the standard clipboard; opens/closes and restores native PRIMARY preference. Does not read clipboard contents. A later read can differ.",
+    "scope": "Active main-thread session; unavailable/open/busy failures signal NATIVE-ERROR. Callback conditions take precedence after cleanup. No async format query.",
+    "wxwidgets": "wxClipboard::Get/Open/Close/IsSupported (wxWidgets 3.2.12)."
+  },
+  {
+    "name": "flush-clipboard",
+    "kind": "function",
+    "arguments": "No arguments.",
+    "returns": "T when native Flush succeeds, NIL for unsupported/unsuccessful persistence.",
+    "description": "Best-effort persistence after exit, on the standard clipboard. Does not set clipboard contents. A false native Flush result is normal; open/session failures signal NATIVE-ERROR.",
+    "scope": "Active main-thread session; brief scoped open/close and restored PRIMARY preference. Port-specific support; live exit persistence remains unverified.",
+    "wxwidgets": "wxClipboard::Flush (wxWidgets 3.2.12; pinned documentation identifies MSW/GTK support)."
   }
 ]

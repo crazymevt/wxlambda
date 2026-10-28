@@ -765,3 +765,7 @@ the filesystem. Next compose the form/editor open/save workflow.
 The [persistent document form](docs/DOCUMENT-FORM.md) combines File menu actions,
 save/discard/cancel prompts, safe modal cancellation and Lisp-native UTF-8 form
 files. Run its interactive START or bounded EXERCISE as documented there.
+
+[Text clipboard](docs/CLIPBOARD.md) supports Unicode reads, generic SETF writes
+and best-effort persistence. The persistent form demonstrates Edit Copy/Paste name;
+automatic examples leave existing clipboard content untouched.

@@ -1,6 +1,7 @@
 // Foreign client-data states cannot be manufactured through the public Lisp API.
 // Include the bridge in this executable only, without adding injection exports.
 // Build with -DWXLAMBDA_BUILD_NATIVE_TESTS=ON; run wxlambda-client-data-native.
+#define WXLAMBDA_NATIVE_TESTS
 #include "../native/wxlambda.cpp"
 #include <atomic>
 #include <iostream>
@@ -464,6 +465,110 @@ void exercise_client_data(unsigned& foreign_destroyed) {
 }
 }
 
+
+#if wxUSE_CLIPBOARD
+#if defined(__WXMSW__) && wxUSE_OLE_CLIPBOARD
+constexpr bool native_owns_failed_clipboard_transfer = false;
+#else
+constexpr bool native_owns_failed_clipboard_transfer = true;
+#endif
+class MemoryClipboard final : public wxClipboardBase {
+public:
+    bool opened = false, fail_open = false, fail_read = false, fail_write = false, persisted = true;
+    bool legacy_only = false, owns_failure = native_owns_failed_clipboard_transfer;
+    unsigned opens = 0, closes = 0;
+    std::unique_ptr<wxDataObject> data;
+    std::function<void()> during_read;
+    bool Open() override { ++opens; if (fail_open) return false; opened = true; return true; }
+    void Close() override { ++closes; opened = false; }
+    bool IsOpened() const override { return opened; }
+    bool AddData(wxDataObject* value) override { data.reset(value); return !fail_write; }
+    bool SetData(wxDataObject* value) override { if (!fail_write || owns_failure) data.reset(value); return !fail_write; }
+    bool IsSupported(const wxDataFormat& format) override {
+        return data && (format == wxDF_TEXT || (!legacy_only && format == wxDF_UNICODETEXT));
+    }
+    bool GetData(wxDataObject& value) override {
+        if (during_read) during_read();
+        if (fail_read || !data) return false;
+        dynamic_cast<wxTextDataObject&>(value).SetText(dynamic_cast<wxTextDataObject&>(*data).GetText());
+        return true;
+    }
+    void Clear() override { data.reset(); }
+    bool Flush() override { return persisted; }
+};
+void exercise_clipboard() {
+    MemoryClipboard memory;
+    test_clipboard = &memory;
+    struct Reset { ~Reset() { test_clipboard = nullptr; } } reset;
+    memory.UsePrimarySelection(true);
+    size_t length = 99;
+    int available = -1;
+    expect(wxl_clipboard_text_available() == 0, "Empty clipboard reported text");
+    expect(wxl_clipboard_text(&length, &available) && !available && length == 0, "No text must differ from empty text");
+    for (const auto& text : {std::string(""), std::string("Unicode: λ 日本語 😀\nsecond line"), std::string(65536, 'x')}) {
+        expect(wxl_set_clipboard_text(text.data(), text.size()) == 0, "Clipboard write failed");
+        expect(wxl_clipboard_text_available() == 1, "Clipboard text unavailable after write");
+        const auto result = wxl_clipboard_text(&length, &available);
+        expect(result && available && std::string(result, length) == text, "Clipboard round trip changed text");
+        expect(memory.IsUsingPrimarySelection() && !memory.IsOpened(), "Clipboard selection/open state leaked");
+    }
+    memory.legacy_only = true;
+    expect(wxl_clipboard_text_available() == 1 && wxl_clipboard_text(&length, &available) && available,
+           "Legacy text fallback failed");
+    memory.during_read = [&] {
+        expect(wxl_clipboard_text_available() == -1, "Reentrant clipboard operation must reject");
+    };
+    expect(wxl_clipboard_text(&length, &available) != nullptr, "Outer clipboard read failed after nested rejection");
+    memory.during_read = nullptr;
+    memory.fail_open = true;
+    const auto closes = memory.closes;
+    expect(wxl_clipboard_text_available() == -1 && memory.closes == closes && memory.IsUsingPrimarySelection(),
+           "Failed open must restore selection without closing an unowned lock");
+    memory.fail_open = false;
+    memory.opened = true;
+    expect(wxl_set_clipboard_text("blocked", 7) == -1 && memory.opened && memory.closes == closes,
+           "Externally open clipboard must reject without closing");
+    memory.opened = false;
+    memory.fail_read = true;
+    expect(!wxl_clipboard_text(&length, &available) && !memory.opened && memory.IsUsingPrimarySelection(),
+           "Read failure leaked clipboard lock/selection");
+    memory.fail_read = false;
+    memory.fail_write = true;
+    expect(wxl_set_clipboard_text("failed", 6) == -1 && !memory.opened, "Failed SetData leaked lock");
+    memory.fail_write = false;
+    struct CountedText : wxTextDataObject {
+        unsigned& count;
+        explicit CountedText(unsigned& n) : count(n) { }
+        ~CountedText() override { ++count; }
+    };
+    for (const bool owns_failure : {false, true}) {
+        unsigned destroyed = 0;
+        memory.data.reset();
+        memory.fail_write = true;
+        memory.owns_failure = owns_failure;
+        expect(!transfer_clipboard_data(memory, std::make_unique<CountedText>(destroyed), owns_failure),
+               "Mock transfer must fail");
+        memory.data.reset();
+        expect(destroyed == 1, "Failed transfer object must be destroyed exactly once for either ownership policy");
+    }
+    memory.owns_failure = native_owns_failed_clipboard_transfer;
+    memory.fail_write = false;
+    const auto opens = memory.opens;
+    expect(wxl_set_clipboard_text("a\0b", 3) == -1 && wxl_set_clipboard_text("\xff", 1) == -1 &&
+           wxl_set_clipboard_text(nullptr, 1) == -1 && memory.opens == opens,
+           "Invalid text must reject before touching clipboard");
+    expect(!wxl_clipboard_text(nullptr, &available) && !wxl_clipboard_text(&length, nullptr), "Null outputs must reject");
+    expect(wxl_flush_clipboard() == 1, "Flush success lost");
+    memory.persisted = false;
+    expect(wxl_flush_clipboard() == 0, "Unsupported flush must be false, not an error");
+    int worker_result = 0;
+    std::thread worker([&] { worker_result = wxl_clipboard_text_available(); });
+    worker.join();
+    expect(worker_result == -1, "Worker clipboard access must reject");
+    expect(memory.opens == memory.closes + 1, "Successful opens and closes must balance (one failed open)");
+}
+#endif
+
 int main() {
     std::thread([] { std::this_thread::sleep_for(std::chrono::seconds(10)); std::_Exit(124); }).detach();
     auto old_assert_handler = wxSetAssertHandler(capture_assert);
@@ -479,10 +584,15 @@ int main() {
         exercise_menus();
         exercise_dialogs();
         exercise_generic_dialogs();
+#if wxUSE_CLIPBOARD
+        exercise_clipboard();
+#endif
         expect(wxl_finish() == 0, "Application cleanup failed");
         active = false;
         expect(wxIdleEvent::GetMode() == wxIDLE_PROCESS_ALL, "Finish did not restore pre-session idle mode");
         expect(wxl_idle_mode() == -1 && wxl_wake_up_idle() == -1, "Inactive idle APIs must reject");
+        expect(wxl_clipboard_text_available() == -1 && wxl_flush_clipboard() == -1 &&
+               wxl_set_clipboard_text("inactive", 8) == -1, "Inactive clipboard APIs must reject");
         expect(wxl_client_data_active(31) == -1, "Inactive client-data scan must reject");
         expect(foreign_destroyed == 1, "Foreign data was deleted more than once");
         expect(assertion_count.load() == 0, "Client-data operations triggered a wx assertion");

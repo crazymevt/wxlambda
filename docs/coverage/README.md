@@ -20,16 +20,16 @@ and verify platforms when selected features or completeness claims require it.
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | [C1: Foundation, values, application, events, and base utilities](phase-c1.md) | 119 | 5292 | 7 | 96 | 5189 | 26 |
 | [C2: Windows, layout, basic controls, and input](phase-c2.md) | 82 | 2862 | 23 | 55 | 2784 | 0 |
-| [C3: Dialogs, navigation, menus, and application services](phase-c3.md) | 57 | 1875 | 0 | 63 | 1812 | 0 |
+| [C3: Dialogs, navigation, menus, and application services](phase-c3.md) | 57 | 1875 | 0 | 78 | 1797 | 0 |
 | [C4: Models, complex controls, and document frameworks](phase-c4.md) | 20 | 2328 | 0 | 0 | 2328 | 4 |
 | [C5: Drawing, images, graphics, and printing](phase-c5.md) | 52 | 2245 | 0 | 0 | 2245 | 0 |
 | [C6: Optional libraries, rich content, and integration](phase-c6.md) | 57 | 8912 | 0 | 0 | 8912 | 380 |
 | [C7: Platform extensions and remaining portability APIs](phase-c7.md) | 11 | 279 | 0 | 0 | 279 | 3 |
-| Total | 398 | 23793 | 30 | 214 | 23549 | 413 |
+| Total | 398 | 23793 | 30 | 229 | 23534 | 413 |
 
 ## Classes and widgets
 
-1016 class/struct definitions: 0 complete; 30 partial; 986 pending.
+1016 class/struct definitions: 0 complete; 32 partial; 984 pending.
 
 See the [complete class/widget index](classes.md) for partial scopes and missing
 types. An implemented constructor does not complete a class or its inherited API.
@@ -262,12 +262,12 @@ unreviewed inherited/platform behavior.
 | [wx/busyinfo.h](phase-c3.md#wxbusyinfoh) | 0 | 0 | 16 | 0 |
 | [wx/choicdlg.h](phase-c3.md#wxchoicdlgh) | 0 | 6 | 31 | 0 |
 | [wx/choicebk.h](phase-c3.md#wxchoicebkh) | 0 | 0 | 20 | 0 |
-| [wx/clipbrd.h](phase-c3.md#wxclipbrdh) | 0 | 0 | 16 | 0 |
+| [wx/clipbrd.h](phase-c3.md#wxclipbrdh) | 0 | 12 | 4 | 0 |
 | [wx/colordlg.h](phase-c3.md#wxcolordlgh) | 0 | 0 | 14 | 0 |
 | [wx/colourdata.h](phase-c3.md#wxcolourdatah) | 0 | 0 | 16 | 0 |
 | [wx/creddlg.h](phase-c3.md#wxcreddlgh) | 0 | 0 | 7 | 0 |
 | [wx/cshelp.h](phase-c3.md#wxcshelph) | 0 | 0 | 22 | 0 |
-| [wx/dataobj.h](phase-c3.md#wxdataobjh) | 0 | 0 | 73 | 0 |
+| [wx/dataobj.h](phase-c3.md#wxdataobjh) | 0 | 3 | 70 | 0 |
 | [wx/dialog.h](phase-c3.md#wxdialogh) | 0 | 5 | 71 | 0 |
 | [wx/dirctrl.h](phase-c3.md#wxdirctrlh) | 0 | 0 | 48 | 0 |
 | [wx/dirdlg.h](phase-c3.md#wxdirdlgh) | 0 | 0 | 24 | 0 |

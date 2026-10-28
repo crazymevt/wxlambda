@@ -47,6 +47,14 @@ typedef void (*wxl_callback)(uint64_t token, const wxl_event *event);
 WXL_API int wxl_abi_version(void);
 /* Error text is borrowed until the next bridge call on this thread. */
 WXL_API const char *wxl_last_error(void);
+/* Standard clipboard only. Each operation opens/closes; no exposed native ownership.
+   Queries/flush: 0/1, -1 error. Read returns borrowed UTF-8 plus length/availability;
+   null pointer means error, available=0 means no text, available=1 includes empty.
+   Setter replaces all formats, rejects NUL. Flush false means not persisted. */
+WXL_API int wxl_clipboard_text_available(void);
+WXL_API const char* wxl_clipboard_text(size_t* length, int* available);
+WXL_API int wxl_set_clipboard_text(const char* value, size_t length);
+WXL_API int wxl_flush_clipboard(void);
 WXL_API int wxl_start(wxl_callback callback);
 WXL_API int wxl_run(void);
 /* GUI dispatch is forbidden inside run, a pump or any Lisp callback. */

@@ -2,7 +2,8 @@
 
 `examples/document-form.lisp` composes the existing controls, frame-owned menus,
 generic message/file dialogs and vetoable close events into a persistent form.
-It adds no public WXLAMBDA exports or native bindings; bridge ABI remains 34.
+The form composes the existing public APIs; clipboard actions use ABI35 text
+clipboard support.
 Document models, validation and file content I/O belong to the Lisp application.
 This is a representative form workflow, not a multiline text editor.
 
@@ -32,6 +33,12 @@ Nested menu commands are ignored while an operation is active; vetoable Close is
 blocked until it finishes. Native modal guards also protect an active dialog's
 parent. Non-vetoable/forced closing follows native default policy without prompting
 and can lose unsaved changes. Session shutdown is not an autosave facility.
+
+Edit / Copy name copies the whole name and attempts best-effort persistence;
+Paste name reads text directly, accepts empty text, rejects multiline input and
+updates dirty state. No available text leaves the name unchanged. Copy replaces
+all system clipboard formats; these are whole-field operations, without native
+selection editing or Cut. See [text clipboard](CLIPBOARD.md).
 
 ## File format and write scope
 

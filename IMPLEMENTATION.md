@@ -79,16 +79,16 @@ as if later features or platform checks already passed.
 - Idle batch: :IDLE family/resources, bounded RequestMore, session-restored
   automatic mode, own-window opt-in and native wake scheduling. Independent review
   and final verification pass.
-- Current bridge ABI: 34. Public API: 167 exports, fourteen window wrapper classes
-  (twelve concrete kinds plus WINDOW/DIALOG abstract bases) plus the event-handler base and frame-owned menu resources, 115 named generics and
-  thirty-six generic SETF writers. The application-handler is a borrowed view; no
+- Current bridge ABI: 35. Public API: 170 exports, fourteen window wrapper classes
+  (twelve concrete kinds plus WINDOW/DIALOG abstract bases) plus the event-handler base and frame-owned menu resources, 116 named generics and
+  thirty-seven generic SETF writers. The application-handler is a borrowed view; no
   native application construction or arbitrary-event class binding exists yet; built-ins plus registered command/notify names have
   observer/contextual bindings.
-- Latest implementation verification: all 52 GUI scenarios and native preflight
+- Latest implementation verification: all 53 GUI scenarios and native preflight
   pass on local Apple Silicon macOS SBCL 2.6.9 and CCL 1.13. Final reports:
-  `evidence/document-form/{sbcl,ccl}-20261028-final/`. Final form-only review fix
-  passes both Lisps separately (quiet-run.ex5y1flw). Five package checks
-  pass in `evidence/packaging/document-form-20261028/`.
+  `evidence/clipboard/{sbcl,ccl}-20261028-final/`. Native clipboard doubles pass
+  with zero wx assertions; live availability-only checks preserve system contents.
+  Five package checks pass in `evidence/packaging/clipboard-20261028/`.
   Hosted Linux/Windows GUI behavior and the graphical Cadre viewer remain open.
 
 ### Feature priorities and working order
@@ -97,8 +97,9 @@ as if later features or platform checks already passed.
    and required documentation/examples/docset/testing for every delivered feature.
 2. Menus/actions and bounded text/single-choice dialogs extend the form/editor
    slice. A persistent form now composes open/save workflows through generic
-   message/file dialogs and Lisp-native document IO. Next add bounded text clipboard
-   support for the form/editor; retain native OS backends as unbound.
+   message/file dialogs and Lisp-native document IO. Text clipboard support now extends
+   the form/editor. Next add bounded multiline text-control construction/editing
+   semantics; retain native OS dialog backends as unbound.
    Add only necessary
    timer/value/lifetime prerequisites; do not drain native ownership/utilities.
 3. Expand controls/layout, navigation/notebooks, list/tree, clipboard and drawing
@@ -1757,3 +1758,56 @@ wxDocument/wxDocManager or native streams. Hosted Windows/Linux, physical intera
 input, graphical Cadre, allocation/IO-race injection and real OS session delivery
 remain unverified. Next selected slice: bounded text clipboard support, preserving
 Lisp-native document/model semantics rather than draining native document APIs.
+
+## Text clipboard and form Copy/Paste (2026-10-28, verified)
+
+ABI35 adds CLIPBOARD-TEXT (zero-argument generic reader and generic STRING SETF),
+CLIPBOARD-TEXT-AVAILABLE-P and FLUSH-CLIPBOARD. Counts: 170 public exports, 116 named
+generics, 37 SETF generics, 53 GUI scenarios, 34 examples and 239 docset entries.
+The standard clipboard is selected internally, with primary preference restored;
+no PRIMARY API, raw Open/Close, Clear, clipboard class or data-object ownership is
+exposed. Each successful open closes on success/failure; already-open and reentrant
+access reject. Native event-context borrowing is suspended during transfer; callback
+conditions rethrow only after cleanup and take precedence over native errors.
+Read distinguishes NIL/no supported text from available empty text, copies explicit
+UTF-8 lengths and rejects NUL. Writes replace all formats and do not auto-flush;
+Flush returns false for unsupported/unsuccessful persistence. No rollback of prior
+clipboard side effects or cross-platform exit persistence is claimed.
+
+Native harness substitutes an in-memory clipboard only in the regression executable;
+production has no injection export or compiled test override. It covers Unicode,
+empty/no-text/large data, legacy fallback, Open/GetData/SetData failures, foreign locks,
+PRIMARY restoration, nesting, malformed arguments, worker rejection and flush results.
+Ownership paths are separately exercised: pinned MSW/OLE failure leaves caller
+ownership; reviewed GTK/macOS ownership differs. Native test passes zero wx assertions
+(quiet-run.j3pnPBPK); main bridge build passes (quiet-run.aY6xRyn0).
+
+Lisp focused tests pass both runtimes (quiet-run.vFvOcvJ6): copied data, generic writer
+return/type/NUL behavior, error text preserved across rooted-binding cleanup,
+callback-condition precedence and form Copy/Paste dirty/multiline/empty handling.
+Automatic tests never read or replace system clipboard content: only the live
+availability query runs; all transfers use native/Lisp doubles. START is interactive;
+EXERCISE is availability-only and runs in the focused scenario. The persistent form
+adds Edit Copy/Paste name through the existing busy/error handling, without native
+selection/Cut or keyboard editing guarantees.
+
+Independent review is clear after fixing accidental script-buffer API-file truncation
+(before Lisp testing), error-text loss across callback cleanup, MSW/OLE failure
+ownership, generic SETF protocol and platform-specific mock ownership defaults.
+Test fixture parentheses and inventory class expectations were corrected during
+verification. Regenerated inventory +13 checks and 239-entry zero-problem docset
+pass (quiet-run.f8mcDrYL). All 53 GUI scenarios plus native preflight pass both
+Lisps (evidence/clipboard/{sbcl,ccl}-20261028-final/). Five package checks pass
+(evidence/packaging/clipboard-20261028/, quiet-run.gUAcIsCn); package:
+dist/wxlambda-form-clipboard. This packages the existing form executable; new
+standalone example/docs remain repository/docset deliverables. Actual 170-export,
+class/SETF reference coverage, 239-entry zero-problem checker, isolated install/
+discovery/lookup and 16 Python unit tests pass (quiet-run.Kn00BV6A). Native harness
+retains a preexisting typeid/side-effect compiler warning unrelated to this change;
+zero runtime wx assertions are required and pass. Docset rebuilt after final notes.
+
+Live system clipboard writes, external-app interoperability/exit persistence,
+physical interactive START/menu input, hosted Windows/Linux GUI, graphical Cadre
+and allocation/IO-race injection remain unverified. The isolated tests do not imply
+those passed. Next selected slice: bounded multiline text-control construction and
+basic editing semantics for the editor, not native document/stream parity.

@@ -130,6 +130,20 @@
     (unwind-protect
          (handler-case
              (ecase command
+               (:copy-name
+                (setf (wxlambda:clipboard-text) (wxlambda:text (document-form-name form)))
+                (setf (wxlambda:label-text (document-form-status form))
+                      (if (wxlambda:flush-clipboard) "Copied name" "Copied name; persistence unavailable"))
+                t)
+               (:paste-name
+                (let ((value (wxlambda:clipboard-text)))
+                  (when value
+                    (when (find-if (lambda (char) (find char '(#\Newline #\Return))) value)
+                      (error "The form name must fit on one line."))
+                    (setf (wxlambda:text (document-form-name form)) value)
+                    (refresh form)
+                    (setf (wxlambda:label-text (document-form-status form)) "Pasted name")
+                    t)))
                (:save (save-document form))
                (:save-as (save-document form t))
                (:open
@@ -163,6 +177,9 @@
                 (document-form-items form)
                 (loop for (id label) in '((41001 "&Open…") (41002 "&Save") (41003 "Save &As…") (41004 "&Close"))
                       collect (wxlambda:make-menu-item menu :id id :label label)))
+          (let ((edit (wxlambda:make-menu bar :label "&Edit")))
+            (wxlambda:make-menu-item edit :id 41005 :label "Copy name")
+            (wxlambda:make-menu-item edit :id 41006 :label "Paste name"))
           (wxlambda:make-column frame)
           (wxlambda:add-child frame panel :proportion 1 :border 0)
           (wxlambda:make-column panel)
@@ -178,8 +195,9 @@
               (declare (ignore context))
               (case (wxlambda:event-id event)
                 (41001 (perform-command form :open)) (41002 (perform-command form :save))
-                (41003 (perform-command form :save-as)) (41004 (wxlambda:close-window frame))))
-            :id 41001 :last-id 41004 :with-context t)
+                (41003 (perform-command form :save-as)) (41004 (wxlambda:close-window frame))
+                (41005 (perform-command form :copy-name)) (41006 (perform-command form :paste-name))))
+            :id 41001 :last-id 41006 :with-context t)
           (wxlambda:bind-event frame :close
             (lambda (event context)
               ;; Forced/non-vetoable closure cannot safely promise an interactive

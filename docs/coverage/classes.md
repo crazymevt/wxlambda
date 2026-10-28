@@ -459,7 +459,7 @@ Class/struct definitions: 0 complete; 11 partial; 121 pending. Partial and pendi
 
 ## C3: Dialogs, navigation, menus, and application services
 
-Class/struct definitions: 0 complete; 9 partial; 102 pending. Partial and pending classes remain open.
+Class/struct definitions: 0 complete; 11 partial; 100 pending. Partial and pending classes remain open.
 
 [Declaration counts and remaining work](README.md).
 
@@ -473,7 +473,7 @@ Class/struct definitions: 0 complete; 9 partial; 102 pending. Partial and pendin
 - [ ] `wxMultiChoiceDialog` — [`wx/choicdlg.h`](phase-c3.md), upstream line 44.
 - [~] `wxSingleChoiceDialog` — [`wx/choicdlg.h`](phase-c3.md), upstream line 152. — **Partial**: `single-choice-dialog`, `make-single-choice-dialog`, `show-modal`, `dialog-selection`, `dialog-selection-text`; ABI: `wxl_single_choice_dialog`, `wxl_dialog_show`, `wxl_dialog_selection`, `wxl_set_dialog_selection`, `wxl_dialog_selection_text`. Managed modal-only nonempty fixed choices, valid selection and native stored string; no multiselect/clientData/item mutation/custom style or generic choice control adoption. Platform-native message/file backends remain deferred after macOS cancellation probe hang; explicit generic message/file GUI backends are supported within their documented scope.
 - [ ] `wxChoicebook` — [`wx/choicebk.h`](phase-c3.md), upstream line 65.
-- [ ] `wxClipboard` — [`wx/clipbrd.h`](phase-c3.md), upstream line 68.
+- [~] `wxClipboard` — [`wx/clipbrd.h`](phase-c3.md), upstream line 68. — **Partial**: `clipboard-text`, `clipboard-text-available-p`, `flush-clipboard`; ABI: `wxl_clipboard_text`, `wxl_set_clipboard_text`. Standard singleton clipboard text only; scoped internal Open/Close and PRIMARY restoration, no public clipboard/data-object wrapper or raw ownership. Unicode/legacy text, empty-vs-absent, NUL rejection and error containment. Native write replaces all formats; persistence is separate best effort. Other payloads, PRIMARY access and async clipboard services remain unbound.
 - [ ] `wxColourDialog` — [`wx/colordlg.h`](phase-c3.md), upstream line 54.
 - [ ] `wxColourDialogEvent` — [`wx/colordlg.h`](phase-c3.md), upstream line 109.
 - [ ] `wxColourData` — [`wx/colourdata.h`](phase-c3.md), upstream line 18.
@@ -491,7 +491,7 @@ Class/struct definitions: 0 complete; 9 partial; 102 pending. Partial and pendin
 - [ ] `wxBitmapDataObject` — [`wx/dataobj.h`](phase-c3.md), upstream line 601.
 - [ ] `wxImageDataObject` — [`wx/dataobj.h`](phase-c3.md), upstream line 642.
 - [ ] `wxURLDataObject` — [`wx/dataobj.h`](phase-c3.md), upstream line 684.
-- [ ] `wxTextDataObject` — [`wx/dataobj.h`](phase-c3.md), upstream line 728.
+- [~] `wxTextDataObject` — [`wx/dataobj.h`](phase-c3.md), upstream line 728. — **Partial**: `clipboard-text`; ABI: `wxl_clipboard_text`, `wxl_set_clipboard_text`. Standard singleton clipboard text only; scoped internal Open/Close and PRIMARY restoration, no public clipboard/data-object wrapper or raw ownership. Unicode/legacy text, empty-vs-absent, NUL rejection and error containment. Native write replaces all formats; persistence is separate best effort. Other payloads, PRIMARY access and async clipboard services remain unbound.
 - [ ] `wxFileDataObject` — [`wx/dataobj.h`](phase-c3.md), upstream line 806.
 - [ ] `wxHTMLDataObject` — [`wx/dataobj.h`](phase-c3.md), upstream line 835.
 - [~] `wxDialog` — [`wx/dialog.h`](phase-c3.md), upstream line 153. — **Partial**: `dialog`, `show-modal`, `end-modal`, `dialog-modal-p`, `dialog-title`, `destroy-window`; ABI: `wxl_dialog_show`, `wxl_dialog_end`, `wxl_dialog_abort`, `wxl_dialog_modal`, `wxl_dialog_title`, `wxl_set_dialog_title`, `wxl_destroy`. Abstract modal protocol only; no direct native wxDialog construction/modeless/custom validation/window-modal hooks. Active modal/ancestor destruction guarded until unwind. Platform-native message/file backends remain deferred after macOS cancellation probe hang; explicit generic message/file GUI backends are supported within their documented scope. Native availability rejects pending/scheduled receiver or ancestor deletion through public wxApp::IsScheduledForDestruction plus bridge markers; no dedicated general deletion-query API.

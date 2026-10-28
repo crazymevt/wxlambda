@@ -103,16 +103,16 @@ The scheduled-deletion ancestor gap is repaired: the bridge uses public wxApp
 scheduled-deletion state plus its pending markers. Native regressions, independent
 review and the full GUI/package checks below validate the corrected behavior.
 
-The current bridge is ABI 34, with 167 public Lisp exports. Generic message/file
-and persistent-form workflows pass the 52-scenario suite on local Apple Silicon
-macOS SBCL and CCL, with five package checks and independent reviews. The final
-form input-validation fix also passes a separate post-review focused run on both
-Lisps. Native regression evidence remains from ABI34 (unchanged by the form).
-Reports: `evidence/document-form/{sbcl,ccl}-20261028-final/` and
-`evidence/packaging/document-form-20261028/`. Docset checks pass with 234 entries
-and zero problems, including actual public-export/class/SETF coverage and isolated
-discovery/lookup. These checks do not validate hosted Windows/Linux, physical
-interactive input, real OS session delivery or the graphical Cadre viewer.
+The current bridge is ABI 35, with 170 public Lisp exports. Clipboard/form workflows
+pass all 53 GUI scenarios on local Apple Silicon macOS SBCL and CCL, five package
+checks and independent reviews. Native isolated clipboard regressions pass with
+zero wx assertions; automatic tests preserve system clipboard content.
+Reports: `evidence/clipboard/{sbcl,ccl}-20261028-final/` and
+`evidence/packaging/clipboard-20261028/`. Docset checks pass with 239 entries and
+zero problems, including actual public-export/class/SETF coverage and isolated
+discovery/lookup. These checks do not validate live clipboard writes, external-app
+interoperability or exit persistence, hosted Windows/Linux, physical interactive
+input, real OS session delivery or the graphical Cadre viewer.
 
 A milestone is accepted against its selected GUI scope and representative
 workflows, not declaration totals or completion of every pending native entry.
@@ -133,8 +133,9 @@ its required semantics. A class can stay native-partial while its selected GUI
 feature scope is accepted. Native missing APIs are not automatic release blockers.
 
 **Current vertical slice:** the persistent form composes menus/actions and generic
-modal dialogs with Lisp-native open/save IO. Next add bounded text clipboard
-support for the form/editor, adding only prerequisites actually needed by that slice. Do not drain native ownership/utilities first.
+modal dialogs with Lisp-native open/save IO. Text clipboard Copy/Paste now extends
+the form/editor; next add bounded multiline text-control construction/editing
+semantics, adding only prerequisites actually needed by that slice. Do not drain native ownership/utilities first.
 
 ### Representative application acceptance
 
@@ -420,3 +421,16 @@ This adds no bindings: wxDocument/wxDocManager/native streams stay unbound. Its
 IMPLEMENTATION.md for evidence. The example is a form, not a multiline editor, and
 does not provide locking, crash durability or external-change detection. Next add
 bounded text clipboard support for the form/editor.
+
+
+ABI35 adds [text clipboard](CLIPBOARD.md): standard-clipboard generic text SETF,
+availability and best-effort persistence, with scoped locking/PRIMARY restoration
+and contained callback conditions. Form Edit Copy/Paste uses whole-field names;
+control selection editing, Cut, binary/image/file data, async formats, PRIMARY and
+native clipboard/data-object wrappers remain unbound. wxClipboard/wxTextDataObject
+stay partial in the regenerated C3 inventory, including private adapters/prerequisites;
+no class-completeness claim follows from these three public names. Automatic tests
+use isolated transfer doubles and a live availability-only query; actual system
+writes/interoperability/exit persistence remain unverified. The 53-scenario,
+239-entry docset and package checks pass; evidence is recorded in IMPLEMENTATION.md. Next add
+bounded multiline text-control construction/editing semantics for the editor.
