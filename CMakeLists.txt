@@ -2,6 +2,19 @@ cmake_minimum_required(VERSION 3.16)
 project(wxlambda VERSION 0.1.0 LANGUAGES CXX)
 find_package(wxWidgets 3.2 REQUIRED COMPONENTS core base)
 include(${wxWidgets_USE_FILE})
+include(CheckCXXSourceCompiles)
+include(CMakePushCheckState)
+cmake_push_check_state(RESET)
+set(CMAKE_REQUIRED_INCLUDES ${wxWidgets_INCLUDE_DIRS})
+check_cxx_source_compiles("#include <wx/setup.h>
+#if !wxUSE_ACCEL
+#error wxUSE_ACCEL is required
+#endif
+int main() { return 0; }" WXLAMBDA_HAS_ACCELERATORS)
+cmake_pop_check_state()
+if(NOT WXLAMBDA_HAS_ACCELERATORS)
+  message(FATAL_ERROR "wxlambda requires wxWidgets built with wxUSE_ACCEL=1")
+endif()
 add_library(wxlambda SHARED native/wxlambda.cpp)
 target_compile_features(wxlambda PRIVATE cxx_std_17)
 target_compile_definitions(wxlambda PRIVATE WXLAMBDA_BUILD)

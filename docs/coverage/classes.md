@@ -320,12 +320,12 @@ Class/struct definitions: 0 complete; 10 partial; 292 pending. Partial and pendi
 
 ## C2: Windows, layout, basic controls, and input
 
-Class/struct definitions: 0 complete; 16 partial; 116 pending. Partial and pending classes remain open.
+Class/struct definitions: 0 complete; 18 partial; 114 pending. Partial and pending classes remain open.
 
 [Declaration counts and remaining work](README.md).
 
-- [ ] `wxAcceleratorEntry` — [`wx/accel.h`](phase-c2.md), upstream line 43.
-- [ ] `wxAcceleratorTable` — [`wx/accel.h`](phase-c2.md), upstream line 191.
+- [~] `wxAcceleratorEntry` — [`wx/accel.h`](phase-c2.md), upstream line 43. — **Partial**: `frame-accelerators`; ABI: `wxl_set_frame_accelerators`, `wxl_frame_accelerator_count`, `wxl_frame_accelerator_entry`. Copied explicit FRAME-ACCELERATORS tables only: bounded ASCII/function keys/modifiers, commandIDs1..32767, max256, quiescent replacement/clear. No menu pointers/resource adoption/string parser/arbitrary codes. Native key dispatch :MENU metadata/menu-state semantics vary by port; shared Lisp model needed. All managed MENU callbacks conservatively guard installed frame subtrees/loops. wxUSE_ACCEL required. See docs/KEYBOARD-ACCELERATORS.md.
+- [~] `wxAcceleratorTable` — [`wx/accel.h`](phase-c2.md), upstream line 191. — **Partial**: `frame-accelerators`; ABI: `wxl_set_frame_accelerators`, `wxl_frame_accelerator_count`, `wxl_frame_accelerator_entry`. Copied explicit FRAME-ACCELERATORS tables only: bounded ASCII/function keys/modifiers, commandIDs1..32767, max256, quiescent replacement/clear. No menu pointers/resource adoption/string parser/arbitrary codes. Native key dispatch :MENU metadata/menu-state semantics vary by port; shared Lisp model needed. All managed MENU callbacks conservatively guard installed frame subtrees/loops. wxUSE_ACCEL required. See docs/KEYBOARD-ACCELERATORS.md.
 - [ ] `wxActivityIndicator` — [`wx/activityindicator.h`](phase-c2.md), upstream line 22.
 - [ ] `wxAddRemoveAdaptor` — [`wx/addremovectrl.h`](phase-c2.md), upstream line 26.
 - [ ] `wxAddRemoveCtrl` — [`wx/addremovectrl.h`](phase-c2.md), upstream line 140.

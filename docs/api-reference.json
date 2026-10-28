@@ -529,14 +529,14 @@
     "name": "frame",
     "kind": "class",
     "syntax": "wxlambda:frame",
-    "arguments": "Superclass: WXLAMBDA:WINDOW.",
+    "arguments": "Superclass: WXLAMBDA:WINDOW. Optional :accelerators defaults NIL; list entries (KEY ID &rest MODIFIERS), see FRAME-ACCELERATORS.",
     "returns": "A native-backed instance of this class or a subclass (WINDOW itself is abstract).",
     "description": "CLOS wrapper for wxFrame, including frame-specific title methods.",
     "scope": "Construction requires an active main-thread application session. Concrete classes create their native widgets in inherited INITIALIZE-INSTANCE methods; subclass AFTER hooks can use them. Native handles cannot be supplied as initargs. Lisp subclassing does not imply native C++ virtual callbacks.",
     "wxwidgets": "wxFrame (wxWidgets 3.2); this is a Lisp wrapper, not a native subclass.",
     "construction": {
       "syntax": "(make-instance 'wxlambda:frame)",
-      "description": "TITLE string, WIDTH 480 and HEIGHT 240; default title is wxlambda. Class :DEFAULT-INITARGS and custom slot initargs are honored; native creation precedes subclass AFTER hooks."
+      "description": "TITLE string, WIDTH 480 and HEIGHT 240; default title is wxlambda. Class :DEFAULT-INITARGS and custom slot initargs are honored; native creation precedes subclass AFTER hooks. :ACCELERATORS installs a copied frame table before subclass AFTER hooks; see FRAME-ACCELERATORS."
     }
   },
   {
@@ -2431,6 +2431,19 @@
     "setf": {
       "syntax": "(setf (wxlambda:status-text status-bar) value)\n(setf (wxlambda:status-text status-bar field) value)",
       "description": "Generic SETF accepts empty/Unicode string, rejects NUL and invalid/stale indices. App-owned text; automatic frame help disabled."
+    }
+  },
+  {
+    "name": "frame-accelerators",
+    "kind": "generic-function",
+    "arguments": "FRAME. Entries are (KEY ID &rest MODIFIERS): ASCII letters/digits or :F1..:F12, ID1..32767, :CTRL/:SHIFT/:ALT/:RAW-CTRL. Maximum256; modified letters/digits only.",
+    "returns": "Fresh normalized nested lists. Generic SETF returns original supplied list; NIL clears the explicit table.",
+    "description": "Read/replace a copied native frame accelerator table for shared :MENU action IDs. Native menu enable/check and origin/metadata behavior vary by port; use a Lisp action model.",
+    "scope": "Active live frame. Quiescent whole-table replacement, duplicate effective chords and invalid/cyclic input reject without replacing the prior table. While tables are nonempty all managed :MENU callbacks conservatively protect installed-frame subtrees and reject modal/clipboard/nested dispatch entry. Native errors signal NATIVE-ERROR; Lisp validation errors remain Lisp conditions. See docs/KEYBOARD-ACCELERATORS.md.",
+    "wxwidgets": "wxAcceleratorEntry, wxAcceleratorTable, wxWindow::SetAcceleratorTable (wxWidgets3.2.12); wxUSE_ACCEL required.",
+    "setf": {
+      "syntax": "(setf (wxlambda:frame-accelerators frame) entries)",
+      "description": "Replace/clear only outside RUN, pumps, callbacks and modal loops. Copies entries, canonicalizes keys/modifiers, bounds count/ID and rejects duplicate native chords."
     }
   }
 ]

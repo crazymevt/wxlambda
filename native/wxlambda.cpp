@@ -8,6 +8,7 @@
 #include <wx/statusbr.h>
 #include <wx/artprov.h>
 #include <wx/sysopt.h>
+#include <wx/accel.h>
 #include <wx/notebook.h>
 #include <wx/listbox.h>
 #include <wx/treectrl.h>
@@ -92,6 +93,8 @@ public:
     int requested_position = 0;
     void OnDoubleClickSash(int, int) override { } // Fixed two-pane ownership.
 };
+struct AcceleratorSpec { int key, flags, command; };
+std::unordered_map<wxWindow*, std::vector<AcceleratorSpec>> frame_accelerators;
 std::unordered_set<wxWindow*> toolbar_owners;
 std::unordered_set<wxWindow*> realized_toolbars;
 std::unordered_set<wxWindow*> splitter_owners;
@@ -349,7 +352,7 @@ template<class T> class ManagedWindow final : public T, public ClientDataAccess 
 public:
     using T::T;
     wxClientDataType ClientStorageKind() const override { return this->m_clientDataType; }
-    ~ManagedWindow() override { toolbar_owners.erase(this); realized_toolbars.erase(this); splitter_owners.erase(this); forget_tree_nodes(this); dialog_choice_counts.erase(this); dialog_message_buttons.erase(this); dialog_file_filters.erase(this); detach_window_stack(this); }
+    ~ManagedWindow() override { frame_accelerators.erase(this); toolbar_owners.erase(this); realized_toolbars.erase(this); splitter_owners.erase(this); forget_tree_nodes(this); dialog_choice_counts.erase(this); dialog_message_buttons.erase(this); dialog_file_filters.erase(this); detach_window_stack(this); }
 };
 void set_registered_type(wxEvent& event, int type) {
         const RegisteredEvent* source = nullptr;
@@ -533,6 +536,37 @@ struct ToolbarCallbackOperation {
     }
     ~ToolbarCallbackOperation() { if (added) toolbar_operations.pop_back(); }
 };
+// Native accelerator commands have no portable origin marker. Protect all
+// installed frame subtrees for any MENU callback, including app/stack receivers.
+std::vector<wxWeakRef<wxWindow>> accelerator_action_frames;
+bool protected_accelerator_window(wxWindow* object) {
+    for (const auto& frame : accelerator_action_frames)
+        for (auto* node = object; node; node = node->GetParent())
+            if (frame.get() == node) return true;
+    return false;
+}
+struct AcceleratorCallbackOperation {
+    size_t previous;
+    explicit AcceleratorCallbackOperation(wxEvent& event) : previous(accelerator_action_frames.size()) {
+        if (event.GetEventType() != wxEVT_MENU) return;
+        for (const auto& entry : frame_accelerators) {
+            if (entry.second.empty()) continue;
+            bool present = false;
+            for (const auto& active : accelerator_action_frames) if (active.get() == entry.first) { present = true; break; }
+            if (!present) accelerator_action_frames.emplace_back(entry.first);
+        }
+    }
+    ~AcceleratorCallbackOperation() { accelerator_action_frames.resize(previous); }
+};
+int accelerator_key(int key) {
+    if ((key >= 'A' && key <= 'Z') || (key >= '0' && key <= '9')) return key;
+    require(key >= 1001 && key <= 1012, "Unsupported accelerator key"); return WXK_F1 + key - 1001;
+}
+int accelerator_flags(int flags) {
+    require(flags >= 0 && flags <= 15 && (flags & 9) != 9, "Invalid/duplicate control modifiers");
+    return ((flags & 1) ? wxACCEL_CTRL : 0) | ((flags & 2) ? wxACCEL_SHIFT : 0) |
+           ((flags & 4) ? wxACCEL_ALT : 0) | ((flags & 8) ? wxACCEL_RAW_CTRL : 0);
+}
 int selected_event_index(wxEvent& event) {
     if (auto* book = dynamic_cast<wxBookCtrlEvent*>(&event)) return book->GetSelection();
     auto* command = dynamic_cast<wxCommandEvent*>(&event);
@@ -550,7 +584,7 @@ void invoke_callback(uint64_t token, const wxl_event& event) {
 }
 void require_dispatch_entry() {
     require(!active_modal.get() && actual_modals.empty(), "Cannot enter structural dispatch during a modal dialog");
-    require(notebook_operations.empty() && list_callback_operations.empty() && tree_operations.empty() && splitter_operations.empty() && toolbar_operations.empty(), "Cannot enter structural dispatch during navigation callbacks");
+    require(notebook_operations.empty() && list_callback_operations.empty() && tree_operations.empty() && splitter_operations.empty() && toolbar_operations.empty() && accelerator_action_frames.empty(), "Cannot enter structural dispatch during navigation callbacks");
     require(!running, "Event loop is already running");
     require(!pumping && callback_depth == 0, "Cannot enter event dispatch from a pump or callback");
 }
@@ -779,6 +813,7 @@ struct Binding {
         TreeCallbackOperation tree_guard(event);
         SplitterCallbackOperation splitter_guard(event);
         ToolbarCallbackOperation toolbar_guard(event);
+        AcceleratorCallbackOperation accelerator_guard(event);
         if (!notebook_guard.allow || !list_guard.allow || !tree_guard.allow || !splitter_guard.allow || !toolbar_guard.allow) { event.Skip(); return; }
         const auto found = bindings.find(token);
         if (found == bindings.end()) { event.Skip(); return; }
@@ -954,7 +989,7 @@ protected:
     int Enter(wxDialog* object) override {
         // Lisp may defer rethrow until its nearest notifying operation returns.
         // Do not open a new native prompt while its callback error is pending.
-        if (pending_callback_error || !notebook_operations.empty() || !list_callback_operations.empty() || !tree_operations.empty() || !splitter_operations.empty() || !toolbar_operations.empty()) return wxID_CANCEL;
+        if (pending_callback_error || !notebook_operations.empty() || !list_callback_operations.empty() || !tree_operations.empty() || !splitter_operations.empty() || !toolbar_operations.empty() || !accelerator_action_frames.empty()) return wxID_CANCEL;
         if (modal_cancel_requested && (active_modal.get() || !actual_modals.empty())) return wxID_CANCEL;
         // Native NSAlert modal loops cannot be aborted using wxDialog::EndModal.
         // Replace them before their platform ShowModal implementation is entered.
@@ -1059,7 +1094,7 @@ class ClipboardSession {
 public:
     ClipboardSession() {
         ready();
-        require(notebook_operations.empty() && list_callback_operations.empty() && tree_operations.empty() && splitter_operations.empty() && toolbar_operations.empty(), "Defer clipboard operations until navigation callbacks return");
+        require(notebook_operations.empty() && list_callback_operations.empty() && tree_operations.empty() && splitter_operations.empty() && toolbar_operations.empty() && accelerator_action_frames.empty(), "Defer clipboard operations until navigation callbacks return");
         require(!clipboard_busy, "Clipboard operation is already in progress");
 #ifdef WXLAMBDA_NATIVE_TESTS
         clipboard = test_clipboard ? test_clipboard : wxTheClipboard;
@@ -1090,7 +1125,7 @@ public:
 
 }
 extern "C" {
-int wxl_abi_version() { return 41; }
+int wxl_abi_version() { return 42; }
 const char* wxl_last_error() { return error.c_str(); }
 int wxl_clipboard_text_available() {
     return boolean_result([&] {
@@ -1346,7 +1381,7 @@ int wxl_dialog_show(wxl_handle id, int* code) {
     return status([&] {
         auto* object = as<wxDialog>(id);
         require(code, "Missing modal result output");
-        require(notebook_operations.empty() && list_callback_operations.empty() && tree_operations.empty() && splitter_operations.empty() && toolbar_operations.empty(), "Defer dialogs until navigation callbacks return");
+        require(notebook_operations.empty() && list_callback_operations.empty() && tree_operations.empty() && splitter_operations.empty() && toolbar_operations.empty() && accelerator_action_frames.empty(), "Defer dialogs until navigation callbacks return");
         require(!active_modal.get() && actual_modals.empty(), "Nested modal dialogs are not supported");
         require(!object->IsShown() && !object->IsModal(), "Dialog is already shown");
         struct ModalScope {
@@ -1401,6 +1436,38 @@ int wxl_set_dialog_selection(wxl_handle id, int value) { return status([&] {
     object->SetSelection(value);
 }); }
 const char* wxl_dialog_selection_text(wxl_handle id, size_t* length) { return metadata_string([&] { return as<wxSingleChoiceDialog>(id)->GetStringSelection(); }, length); }
+int wxl_set_frame_accelerators(wxl_handle id, const int* keys, const int* flags, const int* commands, size_t count) {
+    return status([&] {
+        require_dispatch_entry(); auto* frame = as<wxFrame>(id);
+        require(count <= 256 && (!count || (keys && flags && commands)), "Invalid accelerator arrays/count");
+        std::vector<wxAcceleratorEntry> entries; entries.reserve(count);
+        std::vector<AcceleratorSpec> specs; specs.reserve(count);
+        for (size_t i = 0; i < count; ++i) {
+            const auto key = accelerator_key(keys[i]), mods = accelerator_flags(flags[i]);
+            require(commands[i] >= 1 && commands[i] <= 32767, "Accelerator command ID must be 1..32767");
+            require(keys[i] >= 1001 || (flags[i] & 13), "Letter/digit accelerators require control, alt or raw control");
+            for (const auto& entry : entries)
+                require(entry.GetKeyCode() != key || entry.GetFlags() != mods, "Duplicate effective accelerator chord");
+            entries.emplace_back(mods, key, commands[i]); // No borrowed wxMenuItem pointer.
+            specs.push_back({keys[i], flags[i], commands[i]});
+        }
+        wxAcceleratorTable table = count ? wxAcceleratorTable(static_cast<int>(count), entries.data()) : wxNullAcceleratorTable;
+        require(!count || table.IsOk(), "Native accelerator table creation failed");
+        // Allocate registry storage before publishing. Native table owns a copied,
+        // refcounted value; moving the prepared metadata cannot allocate afterward.
+        auto& stored = frame_accelerators[frame];
+        frame->SetAcceleratorTable(table); stored = std::move(specs);
+    });
+}
+int wxl_frame_accelerator_count(wxl_handle id) {
+    int count = -1; status([&] { auto* frame = as<wxFrame>(id); const auto found = frame_accelerators.find(frame);
+        count = found == frame_accelerators.end() ? 0 : static_cast<int>(found->second.size()); }); return count;
+}
+int wxl_frame_accelerator_entry(wxl_handle id, int index, int* key, int* flags, int* command) { return status([&] {
+    auto* frame = as<wxFrame>(id); const auto found = frame_accelerators.find(frame);
+    require(key && flags && command && index >= 0 && found != frame_accelerators.end() && static_cast<size_t>(index) < found->second.size(), "Invalid accelerator index/output");
+    const auto& entry = found->second[index]; *key = entry.key; *flags = entry.flags; *command = entry.command;
+}); }
 // wxOSX Cocoa NSToolbar identifiers embed C++ addresses and restored item IDs
 // embed tool pointers. Address reuse can resurrect stale native placeholders.
 // Select wx's ordinary in-window control backend during construction instead.
@@ -1916,7 +1983,7 @@ int wxl_context_set_logging_off(uint64_t token, int value) {
     });
 }
 int wxl_close(wxl_handle id, int force) {
-    return boolean_result([&] { auto* object = as<wxFrame>(id); require(!protected_modal_ancestor(object), "Cannot close an active modal dialog ancestor"); require(!protected_notebook_ancestor(object) && !protected_list_ancestor(object) && !protected_tree_ancestor(object) && !protected_splitter_ancestor(object) && !protected_toolbar_ancestor(object), "Cannot close a navigation callback ancestor"); return object->Close(force != 0); });
+    return boolean_result([&] { auto* object = as<wxFrame>(id); require(!protected_modal_ancestor(object), "Cannot close an active modal dialog ancestor"); require(!protected_notebook_ancestor(object) && !protected_list_ancestor(object) && !protected_tree_ancestor(object) && !protected_splitter_ancestor(object) && !protected_toolbar_ancestor(object) && !protected_accelerator_window(object), "Cannot close a navigation callback ancestor"); return object->Close(force != 0); });
 }
 int wxl_context_resume_propagation(uint64_t token, int level) {
     return status([&] {
@@ -2794,7 +2861,7 @@ int wxl_destroy(wxl_handle id) {
     return status([&] {
         auto* object = window(id);
         require(!protected_modal_ancestor(object), "Cannot destroy an active modal dialog or its ancestor");
-        require(!protected_notebook_ancestor(object) && !protected_list_ancestor(object) && !protected_tree_ancestor(object) && !protected_splitter_ancestor(object) && !protected_toolbar_ancestor(object), "Cannot destroy a navigation operation receiver or its ancestor");
+        require(!protected_notebook_ancestor(object) && !protected_list_ancestor(object) && !protected_tree_ancestor(object) && !protected_splitter_ancestor(object) && !protected_toolbar_ancestor(object) && !protected_accelerator_window(object), "Cannot destroy a navigation operation receiver or its ancestor");
         require(!attached_notebook_page(object) && !attached_splitter_pane(object), "Attached pages/panes are owned by their native container");
         if (dynamic_cast<wxToolBar*>(object)) {
             // OSX Destroy() uninstalls native chrome and can defer deletion.

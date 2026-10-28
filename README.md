@@ -791,3 +791,9 @@ IDs, stock-art normal/check tools, enabled/checked state and application-owned
 status fields. Run [frame-actions.lisp](examples/frame-actions.lisp) for an
 in-memory example. macOS uses the explicit safe in-window toolbar backend; native
 Cocoa toolbar chrome and dynamic tools remain outside this bounded scope.
+
+[Frame keyboard accelerators](docs/KEYBOARD-ACCELERATORS.md) route copied shortcut
+tables to shared Lisp actions; see [keyboard-actions.lisp](examples/keyboard-actions.lisp).
+CMake requires wxWidgets wxUSE_ACCEL=1. Physical keyboard input and hosted OS
+translation remain unverified; conservative menu callback guards require modal/
+clipboard/destructive actions to run after callback return.

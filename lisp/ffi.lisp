@@ -95,7 +95,7 @@
           (if (probe-file local)
               (cffi:load-foreign-library local)
               (cffi:use-foreign-library wxlambda-native))))
-    (unless (= 41 (%abi-version)) (error "Unsupported wxlambda native ABI"))
+    (unless (= 42 (%abi-version)) (error "Unsupported wxlambda native ABI"))
     (setf *native-loaded* t))
   t)
 
@@ -310,3 +310,7 @@
 (cffi:defcfun ("wxl_status_fields" %status-fields) :int (bar :uint64))
 (cffi:defcfun ("wxl_status_text" %status-text) :pointer (bar :uint64) (field :int) (length :pointer))
 (cffi:defcfun ("wxl_set_status_text" %set-status-text) :int (bar :uint64) (field :int) (text :pointer) (length :size))
+
+(cffi:defcfun ("wxl_set_frame_accelerators" %set-frame-accelerators) :int (frame :uint64) (keys :pointer) (flags :pointer) (commands :pointer) (count :size))
+(cffi:defcfun ("wxl_frame_accelerator_count" %frame-accelerator-count) :int (frame :uint64))
+(cffi:defcfun ("wxl_frame_accelerator_entry" %frame-accelerator-entry) :int (frame :uint64) (index :int) (key :pointer) (flags :pointer) (command :pointer))

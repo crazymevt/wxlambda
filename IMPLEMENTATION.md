@@ -2140,3 +2140,72 @@ The package remains the existing form executable; the new frame-actions example
 and guides are repository/docset deliverables, not bundled example launchers.
 Documentation is rebuilt and checked after final evidence notes. Follow
 docs/DOCSET.md to install for Cadre; graphical Cadre execution remains unrun.
+
+## Keyboard accelerators for shared actions (2026-10-28, bounded scope)
+
+ABI42 adds FRAME-ACCELERATORS and generic SETF with copied proper finite lists of
+(KEY ID &rest MODIFIERS), plus FRAME :ACCELERATORS initarg. Keys: ASCII letters/
+digits normalized uppercase, F1..F12; modifiers logical Control, Shift, Alt and
+raw Control. Ordinary text keys require Control/Alt/raw-Control. Portable IDs
+1..32767 avoid Windows WORD/signed-short command truncation. Max256 entries;
+effective native duplicate chords reject (raw/control alias off OSX). Getter
+returns fresh nested native-registry data and validates stale/empty frames.
+No native entry wrappers, borrowed menu pointers, parsers or arbitrary key codes.
+CMake explicitly requires wxUSE_ACCEL=1. Native entry/table construction and
+quiescent whole-table replacement prepare data before publication. NIL clears
+wxNullAcceleratorTable; failed CLOS initialization removes native tables/roots.
+Counts: 226 exports, 165 named generics, 52 SETF generics, 20 window wrapper
+classes (18 concrete+2 abstract) plus borrowed TREE-ITEM, 60 GUI scenarios,
+41 examples and 309 docset entries.
+
+Pinned-source review identified platform dispatch differences: OSX/GTK send direct
+MENU commands with unset origin/default metadata, without menu enabled/check
+semantics; MSW may resolve matching menu items, honor disabled state and toggle.
+The new examples/keyboard-actions.lisp uses a shared Lisp model for menu/tool/key
+actions, gates disabled actions and ignores native checked metadata. Contextual
+handlers consume commands to avoid button fallback/duplicate action propagation.
+It does not edit menu labels or own menu/system shortcuts.
+
+Because no portable native accelerator origin marker exists, all managed MENU
+callbacks conservatively protect all frames with nonempty explicit tables and
+their descendants, including callbacks on app/pushed/unrelated handlers and
+synthetic commands. Modal/clipboard/nested dispatch entry and protected subtree
+destruction/close reject; status/model feedback remains writable. Clear removes
+this extra policy; existing toolbar/navigation restrictions persist. Modal
+Open/Save shortcuts are not complete: defer guarded work until callback return.
+See docs/KEYBOARD-ACCELERATORS.md for exact scope and Cadre installation link.
+
+Independent implementation/tests/documentation review found no remaining
+actionable issues. Its source audit confirmed safe native table copying with
+null menu pointers, OSX/GTK/MSW command differences and effective modifiers.
+Focused example/table/rollback/guard tests pass on SBCL+CCL (quiet-run.rJy1SZav).
+Native key tests enter child OSXHandleKeyEvent CHAR_HOOK directly (not just
+synthetic MENU dispatch), traverse pushed handlers and frame tables, exercise
+Control+A, F12 and Alt+0, and verify disabled/check-menu differences, clear/
+modal/clipboard restoration, invalid atomic replacement and registry teardown
+with zero wx assertions (quiet-run.t6ocsNyt). The first coverage validation
+caught missing wxWindow accelerator-table records due class-owner parsing;
+exact pinned Get/Set mappings were added and reviewed.
+
+Session handoff: broad GUI coverage with selective depth remains the objective.
+Next selected slice: deferred UI actions after native callbacks, enabling safe
+modal/clipboard/destructive menu/tool/accelerator workflows before claiming
+complete Open/Save shortcuts. No global hotkeys, key-event/text-input API,
+arbitrary key/modifier/string parsing, menu shortcut ownership or deep native
+accelerator parity. Physical typing/focus, accessibility/layout/input methods,
+reserved-key conflicts, hosted Windows/Linux key translation and graphical
+Cadre remain unverified. Synthetic example exercises check action logic only;
+native CHAR_HOOK tests validate macOS dispatch, not physical keyboard input.
+
+Final accelerator verification: all 60 GUI scenarios pass on SBCL and CCL
+(quiet-run.ocLeRhGx), evidence/accelerators/{sbcl,ccl}-20261028-final/.
+Regenerated inventory+13 coverage checks, all16 Python checks and309-entry
+zero-problem docset pass; isolated install/discovery/symbol/guide/example access
+and actual226-export/class/SETF coverage pass on both Lisps
+(quiet-run.zgRvsN6b). Runtime counts verified (quiet-run.AsCvgs6k).
+Five isolated package checks pass (quiet-run.2YUAvmvb), package
+dist/wxlambda-form-accelerators, evidence/packaging/accelerators-20261028/.
+This packages the existing form executable; the keyboard-actions example and
+new guide remain repository/docset deliverables. Docset is rebuilt/checked and
+installed to an isolated destination after these final evidence notes; see
+docs/DOCSET.md for the standard Cadre installation path. Graphical Cadre unrun.

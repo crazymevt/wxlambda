@@ -94,6 +94,12 @@ WXL_API int wxl_set_dialog_value(wxl_handle dialog, const char *value, size_t le
 WXL_API int wxl_dialog_selection(wxl_handle dialog);
 WXL_API int wxl_set_dialog_selection(wxl_handle dialog, int selection);
 WXL_API const char *wxl_dialog_selection_text(wxl_handle dialog, size_t *length);
+/* Frame accelerator entries: bridge key ASCII A..Z/0..9 or 1001..1012 (F1..F12),
+   flags control=1 shift=2 alt=4 raw-control=8, portable positive ID <=32767.
+   Arrays copied; <=256 entries. Empty clears. Quiescent replacement only. */
+WXL_API int wxl_set_frame_accelerators(wxl_handle frame, const int* keys, const int* flags, const int* commands, size_t count);
+WXL_API int wxl_frame_accelerator_count(wxl_handle frame);
+WXL_API int wxl_frame_accelerator_entry(wxl_handle frame, int index, int* key, int* flags, int* command);
 /* Frame-owned horizontal toolbar and fixed 1..16 field status bar. */
 WXL_API wxl_handle wxl_toolbar(wxl_handle frame);
 WXL_API wxl_handle wxl_status_bar(wxl_handle frame, int fields);

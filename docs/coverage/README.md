@@ -19,17 +19,17 @@ and verify platforms when selected features or completeness claims require it.
 | Category | Headers | Tasks | Implemented | Partial | Pending | Context |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | [C1: Foundation, values, application, events, and base utilities](phase-c1.md) | 119 | 5292 | 7 | 96 | 5189 | 26 |
-| [C2: Windows, layout, basic controls, and input](phase-c2.md) | 82 | 2862 | 23 | 105 | 2734 | 0 |
+| [C2: Windows, layout, basic controls, and input](phase-c2.md) | 82 | 2862 | 23 | 116 | 2723 | 0 |
 | [C3: Dialogs, navigation, menus, and application services](phase-c3.md) | 57 | 1875 | 0 | 118 | 1757 | 0 |
 | [C4: Models, complex controls, and document frameworks](phase-c4.md) | 20 | 2328 | 0 | 24 | 2304 | 4 |
 | [C5: Drawing, images, graphics, and printing](phase-c5.md) | 52 | 2245 | 0 | 0 | 2245 | 0 |
 | [C6: Optional libraries, rich content, and integration](phase-c6.md) | 57 | 8912 | 0 | 0 | 8912 | 380 |
 | [C7: Platform extensions and remaining portability APIs](phase-c7.md) | 11 | 279 | 0 | 0 | 279 | 3 |
-| Total | 398 | 23793 | 30 | 343 | 23420 | 413 |
+| Total | 398 | 23793 | 30 | 354 | 23409 | 413 |
 
 ## Classes and widgets
 
-1016 class/struct definitions: 0 complete; 46 partial; 970 pending.
+1016 class/struct definitions: 0 complete; 48 partial; 968 pending.
 
 See the [complete class/widget index](classes.md) for partial scopes and missing
 types. An implemented constructor does not complete a class or its inherited API.
@@ -168,7 +168,7 @@ unreviewed inherited/platform behavior.
 
 | Header | Implemented | Partial | Pending | Context |
 | --- | ---: | ---: | ---: | ---: |
-| [wx/accel.h](phase-c2.md#wxaccelh) | 0 | 0 | 24 | 0 |
+| [wx/accel.h](phase-c2.md#wxaccelh) | 0 | 9 | 15 | 0 |
 | [wx/activityindicator.h](phase-c2.md#wxactivityindicatorh) | 0 | 0 | 7 | 0 |
 | [wx/addremovectrl.h](phase-c2.md#wxaddremovectrlh) | 0 | 0 | 14 | 0 |
 | [wx/anybutton.h](phase-c2.md#wxanybuttonh) | 0 | 0 | 27 | 0 |
@@ -244,7 +244,7 @@ unreviewed inherited/platform behavior.
 | [wx/valtext.h](phase-c2.md#wxvaltexth) | 0 | 0 | 31 | 0 |
 | [wx/vlbox.h](phase-c2.md#wxvlboxh) | 0 | 0 | 31 | 0 |
 | [wx/vscroll.h](phase-c2.md#wxvscrollh) | 0 | 0 | 79 | 0 |
-| [wx/window.h](phase-c2.md#wxwindowh) | 10 | 16 | 360 | 0 |
+| [wx/window.h](phase-c2.md#wxwindowh) | 10 | 18 | 358 | 0 |
 | [wx/windowid.h](phase-c2.md#wxwindowidh) | 0 | 0 | 4 | 0 |
 | [wx/windowptr.h](phase-c2.md#wxwindowptrh) | 0 | 0 | 8 | 0 |
 | [wx/withimages.h](phase-c2.md#wxwithimagesh) | 0 | 0 | 14 | 0 |

@@ -1,0 +1,68 @@
+;;; Shared model actions, independent of native menu/tool/key checked metadata.
+(require :asdf)
+(load (merge-pathnames "../wxlambda.asd" *load-truename*))
+(asdf:load-system "wxlambda")
+(defpackage #:wxlambda-keyboard-actions (:use #:cl) (:export #:start #:exercise))
+(in-package #:wxlambda-keyboard-actions)
+(defun build-window ()
+  (let* ((frame (wxlambda:make-frame :title "Keyboard actions λ" :width 640 :height 360
+                                  :accelerators '((#\n 3101 :ctrl) (#\d 3102 :ctrl) (:f1 3103))))
+         (toolbar (wxlambda:make-toolbar frame))
+         (status (wxlambda:make-status-bar frame :fields 2))
+         (bar (wxlambda:make-menu-bar frame))
+         (menu (wxlambda:make-menu bar :label "&Actions"))
+         (new (wxlambda:make-menu-item menu :id 3101 :label "&New"))
+         (details (wxlambda:make-menu-item menu :id 3102 :label "&Details" :kind :check))
+         (panel (wxlambda:make-panel frame))
+         (label (wxlambda:make-label panel :label "Ctrl/Command+N: New; Ctrl/Command+D: Details; F1: Help"))
+         (count 0) (details-p nil) (new-enabled t))
+    (wxlambda:add-toolbar-tool toolbar 3101 "New" :art :new)
+    (wxlambda:add-toolbar-tool toolbar 3102 "Details" :kind :check)
+    (wxlambda:realize-toolbar toolbar)
+    (wxlambda:make-column panel) (wxlambda:add-child panel label :border 12)
+    (setf (wxlambda:status-text status) "Ready λ" (wxlambda:status-text status 1) "Details off")
+    (labels ((action (event from-toolbar)
+               ;; Accelerator metadata/menu state vary by port. The model owns
+               ;; state; both native pre-toggles and direct key commands converge.
+               (case (wxlambda:event-id event)
+                 (3101 (when new-enabled (incf count) (setf (wxlambda:status-text status) (format nil "Created ~D" count))))
+                 (3102 (setf details-p (not details-p) (wxlambda:checked-p details) details-p)
+                       (unless from-toolbar (setf (wxlambda:tool-checked-p toolbar 3102) details-p))
+                       (setf (wxlambda:status-text status 1) (if details-p "Details on" "Details off")))
+                 (3103 (setf (wxlambda:status-text status) "Ctrl means Command on macOS")))))
+      (wxlambda:bind-event toolbar :menu
+        (lambda (event context) (declare (ignore context)) (action event t))
+        :id 3101 :last-id 3103 :with-context t)
+      (wxlambda:bind-event frame :menu
+        (lambda (event context) (declare (ignore context)) (action event nil))
+        :id 3101 :last-id 3103 :with-context t)) ; consume: avoid native button fallback
+    (values frame toolbar status new details
+            (lambda (value)
+              (setf new-enabled value (wxlambda:enabled-p new) value
+                    (wxlambda:tool-enabled-p toolbar 3101) value)))))
+(defun exercise ()
+  (multiple-value-bind (frame toolbar status new details enable-new) (build-window)
+    (unwind-protect
+         (progn
+           (wxlambda:show-window frame) (wxlambda:process-events)
+           (wxlambda:activate-menu-item new)
+           (wxlambda:activate-toolbar-tool toolbar 3101)
+           ;; Synthetic command verifies shared Lisp action logic, not a keypress.
+           (wxlambda:process-event frame :menu :id 3101)
+           (assert (string= "Created 3" (wxlambda:status-text status)))
+           (wxlambda:process-event frame :menu :id 3102)
+           (assert (wxlambda:checked-p details))
+           (assert (wxlambda:tool-checked-p toolbar 3102))
+           (wxlambda:activate-menu-item details)
+           (assert (not (wxlambda:tool-checked-p toolbar 3102)))
+           (wxlambda:activate-toolbar-tool toolbar 3102)
+           (assert (wxlambda:checked-p details))
+           (funcall enable-new nil)
+           (wxlambda:process-event frame :menu :id 3101)
+           (assert (not (wxlambda:activate-toolbar-tool toolbar 3101)))
+           (assert (string= "Created 3" (wxlambda:status-text status)))
+           t)
+      (wxlambda:destroy-window frame) (wxlambda:process-events))))
+(defun start ()
+  (wxlambda:with-application ()
+    (let ((frame (build-window))) (wxlambda:show-window frame) (wxlambda:run))))

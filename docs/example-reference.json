@@ -158,5 +158,9 @@
   "frame-actions.lisp": {
     "description": "Shared menu/toolbar actions, check-state synchronization, disabled activation and application-owned status fields. START interactive; EXERCISE runs in an active application session.",
     "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/frame-actions.lisp --eval '(wxlambda-frame-actions:start)'"
+  },
+  "keyboard-actions.lisp": {
+    "description": "Shared model actions reached by menu, toolbar and frame accelerator IDs; enable/check policy ignores platform-specific native metadata. EXERCISE uses synthetic action commands, separate native tests verify actual key translation.",
+    "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/keyboard-actions.lisp --eval '(wxlambda-keyboard-actions:start)'"
   }
 }

@@ -138,7 +138,7 @@ modal dialogs with Lisp-native open/save IO. Text clipboard Copy/Paste now exten
 the form/editor; multiline text primitives now support editor UI construction.
 Notebook navigation now adds fixed editor/settings pages. Single-selection
 list boxes and checked tree navigation now extend the tree/list-manager slice.
-Fixed splitter panes now provide the two-pane manager slice. Toolbar/status-bar actions now extend the application shell; next add bounded keyboard accelerators. Do not drain native ownership/utilities first.
+Fixed splitter panes now provide the two-pane manager slice. Toolbar/status-bar actions now extend the application shell; copied keyboard accelerator tables now route shared model actions. Do not drain native ownership/utilities first.
 
 ### Representative application acceptance
 
@@ -511,6 +511,15 @@ toolbar chrome, dynamic tools and status widths/stacks remain deferred.
 
 The frame-actions batch adds a complete example of shared menu/tool action IDs
 and status feedback within this bounded slice, preserving deferred native APIs
-in the generated inventory. Next selected feature: keyboard accelerators for
-shared application actions. Physical interaction and hosted Windows/Linux GUI
+in the generated inventory. Copied frame keyboard tables now route shared application actions. Physical interaction and hosted Windows/Linux GUI
 remain unverified; no full toolbar class or native Cocoa chrome parity claim.
+
+## Keyboard accelerator action tables
+
+[Keyboard accelerators](KEYBOARD-ACCELERATORS.md) add bounded copied frame tables,
+modified ASCII keys/F1..F12 and shared Lisp model actions. Native command
+metadata/menu-state handling varies by port; all MENU callbacks conservatively
+guard installed frame subtrees. No physical keyboard/layout/platform completeness
+claim. Native arbitrary key/parser/resource and global hotkey APIs remain pending.
+Next selected slice: deferred UI actions for safe modal/clipboard/destructive
+work after menu/tool/accelerator callbacks, before claiming complete Open/Save shortcuts.

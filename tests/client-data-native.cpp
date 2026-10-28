@@ -35,13 +35,14 @@ void inspect_binding(uint64_t token, const wxl_event* event) {
     saved_context = event->context;
     binding_called = true;
 }
-std::function<void(uint64_t, const wxl_event*)> notebook_probe, list_probe, tree_probe, splitter_probe, toolbar_probe;
+std::function<void(uint64_t, const wxl_event*)> notebook_probe, list_probe, tree_probe, splitter_probe, toolbar_probe, accelerator_probe;
 void ignore_event(uint64_t token, const wxl_event* event) {
     if ((token == 904 || token == 905) && notebook_probe) notebook_probe(token, event);
     if (token >= 906 && token <= 908 && list_probe) list_probe(token, event);
     if ((token == 909 || token == 910) && tree_probe) tree_probe(token, event);
     if ((token == 911 || token == 912) && splitter_probe) splitter_probe(token, event);
     if ((token == 913 || token == 914) && toolbar_probe) toolbar_probe(token, event);
+    if ((token == 915 || token == 916) && accelerator_probe) accelerator_probe(token, event);
     if (token == 901) inspect_binding(token, event);
     if (token == 903) { ++menu_calls; menu_checked_payload = event->checked; menu_integer_payload = event->integer; menu_origin = event->origin_id; }
 }
@@ -801,6 +802,69 @@ struct SplitterProbe : FixedSplitter {
     using FixedSplitter::FixedSplitter;
     using wxSplitterWindow::SetSashPositionAndNotify;
 };
+void exercise_accelerators() {
+    const auto frame=wxl_frame("Accelerators",640,360), child=wxl_panel(frame);
+    const int keys[]={'A',1012,'0'}, flags[]={1,0,4}, ids[]={3201,32767,3202};
+    expect(wxl_frame_accelerator_count(frame)==0,"Default empty accelerator table");
+    expect(wxl_set_frame_accelerators(frame,keys,flags,ids,3)==0 && wxl_frame_accelerator_count(frame)==3,"Install copied table");
+    int key=0, mods=0, command=0;
+    expect(wxl_frame_accelerator_entry(frame,0,&key,&mods,&command)==0 && key=='A' && mods==1 && command==3201,"Accelerator metadata");
+    expect(wxl_frame_accelerator_entry(frame,-1,&key,&mods,&command)==-1 && wxl_frame_accelerator_entry(frame,3,&key,&mods,&command)==-1 && wxl_frame_accelerator_entry(frame,0,nullptr,&mods,&command)==-1,"Index/output validation");
+    expect(wxl_set_frame_accelerators(frame,nullptr,flags,ids,1)==-1 && wxl_set_frame_accelerators(frame,keys,flags,ids,257)==-1,"Array/count validation");
+    const int invalidkeys[]={1000}, invalidids[]={32768}, invalidflags[]={16}, nomods[]={2};
+    expect(wxl_set_frame_accelerators(frame,invalidkeys,flags,ids,1)==-1 && wxl_set_frame_accelerators(frame,keys,flags,invalidids,1)==-1 && wxl_set_frame_accelerators(frame,keys,invalidflags,ids,1)==-1 && wxl_set_frame_accelerators(frame,keys,nomods,ids,1)==-1,"Raw entry validation");
+    const int duplicatekeys[]={'A','A'}, duplicateflags[]={1,1}, duplicateids[]={3201,3202}, rawflags[]={1,8};
+    expect(wxl_set_frame_accelerators(frame,duplicatekeys,duplicateflags,duplicateids,2)==-1 && wxl_frame_accelerator_count(frame)==3,"Duplicate atomic rejection");
+#ifdef __WXMAC__
+    expect(wxl_set_frame_accelerators(frame,duplicatekeys,rawflags,duplicateids,2)==0,"Distinct OSX control modifiers");
+#else
+    expect(wxl_set_frame_accelerators(frame,duplicatekeys,rawflags,duplicateids,2)==-1,"Aliased effective control modifiers");
+#endif
+    expect(wxl_set_frame_accelerators(frame,keys,flags,ids,3)==0,"Replace table");
+    const auto bar=wxl_menu_bar(frame), menu=wxl_menu(bar,"Actions",7), item=wxl_menu_item(menu,3201,"Check",5,nullptr,0,1);
+    expect(item && wxl_set_menu_enabled(item,0)>=0,"Disabled matching check menu");
+    const auto dialog=wxl_message_dialog(frame,"Probe",5,"Probe",5,0,0);
+    as<wxDialog>(dialog)->Bind(wxEVT_SHOW, [](wxShowEvent& event) { if (event.IsShown()) wxl_dialog_abort(); event.Skip(); });
+    unsigned calls=0; bool installed=true;
+    accelerator_probe=[&](uint64_t token,const wxl_event* event) {
+        ++calls; expect(event->kind==WXL_EVENT_MENU,"Key routes MENU command");
+        if (installed) {
+            expect(wxl_destroy(frame)==-1 && wxl_close(frame,1)==-1 && wxl_destroy(child)==-1,"Accelerator frame subtree guards");
+            expect(wxl_set_frame_accelerators(frame,nullptr,nullptr,nullptr,0)==-1,"No callback table replacement");
+            int result=-1;
+            expect(wxl_dialog_show(dialog,&result)==-1 && wxl_clipboard_text_available()==-1 && wxl_poll()==-1,"Accelerator loop guards");
+        } else if (token==915) {
+            int result=-1;
+            expect(wxl_clipboard_text_available()>=0 && wxl_dialog_show(dialog,&result)==0 && result==1,"Clear restores menu modal/clipboard policy");
+        }
+        if (token==916) expect(wxl_context_set_skipped(event->context,1)==0,"Stack action propagation");
+    };
+    const auto handler=wxl_event_handler();
+    expect(wxl_push_handler(frame,handler)==0 && wxl_bind(handler,WXL_EVENT_MENU,916,1,32767,1,0)==0 && wxl_bind(frame,WXL_EVENT_MENU,915,1,32767,1,0)==0,"Frame/stack accelerator handlers");
+#ifdef __WXOSX__
+    wxKeyEvent event(wxEVT_CHAR_HOOK); event.m_keyCode='A'; event.SetControlDown(true);
+    expect(as<wxFrame>(frame)->GetAcceleratorTable()->GetCommand(event)==3201,"Native accelerator lookup");
+    expect(window(child)->OSXHandleKeyEvent(event),"Actual child-to-frame native key dispatch");
+    expect(calls==2 && wxl_menu_checked(item)==0,"OSX direct command ignores disabled/check menu state");
+    event.m_keyCode=WXK_F12; event.SetControlDown(false);
+    expect(window(child)->OSXHandleKeyEvent(event) && calls==4,"Unmodified function key dispatch");
+    event.m_keyCode='0'; event.SetAltDown(true);
+    expect(window(child)->OSXHandleKeyEvent(event) && calls==6,"Alt digit dispatch");
+#else
+    wxCommandEvent event(wxEVT_MENU,3201); as<wxFrame>(frame)->HandleWindowEvent(event);
+    expect(calls==2,"Frame command/stack guard probe (physical translation unrun)");
+#endif
+    expect(wxl_set_frame_accelerators(frame,nullptr,nullptr,nullptr,0)==0 && wxl_frame_accelerator_count(frame)==0 && !as<wxFrame>(frame)->GetAcceleratorTable()->IsOk(),"Clear native table");
+    installed=false;
+    wxCommandEvent after(wxEVT_MENU,3201); as<wxFrame>(frame)->HandleWindowEvent(after);
+    expect(accelerator_action_frames.empty(),"Callback guard stack restored");
+    expect(wxl_unbind(915)==1 && wxl_unbind(916)==1,"Unbind accelerator probes"); accelerator_probe={};
+    wxl_handle popped=0; expect(wxl_pop_handler(frame,1,&popped)==0,"Pop accelerator stack");
+    expect(wxl_set_frame_accelerators(frame,keys,flags,ids,3)==0,"Reinstall before teardown");
+    delete as<wxFrame>(frame);
+    expect(frame_accelerators.empty() && wxl_frame_accelerator_count(frame)==-1,"Owner teardown clears accelerator registry");
+}
+
 void exercise_frame_actions() {
     const auto frame = wxl_frame("Frame actions",640,360), bar = wxl_toolbar(frame), status_bar = wxl_status_bar(frame,2);
     expect(bar && status_bar, "Frame bar construction");
@@ -953,6 +1017,7 @@ int main() {
         exercise_tree();
         exercise_splitter();
         exercise_frame_actions();
+        exercise_accelerators();
 #if wxUSE_CLIPBOARD
         exercise_clipboard();
 #endif

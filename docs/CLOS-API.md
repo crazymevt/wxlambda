@@ -39,7 +39,7 @@ Use `make-instance` directly, including for your own subclasses:
 
 Concrete native initargs are:
 
-- `frame`: `:title` (default "wxlambda"), `:width` (480), `:height` (240).
+- `frame`: `:title` (default "wxlambda"), `:width` (480), `:height` (240), `:accelerators` (NIL). See [keyboard actions](KEYBOARD-ACCELERATORS.md).
 - `panel`: required `:parent` window.
 - `toolbar`: required `:parent` frame; fixed tools after realization.
 - `status-bar`: required `:parent` frame, `:fields` (1, range 1..16). See [frame actions](FRAME-ACTIONS.md).

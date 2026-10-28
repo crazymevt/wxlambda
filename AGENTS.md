@@ -193,3 +193,10 @@ structure/deletion; fixed tools are addressed by toolbar-scoped positive IDs.
 wxEVT_TOOL aliases MENU. Preserve actual/propagated origin lifetime/reentry guards,
 app-owned status fields, and explicit safe in-window OSX toolbar construction.
 Native Cocoa pointer-ID placeholder restoration is excluded. See docs/FRAME-ACTIONS.md.
+
+ABI42 FRAME-ACCELERATORS stores copied normalized Lisp/native entry data; no
+menu pointers. Preserve portable ID1..32767 and native-effective chord duplicate
+checks, quiescent table writes, subtree registry teardown and conservative
+all-MENU callback guards while explicit tables are installed. Native keyboard
+commands vary by port in origin/checked/menu enabled behavior; shared actions
+use the Lisp model. See docs/KEYBOARD-ACCELERATORS.md. wxUSE_ACCEL is a build prerequisite.

@@ -35,6 +35,7 @@ def scenarios():
     yield "text-editing", "text-editing.lisp", {}
     yield "notebook", "notebook.lisp", {}
     yield "list-box", "list-box.lisp", {}
+    yield "accelerators", "accelerators.lisp", {}
     yield "frame-actions", "frame-actions.lisp", {}
     yield "splitter", "splitter.lisp", {}
     yield "tree-navigation", "tree-navigation.lisp", {}
