@@ -17,7 +17,7 @@ class or constructor does not imply full upstream coverage.
 
 ## Current coverage and remaining work
 
-0 implemented; 0 partial; 1875 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
+0 implemented; 27 partial; 1848 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
 
 Counts describe inventory entries, not distinct APIs or percent completion.
 See the [coverage summary](README.md) for phase/header comparisons.
@@ -1224,13 +1224,13 @@ See the [coverage summary](README.md) for phase/header comparisons.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h)
 
-0 implemented; 0 partial; 96 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
+0 implemented; 14 partial; 82 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
 
-- [ ] [L31](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L31) `class wxMenuBar : public wxWindow {`
-- [ ] [L40](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L40) `wxMenuBar(long style = 0);`
+- [~] [L31](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L31) `class wxMenuBar : public wxWindow {` — **Partial**: `menu-bar`, `make-menu-bar`, `menu-count`, `menu-label`, `destroy-menu-resource`; ABI: `wxl_menu_bar`, `wxl_menu_count`, `wxl_menu_label`, `wxl_set_menu_label`, `wxl_menu_destroy`. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN. Normal/check/separator command actions only. Native OS menu interaction, accelerators, radio/submenu/popup and additional overloads remain outside this selected feature.
+- [~] [L40](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L40) `wxMenuBar(long style = 0);` — **Partial**: `menu-bar`, `make-menu-bar`; ABI: `wxl_menu_bar`. Default style only; attached immediately to a managed frame. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN.
 - [ ] [L60](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L60) `wxMenuBar(size_t n, wxMenu* menus[], const wxString titles[], long style = 0);`
-- [ ] [L67](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L67) `virtual ~wxMenuBar();`
-- [ ] [L81](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L81) `virtual bool Append(wxMenu* menu, const wxString& title);`
+- [~] [L67](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L67) `virtual ~wxMenuBar();` — **Partial**: `destroy-menu-resource`, `menu-resource-alive-p`; ABI: `wxl_menu_destroy`. Native destructor invalidates bar/menu/item identities; frame ownership retained. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN.
+- [~] [L81](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L81) `virtual bool Append(wxMenu* menu, const wxString& title);` — **Partial**: `menu`, `make-menu`; ABI: `wxl_menu`. Append a newly created managed menu with validated raw label; no existing-menu adoption. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN.
 - [ ] [L94](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L94) `void Check(int id, bool check);`
 - [ ] [L107](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L107) `void Enable(int id, bool enable);`
 - [ ] [L117](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L117) `bool IsEnabledTop(size_t pos) const;`
@@ -1242,19 +1242,19 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [ ] [L199](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L199) `wxString GetLabel(int id) const;`
 - [ ] [L218](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L218) `wxString GetLabelTop(size_t pos) const;`
 - [ ] [L223](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L223) `wxMenu* GetMenu(size_t menuIndex) const;`
-- [ ] [L228](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L228) `size_t GetMenuCount() const;`
-- [ ] [L244](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L244) `virtual wxString GetMenuLabel(size_t pos) const;`
+- [~] [L228](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L228) `size_t GetMenuCount() const;` — **Partial**: `menu-count`; ABI: `wxl_menu_count`. Native count of managed bar menus. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN.
+- [~] [L244](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L244) `virtual wxString GetMenuLabel(size_t pos) const;` — **Partial**: `menu-label`; ABI: `wxl_menu_label`. Read raw tab label by managed MENU identity, not arbitrary bar index. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN.
 - [ ] [L260](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L260) `virtual wxString GetMenuLabelText(size_t pos) const;`
 - [ ] [L278](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L278) `virtual bool Insert(size_t pos, wxMenu* menu, const wxString& title);`
 - [ ] [L288](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L288) `bool IsChecked(int id) const;`
 - [ ] [L298](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L298) `bool IsEnabled(int id) const;`
 - [ ] [L303](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L303) `virtual void Refresh(bool eraseBackground = true, const wxRect* rect = NULL);`
-- [ ] [L312](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L312) `virtual wxMenu* Remove(size_t pos);`
+- [~] [L312](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L312) `virtual wxMenu* Remove(size_t pos);` — **Partial**: `destroy-menu-resource`; ABI: `wxl_menu_destroy`. Internal delete path removes then immediately destroys menu; no public detached native ownership. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN.
 - [ ] [L329](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L329) `virtual wxMenu* Replace(size_t pos, wxMenu* menu, const wxString& title);`
 - [ ] [L341](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L341) `void SetHelpString(int id, const wxString& helpString);`
 - [ ] [L355](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L355) `void SetLabel(int id, const wxString& label);`
 - [ ] [L372](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L372) `void SetLabelTop(size_t pos, const wxString& label);`
-- [ ] [L384](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L384) `virtual void SetMenuLabel(size_t pos, const wxString& label);`
+- [~] [L384](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L384) `virtual void SetMenuLabel(size_t pos, const wxString& label);` — **Partial**: `menu-label`; ABI: `wxl_set_menu_label`. Set validated nonempty raw tab label; scalar callback writes allowed. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN.
 - [ ] [L397](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L397) `static void MacSetCommonMenuBar(wxMenuBar* menubar);`
 - [ ] [L409](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L409) `static wxMenuBar* MacGetCommonMenuBar();`
 - [ ] [L421](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L421) `wxMenu *OSXGetAppleMenu() const;`
@@ -1262,14 +1262,14 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [ ] [L424](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L424) `bool IsAttached() const;`
 - [ ] [L425](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L425) `virtual void Attach(wxFrame *frame);`
 - [ ] [L426](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L426) `virtual void Detach();`
-- [ ] [L506](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L506) `class wxMenu : public wxEvtHandler {`
-- [ ] [L513](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L513) `wxMenu();`
+- [~] [L506](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L506) `class wxMenu : public wxEvtHandler {` — **Partial**: `menu`, `make-menu`, `menu-item-count`, `destroy-menu-resource`; ABI: `wxl_menu`, `wxl_menu_count`, `wxl_menu_destroy`. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN. Normal/check/separator command actions only. Native OS menu interaction, accelerators, radio/submenu/popup and additional overloads remain outside this selected feature.
+- [~] [L513](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L513) `wxMenu();` — **Partial**: `menu`, `make-menu`; ABI: `wxl_menu`. Default menu constructor attached immediately to managed menu bar. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN.
 - [ ] [L521](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L521) `wxMenu(long style);`
 - [ ] [L531](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L531) `wxMenu(const wxString& title, long style = 0);`
-- [ ] [L544](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L544) `virtual ~wxMenu();`
+- [~] [L544](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L544) `virtual ~wxMenu();` — **Partial**: `destroy-menu-resource`, `menu-resource-alive-p`; ABI: `wxl_menu_destroy`. Native-owned descendants invalidated on explicit/parent destruction. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN.
 - [ ] [L580](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L580) `wxMenuItem* Append(int id, const wxString& item = wxEmptyString, const wxString& helpString = wxEmptyString, wxItemKind kind = wxITEM_NORMAL);`
 - [ ] [L604](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L604) `wxMenuItem* Append(int id, const wxString& item, wxMenu* subMenu, const wxString& helpString = wxEmptyString);`
-- [ ] [L626](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L626) `wxMenuItem* Append(wxMenuItem* menuItem);`
+- [~] [L626](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L626) `wxMenuItem* Append(wxMenuItem* menuItem);` — **Partial**: `menu-item`, `make-menu-item`; ABI: `wxl_menu_item`. Append newly created managed normal/check/separator item only; no native item adoption. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN.
 - [ ] [L633](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L633) `wxMenuItem* AppendCheckItem(int id, const wxString& item, const wxString& help = wxEmptyString);`
 - [ ] [L645](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L645) `wxMenuItem* AppendRadioItem(int id, const wxString& item, const wxString& help = wxEmptyString);`
 - [ ] [L653](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L653) `wxMenuItem* AppendSeparator();`
@@ -1279,7 +1279,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [ ] [L695](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L695) `bool Delete(int id);`
 - [ ] [L706](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L706) `bool Delete(wxMenuItem* item);`
 - [ ] [L718](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L718) `bool Destroy(int id);`
-- [ ] [L730](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L730) `bool Destroy(wxMenuItem* item);`
+- [~] [L730](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L730) `bool Destroy(wxMenuItem* item);` — **Partial**: `destroy-menu-resource`; ABI: `wxl_menu_destroy`. Delete managed item through owner; submenu behavior not exposed. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN.
 - [ ] [L742](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L742) `void Enable(int id, bool enable);`
 - [ ] [L759](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L759) `wxMenuItem *FindChildItem(int id, size_t *pos = NULL) const;`
 - [ ] [L772](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L772) `virtual int FindItem(const wxString& itemString) const;`
@@ -1288,7 +1288,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [ ] [L804](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L804) `virtual wxString GetHelpString(int id) const;`
 - [ ] [L816](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L816) `wxString GetLabel(int id) const;`
 - [ ] [L829](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L829) `wxString GetLabelText(int id) const;`
-- [ ] [L834](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L834) `size_t GetMenuItemCount() const;`
+- [~] [L834](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L834) `size_t GetMenuItemCount() const;` — **Partial**: `menu-item-count`; ABI: `wxl_menu_count`. Native count including separators. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN.
 - [ ] [L843](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L843) `wxMenuItemList& GetMenuItems();`
 - [ ] [L844](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L844) `const wxMenuItemList& GetMenuItems() const;`
 - [ ] [L852](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L852) `const wxString& GetTitle() const;`
@@ -1327,7 +1327,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menuitem.h)
 
-0 implemented; 0 partial; 56 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
+0 implemented; 13 partial; 43 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
 
 - [ ] [L20](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menuitem.h#L20) `documented event: EVT_MENU(id, func)`
 - [ ] [L23](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menuitem.h#L23) `documented event: EVT_MENU_RANGE(id1, id2, func)`
@@ -1335,11 +1335,11 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [ ] [L30](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menuitem.h#L30) `documented event: EVT_MENU_CLOSE(func)`
 - [ ] [L33](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menuitem.h#L33) `documented event: EVT_MENU_HIGHLIGHT(id, func)`
 - [ ] [L39](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menuitem.h#L39) `documented event: EVT_MENU_HIGHLIGHT_ALL(func)`
-- [ ] [L49](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menuitem.h#L49) `class wxMenuItem : public wxObject {`
-- [ ] [L107](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menuitem.h#L107) `wxMenuItem(wxMenu* parentMenu = NULL, int id = wxID_SEPARATOR, const wxString& text = wxEmptyString, const wxString& helpString = wxEmptyString, wxItemKind kind = wxITEM_NORMAL, wxMenu* subMenu = NULL);`
-- [ ] [L116](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menuitem.h#L116) `virtual ~wxMenuItem();`
-- [ ] [L122](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menuitem.h#L122) `virtual void Check(bool check = true);`
-- [ ] [L127](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menuitem.h#L127) `virtual void Enable(bool enable = true);`
+- [~] [L49](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menuitem.h#L49) `class wxMenuItem : public wxObject {` — **Partial**: `menu-item`, `make-menu-item`, `menu-item-id`, `menu-item-kind`, `label-text`, `enabled-p`, `checked-p`, `activate-menu-item`, `destroy-menu-resource`; ABI: `wxl_menu_item`, `wxl_menu_item_id`, `wxl_menu_item_kind`, `wxl_menu_label`, `wxl_set_menu_label`, `wxl_menu_enabled`, `wxl_set_menu_enabled`, `wxl_menu_checked`, `wxl_set_menu_checked`, `wxl_activate_menu`, `wxl_menu_destroy`. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN. Normal/check/separator command actions only. Native OS menu interaction, accelerators, radio/submenu/popup and additional overloads remain outside this selected feature.
+- [~] [L107](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menuitem.h#L107) `wxMenuItem(wxMenu* parentMenu = NULL, int id = wxID_SEPARATOR, const wxString& text = wxEmptyString, const wxString& helpString = wxEmptyString, wxItemKind kind = wxITEM_NORMAL, wxMenu* subMenu = NULL);` — **Partial**: `menu-item`, `make-menu-item`; ABI: `wxl_menu_item`. Managed parent, positive unique-per-bar signed32 IDs, normal/check/separator only, validated label/help; no submenu. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN.
+- [~] [L116](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menuitem.h#L116) `virtual ~wxMenuItem();` — **Partial**: `destroy-menu-resource`, `menu-resource-alive-p`; ABI: `wxl_menu_destroy`. Managed native identity invalidates on native destructor. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN.
+- [~] [L122](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menuitem.h#L122) `virtual void Check(bool check = true);` — **Partial**: `checked-p`; ABI: `wxl_set_menu_checked`. Silent check-item generalized boolean update; NOTIFY T rejects. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN.
+- [~] [L127](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menuitem.h#L127) `virtual void Enable(bool enable = true);` — **Partial**: `enabled-p`; ABI: `wxl_set_menu_enabled`. Silent native item flag update, reports change; separators reject. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN.
 - [ ] [L134](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menuitem.h#L134) `static wxString GetLabelFromText(const wxString& text);`
 - [ ] [L148](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menuitem.h#L148) `static wxString GetLabelText(const wxString& text);`
 - [ ] [L161](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menuitem.h#L161) `wxColour& GetBackgroundColour() const;`
@@ -1349,10 +1349,10 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [ ] [L195](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menuitem.h#L195) `virtual wxBitmap GetDisabledBitmap() const;`
 - [ ] [L202](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menuitem.h#L202) `wxFont& GetFont() const;`
 - [ ] [L207](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menuitem.h#L207) `const wxString& GetHelp() const;`
-- [ ] [L212](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menuitem.h#L212) `int GetId() const;`
-- [ ] [L220](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menuitem.h#L220) `virtual wxString GetItemLabel() const;`
+- [~] [L212](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menuitem.h#L212) `int GetId() const;` — **Partial**: `menu-item-id`; ABI: `wxl_menu_item_id`. Positive ID or NIL for managed separator. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN.
+- [~] [L220](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menuitem.h#L220) `virtual wxString GetItemLabel() const;` — **Partial**: `label-text`; ABI: `wxl_menu_label`. Raw label including mnemonic/accelerator syntax. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN.
 - [ ] [L228](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menuitem.h#L228) `virtual wxString GetItemLabelText() const;`
-- [ ] [L234](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menuitem.h#L234) `wxItemKind GetKind() const;`
+- [~] [L234](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menuitem.h#L234) `wxItemKind GetKind() const;` — **Partial**: `menu-item-kind`; ABI: `wxl_menu_item_kind`. Bounded equivalent kind classification via native IsSeparator/IsCheckable for managed normal/check/separator items; no raw wxItemKind or radio/submenu mapping.
 - [ ] [L244](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menuitem.h#L244) `wxString GetLabel() const;`
 - [ ] [L251](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menuitem.h#L251) `int GetMarginWidth() const;`
 - [ ] [L257](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menuitem.h#L257) `wxMenu* GetMenu() const;`
@@ -1363,11 +1363,11 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [ ] [L294](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menuitem.h#L294) `static wxAcceleratorEntry *GetAccelFromString(const wxString& label);`
 - [ ] [L299](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menuitem.h#L299) `virtual wxAcceleratorEntry *GetAccel() const;`
 - [ ] [L317](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menuitem.h#L317) `bool IsCheck() const;`
-- [ ] [L326](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menuitem.h#L326) `bool IsCheckable() const;`
-- [ ] [L331](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menuitem.h#L331) `virtual bool IsChecked() const;`
-- [ ] [L336](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menuitem.h#L336) `virtual bool IsEnabled() const;`
+- [~] [L326](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menuitem.h#L326) `bool IsCheckable() const;` — **Partial**: `menu-item-kind`, `checked-p`; ABI: `wxl_menu_item_kind`, `wxl_menu_checked`. Internal prerequisite for managed normal/check/separator kind validation; no standalone public predicate or radio/submenu exposure.
+- [~] [L331](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menuitem.h#L331) `virtual bool IsChecked() const;` — **Partial**: `checked-p`; ABI: `wxl_menu_checked`. Check item only; raw command checked metadata is separate. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN.
+- [~] [L336](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menuitem.h#L336) `virtual bool IsEnabled() const;` — **Partial**: `enabled-p`; ABI: `wxl_menu_enabled`. Own item enabled flag; separators reject. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN.
 - [ ] [L343](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menuitem.h#L343) `bool IsRadio() const;`
-- [ ] [L348](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menuitem.h#L348) `bool IsSeparator() const;`
+- [~] [L348](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menuitem.h#L348) `bool IsSeparator() const;` — **Partial**: `menu-item-kind`, `checked-p`; ABI: `wxl_menu_item_kind`, `wxl_menu_checked`. Internal prerequisite for managed normal/check/separator kind validation; no standalone public predicate or radio/submenu exposure.
 - [ ] [L353](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menuitem.h#L353) `bool IsSubMenu() const;`
 - [ ] [L369](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menuitem.h#L369) `void SetBackgroundColour(const wxColour& colour);`
 - [ ] [L379](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menuitem.h#L379) `void SetBitmap(const wxBitmapBundle& bmp);`
@@ -1376,7 +1376,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [ ] [L409](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menuitem.h#L409) `void SetDisabledBitmap(const wxBitmapBundle& disabled);`
 - [ ] [L417](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menuitem.h#L417) `void SetFont(const wxFont& font);`
 - [ ] [L422](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menuitem.h#L422) `void SetHelp(const wxString& helpString);`
-- [ ] [L552](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menuitem.h#L552) `virtual void SetItemLabel(const wxString& label);`
+- [~] [L552](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menuitem.h#L552) `virtual void SetItemLabel(const wxString& label);` — **Partial**: `label-text`; ABI: `wxl_set_menu_label`. Validated nonempty raw label, nonseparator only; scalar callback writes allowed. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN.
 - [ ] [L559](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menuitem.h#L559) `void SetMarginWidth(int width);`
 - [ ] [L564](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menuitem.h#L564) `void SetMenu(wxMenu* menu);`
 - [ ] [L569](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menuitem.h#L569) `void SetSubMenu(wxMenu* menu);`

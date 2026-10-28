@@ -17,7 +17,7 @@ class or constructor does not imply full upstream coverage.
 
 ## Current coverage and remaining work
 
-7 implemented; 94 partial; 5191 pending; 26 context entries. Native gaps stay visible; feature priority is separate.
+7 implemented; 95 partial; 5190 pending; 26 context entries. Native gaps stay visible; feature priority is separate.
 
 Counts describe inventory entries, not distinct APIs or percent completion.
 See the [coverage summary](README.md) for phase/header comparisons.
@@ -97,7 +97,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 
 0 implemented; 13 partial; 91 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
 
-- [~] [L39](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L39) `class wxAppConsole : public wxEvtHandler, public wxEventFilter {` — **Partial**: `call-with-application`, `run`, `stop`, `process-events`, `main-loop-running-p`, `pending-events-p`, `process-pending-events`, `application-handler`, `current-application-handler`; ABI: `wxl_start`, `wxl_run`, `wxl_stop`, `wxl_poll`, `wxl_main_loop_running`, `wxl_pending_events`, `wxl_process_pending_events`, `wxl_application_handler`. Managed bridge application only: session lifetime, native main loop, polling, queued-event status/dispatch and callback/pump guards. No constructible application wrapper, application traits, arbitrary event loops, command-line hooks or native virtual overrides. Arbitrary native event classes and persistent mutable events, pushed-handler ownership, filters, propagation, idle handlers, timers and worker dispatch remain open. Borrowed managed application handler view supports inherited binding/dispatch/state; construction and explicit deletion reject. OS session delivery and native application subclass hooks remain unverified/unbound. Query/end-session binding is available on the managed app and isolated owned handlers; synthetic app/window session emission rejects; OS delivery remains unverified.
+- [~] [L39](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L39) `class wxAppConsole : public wxEvtHandler, public wxEventFilter {` — **Partial**: `call-with-application`, `run`, `stop`, `process-events`, `main-loop-running-p`, `pending-events-p`, `process-pending-events`, `application-handler`, `current-application-handler`; ABI: `wxl_start`, `wxl_run`, `wxl_stop`, `wxl_poll`, `wxl_main_loop_running`, `wxl_pending_events`, `wxl_process_pending_events`, `wxl_application_handler`. Managed bridge application only: session lifetime, native main loop/polling, pending queues, callback/pump guards, borrowed handler view and supported command/notify/close/idle dispatch. Contextual Skip/propagation, owned events and bounded idle mode/wake are supported by the shared event layer. No constructible application wrapper, application traits, arbitrary event loops, command-line hooks, filters, native virtual overrides, timer/worker API or arbitrary event-class adoption. Window pushed stacks remain bridge-owned and cannot include the borrowed application. Query/end-session binding is available on the managed app and isolated owned handlers; synthetic app/window session emission rejects. Native OS-session delivery remains unverified.
 - [ ] [L48](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L48) `virtual wxAppTraits* CreateTraits();`
 - [ ] [L55](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L55) `virtual ~wxAppConsole();`
 - [ ] [L72](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L72) `virtual int MainLoop();`
@@ -1476,7 +1476,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h)
 
-7 implemented; 74 partial; 579 pending; 16 context entries. Native gaps stay visible; feature priority is separate.
+7 implemented; 75 partial; 578 pending; 16 context entries. Native gaps stay visible; feature priority is separate.
 
 - **Context**: [L9](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L9) `#if wxUSE_BASE`
 - [ ] [L15](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L15) `enum wxEventPropagation {`
@@ -2030,7 +2030,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [ ] [L5157](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L5157) `wxEventType wxEVT_LISTBOX;`
 - [ ] [L5158](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L5158) `wxEventType wxEVT_LISTBOX_DCLICK;`
 - [ ] [L5159](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L5159) `wxEventType wxEVT_CHECKLISTBOX;`
-- [ ] [L5160](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L5160) `wxEventType wxEVT_MENU;`
+- [~] [L5160](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L5160) `wxEventType wxEVT_MENU;` — **Partial**: `bind-event`, `make-event`, `queue-event`, `process-event`, `event-checked-p`; ABI: `wxl_bind`, `wxl_owned_event`, `wxl_queue_event`, `wxl_process_event`. Built-in :MENU command routing with ID/ranges and bounded command payload; no menu-open/close/highlight event family. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN.
 - [ ] [L5161](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L5161) `wxEventType wxEVT_SLIDER;`
 - [ ] [L5162](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L5162) `wxEventType wxEVT_RADIOBOX;`
 - [ ] [L5163](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L5163) `wxEventType wxEVT_RADIOBUTTON;`

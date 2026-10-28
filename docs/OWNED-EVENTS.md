@@ -24,7 +24,7 @@ allocation. These wrappers do not install native C++ virtual overrides.
       (wxlambda:destroy-event event))))
 ```
 
-`:kind` defaults to :CLICK and accepts the eight built-in kinds or a registered
+`:kind` defaults to :CLICK and accepts the nine built-in kinds or a registered
 command/notify name. The other base construction initargs match synthetic event
 payloads: `:id` defaults to 0, `:text` to an empty string, `:integer` to 0,
 `:checked-p` and `:selection` apply only to their built-in kinds, `:can-veto-p`
@@ -195,5 +195,8 @@ handler client data and native command/client/item pointers. Borrowed native
 userdata still prevents owned cloning; no mutable association API is added.
 
 [Idle events](IDLE-EVENTS.md) add family :IDLE, bounded RequestMore, global
-automatic policy and own-window opt-in metadata. The next GUI breadth slice is
-menus/actions plus standard dialogs, not exhaustive foundation parity.
+automatic policy and own-window opt-in metadata. Frame menus/actions now extend GUI breadth; standard dialogs are next,
+without requiring exhaustive foundation parity.
+
+[Menus and actions](MENUS.md) add built-in :MENU commands, including raw checked
+metadata. Event field writes do not synchronize a managed menu item.

@@ -191,3 +191,19 @@ remain unbound.
 [Handler Lisp client data](HANDLER-CLIENT-DATA.md) now retains EQ values through
 a native typed token adapter with safe foreign-mode rejection. General native event/client/item pointer ownership remains unbound; per-binding
 Lisp USER-DATA is separately supported.
+
+## Native-owned menu resource classes
+
+MENU-RESOURCE is abstract; MENU-BAR, MENU and MENU-ITEM are native-backed resource
+classes outside the window/event-handler hierarchy. Direct MAKE-INSTANCE uses
+:PARENT frame/bar/menu. Generic MAKE-MENU-BAR/MAKE-MENU/MAKE-MENU-ITEM accept
+validated :CLASS and subclass initargs, including DEFAULT-INITARGS. Native
+properties exist in subclass AFTER hooks. Mixed managed ancestry rejects before
+allocation; failed initialization removes its new native resource/descendants.
+This cleanup does not reverse arbitrary edits to existing external resources.
+
+Native frame→bar→menu→items ownership controls lifetime. Explicit destruction or
+parent destruction invalidates descendant identities; wrappers and GC do not
+retain/delete native objects. Structural operations reject callbacks/pumps/RUN,
+while scalar label/check/enabled writes are allowed. See [menus](MENUS.md) for
+separator constraints, raw labels, per-bar IDs and command routing.

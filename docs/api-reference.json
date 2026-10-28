@@ -241,27 +241,27 @@
   {
     "name": "label-text",
     "kind": "generic-function",
-    "arguments": "LABEL is live static text.",
+    "arguments": "RECEIVER is live static text or MENU-ITEM; separator reads return the empty string, but all separator writes reject.",
     "returns": "An independent Lisp string.",
-    "description": "Read raw label text including mnemonic syntax. Other control types are not accepted.",
+    "description": "Read raw label text including mnemonic/accelerator syntax. Menu item reads preserve the raw label, not stripped display text.",
     "scope": "Requires an active GUI session on the process main thread. Invalid/destroyed handles or unsupported native arguments signal NATIVE-ERROR; Lisp argument/type errors remain Lisp conditions. One GUI session per process. Widget behavior uses CLOS generic dispatch. Wrong receiver types signal Lisp dispatch conditions; native handle/state failures signal NATIVE-ERROR.",
-    "wxwidgets": "wxControl::GetLabel (wxStaticText only)",
+    "wxwidgets": "wxControl::GetLabel (wxStaticText only); wxMenuItem::GetItemLabel / SetItemLabel",
     "setf": {
       "syntax": "(setf (wxlambda:label-text label) new-value)",
-      "description": "Assign static text and relayout its parent if necessary. Writers are generic functions with VALUE first, followed by the receiver."
+      "description": "Assign static text and relayout its parent if necessary. Writers are generic functions with VALUE first, followed by the receiver. Menu item labels must be nonempty Unicode strings without NUL; separators reject. Scalar changes are allowed in callbacks and do not synthesize menu commands."
     }
   },
   {
     "name": "checked-p",
     "kind": "generic-function",
-    "arguments": "CHECKBOX is a live two-state checkbox. Optional NOTIFY affects writes and is ignored by reads.",
+    "arguments": "RECEIVER is a live two-state checkbox or check MENU-ITEM. Optional NOTIFY affects writes and is ignored by reads.",
     "returns": "T or NIL.",
-    "description": "Read the boolean checkbox state.",
+    "description": "Read boolean control/resource state. Menu normal/separator items reject.",
     "scope": "Requires an active GUI session on the process main thread. Invalid/destroyed handles or unsupported native arguments signal NATIVE-ERROR; Lisp argument/type errors remain Lisp conditions. One GUI session per process. Widget behavior uses CLOS generic dispatch. Wrong receiver types signal Lisp dispatch conditions; native handle/state failures signal NATIVE-ERROR.",
-    "wxwidgets": "wxCheckBox::GetValue",
+    "wxwidgets": "wxCheckBox::GetValue; wxMenuItem::IsChecked / Check",
     "setf": {
       "syntax": "(setf (wxlambda:checked-p checkbox :notify notify) new-value)",
-      "description": "Store generalized boolean state; reads normalize it to T/NIL, while SETF returns the supplied value. :NOTIFY T emits a synchronous toggle event. Writers are generic functions with VALUE first, followed by the receiver."
+      "description": "Store generalized boolean state; reads normalize it to T/NIL, while SETF returns the supplied value. :NOTIFY T emits a synchronous toggle event. Writers are generic functions with VALUE first, followed by the receiver. For menu items :NOTIFY T rejects before mutation; silent resource changes are allowed during callbacks."
     }
   },
   {
@@ -392,7 +392,7 @@
     "name": "event-kind",
     "kind": "generic-function",
     "arguments": "EVENT is an immutable snapshot, current context or live OWNED-EVENT.",
-    "returns": ":CLICK, :TEXT-CHANGE, :TOGGLE, :SELECTION, :CLOSE, :QUERY-END-SESSION, :END-SESSION, :IDLE or a registered command/notify keyword name.",
+    "returns": ":CLICK, :TEXT-CHANGE, :TOGGLE, :SELECTION, :CLOSE, :QUERY-END-SESSION, :END-SESSION, :IDLE, :MENU or a registered command/notify keyword name.",
     "description": "Read the event kind. The captured kind reflects the actual supported native tag at callback entry, even if an earlier callback changed it; binding registration identity does not change.",
     "scope": "Saved snapshots need no session. Owned/current native reads require the active main-thread session; contexts must be innermost. Registered names expire with the session for native resources; saved copied keywords remain readable.",
     "wxwidgets": "Lisp-owned wxCommandEvent snapshot.",
@@ -425,15 +425,15 @@
   {
     "name": "event-checked-p",
     "kind": "generic-function",
-    "arguments": "EVENT is an immutable snapshot, current context or live OWNED-EVENT. SETF requires native :TOGGLE kind and accepts a generalized boolean.",
-    "returns": "T/NIL for :TOGGLE checked state; NIL for other kinds. SETF returns VALUE.",
-    "description": "Read the kind-limited checked interpretation of native command integer. Live SETF writes SetInt(0/1) only for :TOGGLE without calling a control setter. Raw EVENT-INTEGER can supply other nonzero checked values; earlier snapshots stay unchanged. Later native/user handlers can react to changed metadata; the entire dispatch is not guaranteed to leave controls unchanged.",
+    "arguments": "EVENT is an immutable snapshot, current context or live OWNED-EVENT. SETF requires native :TOGGLE or :MENU kind and accepts a generalized boolean.",
+    "returns": "T/NIL for :TOGGLE/:MENU checked state; NIL for other kinds. SETF returns VALUE.",
+    "description": "Read the kind-limited checked interpretation of native command integer. Live SETF writes SetInt(0/1) only for :TOGGLE/:MENU without calling a control setter. Raw EVENT-INTEGER can supply other nonzero checked values; earlier snapshots stay unchanged. Later native/user handlers can react to changed metadata; the entire dispatch is not guaranteed to leave controls unchanged. Native normal-menu commands may carry integer -1 and thus read checked true; this raw view does not classify a check item.",
     "scope": "Saved snapshot reads need no session. Live operations require active main-thread session and valid owned/innermost-context lifetime. Wrong-kind live writes reject; no snapshot writer or direct checkbox-control setter.",
-    "wxwidgets": "Bounded wxCommandEvent::IsChecked view and SetInt(0/1), :TOGGLE only (wxWidgets 3.2.12 baseline).",
+    "wxwidgets": "Bounded wxCommandEvent::IsChecked view and SetInt(0/1), :TOGGLE/:MENU only (wxWidgets 3.2.12 baseline).",
     "syntax": "(wxlambda:event-checked-p event)",
     "setf": {
       "syntax": "(setf (wxlambda:event-checked-p event-or-context) value)",
-      "description": "Assign native :TOGGLE command integer as0/1 and return the generalized boolean. No other-kind or snapshot writer; does not alter a checkbox control."
+      "description": "Assign native :TOGGLE/:MENU command integer as 0/1, returning the supplied generalized boolean. No snapshot writer or menu-resource synchronization; no item-kind check is implied by raw event metadata."
     }
   },
   {
@@ -475,14 +475,14 @@
   {
     "name": "enabled-p",
     "kind": "generic-function",
-    "arguments": "WINDOW is live.",
+    "arguments": "RECEIVER is a live window or MENU-ITEM.",
     "returns": "T or NIL.",
-    "description": "Read effective enabled state, including disabled ancestors. A child's own disabled state survives parent disable/re-enable.",
+    "description": "Read effective enabled state, including disabled ancestors. A child's own disabled state survives parent disable/re-enable. Menu item access reads its native item flag, without an ancestor-window interpretation; separators reject.",
     "scope": "Requires an active GUI session on the process main thread. Invalid/destroyed handles or unsupported native arguments signal NATIVE-ERROR; Lisp argument/type errors remain Lisp conditions. One GUI session per process. Widget behavior uses CLOS generic dispatch. Wrong receiver types signal Lisp dispatch conditions; native handle/state failures signal NATIVE-ERROR.",
-    "wxwidgets": "wxWindow::IsEnabled (wxWidgets 3.2).",
+    "wxwidgets": "wxWindow::IsEnabled (wxWidgets 3.2). wxMenuItem::IsEnabled / Enable.",
     "setf": {
       "syntax": "(setf (wxlambda:enabled-p window) new-value)",
-      "description": "Assign the input-enabled state; return the supplied value and a second native changed-state flag. Writers are generic functions with VALUE first, followed by the receiver."
+      "description": "Assign the input-enabled state; return the supplied value and a second native changed-state flag. Writers are generic functions with VALUE first, followed by the receiver. Menu items support scalar callback-time changes and return VALUE plus whether their native flag changed; separators reject."
     }
   },
   {
@@ -794,7 +794,7 @@
   {
     "name": "bind-event",
     "kind": "generic-function",
-    "arguments": "HANDLER is an EVENT-HANDLER/window; KIND is :CLICK, :TEXT-CHANGE, :TOGGLE, :SELECTION, :CLOSE, :QUERY-END-SESSION, :END-SESSION, :IDLE or a registered command/notify name. FUNCTION takes one immutable EVENT. ID defaults NIL (any); LAST-ID defaults NIL (exact ID when ID is given). WITH-CONTEXT defaults NIL; when true FUNCTION takes (EVENT CONTEXT) instead of just EVENT. USER-DATA defaults NIL and associates any EQ-preserved Lisp value with this registration; callback arity is unchanged.",
+    "arguments": "HANDLER is an EVENT-HANDLER/window; KIND is :CLICK, :TEXT-CHANGE, :TOGGLE, :SELECTION, :CLOSE, :QUERY-END-SESSION, :END-SESSION, :IDLE, :MENU or a registered command/notify name. FUNCTION takes one immutable EVENT. ID defaults NIL (any); LAST-ID defaults NIL (exact ID when ID is given). WITH-CONTEXT defaults NIL; when true FUNCTION takes (EVENT CONTEXT) instead of just EVENT. USER-DATA defaults NIL and associates any EQ-preserved Lisp value with this registration; callback arity is unchanged.",
     "returns": "A new independent EVENT-BINDING.",
     "description": "Register an observer without replacing any existing generic or control-specific registration. Signed 32-bit IDs are supported except -1 (reserved as native wxID_ANY; use NIL). LAST-ID requires ID and an ordered inclusive range. Observer bindings automatically Skip; contextual bindings start unskipped and control native Skip explicitly; relative callback order follows wxWidgets and is not a Lisp API guarantee. Failed registration releases temporary roots. Contextual access is limited to the innermost callback and expires at return, including on errors. A native entry-owned wxObject token adapter represents non-NIL user data without a Lisp/native pointer. EVENT-USER-DATA reads the per-binding value in snapshots/current contexts; there is no public mutation API for an existing association.",
     "scope": "Active main-thread GUI session required; otherwise NATIVE-ERROR. Stale/deleting receivers reject registration/queuing. Invalid event kinds, IDs and payload options signal Lisp errors; wrong receiver types use CLOS dispatch errors. Built-ins and registered command/notify types. Contexts support scoped Skip/propagation and checked close/notify veto. Arbitrary native events, native control-specific notify subclasses, arbitrary native userData pointers, external handler adoption and worker-thread dispatch remain unbound. Session bindings accept only the borrowed application view or an isolated owned handler; windows reject. Real OS delivery remains unverified. Skipped application END_SESSION callbacks can reach process-exiting defaults. Session bindings on attached pushed handlers reject so a window tail cannot route them to app defaults. Callback-local roots preserve current user data after self/peer unbind until return. Snapshots preserve the EQ reference after unbind/session end, not a deep copy of mutable contents.",
@@ -822,9 +822,9 @@
   {
     "name": "queue-event",
     "kind": "generic-function",
-    "arguments": "HANDLER is live; KIND is a built-in keyword or registered name. ID defaults 0; TEXT defaults empty. CHECKED-P is toggle-only; SELECTION is NIL/nonnegative index for selection. CAN-VETO-P is close-family-only (default T). Registered types accept signed INTEGER (default 0) and copied TEXT; registered notify types accept initial VETOED-P (default NIL). LOGGING-OFF-P defaults NIL and is accepted only for :QUERY-END-SESSION/:END-SESSION; CAN-VETO-P applies to all close-family kinds. The second positional argument may instead be a live OWNED-EVENT, with no payload keyword overrides.",
+    "arguments": "HANDLER is live; KIND is a built-in keyword or registered name. ID defaults 0; TEXT defaults empty. CHECKED-P is toggle/menu-only; SELECTION is NIL/nonnegative index for selection. CAN-VETO-P is close-family-only (default T). Registered types accept signed INTEGER (default 0) and copied TEXT; registered notify types accept initial VETOED-P (default NIL). LOGGING-OFF-P defaults NIL and is accepted only for :QUERY-END-SESSION/:END-SESSION; CAN-VETO-P applies to all close-family kinds. The second positional argument may instead be a live OWNED-EVENT, with no payload keyword overrides.",
     "returns": "The supplied handler.",
-    "description": "Queue a copied synthetic event: wxCommandEvent for four command kinds, wxCloseEvent for close/session kinds and wxIdleEvent for :IDLE. Ordinary control properties are not changed directly. A queued close on a frame may run its native default closing action; use CLOSE-WINDOW for a synchronous acceptance result. Explicit UTF-8 lengths preserve text. Close events take no command payload, may be vetoable or non-vetoable, and do not normally propagate to parents. Registry types create wxCommandEvent or wxNotifyEvent according to their declared family. Initial veto applies only to custom notify types. Queuing offers no final veto/handled result; use PROCESS-EVENT when a synchronous decision is required. Owned-event dispatch always clones, attaches the receiver as copy origin and never consumes or mutates the source. The original can be destroyed after queueing or inside callbacks. Processing returns final state from its copy; contextual CLONE-EVENT can retain changed state detached from origin.",
+    "description": "Queue a copied synthetic event: wxCommandEvent for five command kinds, wxCloseEvent for close/session kinds and wxIdleEvent for :IDLE. Ordinary control properties are not changed directly. A queued close on a frame may run its native default closing action; use CLOSE-WINDOW for a synchronous acceptance result. Explicit UTF-8 lengths preserve text. Close events take no command payload, may be vetoable or non-vetoable, and do not normally propagate to parents. Registry types create wxCommandEvent or wxNotifyEvent according to their declared family. Initial veto applies only to custom notify types. Queuing offers no final veto/handled result; use PROCESS-EVENT when a synchronous decision is required. Owned-event dispatch always clones, attaches the receiver as copy origin and never consumes or mutates the source. The original can be destroyed after queueing or inside callbacks. Processing returns final state from its copy; contextual CLONE-EVENT can retain changed state detached from origin.",
     "scope": "Active main-thread GUI session required; otherwise NATIVE-ERROR. Stale/deleting receivers reject registration/queuing. Invalid event kinds, IDs and payload options signal Lisp errors; wrong receiver types use CLOS dispatch errors. Built-ins and registered command/notify types. Contexts support scoped Skip/propagation and checked close/notify veto. Arbitrary native events, native control-specific notify subclasses, arbitrary native userData pointers, external handler adoption and worker-thread dispatch remain unbound. Synthetic session kinds require isolated owned standalone handlers; application/window receivers reject before emission. Standalone session fallback to wxApp is suppressed even for skipped, disabled or unmatched delivery. Native application session bindings are distinct from synthetic probes. Owned session event copies retain isolated standalone-receiver guards. Copies carrying borrowed userdata/client pointers or unsupported exact native classes reject. Copied owned :TEXT-CHANGE delivery to text-entry receivers rejects before emission, preventing lazy GetString from shadowing the owned payload. Keyword synthetic behavior is unchanged. Managed standalone chains participate in native traversal; linking does not change pending queue ownership or introduce window/app pushed chains. Window receivers retain wxEvtHandler semantics and bypass pushed stacks; explicit PROCESS-WINDOW-EVENT/LOCALLY provide stack-aware synchronous routing. Synthetic session delivery to attached pushed handlers rejects before emission/transfer.",
     "wxwidgets": "wxEvtHandler::QueueEvent; wxCommandEvent, wxCloseEvent or wxIdleEvent construction, SetCanVeto at close-event creation only.",
     "syntax": "(wxlambda:queue-event handler kind &key id text checked-p selection can-veto-p integer vetoed-p logging-off-p)\n(wxlambda:queue-event handler owned-event)"
@@ -931,9 +931,9 @@
     "kind": "function",
     "arguments": "KIND is a built-in event keyword or a name registered in this active session.",
     "returns": "The corresponding process-local native wxEventType integer.",
-    "description": "Look up a process-local native type ID. Eight built-in kinds plus registered command/notify names are supported. Registry names are session-scoped; saved snapshot native IDs remain plain data after cleanup. Borrowed application handler access is supported; arbitrary native event-class binding and OS session delivery remains unverified.",
+    "description": "Look up a process-local native type ID. Nine built-in kinds plus registered command/notify names are supported. Registry names are session-scoped; saved snapshot native IDs remain plain data after cleanup. Borrowed application handler access is supported; arbitrary native event-class binding and OS session delivery remains unverified.",
     "scope": "Active main-thread session required; inactive calls signal NATIVE-ERROR before native-library lookup. Native IDs are process-local and may change between runs.",
-    "wxwidgets": "wxEVT_BUTTON / wxEVT_TEXT / wxEVT_CHECKBOX / wxEVT_CHOICE / wxEVT_CLOSE_WINDOW / wxEVT_QUERY_END_SESSION / wxEVT_END_SESSION / wxEVT_IDLE; wxNewEventType for registered command/notify names (wxWidgets 3.2.12 baseline)."
+    "wxwidgets": "wxEVT_BUTTON / wxEVT_TEXT / wxEVT_CHECKBOX / wxEVT_CHOICE / wxEVT_CLOSE_WINDOW / wxEVT_QUERY_END_SESSION / wxEVT_END_SESSION / wxEVT_IDLE / wxEVT_MENU; wxNewEventType for registered command/notify names (wxWidgets 3.2.12 baseline)."
   },
   {
     "name": "event-family",
@@ -1077,8 +1077,8 @@
     "kind": "generic-function",
     "arguments": "EVENT is an immutable snapshot, current innermost context or live OWNED-EVENT. SETF accepts only NIL on live state under the bounded detachment rules.",
     "returns": "Positive opaque bridge identity, or NIL for null/untracked native origin.",
-    "description": "Copy/read GetEventObject identity only when it matches a registered application, owned handler or tracked window. This differs from EVENT-SOURCE (binding receiver) and EVENT-ID (routing metadata). Pointer identity is compared without dereferencing the origin; no native pointer or wrapper reconstruction is exposed. Clear-only live SETF accepts NIL. Owned events are already detached; non-null current origins can clear only for registered command/notify tags matching actual native class. No origin object is retained or destroyed; EVENT-SOURCE and earlier snapshots stay unchanged.",
-    "scope": "Saved values need no native session and imply no current liveness. Context reads require active main-thread session and innermost callback; expired/suspended contexts signal NATIVE-ERROR. Null and untracked origins both map to NIL. Registry lookup is at capture/read time, not a historical pointer-lifetime guarantee. No new-origin writer, generic wxObject wrapper, origin retention or native ownership transfer. Live owned-event reads validate the resource and return NIL because every owned event is detached; no new-origin setter/retention protocol is supplied. Non-NIL origin SETF signals TYPE-ERROR after session validation.",
+    "description": "Copy/read GetEventObject identity only when it matches a registered application, owned handler, tracked window or managed menu resource. This differs from EVENT-SOURCE (binding receiver) and EVENT-ID (routing metadata). Pointer identity is compared without dereferencing the origin; no native pointer or wrapper reconstruction is exposed. Clear-only live SETF accepts NIL. Owned events are already detached; non-null current origins can clear only for registered command/notify tags matching actual native class. No origin object is retained or destroyed; EVENT-SOURCE and earlier snapshots stay unchanged.",
+    "scope": "Saved values need no native session and imply no current liveness. Context reads require active main-thread session and innermost callback; expired/suspended contexts signal NATIVE-ERROR. Null and untracked origins both map to NIL. Registry lookup is at capture/read time, not a historical pointer-lifetime guarantee. No new-origin writer, generic wxObject wrapper, origin retention or native ownership transfer. Live owned-event reads validate the resource and return NIL because every owned event is detached; no new-origin setter/retention protocol is supplied. Non-NIL origin SETF signals TYPE-ERROR after session validation. Actual OS-generated origin identity is not guaranteed; origin can differ from the frame binding receiver.",
     "wxwidgets": "wxEvent::GetEventObject, bounded bridge-identity mapping (wxWidgets 3.2.12 baseline).",
     "setf": {
       "syntax": "(setf (wxlambda:event-origin-id event-or-context) nil)",
@@ -1400,5 +1400,165 @@
     "description": "Wake the native idle system without pumping or invoking callbacks inline. Actual handling occurs at a later native idle opportunity, not a promised immediate time.",
     "scope": "Active main-thread GUI session required. No worker wake/posting facility, timer, implicit RUN or direct pending/idle pump is added.",
     "wxwidgets": "wxWakeUpIdle, managed GUI-thread mapping (wxWidgets 3.2.12 baseline)."
+  },
+  {
+    "name": "menu-resource",
+    "kind": "class",
+    "arguments": "Abstract base of MENU-BAR, MENU and MENU-ITEM.",
+    "returns": "No direct abstract construction.",
+    "description": "Native-owned menu resource identity with explicit liveness and destruction. Resources are not windows or event handlers; mixed managed ancestry rejects before allocation.",
+    "scope": "Requires an active main-thread GUI session and a live managed resource. Native resource/type/state failures signal NATIVE-ERROR; invalid Lisp types and CLOS receivers signal Lisp conditions. Structural operations reject during callbacks, pumps and RUN. Ownership stays in the frame/bar/menu native hierarchy; no raw pointer adoption or GC finalizer.",
+    "wxwidgets": "Bounded wxMenuBar/wxMenu/wxMenuItem lifetime protocol.",
+    "syntax": "wxlambda:menu-resource",
+    "construction": {
+      "syntax": "(make-instance 'wxlambda:menu-resource) ; signals an error",
+      "description": "Abstract base: no direct instantiation or native allocation. A subclass must inherit exactly one concrete MENU-BAR, MENU or MENU-ITEM class. Mixed event-handler/window/owned-event ancestry and multiple concrete menu ancestry reject before native allocation. Use the concrete constructor with :PARENT frame/bar/menu."
+    }
+  },
+  {
+    "name": "menu-bar",
+    "kind": "class",
+    "arguments": "FRAME via :PARENT; one managed bar per frame.",
+    "returns": "New native-backed instance.",
+    "description": "Create and attach a frame-owned menu bar; existing native bars cannot be adopted. Concrete subclass initargs and DEFAULT-INITARGS are supported; native properties exist in subclass AFTER hooks. Failed initialization cleans newly allocated resources and descendants; it does not undo arbitrary external mutations.",
+    "scope": "Requires an active main-thread GUI session and a live managed resource. Native resource/type/state failures signal NATIVE-ERROR; invalid Lisp types and CLOS receivers signal Lisp conditions. Structural operations reject during callbacks, pumps and RUN. Ownership stays in the frame/bar/menu native hierarchy; no raw pointer adoption or GC finalizer.",
+    "wxwidgets": "wxMenuBar and wxFrame::SetMenuBar",
+    "syntax": "menu-bar",
+    "construction": {
+      "syntax": "(make-instance 'wxlambda:menu-bar :parent frame)",
+      "description": "Native-backed CLOS construction; ownership transfers only into the managed parent hierarchy. Labels/help are Unicode strings without NUL. Nonseparator labels must be nonempty."
+    }
+  },
+  {
+    "name": "menu",
+    "kind": "class",
+    "arguments": "MENU-BAR via :PARENT and nonempty :LABEL.",
+    "returns": "New native-backed instance.",
+    "description": "Create a menu and append its raw tab label to the managed bar. Concrete subclass initargs and DEFAULT-INITARGS are supported; native properties exist in subclass AFTER hooks. Failed initialization cleans newly allocated resources and descendants; it does not undo arbitrary external mutations.",
+    "scope": "Requires an active main-thread GUI session and a live managed resource. Native resource/type/state failures signal NATIVE-ERROR; invalid Lisp types and CLOS receivers signal Lisp conditions. Structural operations reject during callbacks, pumps and RUN. Ownership stays in the frame/bar/menu native hierarchy; no raw pointer adoption or GC finalizer.",
+    "wxwidgets": "wxMenu and wxMenuBar::Append",
+    "syntax": "menu",
+    "construction": {
+      "syntax": "(make-instance 'wxlambda:menu :parent bar :label \"&File\")",
+      "description": "Native-backed CLOS construction; ownership transfers only into the managed parent hierarchy. Labels/help are Unicode strings without NUL. Nonseparator labels must be nonempty."
+    }
+  },
+  {
+    "name": "menu-item",
+    "kind": "class",
+    "arguments": "MENU via :PARENT; :ID, :LABEL, :HELP, :KIND, :CHECKED-P and :ENABLED-P.",
+    "returns": "New native-backed instance.",
+    "description": "Create and append a normal/check/separator item. Normal/check IDs are positive signed32 and unique across the bar. Separators require NIL ID and empty label/help. Check state is only valid for :CHECK. Help is construction-only. Concrete subclass initargs and DEFAULT-INITARGS are supported; native properties exist in subclass AFTER hooks. Failed initialization cleans newly allocated resources and descendants; it does not undo arbitrary external mutations. Explicit :ENABLED-P or :CHECKED-P on a separator rejects even NIL. A normal item permits NIL checked state but rejects a non-NIL initial check.",
+    "scope": "Requires an active main-thread GUI session and a live managed resource. Native resource/type/state failures signal NATIVE-ERROR; invalid Lisp types and CLOS receivers signal Lisp conditions. Structural operations reject during callbacks, pumps and RUN. Ownership stays in the frame/bar/menu native hierarchy; no raw pointer adoption or GC finalizer.",
+    "wxwidgets": "wxMenuItem and wxMenu::Append",
+    "syntax": "menu-item",
+    "construction": {
+      "syntax": "(make-instance 'wxlambda:menu-item :parent menu :id 1001 :label \"&Open\")",
+      "description": "Native-backed CLOS construction; ownership transfers only into the managed parent hierarchy. Labels/help are Unicode strings without NUL. Nonseparator labels must be nonempty."
+    }
+  },
+  {
+    "name": "make-menu-bar",
+    "kind": "generic-function",
+    "arguments": "FRAME is live; :CLASS defaults to MENU-BAR. Remaining constructor and subclass initargs are forwarded.",
+    "returns": "New instance of the selected concrete subclass.",
+    "description": "Thin MAKE-INSTANCE factory with validated subclass support; same ownership, defaults and validation as MENU-BAR.",
+    "scope": "Requires an active main-thread GUI session and a live managed resource. Native resource/type/state failures signal NATIVE-ERROR; invalid Lisp types and CLOS receivers signal Lisp conditions. Structural operations reject during callbacks, pumps and RUN. Ownership stays in the frame/bar/menu native hierarchy; no raw pointer adoption or GC finalizer.",
+    "wxwidgets": "wxMenuBar and wxFrame::SetMenuBar"
+  },
+  {
+    "name": "make-menu",
+    "kind": "generic-function",
+    "arguments": "MENU-BAR is live; :CLASS defaults to MENU. Remaining constructor and subclass initargs are forwarded.",
+    "returns": "New instance of the selected concrete subclass.",
+    "description": "Thin MAKE-INSTANCE factory with validated subclass support; same ownership, defaults and validation as MENU.",
+    "scope": "Requires an active main-thread GUI session and a live managed resource. Native resource/type/state failures signal NATIVE-ERROR; invalid Lisp types and CLOS receivers signal Lisp conditions. Structural operations reject during callbacks, pumps and RUN. Ownership stays in the frame/bar/menu native hierarchy; no raw pointer adoption or GC finalizer.",
+    "wxwidgets": "wxMenu and wxMenuBar::Append"
+  },
+  {
+    "name": "make-menu-item",
+    "kind": "generic-function",
+    "arguments": "MENU is live; :CLASS defaults to MENU-ITEM. Remaining constructor and subclass initargs are forwarded.",
+    "returns": "New instance of the selected concrete subclass.",
+    "description": "Thin MAKE-INSTANCE factory with validated subclass support; same ownership, defaults and validation as MENU-ITEM.",
+    "scope": "Requires an active main-thread GUI session and a live managed resource. Native resource/type/state failures signal NATIVE-ERROR; invalid Lisp types and CLOS receivers signal Lisp conditions. Structural operations reject during callbacks, pumps and RUN. Ownership stays in the frame/bar/menu native hierarchy; no raw pointer adoption or GC finalizer.",
+    "wxwidgets": "wxMenuItem and wxMenu::Append"
+  },
+  {
+    "name": "menu-label",
+    "kind": "generic-function",
+    "arguments": "MENU is live; SETF VALUE is a nonempty Unicode string without NUL.",
+    "returns": "Raw top-level tab label; SETF returns VALUE.",
+    "description": "Read/write bar tab label including native mnemonic syntax. This differs from a menu item label. Scalar writes are permitted in callbacks.",
+    "scope": "Requires an active main-thread GUI session and a live managed resource. Native resource/type/state failures signal NATIVE-ERROR; invalid Lisp types and CLOS receivers signal Lisp conditions. Structural operations reject during callbacks, pumps and RUN. Ownership stays in the frame/bar/menu native hierarchy; no raw pointer adoption or GC finalizer.",
+    "wxwidgets": "wxMenuBar::GetMenuLabel / SetMenuLabel",
+    "syntax": "(wxlambda:menu-label menu)",
+    "setf": {
+      "syntax": "(setf (wxlambda:menu-label menu) value)",
+      "description": "Assign the raw tab label; no command callback is synthesized."
+    }
+  },
+  {
+    "name": "menu-count",
+    "kind": "generic-function",
+    "arguments": "MENU-BAR is live.",
+    "returns": "Nonnegative integer.",
+    "description": "Count menus attached to this bar.",
+    "scope": "Requires an active main-thread GUI session and a live managed resource. Native resource/type/state failures signal NATIVE-ERROR; invalid Lisp types and CLOS receivers signal Lisp conditions. Structural operations reject during callbacks, pumps and RUN. Ownership stays in the frame/bar/menu native hierarchy; no raw pointer adoption or GC finalizer.",
+    "wxwidgets": "wxMenuBar::GetMenuCount"
+  },
+  {
+    "name": "menu-item-count",
+    "kind": "generic-function",
+    "arguments": "MENU is live.",
+    "returns": "Nonnegative integer.",
+    "description": "Count all items including separators in this menu.",
+    "scope": "Requires an active main-thread GUI session and a live managed resource. Native resource/type/state failures signal NATIVE-ERROR; invalid Lisp types and CLOS receivers signal Lisp conditions. Structural operations reject during callbacks, pumps and RUN. Ownership stays in the frame/bar/menu native hierarchy; no raw pointer adoption or GC finalizer.",
+    "wxwidgets": "wxMenu::GetMenuItemCount"
+  },
+  {
+    "name": "menu-item-id",
+    "kind": "generic-function",
+    "arguments": "MENU-ITEM is live.",
+    "returns": "Positive command ID or NIL for a separator.",
+    "description": "Read immutable routing identity. IDs are unique across the managed bar.",
+    "scope": "Requires an active main-thread GUI session and a live managed resource. Native resource/type/state failures signal NATIVE-ERROR; invalid Lisp types and CLOS receivers signal Lisp conditions. Structural operations reject during callbacks, pumps and RUN. Ownership stays in the frame/bar/menu native hierarchy; no raw pointer adoption or GC finalizer.",
+    "wxwidgets": "wxMenuItem::GetId"
+  },
+  {
+    "name": "menu-item-kind",
+    "kind": "generic-function",
+    "arguments": "MENU-ITEM is live.",
+    "returns": ":NORMAL, :CHECK or :SEPARATOR.",
+    "description": "Read immutable item kind; radio and submenu kinds are outside this slice.",
+    "scope": "Requires an active main-thread GUI session and a live managed resource. Native resource/type/state failures signal NATIVE-ERROR; invalid Lisp types and CLOS receivers signal Lisp conditions. Structural operations reject during callbacks, pumps and RUN. Ownership stays in the frame/bar/menu native hierarchy; no raw pointer adoption or GC finalizer.",
+    "wxwidgets": "wxMenuItem::GetKind"
+  },
+  {
+    "name": "menu-resource-alive-p",
+    "kind": "generic-function",
+    "arguments": "RESOURCE is a menu resource.",
+    "returns": "T/NIL.",
+    "description": "Query managed native liveness. Parent destruction invalidates all descendants. Requires an active session; no pointer adoption.",
+    "scope": "Requires an active main-thread GUI session and a completed managed wrapper. Expired/destroyed native resources return NIL rather than requiring native liveness. Invalid Lisp receivers signal CLOS conditions; no raw native adoption or GC finalizer.",
+    "wxwidgets": "Bridge registry identity and native ownership"
+  },
+  {
+    "name": "destroy-menu-resource",
+    "kind": "generic-function",
+    "arguments": "RESOURCE is live.",
+    "returns": "T on successful explicit destruction.",
+    "description": "Delete a resource through its native owner, invalidating descendants and wrapper handles. Menu/bar deletion removes it from its parent; frame lifetime also cleans remaining descendants. Structural callback/pump/RUN deletion rejects.",
+    "scope": "Requires an active main-thread GUI session and a live managed resource. Native resource/type/state failures signal NATIVE-ERROR; invalid Lisp types and CLOS receivers signal Lisp conditions. Structural operations reject during callbacks, pumps and RUN. Ownership stays in the frame/bar/menu native hierarchy; no raw pointer adoption or GC finalizer.",
+    "wxwidgets": "wxFrame::SetMenuBar / wxMenuBar::Remove / wxMenu::Destroy and destructors"
+  },
+  {
+    "name": "activate-menu-item",
+    "kind": "generic-function",
+    "arguments": "MENU-ITEM is a live normal/check item.",
+    "returns": "Native handled boolean; NIL for a disabled item.",
+    "description": "Programmatically route the native command through its frame. Separators reject. This is not a claim that graphical OS menu selection or accelerators were exercised. Event metadata and resource state remain distinct; see MENUS guide for checked-command behavior. Native check-item activation toggles the resource before callbacks. A normal item can carry native command integer -1, so EVENT-CHECKED-P may be true even for a normal item; use CHECKED-P on a known check resource for actual state.",
+    "scope": "Requires an active main-thread GUI session and a live managed resource. Native resource/type/state failures signal NATIVE-ERROR; invalid Lisp types and CLOS receivers signal Lisp conditions. Structural operations reject during callbacks, pumps and RUN. Ownership stays in the frame/bar/menu native hierarchy; no raw pointer adoption or GC finalizer.",
+    "wxwidgets": "wxFrame::ProcessCommand"
   }
 ]

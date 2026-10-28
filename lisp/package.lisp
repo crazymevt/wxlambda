@@ -1,6 +1,9 @@
 (defpackage #:wxlambda
   (:use #:cl)
-  (:export #:event-more-requested-p #:idle-mode #:window-process-idle-p #:wake-up-idle
+  (:export #:menu-resource #:menu-bar #:menu #:menu-item #:make-menu-bar #:make-menu #:make-menu-item
+           #:menu-label #:menu-count #:menu-item-count #:menu-item-id #:menu-item-kind
+           #:menu-resource-alive-p #:destroy-menu-resource #:activate-menu-item
+           #:event-more-requested-p #:idle-mode #:window-process-idle-p #:wake-up-idle
            #:event-user-data #:event-handler-client-data #:event-extra-long #:event-selection-p
            #:window-event-handler #:push-event-handler #:pop-event-handler #:remove-event-handler
            #:process-window-event #:process-window-event-locally

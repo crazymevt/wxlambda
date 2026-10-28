@@ -12,6 +12,10 @@ void capture_assert(const wxString&, int, const wxString&, const wxString&, cons
 }
 void expect(bool ok, const char* message);
 bool binding_called = false;
+unsigned menu_calls = 0;
+int menu_checked_payload = -1;
+int menu_integer_payload = 0;
+wxl_handle menu_origin = 0;
 uint64_t saved_context = 0;
 void inspect_binding(uint64_t token, const wxl_event* event) {
     expect(event->user_data == token, "Snapshot binding user data mismatch");
@@ -27,6 +31,7 @@ void inspect_binding(uint64_t token, const wxl_event* event) {
 }
 void ignore_event(uint64_t token, const wxl_event* event) {
     if (token == 901) inspect_binding(token, event);
+    if (token == 903) { ++menu_calls; menu_checked_payload = event->checked; menu_integer_payload = event->integer; menu_origin = event->origin_id; }
 }
 void expect(bool ok, const char* message) {
     if (!ok) throw std::runtime_error(message);
@@ -47,6 +52,71 @@ void expect_rejected(wxl_handle id) {
     expect(token == 999, "Failed read must preserve its output");
     expect(wxl_set_handler_client_data(id, 41) == -1, "Foreign storage replacement must reject");
     expect(wxl_set_handler_client_data(id, 0) == -1, "Foreign storage clearing must reject");
+}
+void exercise_menus() {
+    const auto frame = wxl_frame("Menu native regression", 240, 140);
+    const auto bar = wxl_menu_bar(frame);
+    expect(bar && !wxl_menu_bar(frame), "Only one menu bar may attach to a frame");
+    expect(!wxl_menu(bar, "", 0), "Empty menu title must reject");
+    const char embedded_nul[] = {'a', 0, 'b'};
+    expect(!wxl_menu(bar, embedded_nul, 3), "NUL menu title must reject");
+    const auto menu = wxl_menu(bar, "&File", 5);
+    expect(!wxl_menu_item(menu, 18004, "", 0, nullptr, 0, 0), "Empty item label must reject");
+    expect(!wxl_menu_item(menu, 18004, "text", 4, embedded_nul, 3, 0), "NUL help must reject");
+    const auto check = wxl_menu_item(menu, 18001, "&Check\tCtrl+K", 13, "help", 4, 1);
+    const auto separator = wxl_menu_item(menu, 0, nullptr, 0, nullptr, 0, 2);
+    size_t label_length = 999;
+    expect(wxl_menu_label(bar, &label_length) == nullptr && label_length == 0 && *wxl_last_error(),
+           "Wrong menu label receiver must reset length and set an error");
+    const auto* tab_label = wxl_menu_label(menu, &label_length);
+    expect(tab_label && std::string(tab_label, label_length) == "&File" && !*wxl_last_error(),
+           "Successful menu label read must clear stale error");
+    expect(wxl_menu_label(check, nullptr) == nullptr && *wxl_last_error(),
+           "Missing menu label length output must reject");
+    const auto* item_label = wxl_menu_label(check, &label_length);
+    expect(item_label && label_length != 0 && !*wxl_last_error(),
+           "Successful item label read must clear stale error");
+    expect(wxl_set_menu_label(check, "", 0) == -1 && wxl_set_menu_label(menu, embedded_nul, 3) == -1,
+           "Invalid label mutation must reject");
+    expect(menu && check && separator && wxl_menu_count(bar) == 1 && wxl_menu_count(menu) == 2,
+           "Menu resource construction/count failed");
+    expect(!wxl_menu_item(menu, 18001, "dup", 3, nullptr, 0, 0), "Duplicate menu ID must reject");
+    int id = 0;
+    expect(wxl_menu_item_id(separator, &id) == 0 && id == wxID_SEPARATOR, "Separator ID mismatch");
+    expect(wxl_menu_checked(check) == 0 && wxl_menu_item_kind(check) == 1, "Check item metadata mismatch");
+    expect(wxl_bind(frame, WXL_EVENT_MENU, 903, 18001, wxID_ANY, 1, 0) == 0, "Menu action bind failed");
+    expect(wxl_activate_menu(check) == 1 && menu_calls == 1, "Menu activation not handled");
+    expect(wxl_menu_checked(check) == 1 && menu_checked_payload == 1,
+           "ProcessCommand should toggle check item before callback");
+    expect(menu_origin == frame || menu_origin == menu, "Unexpected menu command origin");
+    std::cout << "Menu ProcessCommand origin handle=" << menu_origin << " frame=" << frame << " menu=" << menu << '\n';
+    expect(wxl_activate_menu(check) == 1 && wxl_menu_checked(check) == 0 && menu_checked_payload == 0,
+           "Second activation should untoggle check item");
+    expect(wxl_set_menu_enabled(check, 0) == 1 && wxl_set_menu_enabled(check, 0) == 0,
+           "Enable changed-result mismatch");
+    expect(wxl_activate_menu(check) == 0 && menu_calls == 2, "Disabled activation should not deliver");
+    expect(wxl_activate_menu(separator) == -1, "Separator activation must reject");
+    expect(wxl_unbind(903) == 1, "Menu action unbind failed");
+    const auto normal = wxl_menu_item(menu, 18005, "Normal", 6, nullptr, 0, 0);
+    expect(wxl_bind(frame, WXL_EVENT_MENU, 903, 18005, wxID_ANY, 1, 0) == 0, "Normal action bind failed");
+    expect(wxl_activate_menu(normal) == 1 && menu_integer_payload == -1 && menu_checked_payload == 1,
+           "Normal menu command preserves native -1 integer/IsChecked interpretation");
+    expect(wxl_menu_checked(normal) == -1, "Normal item check-state query must reject");
+    expect(wxl_unbind(903) == 1, "Normal action unbind failed");
+    expect(wxl_menu_destroy(menu) == 0 && wxl_menu_alive(menu) == 0 && wxl_menu_alive(check) == 0 && wxl_menu_count(bar) == 0,
+           "Deleting menu must invalidate owned items");
+    const auto another = wxl_menu(bar, "Edit", 4);
+    const auto child = wxl_menu_item(another, 18002, "Item", 4, nullptr, 0, 0);
+    expect(wxl_menu_destroy(bar) == 0 && wxl_menu_alive(another) == 0 && wxl_menu_alive(child) == 0,
+           "Deleting bar must invalidate descendants");
+    const auto last_bar = wxl_menu_bar(frame);
+    const auto last_menu = wxl_menu(last_bar, "Last", 4);
+    const auto last_item = wxl_menu_item(last_menu, 18003, "Last item", 9, nullptr, 0, 0);
+    as<wxFrame>(frame)->Bind(wxEVT_DESTROY, [](wxWindowDestroyEvent&) { });
+    delete as<wxFrame>(frame);
+    expect(wxl_menu_alive(last_bar) == 0 && wxl_menu_alive(last_menu) == 0 && wxl_menu_alive(last_item) == 0,
+           "Real frame deletion must invalidate menus despite consumed destroy event");
+    expect(menu_resources.empty(), "Menu registry must not retain deleted resources");
 }
 void exercise_idle() {
     expect(native_event_type(WXL_EVENT_IDLE) == wxEVT_IDLE && native_event_family(WXL_EVENT_IDLE) == WXL_FAMILY_IDLE,
@@ -182,6 +252,7 @@ int main() {
         exercise_client_data(foreign_destroyed);
         exercise_binding_data();
         exercise_idle();
+        exercise_menus();
         expect(wxl_finish() == 0, "Application cleanup failed");
         active = false;
         expect(wxIdleEvent::GetMode() == wxIDLE_PROCESS_ALL, "Finish did not restore pre-session idle mode");
@@ -190,7 +261,7 @@ int main() {
         expect(foreign_destroyed == 1, "Foreign data was deleted more than once");
         expect(assertion_count.load() == 0, "Client-data operations triggered a wx assertion");
         wxSetAssertHandler(old_assert_handler);
-        std::cout << "PASS: handler client data, binding user-data lifetime, idle metadata/mode/style restoration, foreign guards and zero wx assertions\n";
+        std::cout << "PASS: handler client data, binding user-data lifetime, idle metadata/mode/style restoration, menu ownership/actions, foreign guards and zero wx assertions\n";
         return 0;
     } catch (const std::exception& failure) {
         if (active) wxl_finish();

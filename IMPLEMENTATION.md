@@ -79,23 +79,23 @@ as if later features or platform checks already passed.
 - Idle batch: :IDLE family/resources, bounded RequestMore, session-restored
   automatic mode, own-window opt-in and native wake scheduling. Independent review
   and final verification pass.
-- Current bridge ABI: 31. Public API: 131 exports, nine window wrapper classes
-  (eight concrete widget kinds) plus the event-handler base, 92 named generics and
-  thirty generic SETF writers. The application-handler is a borrowed view; no
+- Current bridge ABI: 32. Public API: 146 exports, nine window wrapper classes
+  (eight concrete widget kinds) plus the event-handler base and frame-owned menu resources, 103 named generics and
+  thirty-one generic SETF writers. The application-handler is a borrowed view; no
   native application construction or arbitrary-event class binding exists yet; built-ins plus registered command/notify names have
   observer/contextual bindings.
-- Latest implementation verification: 48 GUI scenarios and native preflight
+- Latest implementation verification: 49 GUI scenarios and native preflight
   pass on local Apple Silicon macOS SBCL 2.6.9 and CCL 1.13. Final reports:
-  `evidence/idle-events/{sbcl,ccl}-20261028-final/`. Five package checks
-  pass in `evidence/packaging/idle-events-20261028/`.
+  `evidence/menus/{sbcl,ccl}-20261028-final/`. Five package checks
+  pass in `evidence/packaging/menus-20261028/`.
   Hosted Linux/Windows GUI behavior and the graphical Cadre viewer remain open.
 
 ### Feature priorities and working order
 
 1. Preserve core ownership/invalidation, callbacks/main-thread rules, CLOS APIs
    and required documentation/examples/docset/testing for every delivered feature.
-2. Idle support is complete within its documented scope. Next implement
-   **menus/actions plus standard dialogs** for a form/editor. Add only necessary
+2. Menus/actions implement the first part of the selected GUI slice. Next implement
+   **standard dialogs** for a form/editor. Add only necessary
    timer/value/lifetime prerequisites; do not drain native ownership/utilities.
 3. Expand controls/layout, navigation/notebooks, list/tree, clipboard and drawing
    against form/editor, tree/list manager and drawing/monitoring acceptance.
@@ -1451,11 +1451,65 @@ remain factual inventory entries, not automatic blockers for unrelated GUI work.
 with only the value/lifetime prerequisites that feature needs. The earlier saved
 native-only idle checkpoint is now integrated; do not reapply its patch.
 
+## Frame menus and actions (2026-10-28, verification pending)
+
+ABI 32 adds the menu portion of the selected everyday-GUI vertical slice.
+MENU-RESOURCE is abstract; native frame-owned MENU-BAR/MENU/MENU-ITEM resources
+use native-backed CLOS and generic factories with :PARENT, subclass hooks and
+rollback. Menu/tab labels, normal/check/separator items, per-bar unique positive
+IDs, counts/kind/identity, scalar label/enabled/check updates and explicit
+destruction are bounded managed interfaces. The native owner tree invalidates
+descendants independently of Lisp GC. Structural edits reject callbacks/pumps/RUN;
+scalar edits remain available during callbacks. No adoption, reparenting, popup,
+submenu/radio group or generic native ownership interface is added.
+
+Built-in :MENU command callbacks use the existing frame ID/range/user-data/context
+protocol. EVENT-CHECKED-P reads/writes :MENU/:TOGGLE raw command metadata without
+looking up or synchronizing resource state. ACTIVATE-MENU-ITEM uses native frame
+ProcessCommand; check resources toggle before callbacks, disabled items return
+NIL, separators reject. Normal native commands can carry integer -1, so raw
+EVENT-CHECKED-P can be true on a normal item; resource CHECKED-P is check-only.
+OS menu selection
+and accelerators remain separate verification. Normal/check label/help validation
+and separator option restrictions are documented in docs/MENUS.md.
+
+Independent native review identified a P2 ABI-boundary issue: menu-label string
+reads needed the common metadata_string catch-all and stale-error clearing,
+rather than the narrower manual exception path. The implementation now uses the
+shared boundary; the native regression passes with zero wx assertions
+(quiet-run.A3Ze5r3X). Documentation review corrected built-in type enumeration,
+managed-menu origin identities, stale menu liveness scope and obsolete app idle/
+propagation gaps. Initial docset construction caught missing MENU-RESOURCE syntax;
+that signature was completed. The actual-package export/class check then caught
+the abstract MENU-RESOURCE entry missing its required Construction section
+(quiet-run.8UQaBuEp); an explicit abstract construction/error contract was added,
+and all four menu class records now include Construction sections. Standard
+static docset checks alone did not catch this actual-class requirement.
+An initial test accumulator DEFVAR missing NIL was
+corrected in the tests; no runtime failure was attributed to that test setup.
+
+Verified counts: 146 exports, 103 named generics, 31 SETF generics,
+49 GUI scenarios, 30 examples and 207 docset entries. Independent runtime/native
+and documentation reviews pass after the corrections above. Both local full GUI
+suites and native preflights pass on SBCL and CCL, including menus and the final
+label boundary fix. Focused tests and the example pass on both Lisps; the native
+regression reports zero wx assertions (quiet-run.A3Ze5r3X). Thirteen inventory
+tests, sixteen Python tests and five relocated package checks pass. Actual-package
+export/class/SETF checks and isolated docset installation, discovery, symbol lookup
+and guide/example access pass; the docset reports zero problems.
+
+Evidence: evidence/menus/{sbcl,ccl}-20261028-final/ and
+evidence/packaging/menus-20261028/; package: dist/wxlambda-form-menus.
+Manual OS menu selection/accelerator input, hosted Windows/Linux GUI, real OS
+session delivery and graphical Cadre remain unverified. Standard dialogs are the
+next selected GUI slice; menu radio/submenu/popup depth remains on-demand rather
+than an automatic blocker for that next feature.
+
 ## Decisions
 
 - D1 (superseded) The former complete-wxWidgets objective treated bounded releases
   as intermediate and every native gap as required; retained as historical context.
-- D8 Current goal is broad GUI coverage with selective depth. Feature policy and
+- D11 Current goal is broad GUI coverage with selective depth. Feature policy and
   representative-app acceptance govern delivery; C1–C7 are inventory categories
   and native pending entries are not automatic release blockers.
 - D2 Gate editor support on prototype evidence because main-thread integration

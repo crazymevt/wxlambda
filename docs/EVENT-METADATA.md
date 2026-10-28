@@ -103,5 +103,5 @@ selection-action metadata from kind-specific checked/selection views and add
 bounded clear-only native origin detachment without retaining objects.
 
 [Idle events](IDLE-EVENTS.md) add family :IDLE, bounded RequestMore, global
-automatic policy and own-window opt-in metadata. The next GUI breadth slice is
-menus/actions plus standard dialogs, not exhaustive foundation parity.
+automatic policy and own-window opt-in metadata. Frame menus/actions now extend GUI breadth; standard dialogs are next,
+without requiring exhaustive foundation parity.

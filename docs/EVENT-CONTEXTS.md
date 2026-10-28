@@ -3,7 +3,7 @@
 This C1 slice adds borrowed `event-context` values for native Skip and propagation
 control. Existing `event` snapshots remain immutable Lisp-owned data. The bridge
 is ABI 31, using the wxWidgets 3.2.12 inventory baseline. Supported events now include
-four command kinds, the [close family](CLOSE-EVENTS.md), registered command/notify
+five command kinds (including :MENU), the [close family](CLOSE-EVENTS.md), registered command/notify
 types and [idle events](IDLE-EVENTS.md). Registered
 [notify types](NOTIFY-EVENTS.md) support scoped Veto/Allow. Arbitrary native
 classes and native notify subclasses remain outside the bounded bridge;
@@ -99,7 +99,8 @@ supported snapshot, including observer/control-specific callbacks:
    (wxlambda:event-type :click))
 ```
 
-The lookup accepts `:click`, `:text-change`, `:toggle`, `:selection` and `:close`,
+The lookup accepts `:click`, `:text-change`, `:toggle`, `:selection`, `:menu`,
+`:close`, `:query-end-session`, `:end-session` and `:idle`,
 or a registered command/notify name, and requires an active main-thread session. Saved snapshot integers can be read without a
 session. These are process-local runtime IDs; do not serialize them as stable
 type identifiers or compare IDs from different processes. `event-kind` retains

@@ -90,21 +90,21 @@ The current baseline has eight concrete widgets, basic layout and a deeply teste
 managed lifetime/event layer, including command/notify/close/idle families, owned
 resources, pending delivery, handler chains/stacks and rooted Lisp associations.
 This foundation supports breadth; it is not a mandate to keep draining C1.
-Idle support is complete within its documented scope. Next deliver menus/actions
-plus standard dialogs for the form/editor, with only that slice's prerequisites.
+Menus/actions deliver the first part of the selected form/editor slice.
+Standard dialogs are next, with only that feature's necessary prerequisites.
 Native notify subclasses, retained origins and other unselected depth stay
 visible as native gaps without automatically blocking that GUI work.
 See the [C1 details](coverage/phase-c1.md), [C2 details](coverage/phase-c2.md) and
 [class index](coverage/classes.md) for the remaining work within bound families.
 
-The current bridge is ABI 31, with 131 public Lisp exports. The idle batch passes
-48 GUI scenarios on both local Apple Silicon macOS SBCL/CCL configurations and
-five packaging checks. These are local results retained under
-`evidence/idle-events/{sbcl,ccl}-20261028-final/` and
-`evidence/packaging/idle-events-20261028/`;
-they do not validate Linux/Windows or the graphical Cadre viewer. The idle
-implementation reruns the GUI suites; documentation-only
-updates must distinguish retained results from newly run checks.
+The current bridge is ABI 32, with 146 public Lisp exports. The menu/action batch
+passes all 49 GUI scenarios on both local Apple Silicon macOS SBCL/CCL configurations
+and five packaging checks. Reports: `evidence/menus/{sbcl,ccl}-20261028-final/`
+and `evidence/packaging/menus-20261028/`. Independent reviews and the zero-assert
+native regression pass. Docset checks pass with 207 entries and zero problems,
+including actual public-export/class/SETF coverage and isolated discovery/lookup.
+These checks do not validate hosted Windows/Linux, manual OS menu selection or
+accelerator input, real OS session delivery, or the graphical Cadre viewer.
 
 A milestone is accepted against its selected GUI scope and representative
 workflows, not declaration totals or completion of every pending native entry.
@@ -124,7 +124,7 @@ status.json to represent deferral or assume a Lisp equivalent without checking
 its required semantics. A class can stay native-partial while its selected GUI
 feature scope is accepted. Native missing APIs are not automatic release blockers.
 
-**Next vertical slice after idle:** menus/actions plus standard dialogs for an
+**Current vertical slice:** menus/actions, followed next by standard dialogs for an
 everyday form/editor, adding only timer/value/lifetime prerequisites actually
 needed by that slice. Do not drain native ownership/utilities first.
 
@@ -211,7 +211,8 @@ widget classes has complete wxWidgets coverage yet.
 - [x] :IDLE snapshots/current/owned resources, RequestMore, session-restored IDLE-MODE, own-window idle opt-in and GUI-thread wake scheduling. Explicit synthetic delivery is distinct from automatic policy; this does not imply full native idle/worker parity.
 - [x] Native errors translated to Lisp `native-error` conditions.
 - [x] Event snapshots: `event`, `event-p`, `event-kind`, `event-source`,
-  `event-text`, `event-checked-p`, `event-selection` for four command kinds plus :close.
+  `event-text`, `event-checked-p`, `event-selection` and family-specific payloads
+  across supported command/notify/close/idle families; :MENU joins five command kinds.
 
 ### C2: Windows, controls and layout
 
@@ -288,7 +289,9 @@ useful control.
 [Complete C3 source inventory](coverage/phase-c3.md). Menus/actions, toolbar/status
 feedback, standard dialogs, books/notebooks and clipboard are everyday priorities.
 Drag/drop and specialized platform/help/wizard services follow concrete demand.
-The next post-idle batch is menus/actions plus standard dialogs.
+Frame-owned normal/check/separator menus and ID-routed actions are implemented
+within the documented scope; final verification is pending. Standard dialogs are
+next. Popup/submenu/radio and full native menu overload depth stay in the inventory.
 
 ### C4: Models, complex controls, and document frameworks
 
@@ -381,3 +384,7 @@ field/mode API.
 The ABI 31 idle batch passes all 48 local GUI scenarios on both Lisps, five
 package checks and the zero-assert native regression; independent reviews pass. Automatic idle policy is separate from explicit synthetic
 delivery and own-window opt-in is not an effective eligibility predicate.
+
+The verified ABI 32 menu batch adds managed native menu hierarchies and :MENU
+commands; [MENUS.md](MENUS.md) defines its selected scope and completed checks. Standard dialogs are next; native menu gaps do not automatically block
+that GUI feature.

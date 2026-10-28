@@ -3,6 +3,7 @@
 #include <wx/thread.h>
 #include <wx/choice.h>
 #include <wx/gauge.h>
+#include <wx/menu.h>
 #include <wx/weakref.h>
 #include <memory>
 #include <typeinfo>
@@ -10,6 +11,7 @@
 #include <vector>
 #include <limits>
 #include <algorithm>
+#include <cstring>
 #include <stdexcept>
 #include <string>
 #include <unordered_map>
@@ -76,9 +78,23 @@ std::unordered_map<wxl_handle, uint64_t> handlers;
 struct Binding;
 std::unordered_map<uint64_t, std::shared_ptr<Binding>> bindings;
 std::unordered_set<wxl_handle> pending_destruction;
+struct MenuResource { wxObject* object; wxl_handle frame, parent; int kind; };
+std::unordered_map<wxl_handle, MenuResource> menu_resources;
+class ManagedMenuBar final : public wxMenuBar {
+public: wxl_handle identity = 0;
+    ~ManagedMenuBar() override { menu_resources.erase(identity); }
+};
+class ManagedMenu final : public wxMenu {
+public: wxl_handle identity = 0;
+    ~ManagedMenu() override { menu_resources.erase(identity); }
+};
+class ManagedMenuItem final : public wxMenuItem {
+public: using wxMenuItem::wxMenuItem; wxl_handle identity = 0;
+    ~ManagedMenuItem() override { menu_resources.erase(identity); }
+};
 struct RegisteredEvent { wxEventType type; int family; };
 std::unordered_map<int, RegisteredEvent> registered_events;
-constexpr int first_registered_event_kind = WXL_EVENT_IDLE + 1;
+constexpr int first_registered_event_kind = WXL_EVENT_MENU + 1;
 int next_event_kind = first_registered_event_kind;
 wxIdleMode initial_idle_mode = wxIDLE_PROCESS_ALL;
 wxl_handle next_handle = 1;
@@ -195,6 +211,8 @@ wxl_handle origin_id(const wxEvent& event) {
         if (origin == item.second.get()) return item.first;
     for (const auto& item : windows)
         if (item.second.get() && origin == item.second.get()) return item.first;
+    for (const auto& item : menu_resources)
+        if (origin == item.second.object) return item.first;
     return 0;
 }
 bool isolated_handler(wxl_handle id) {
@@ -302,6 +320,7 @@ wxEventTypeTag<wxEvent> native_event_type(int kind) {
         case WXL_EVENT_QUERY_END_SESSION: return wxEventTypeTag<wxEvent>(wxEVT_QUERY_END_SESSION);
         case WXL_EVENT_END_SESSION: return wxEventTypeTag<wxEvent>(wxEVT_END_SESSION);
         case WXL_EVENT_IDLE: return wxEventTypeTag<wxEvent>(wxEVT_IDLE);
+        case WXL_EVENT_MENU: return wxEventTypeTag<wxEvent>(wxEVT_MENU);
         default: {
             const auto it = registered_events.find(kind);
             require(it != registered_events.end(), "Unsupported event kind");
@@ -313,6 +332,7 @@ int native_event_family(int kind) {
     if (kind >= WXL_EVENT_CLICK && kind <= WXL_EVENT_SELECTION) return WXL_FAMILY_COMMAND;
     if (kind >= WXL_EVENT_CLOSE && kind <= WXL_EVENT_END_SESSION) return WXL_FAMILY_CLOSE;
     if (kind == WXL_EVENT_IDLE) return WXL_FAMILY_IDLE;
+    if (kind == WXL_EVENT_MENU) return WXL_FAMILY_COMMAND;
     const auto it = registered_events.find(kind);
     require(it != registered_events.end(), "Unsupported event kind");
     return it->second.family;
@@ -364,7 +384,7 @@ std::unique_ptr<wxEvent> synthetic_event(wxEvtHandler* receiver, int kind, int e
     return event;
 }
 int kind_of(wxEvent& event) {
-    for (int kind = WXL_EVENT_CLICK; kind <= WXL_EVENT_IDLE; ++kind)
+    for (int kind = WXL_EVENT_CLICK; kind <= WXL_EVENT_MENU; ++kind)
         if (native_event_type(kind) == event.GetEventType()) return kind;
     for (const auto& item : registered_events)
         if (item.second.type == event.GetEventType()) return item.first;
@@ -411,7 +431,7 @@ int64_t read_event_field(wxEvent& event, int field) {
         case 11: return event.ShouldPropagate();
         case 12: return native_event_family(kind_of(event));
         case 14: return command ? command->GetExtraLong() : 0;
-        case 15: return command && event.GetEventType() == wxEVT_CHECKBOX && command->IsChecked();
+        case 15: return command && (event.GetEventType() == wxEVT_CHECKBOX || event.GetEventType() == wxEVT_MENU) && command->IsChecked();
         case 16: return command && event.GetEventType() == wxEVT_CHOICE ? command->GetSelection() : -1;
         case 17: return command && command->IsSelection();
         case 18: { auto* idle = dynamic_cast<wxIdleEvent*>(&event); return idle && idle->MoreRequested(); }
@@ -463,7 +483,7 @@ void write_event_field(wxEvent& event, int field, int64_t value) {
                     "Extra-long payload outside native LONG range");
             command->SetExtraLong(static_cast<long>(value)); break;
         case 15:
-            require(command && event.GetEventType() == wxEVT_CHECKBOX, "Checked metadata requires a toggle event");
+            require(command && (event.GetEventType() == wxEVT_CHECKBOX || event.GetEventType() == wxEVT_MENU), "Checked metadata requires a toggle/menu event");
             command->SetInt(value != 0 ? 1 : 0); break;
         case 16:
             require(command && event.GetEventType() == wxEVT_CHOICE, "Selection metadata requires a selection event");
@@ -505,7 +525,7 @@ struct Binding {
             const auto text = command ? command->GetString() : wxString();
             const auto bytes = text.ToUTF8();
             wxl_event snapshot{snapshot_kind, carries_text ? (bytes.data() ? bytes.data() : "") : nullptr,
-                                     snapshot_kind == WXL_EVENT_TOGGLE && command && command->IsChecked() ? 1 : 0,
+                                     (snapshot_kind == WXL_EVENT_TOGGLE || snapshot_kind == WXL_EVENT_MENU) && command && command->IsChecked() ? 1 : 0,
                                      snapshot_kind == WXL_EVENT_SELECTION && command ? command->GetSelection() : -1,
                                      event.GetId(), carries_text ? bytes.length() : 0,
                                      0, event.GetEventType(), event_can_veto(event) ? 1 : 0, event_vetoed(event) ? 1 : 0,
@@ -586,9 +606,30 @@ wxString utf8(const char* value) {
     require(value != nullptr, "Null UTF-8 string");
     return wxString::FromUTF8(value);
 }
+wxString menu_string(const char* text, size_t length, bool allow_empty) {
+    require(text || length == 0, "Null menu text");
+    require(allow_empty || length != 0, "Menu label must be nonempty");
+    require(!length || !std::memchr(text, 0, length), "Menu text cannot contain NUL");
+    const auto value = wxString::FromUTF8(text ? text : "", length);
+    require(!length || !value.empty(), "Invalid UTF-8 menu text");
+    return value;
+}
+MenuResource menu_resource(wxl_handle id, int kind = -1) {
+    ready();
+    const auto found = menu_resources.find(id);
+    require(found != menu_resources.end(), "Invalid or destroyed menu resource");
+    window(found->second.frame);
+    require(kind < 0 || found->second.kind == kind, "Wrong menu resource type");
+    return found->second;
+}
+size_t menu_position(wxMenuBar* bar, wxMenu* menu) {
+    for (size_t i = 0; i < bar->GetMenuCount(); ++i) if (bar->GetMenu(i) == menu) return i;
+    throw std::runtime_error("Menu is not attached to its managed bar");
+}
+
 }
 extern "C" {
-int wxl_abi_version() { return 31; }
+int wxl_abi_version() { return 32; }
 const char* wxl_last_error() { return error.c_str(); }
 int wxl_start(wxl_callback callback) {
     return status([&] {
@@ -672,6 +713,112 @@ int wxl_finish() {
         windows.clear(); handlers.clear(); pending_destruction.clear(); registered_events.clear(); dispatch = nullptr; started = false;
     });
 }
+wxl_handle wxl_menu_bar(wxl_handle frame_id) {
+    return create([&] {
+        require_dispatch_entry(); auto* owner = as<wxFrame>(frame_id);
+        require(!owner->GetMenuBar(), "Frame already has a menu bar");
+        auto object = std::make_unique<ManagedMenuBar>();
+        const auto id = next_handle++; object->identity = id;
+        menu_resources.emplace(id, MenuResource{object.get(), frame_id, frame_id, 0});
+        try { owner->SetMenuBar(object.get()); }
+        catch (...) { if (owner->GetMenuBar() == object.get()) owner->SetMenuBar(nullptr); throw; }
+        object.release(); return id;
+    });
+}
+wxl_handle wxl_menu(wxl_handle bar_id, const char* label, size_t length) {
+    return create([&] {
+        require_dispatch_entry(); const auto parent = menu_resource(bar_id, 0);
+        const auto title = menu_string(label, length, false);
+        auto object = std::make_unique<ManagedMenu>();
+        const auto id = next_handle++; object->identity = id;
+        menu_resources.emplace(id, MenuResource{object.get(), parent.frame, bar_id, 1});
+        auto* bar = static_cast<wxMenuBar*>(parent.object);
+        try { require(bar->Append(object.get(), title), "Native menu append failed"); }
+        catch (...) {
+            for (size_t index = 0; index < bar->GetMenuCount(); ++index)
+                if (bar->GetMenu(index) == object.get()) { bar->Remove(index); break; }
+            throw;
+        }
+        object.release(); return id;
+    });
+}
+wxl_handle wxl_menu_item(wxl_handle menu_id, int item_id, const char* label, size_t length,
+                         const char* help, size_t help_length, int kind) {
+    return create([&] {
+        require_dispatch_entry(); const auto parent = menu_resource(menu_id, 1);
+        require(kind >= 0 && kind <= 2, "Unsupported menu item kind");
+        require((label || !length) && (help || !help_length), "Null menu item text");
+        require(kind == 2 ? item_id == 0 && !length && !help_length : item_id > 0,
+                "Menu item requires a positive ID; separator requires zero and empty text");
+        require(kind == 2 || length != 0, "Menu item label must be nonempty");
+        const auto menu_record = menu_resource(parent.parent, 0);
+        auto* bar = static_cast<wxMenuBar*>(menu_record.object);
+        require(kind == 2 || !bar->FindItem(item_id), "Duplicate menu item ID in menu bar");
+        const auto item_label = menu_string(label, length, kind == 2);
+        const auto item_help = menu_string(help, help_length, true);
+        auto object = std::make_unique<ManagedMenuItem>(static_cast<wxMenu*>(parent.object),
+            kind == 2 ? wxID_SEPARATOR : item_id, item_label, item_help,
+            kind == 2 ? wxITEM_SEPARATOR : kind ? wxITEM_CHECK : wxITEM_NORMAL);
+        const auto id = next_handle++; object->identity = id;
+        menu_resources.emplace(id, MenuResource{object.get(), parent.frame, menu_id, 2});
+        auto* menu = static_cast<wxMenu*>(parent.object);
+        try { require(menu->Append(object.get()) != nullptr, "Native item append failed"); }
+        catch (...) {
+            for (const auto* entry : menu->GetMenuItems())
+                if (entry == object.get()) { menu->Remove(object.get()); break; }
+            throw;
+        }
+        object.release(); return id;
+    });
+}
+int wxl_menu_alive(wxl_handle id) {
+    return boolean_result([&] {
+        ready(); const auto found = menu_resources.find(id); if (found == menu_resources.end()) return false;
+        const auto owner = windows.find(found->second.frame);
+        return !pending_destruction.count(found->second.frame) && owner != windows.end() && owner->second.get() && !owner->second.get()->IsBeingDeleted();
+    });
+}
+int wxl_menu_destroy(wxl_handle id) {
+    return status([&] {
+        ready(); require_dispatch_entry(); const auto resource = menu_resource(id);
+        if (resource.kind == 0) { as<wxFrame>(resource.frame)->SetMenuBar(nullptr); delete static_cast<wxMenuBar*>(resource.object); }
+        else if (resource.kind == 1) {
+            auto* bar = static_cast<wxMenuBar*>(menu_resource(resource.parent, 0).object);
+            delete bar->Remove(menu_position(bar, static_cast<wxMenu*>(resource.object)));
+        } else require(static_cast<wxMenu*>(menu_resource(resource.parent, 1).object)->Destroy(static_cast<wxMenuItem*>(resource.object)), "Native item destruction failed");
+    });
+}
+int wxl_menu_count(wxl_handle id) {
+    int value = -1; const auto result = status([&] { const auto r = menu_resource(id); require(r.kind != 2, "Item has no children");
+        value = static_cast<int>(r.kind == 0 ? static_cast<wxMenuBar*>(r.object)->GetMenuCount() : static_cast<wxMenu*>(r.object)->GetMenuItemCount()); });
+    return result == 0 ? value : -1;
+}
+int wxl_menu_item_id(wxl_handle id, int* value) { return status([&] { const auto r = menu_resource(id, 2); require(value, "Missing menu ID output"); *value = static_cast<wxMenuItem*>(r.object)->GetId(); }); }
+int wxl_menu_item_kind(wxl_handle id) {
+    int value = -1; const auto result = status([&] { auto* item = static_cast<wxMenuItem*>(menu_resource(id, 2).object); value = item->IsSeparator() ? 2 : item->IsCheckable() ? 1 : 0; }); return result == 0 ? value : -1;
+}
+const char* wxl_menu_label(wxl_handle id, size_t* length) {
+    return metadata_string([&] {
+        const auto r = menu_resource(id);
+        require(r.kind != 0, "Bar has no label");
+        return r.kind == 2 ? static_cast<wxMenuItem*>(r.object)->GetItemLabel() :
+            static_cast<wxMenuBar*>(menu_resource(r.parent, 0).object)->GetMenuLabel(menu_position(static_cast<wxMenuBar*>(menu_resource(r.parent, 0).object), static_cast<wxMenu*>(r.object)));
+    }, length);
+}
+int wxl_set_menu_label(wxl_handle id, const char* text, size_t length) { return status([&] {
+    const auto r = menu_resource(id); require(r.kind != 0, "Bar has no label"); const auto value = menu_string(text, length, false);
+    if (r.kind == 2) { auto* item = static_cast<wxMenuItem*>(r.object); require(!item->IsSeparator(), "Separator has no label"); item->SetItemLabel(value); }
+    else { auto* bar = static_cast<wxMenuBar*>(menu_resource(r.parent, 0).object); bar->SetMenuLabel(menu_position(bar, static_cast<wxMenu*>(r.object)), value); }
+}); }
+int wxl_menu_enabled(wxl_handle id) { return boolean_result([&] { auto* item = static_cast<wxMenuItem*>(menu_resource(id, 2).object); require(!item->IsSeparator(), "Separator cannot be enabled"); return item->IsEnabled(); }); }
+int wxl_set_menu_enabled(wxl_handle id, int value) { return boolean_result([&] { auto* item = static_cast<wxMenuItem*>(menu_resource(id, 2).object); require(!item->IsSeparator(), "Separator cannot be enabled"); const bool changed = item->IsEnabled() != (value != 0); item->Enable(value != 0); return changed; }); }
+int wxl_menu_checked(wxl_handle id) { return boolean_result([&] { auto* item = static_cast<wxMenuItem*>(menu_resource(id, 2).object); require(item->IsCheckable(), "Item is not checkable"); return item->IsChecked(); }); }
+int wxl_set_menu_checked(wxl_handle id, int value) { return status([&] { auto* item = static_cast<wxMenuItem*>(menu_resource(id, 2).object); require(item->IsCheckable(), "Item is not checkable"); item->Check(value != 0); }); }
+int wxl_activate_menu(wxl_handle id) { return boolean_result([&] {
+    const auto r = menu_resource(id, 2); auto* item = static_cast<wxMenuItem*>(r.object);
+    require(!item->IsSeparator(), "Cannot activate a separator"); if (!item->IsEnabled()) return false;
+    return as<wxFrame>(r.frame)->ProcessCommand(item->GetId());
+}); }
 int wxl_idle_mode() {
     int mode = -1;
     const int result = status([&] { ready(); mode = wxIdleEvent::GetMode() == wxIDLE_PROCESS_SPECIFIED ? 1 : 0; });

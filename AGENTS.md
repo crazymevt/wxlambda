@@ -136,3 +136,9 @@ full log when needed to diagnose failures or retrieve results. Preserve and
 respect the wrapped command's exit code.
 Short, targeted reads and interactive commands may run directly. If the wrapper
 is missing or unusable, report that and use bounded output as a fallback.
+
+Menu resources use the separate native-backed MENU-RESOURCE abstract hierarchy:
+MENU-BAR, MENU and MENU-ITEM. Direct constructors use :PARENT; native frame/bar/
+menu ownership controls invalidation. Structural menu edits reject callback/pump/
+RUN contexts; scalar writes follow the documented generic protocols. See
+`docs/MENUS.md`. The next selected GUI feature is standard dialogs.

@@ -17,7 +17,7 @@ class or constructor does not imply full upstream coverage.
 
 ## Current coverage and remaining work
 
-23 implemented; 50 partial; 2789 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
+23 implemented; 53 partial; 2786 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
 
 Counts describe inventory entries, not distinct APIs or percent completion.
 See the [coverage summary](README.md) for phase/header comparisons.
@@ -930,7 +930,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/frame.h)
 
-0 implemented; 2 partial; 50 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
+0 implemented; 5 partial; 47 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
 
 - [ ] [L11](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/frame.h#L11) `#define wxFRAME_NO_TASKBAR      0x0002`
 - [ ] [L12](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/frame.h#L12) `#define wxFRAME_TOOL_WINDOW     0x0004`
@@ -968,14 +968,14 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [ ] [L289](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/frame.h#L289) `virtual wxToolBar* CreateToolBar(long style = wxTB_DEFAULT_STYLE, wxWindowID id = wxID_ANY, const wxString& name = wxToolBarNameStr);`
 - [ ] [L311](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/frame.h#L311) `virtual void DoGiveHelp(const wxString& text, bool show);`
 - [ ] [L317](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/frame.h#L317) `virtual wxPoint GetClientAreaOrigin() const;`
-- [ ] [L324](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/frame.h#L324) `virtual wxMenuBar* GetMenuBar() const;`
+- [~] [L324](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/frame.h#L324) `virtual wxMenuBar* GetMenuBar() const;` — **Partial**: `make-menu-bar`; ABI: `wxl_menu_bar`. Internal guard prevents replacing/adopting a preexisting bar; no public frame-bar getter. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN.
 - [ ] [L332](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/frame.h#L332) `virtual wxStatusBar* GetStatusBar() const;`
 - [ ] [L339](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/frame.h#L339) `int GetStatusBarPane() const;`
 - [ ] [L346](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/frame.h#L346) `virtual wxToolBar* GetToolBar() const;`
 - [ ] [L370](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/frame.h#L370) `virtual wxStatusBar* OnCreateStatusBar(int number, long style, wxWindowID id, const wxString& name);`
 - [ ] [L394](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/frame.h#L394) `virtual wxToolBar* OnCreateToolBar(long style, wxWindowID id, const wxString& name);`
-- [ ] [L403](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/frame.h#L403) `bool ProcessCommand(int id);`
-- [ ] [L422](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/frame.h#L422) `virtual void SetMenuBar(wxMenuBar* menuBar);`
+- [~] [L403](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/frame.h#L403) `bool ProcessCommand(int id);` — **Partial**: `activate-menu-item`; ABI: `wxl_activate_menu`. Managed normal/check item activation; disabled returns NIL, separator rejects. Native handled result, no OS-menu-interaction guarantee. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN.
+- [~] [L422](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/frame.h#L422) `virtual void SetMenuBar(wxMenuBar* menuBar);` — **Partial**: `make-menu-bar`, `destroy-menu-resource`; ABI: `wxl_menu_bar`, `wxl_menu_destroy`. Attach/detach only managed ownership lifecycle; no public arbitrary bar replacement. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN.
 - [ ] [L432](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/frame.h#L432) `virtual void SetStatusBar(wxStatusBar* statusBar);`
 - [ ] [L438](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/frame.h#L438) `void SetStatusBarPane(int n);`
 - [ ] [L456](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/frame.h#L456) `virtual void SetStatusText(const wxString& text, int number = 0);`

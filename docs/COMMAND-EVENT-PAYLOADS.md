@@ -33,11 +33,11 @@ but this batch does not bind listbox classes or reconstruct their item state.
 
 ## Semantic checked and selection views
 
-EVENT-CHECKED-P retains the snapshot contract: only :TOGGLE reports checkbox-like
-checked state; other supported kinds read NIL. Current/owned reads use the same
-kind restriction. SETF accepts a generalized boolean only for a current/owned
-:TOGGLE event, writes native SetInt as 0/1 and returns the supplied value. It
-changes event payload metadata without calling a checkbox-control setter.
+EVENT-CHECKED-P reports checked state for :TOGGLE and :MENU; other supported
+kinds read NIL. Snapshot/current/owned views share this restriction. SETF accepts
+a generalized boolean only for current/owned :TOGGLE/:MENU events, writes native
+SetInt as 0/1 and returns the supplied value. This is raw IsChecked metadata: no
+menu-item kind lookup or checkbox/menu-resource synchronization is implied.
 
 EVENT-SELECTION retains its kind restriction too: only :SELECTION returns the
 native command selection integer, with -1 mapped to NIL; other kinds read NIL.

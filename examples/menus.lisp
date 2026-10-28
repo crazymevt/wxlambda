@@ -1,0 +1,41 @@
+;;; Load and call (wxlambda-menus:start).
+(require :asdf)
+(load (merge-pathnames "../wxlambda.asd" *load-truename*))
+(asdf:load-system "wxlambda")
+(defpackage #:wxlambda-menus (:use #:cl) (:export #:start #:exercise))
+(in-package #:wxlambda-menus)
+
+(defun exercise ()
+  (let* ((frame (wxlambda:make-frame :title "Menu actions"))
+         (bar (wxlambda:make-menu-bar frame))
+         (file (wxlambda:make-menu bar :label "&File"))
+         (save (wxlambda:make-menu-item file :id 1001 :label (format nil "&Save~CCtrl+S" #\Tab)
+                                            :help "Save the current document"))
+         (separator (wxlambda:make-menu-item file :kind :separator))
+         (autosave (wxlambda:make-menu-item file :id 1002 :kind :check :label "&Autosave"))
+         (state (list :saves 0 :autosave nil)) (binding nil))
+    (declare (ignore separator))
+    (unwind-protect
+         (progn
+           (setf binding
+                 (wxlambda:bind-event frame :menu
+                   (lambda (event context)
+                     (declare (ignore context))
+                     (let ((data (wxlambda:event-user-data event)))
+                       (case (wxlambda:event-id event)
+                         (1001 (incf (getf data :saves)))
+                         (1002 (setf (getf data :autosave) (wxlambda:checked-p autosave))))))
+                   :id 1001 :last-id 1002 :with-context t :user-data state))
+           (assert (wxlambda:activate-menu-item save))
+           (assert (wxlambda:activate-menu-item autosave))
+           (assert (= 1 (getf state :saves)))
+           (assert (getf state :autosave))
+           (setf (wxlambda:enabled-p save) nil)
+           (assert (not (wxlambda:activate-menu-item save)))
+           (assert (= 3 (wxlambda:menu-item-count file)))
+           t)
+      (when binding (wxlambda:unbind-event binding))
+      (wxlambda:destroy-window frame)
+      (wxlambda:process-events))))
+
+(defun start () (wxlambda:with-application () (exercise)))

@@ -15,7 +15,7 @@ handlers cast incompatible storage. Unrestricted mutation remains unbound; the r
 registry families and actual native class.
 
 EVENT-ORIGIN-ID returns a positive opaque bridge identity if GetEventObject
-matches a currently registered application, owned handler or tracked window.
+matches a currently registered application, owned handler, tracked window or managed menu resource.
 It returns NIL for null or untracked origins; it does not distinguish those two
 cases. The bridge compares pointer identities without dereferencing the origin.
 This is not a general wxObject wrapper, native pointer, native window ID or
@@ -77,5 +77,9 @@ snapshots and scoped contexts keep their lifetime rules. Arbitrary native classe
 origin retention and client/userData ownership remain open.
 
 [Idle events](IDLE-EVENTS.md) add family :IDLE, bounded RequestMore, global
-automatic policy and own-window opt-in metadata. The next GUI breadth slice is
-menus/actions plus standard dialogs, not exhaustive foundation parity.
+automatic policy and own-window opt-in metadata. Frame menus/actions now extend GUI breadth; standard dialogs are next,
+without requiring exhaustive foundation parity.
+
+Managed menu-resource identities also participate in the bounded native-origin
+registry. This does not guarantee actual OS-generated menu origins or equate
+origin with the frame binding receiver.

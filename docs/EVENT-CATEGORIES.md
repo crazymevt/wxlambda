@@ -67,5 +67,5 @@ See [metadata](EVENT-METADATA.md), [origin/type readers](EVENT-ORIGINS.md) and
 [Registered-tag mutation](EVENT-TAGS.md) now supports same-family SETF with actual native class checks; built-in/session tags and origin writes remain excluded.
 
 [Idle events](IDLE-EVENTS.md) add family :IDLE, bounded RequestMore, global
-automatic policy and own-window opt-in metadata. The next GUI breadth slice is
-menus/actions plus standard dialogs, not exhaustive foundation parity.
+automatic policy and own-window opt-in metadata. Frame menus/actions now extend GUI breadth; standard dialogs are next,
+without requiring exhaustive foundation parity.

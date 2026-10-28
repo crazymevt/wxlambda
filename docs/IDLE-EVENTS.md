@@ -101,8 +101,8 @@ real OS-session delivery or graphical Cadre behavior.
 No CanSend binding is added: that method is absent from the pinned wxWidgets
 3.2.12 idle interface. Arbitrary event classes, retained origins and native
 client/item pointers remain factual gaps but are not automatic blockers for
-unrelated GUI breadth. **The next feature batch is menus/actions plus standard
-dialogs**, adding only prerequisites those workflows need. Use the form/editor,
+unrelated GUI breadth. **Frame menus/actions are available; standard dialogs are next**, adding only
+prerequisites those workflows need. Use the form/editor,
 tree/list manager and drawing/monitoring roadmap in
 [GUI coverage priorities](WXWIDGETS-COVERAGE.md), not C1 exhaustion.
 
