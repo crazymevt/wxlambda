@@ -83,7 +83,7 @@ for the existing control-specific handlers still require explicit unbinding
 before window destruction, or they remain rooted until session cleanup.
 Standalone handlers, windows and the borrowed application view support built-in and registered command/notify observer kinds,
 ID filters, safe generic unbinding and copied synthetic queues; see
-[command-event bindings](EVENT-BINDINGS.md). Arbitrary event types, pushed/linked
+[command-event bindings](EVENT-BINDINGS.md). Arbitrary event types, borrowed window/app chains and pushed
 handler ownership, filters, derived notify/session event classes, timer/idle handlers,
 worker dispatch and native virtual overrides remain open C1 work.
 [Scoped contexts](EVENT-CONTEXTS.md) provide Skip/propagation for supported
@@ -118,7 +118,7 @@ python3 tools/docset.py build
 python3 tools/docset.py check
 ```
 
-Use the project quiet-command wrapper in agent sessions. Rebuild the ABI 25
+Use the project quiet-command wrapper in agent sessions. Rebuild the ABI 26
 bridge alongside the bindings. The GUI runner includes this scenario; broader
 platform and graphical Cadre verification remain separate. The API, this guide
 and example are included in the [Cadre docset](DOCSET.md), installable under
@@ -138,3 +138,7 @@ See the [borrowed application-handler view](APPLICATION-HANDLER.md) for managed 
 consuming native transfer, local copy processing and non-application target
 cancellation. Per-handler pending processing and application-wide cancellation
 remain unbound.
+
+[Managed standalone chains](HANDLER-CHAINS.md) now have canonical peer access,
+reciprocal SETF joins/splits and explicit unlink. Window/application sources and
+peers remain excluded; native ownership stays with the session.

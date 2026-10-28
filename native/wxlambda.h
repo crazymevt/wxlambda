@@ -58,6 +58,11 @@ WXL_API int wxl_finish(void);
    Queries return 0/1, or -1 on failure. ALIVE returns 0 for stale/unknown IDs. */
 WXL_API wxl_handle wxl_application_handler(void);
 WXL_API wxl_handle wxl_event_handler(void);
+/* Reciprocal managed standalone chains; no borrowed app/window endpoints. */
+WXL_API int wxl_handler_chain_peer(wxl_handle handler, int previous, wxl_handle *peer);
+WXL_API int wxl_handler_unlinked(wxl_handle handler);
+WXL_API int wxl_link_handlers(wxl_handle handler, wxl_handle peer, int previous);
+WXL_API int wxl_unlink_handler(wxl_handle handler);
 WXL_API int wxl_handler_alive(wxl_handle handler);
 WXL_API int wxl_handler_enabled(wxl_handle handler);
 WXL_API int wxl_set_handler_enabled(wxl_handle handler, int enabled);

@@ -109,6 +109,31 @@ wxEvtHandler* event_handler(wxl_handle id) {
     require(it != owned_handlers.end(), "Invalid or destroyed event-handler handle");
     return it->second.get();
 }
+wxEvtHandler* standalone_handler(wxl_handle id) {
+    auto* object = event_handler(id);
+    require(owned_handlers.count(id) != 0, "Handler chains require owned standalone handlers");
+    return object;
+}
+wxl_handle owned_handler_id(wxEvtHandler* object) {
+    if (!object) return 0;
+    for (const auto& item : owned_handlers) {
+        if (item.second.get() == object) {
+            require(!pending_destruction.count(item.first), "Chain peer destruction is pending");
+            return item.first;
+        }
+    }
+    throw std::runtime_error("Chain peer is not a managed standalone handler");
+}
+void validate_chain_neighbors(wxEvtHandler* object) {
+    if (auto* next = object->GetNextHandler()) {
+        owned_handler_id(next);
+        require(next->GetPreviousHandler() == object, "Inconsistent next-handler link");
+    }
+    if (auto* previous = object->GetPreviousHandler()) {
+        owned_handler_id(previous);
+        require(previous->GetNextHandler() == object, "Inconsistent previous-handler link");
+    }
+}
 wxl_handle origin_id(const wxEvent& event) {
     // Compare identities only: GetEventObject may be null, untracked or stale.
     const auto* origin = event.GetEventObject();
@@ -411,7 +436,7 @@ wxString utf8(const char* value) {
 }
 }
 extern "C" {
-int wxl_abi_version() { return 25; }
+int wxl_abi_version() { return 26; }
 const char* wxl_last_error() { return error.c_str(); }
 int wxl_start(wxl_callback callback) {
     return status([&] {
@@ -525,12 +550,66 @@ int wxl_handler_destroy(wxl_handle id) {
         const auto it = owned_handlers.find(id);
         require(it != owned_handlers.end(), "Invalid or destroyed event-handler handle");
         require(!pending_destruction.count(id), "Handler destruction is pending");
+        require(!callback_depth || it->second->IsUnlinked(), "Cannot destroy a linked handler during a callback");
         if (callback_depth) {
             pending_destruction.insert(id);
             try {
                 wxTheApp->CallAfter([id] { owned_handlers.erase(id); pending_destruction.erase(id); });
             } catch (...) { pending_destruction.erase(id); throw; }
         } else owned_handlers.erase(it);
+    });
+}
+int wxl_handler_chain_peer(wxl_handle id, int previous, wxl_handle* peer) {
+    return status([&] {
+        require(peer != nullptr, "Missing handler peer output");
+        auto* source = standalone_handler(id);
+        *peer = owned_handler_id(previous ? source->GetPreviousHandler() : source->GetNextHandler());
+    });
+}
+int wxl_handler_unlinked(wxl_handle id) {
+    return boolean_result([&] { return standalone_handler(id)->IsUnlinked(); });
+}
+int wxl_link_handlers(wxl_handle id, wxl_handle peer_id, int previous) {
+    return status([&] {
+        ready();
+        require_dispatch_entry();
+        auto* source = standalone_handler(id);
+        validate_chain_neighbors(source);
+        if (!peer_id) {
+            if (previous) {
+                if (auto* peer = source->GetPreviousHandler()) {
+                    peer->SetNextHandler(nullptr);
+                    source->SetPreviousHandler(nullptr);
+                }
+            } else if (auto* peer = source->GetNextHandler()) {
+                peer->SetPreviousHandler(nullptr);
+                source->SetNextHandler(nullptr);
+            }
+            return;
+        }
+        auto* peer = standalone_handler(peer_id);
+        validate_chain_neighbors(peer);
+        require(source != peer, "A handler cannot link to itself");
+        auto* left = previous ? peer : source;
+        auto* right = previous ? source : peer;
+        if (left->GetNextHandler() == right && right->GetPreviousHandler() == left) return;
+        require(!left->GetNextHandler() && !right->GetPreviousHandler(),
+                "Disconnect occupied chain endpoints before linking");
+        for (auto* node = right; node; node = node->GetNextHandler()) {
+            owned_handler_id(node);
+            require(node != left, "Handler chains cannot contain cycles");
+        }
+        left->SetNextHandler(right);
+        right->SetPreviousHandler(left);
+    });
+}
+int wxl_unlink_handler(wxl_handle id) {
+    return status([&] {
+        ready();
+        require_dispatch_entry();
+        auto* source = standalone_handler(id);
+        validate_chain_neighbors(source);
+        source->Unlink();
     });
 }
 int wxl_event_type(int kind) {

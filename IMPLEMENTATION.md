@@ -61,15 +61,18 @@ must reconcile additional documented public interfaces beyond those headers.
 - Pending-delivery batch: GUI posting copies, consuming native transfer, local
   synchronous copies and non-application target queue deletion. Final verification
   and independent review pass.
-- Current bridge ABI: 25. Public API: 113 exports, nine window wrapper classes
-  (eight concrete widget kinds) plus the event-handler base, 73 named generics and
-  twenty generic SETF writers. The application-handler is a borrowed view; no
+- Standalone-chain batch: canonical next/previous peers, reciprocal guarded SETF,
+  unlinked-state query and splice/unlink with unchanged session native ownership.
+  Final verification and independent review pass.
+- Current bridge ABI: 26. Public API: 117 exports, nine window wrapper classes
+  (eight concrete widget kinds) plus the event-handler base, 77 named generics and
+  twenty-two generic SETF writers. The application-handler is a borrowed view; no
   native application construction or arbitrary-event class binding exists yet; built-ins plus registered command/notify names have
   observer/contextual bindings.
-- Latest implementation verification: 42 GUI scenarios and native preflight
+- Latest implementation verification: 43 GUI scenarios and native preflight
   pass on local Apple Silicon macOS SBCL 2.6.9 and CCL 1.13. Final reports:
-  `evidence/pending-events/{sbcl,ccl}-20261028/`. Five package checks
-  pass in `evidence/packaging/pending-events-20261028/`.
+  `evidence/handler-chains/{sbcl,ccl}-20261028/`. Five package checks
+  pass in `evidence/packaging/handler-chains-20261028/`.
   Hosted Linux/Windows GUI behavior and the graphical Cadre viewer remain open.
 
 ### Next dependency and working order
@@ -89,8 +92,8 @@ must reconcile additional documented public interfaces beyond those headers.
    The borrowed application handler view and query/end-session metadata/bindings
    are implemented, as are scoped CanVeto mutation, timestamp and command metadata.
    Scoped native ID mutation and routing semantics are implemented. Next define
-   remaining origin retention/native ownership contracts after detached owned
-   events and the posting/transfer/local/cancellation batch. Bounded registered-tag mutation
+   borrowed window handler-stack ownership and remaining origin retention after
+   detached events, pending delivery and standalone chains. Bounded registered-tag mutation
    with actual native class checks is implemented. Category metadata is implemented. Current type
    reads and bounded origin identities are implemented; arbitrary native tag/origin
    writers and general wxObject wrappers remain open. Native OS session delivery is unverified. Native session events are
@@ -102,7 +105,7 @@ must reconcile additional documented public interfaces beyond those headers.
    Native control-specific notify subclasses and remaining event ownership stay open. Preserve immutable
    snapshots and opaque binding/context identities; never expose a native event
    pointer after callback return. Arbitrary native event classes/userData, session routing and
-   linked/pushed handlers remain gaps.
+   borrowed/pushed handler stacks remain gaps.
 4. Build timer/idle, event propagation/skip/veto and worker-to-GUI dispatch on
    those contracts, adding prerequisite value types before their consumers.
    Existing immutable event snapshots do not provide mutable native event access
@@ -1160,6 +1163,52 @@ Hosted Windows/Linux GUI, actual OS-session delivery, graphical
 Cadre and prior inaccessible pointer/class-mismatch branches remain unverified.
 Next continue C1 origin retention/ownership or handler-chain prerequisites;
 worker posting, arbitrary native pointers and global queue cancellation remain gaps.
+
+## Managed standalone handler chains (2026-10-28)
+
+ABI 26 adds NEXT-HANDLER/PREVIOUS-HANDLER generic readers and SETF, plus
+HANDLER-UNLINKED-P and UNLINK-EVENT-HANDLER. Sources/peers are owned standalone
+handlers only; borrowed window/app inputs reject before mutation. Reciprocal
+vacant endpoints can join whole segments, existing links are idempotent, and
+self/cycle/occupied-endpoint attempts reject unchanged. SETF NIL splits one edge;
+UNLINK splices neighbors and leaves the node alive. Native ownership remains
+session-owned. A session map strongly roots canonical wrappers until explicit
+destruction, rollback or cleanup so peer lookups return EQ original subclasses.
+
+Reads are callback-safe under lifetime guards. All structural writes reject
+RUN/pump/callback use. Linked callback-time destruction rejects; outside callbacks
+native destruction unlinks/splices normally, while unlinked callback disposal
+retains existing deferral. Normal/local/pending dispatch traverses native chains;
+disabled nodes do not disable followers. Chain-node traversal follows next links;
+callback order within one node is still native behavior. Queues belong to target
+nodes, not all future chain observers. Native session tags remain isolated from
+app fallback. Constructor rollback cleans created resources/canonical roots, not
+arbitrary edits to external graph state: native Unlink can leave surviving
+prefix/suffix segments joined after the failed node is removed.
+
+The pinned setter prose forbids NULL, while implementation setters and native
+Unlink permit paired pointer clearing. NIL is a bounded reciprocal detach mapping,
+not a one-sided raw setter; retain the discrepancy for C7 reconciliation. Native
+Push/Pop/Remove, borrowed chains, external adoption and arbitrary origin retention
+remain open.
+
+Final counts: 117 exports, 77 named generics, 22 generic SETF writers,
+43 GUI scenarios, 166 docset entries and twenty-four examples. Independent runtime
+and documentation review pass with no actionable findings. The example and
+expanded focused regressions pass on SBCL and CCL without implementation/test
+corrections. All 43 local GUI scenarios plus native preflight and five rebuilt
+relocated-package checks pass. Python/inventory regressions and actual export/SETF
+lookup pass; docset checker reports zero problems, including isolated install,
+discovery and API/guide/example navigation on both Lisps. Evidence:
+`evidence/handler-chains/{sbcl,ccl}-20261028/` and
+`evidence/packaging/handler-chains-20261028/`; package:
+`dist/wxlambda-form-handler-chains`. Two user-authorized subagents handled
+regressions and docs/coverage in parallel, with separate independent review.
+Hosted Windows/Linux GUI, actual OS-session delivery, graphical Cadre and
+previous inaccessible pointer/class-mismatch branches remain unverified.
+Next define borrowed window handler-stack ownership before widening chain peers
+or adding Push/Pop; preserve reciprocal identity, session lifetime and dispatch
+mutation restrictions.
 
 ## Decisions
 

@@ -176,3 +176,8 @@ See the [borrowed application-handler view](APPLICATION-HANDLER.md) for managed 
 explicit disposal, mutable value fields and copied dispatch. Earlier immutable
 snapshots and scoped contexts keep their lifetime rules. Arbitrary native classes,
 origin retention and client/userData ownership remain open.
+
+[Standalone handler chains](HANDLER-CHAINS.md) now preserve canonical wrapper
+identity and session ownership while participating in normal/local/pending
+delivery. Structural edits and linked destruction during callbacks reject;
+borrowed window/application stacks remain unbound.

@@ -846,7 +846,7 @@
       "native": [
         "wxl_handler_destroy"
       ],
-      "scope": "Owned standalone handlers only. Borrowed window identities must use window/parent destruction. Generic binding teardown and pushed-handler ownership remain open."
+      "scope": "Owned standalone handlers only. Borrowed window identities must use window/parent destruction. Generic binding teardown and pushed-handler ownership remain open. Linked callback-time destruction rejects; outside callbacks native destruction unlinks/splices neighbors. Canonical wrapper roots are removed after explicit destruction or rollback; unlinked callback disposal retains prior deferral."
     },
     {
       "header": "wx/event.h",
@@ -919,7 +919,7 @@
         "wxl_queue_event",
         "wxl_dispatch_owned"
       ],
-      "scope": "Copied four-command or :CLOSE wxCloseEvent queues on exposed handlers, main-thread only. Kind-specific payloads and synthetic CanVeto option; queued frame close may run defaults. Arbitrary types, session events, native-origin override and worker dispatch remain open. OWNED-EVENT arguments dispatch independent detached clones, with receiver origin; source survives and may be destroyed after copying. Session receiver guards remain. Copied owned wxEVT_TEXT to text-entry receivers rejects before emission; keyword synthetic behavior is unchanged. TRANSFER-EVENT also hands off the actual supported owned native object after validation; the former source handle is consumed, with no post-handoff rollback/delivery guarantee."
+      "scope": "Copied four-command or :CLOSE wxCloseEvent queues on exposed handlers, main-thread only. Kind-specific payloads and synthetic CanVeto option; queued frame close may run defaults. Arbitrary types, session events, native-origin override and worker dispatch remain open. OWNED-EVENT arguments dispatch independent detached clones, with receiver origin; source survives and may be destroyed after copying. Session receiver guards remain. Copied owned wxEVT_TEXT to text-entry receivers rejects before emission; keyword synthetic behavior is unchanged. TRANSFER-EVENT also hands off the actual supported owned native object after validation; the former source handle is consumed, with no post-handoff rollback/delivery guarantee. Managed standalone chains now participate in native traversal, with node-local enabled flags, Skip/consumption and unchanged target queue ownership."
     },
     {
       "header": "wx/event.h",
@@ -1162,7 +1162,7 @@
         "wxl_process_event",
         "wxl_dispatch_owned"
       ],
-      "scope": "Synchronous fresh supported synthetic event dispatch, native handled result plus copied final veto. Main thread, owned event lifetime and nearer Lisp callback-error boundary. Arbitrary existing native event objects and application session routing remain unbound. OWNED-EVENT arguments dispatch independent detached clones, with receiver origin; source survives and may be destroyed after copying. Session receiver guards remain. Copied owned wxEVT_TEXT to text-entry receivers rejects before emission; keyword synthetic behavior is unchanged."
+      "scope": "Synchronous fresh supported synthetic event dispatch, native handled result plus copied final veto. Main thread, owned event lifetime and nearer Lisp callback-error boundary. Arbitrary existing native event objects and application session routing remain unbound. OWNED-EVENT arguments dispatch independent detached clones, with receiver origin; source survives and may be destroyed after copying. Session receiver guards remain. Copied owned wxEVT_TEXT to text-entry receivers rejects before emission; keyword synthetic behavior is unchanged. Managed standalone chains now participate in native traversal, with node-local enabled flags, Skip/consumption and unchanged target queue ownership."
     },
     {
       "header": "wx/event.h",
@@ -1701,7 +1701,7 @@
       "native": [
         "wxl_dispatch_owned"
       ],
-      "scope": "Independent detached processing copy, local receiver/pre-processing/native chains without normal outer global-filter/parent/application fallback. Returns handled/final-veto independently; source alive. No pushed-chain API, native overrides or queue pump."
+      "scope": "Independent detached processing copy, local receiver/pre-processing/native chains without normal outer global-filter/parent/application fallback. Returns handled/final-veto independently; source alive. No pushed-chain API, native overrides or queue pump. Managed standalone chains now participate in native traversal, with node-local enabled flags, Skip/consumption and unchanged target queue ownership."
     },
     {
       "header": "wx/event.h",
@@ -1744,6 +1744,90 @@
         "wxl_dispatch_owned"
       ],
       "scope": "Genuine handoff of supported owned event after preflight; original registry handle consumed before native handoff. Validation failure preserves input. No rollback/delivery guarantee after handoff or arbitrary native pointer transfer; receiver/session/text guards apply."
+    },
+    {
+      "header": "wx/event.h",
+      "line": 1105,
+      "declaration": "wxEvtHandler* GetNextHandler() const;",
+      "status": "~",
+      "symbol": "wxEvtHandler::GetNextHandler",
+      "lisp": [
+        "next-handler"
+      ],
+      "native": [
+        "wxl_handler_chain_peer"
+      ],
+      "scope": "Owned standalone sources only; returns canonical EQ managed peer or NIL through status/out-handle transport. Session map strongly roots wrappers until destruction/rollback/cleanup. No borrowed window/app chains or raw pointers."
+    },
+    {
+      "header": "wx/event.h",
+      "line": 1113,
+      "declaration": "wxEvtHandler* GetPreviousHandler() const;",
+      "status": "~",
+      "symbol": "wxEvtHandler::GetPreviousHandler",
+      "lisp": [
+        "previous-handler"
+      ],
+      "native": [
+        "wxl_handler_chain_peer"
+      ],
+      "scope": "Owned standalone sources only; canonical managed previous peer or NIL. Reads permitted inside callbacks with active main-thread/session guards. No native ownership transfer or borrowed chains."
+    },
+    {
+      "header": "wx/event.h",
+      "line": 1149,
+      "declaration": "virtual void SetNextHandler(wxEvtHandler* handler);",
+      "status": "~",
+      "symbol": "wxEvtHandler::SetNextHandler",
+      "lisp": [
+        "(setf next-handler)"
+      ],
+      "native": [
+        "wxl_link_handlers"
+      ],
+      "scope": "Reciprocal vacant endpoint join or paired NIL edge detach for owned standalone chains; self/cycles/occupied endpoints reject before mutation. Existing pair idempotent. RUN/pump/callback edits and borrowed peers reject. Interface says noNULL; actual setter/Unlink allow paired clears, retained for C7."
+    },
+    {
+      "header": "wx/event.h",
+      "line": 1161,
+      "declaration": "virtual void SetPreviousHandler(wxEvtHandler* handler);",
+      "status": "~",
+      "symbol": "wxEvtHandler::SetPreviousHandler",
+      "lisp": [
+        "(setf previous-handler)"
+      ],
+      "native": [
+        "wxl_link_handlers"
+      ],
+      "scope": "Mirror reciprocal previous endpoint join/split for owned standalone chains, preserving session ownership. Same vacancy/cycle/dispatch/borrowed-peer guards. NIL is composed paired detach rather than one-sided raw native state."
+    },
+    {
+      "header": "wx/event.h",
+      "line": 1175,
+      "declaration": "void Unlink();",
+      "status": "~",
+      "symbol": "wxEvtHandler::Unlink",
+      "lisp": [
+        "unlink-event-handler"
+      ],
+      "native": [
+        "wxl_unlink_handler"
+      ],
+      "scope": "Splice neighbors around an owned standalone node and leave it detached/alive. Active main-thread non-dispatch boundary only; borrowed sources reject. No window Push/Pop/Remove or ownership change."
+    },
+    {
+      "header": "wx/event.h",
+      "line": 1185,
+      "declaration": "bool IsUnlinked() const;",
+      "status": "~",
+      "symbol": "wxEvtHandler::IsUnlinked",
+      "lisp": [
+        "handler-unlinked-p"
+      ],
+      "native": [
+        "wxl_handler_unlinked"
+      ],
+      "scope": "Owned standalone next/previous-empty query, callback-readable under native session/lifetime checks. Borrowed window/app sources reject; unlinked objects stay canonical/session-owned."
     }
   ],
   "classes": {
@@ -1885,7 +1969,7 @@
         "wxl_gauge_vertical",
         "wxl_gauge_pulse"
       ],
-      "scope": "Parent-owned progress gauge: positive range, value, horizontal/vertical orientation and pulsing. Constructor options, two-step creation and full inherited API remain open. Gauge support introduced in ABI 10; current bridge ABI 25; see docs/GAUGE.md and tests/gauge.lisp."
+      "scope": "Parent-owned progress gauge: positive range, value, horizontal/vertical orientation and pulsing. Constructor options, two-step creation and full inherited API remain open. Gauge support introduced in ABI 10; current bridge ABI 26; see docs/GAUGE.md and tests/gauge.lisp."
     },
     "wxAppConsole": {
       "status": "~",
@@ -1943,7 +2027,13 @@
         "post-event",
         "transfer-event",
         "process-event-locally",
-        "delete-pending-events"
+        "delete-pending-events",
+        "next-handler",
+        "previous-handler",
+        "(setf next-handler)",
+        "(setf previous-handler)",
+        "handler-unlinked-p",
+        "unlink-event-handler"
       ],
       "native": [
         "wxl_event_handler",
@@ -1956,9 +2046,13 @@
         "wxl_binding_active",
         "wxl_queue_event",
         "wxl_dispatch_owned",
-        "wxl_delete_pending_events"
+        "wxl_delete_pending_events",
+        "wxl_handler_chain_peer",
+        "wxl_handler_unlinked",
+        "wxl_link_handlers",
+        "wxl_unlink_handler"
       ],
-      "scope": "Owned/borrowed handler identities and command/close-family bindings with exact IDs/ranges, safe unbinding, copied queue payloads and weak invalidation. Callback-time receiver disposal is deferred; generic roots are reaped at Lisp boundaries. Optional contextual callbacks now control Skip/propagation for supported command/close kinds. Arbitrary event types/userData, derived notify classes, pushed chains and worker dispatch remain open. See docs/EVENT-CONTEXTS.md. Registered command/notify names and synchronous ProcessEvent are now supported; native OS session delivery remains unverified. Query/end-session binding is available on the managed app and isolated owned handlers; synthetic app/window session emission rejects; OS delivery remains unverified. GUI post copies, native owned-event handoff, local copy processing and target-only pending deletion are supported. Delete rejects app/dispatch boundaries and synchronizes native pending-handler membership. Source consumption occurs only for transfer; per-handler pending processing and app-wide deletion remain open."
+      "scope": "Owned/borrowed handler identities and command/close-family bindings with exact IDs/ranges, safe unbinding, copied queue payloads and weak invalidation. Callback-time receiver disposal is deferred; generic roots are reaped at Lisp boundaries. Optional contextual callbacks now control Skip/propagation for supported command/close kinds. Arbitrary event types/userData, derived notify classes, pushed chains and worker dispatch remain open. See docs/EVENT-CONTEXTS.md. Registered command/notify names and synchronous ProcessEvent are now supported; native OS session delivery remains unverified. Query/end-session binding is available on the managed app and isolated owned handlers; synthetic app/window session emission rejects; OS delivery remains unverified. GUI post copies, native owned-event handoff, local copy processing and target-only pending deletion are supported. Delete rejects app/dispatch boundaries and synchronizes native pending-handler membership. Source consumption occurs only for transfer; per-handler pending processing and app-wide deletion remain open. Managed standalone reciprocal chains, canonical peer roots, guarded segment joins/splits/unlink and native destructor splicing are now supported. Reads may run in callbacks; mutations and linked callback-time destruction reject. Borrowed window/app chains and native Push/Pop/Remove ownership remain open."
     },
     "wxEvent": {
       "status": "~",

@@ -1,6 +1,6 @@
 # Pending-event copies, transfer and local processing
 
-ABI 25 adds POST-EVENT, TRANSFER-EVENT, PROCESS-EVENT-LOCALLY and
+ABI 26 adds POST-EVENT, TRANSFER-EVENT, PROCESS-EVENT-LOCALLY and
 DELETE-PENDING-EVENTS as generic handler operations. They build on detached
 OWNED-EVENT resources and the wxWidgets 3.2.12 event-handler interface. This
 batch distinguishes copy delivery from genuine native ownership handoff.
@@ -75,8 +75,9 @@ handlers, including local pre-processing such as TryBefore/validators. Native
 local static/default handlers can still run, including frame-close behavior.
 Local processing is not an observer-only or no-default-action mode. It does
 not run the normal outer global-filter and parent/application fallback path of
-ProcessEvent. Pushed/linked handler APIs and native virtual overrides remain
-unbound; this operation does not create or promise a new Lisp callback chain.
+ProcessEvent. Managed standalone [handler chains](HANDLER-CHAINS.md) are now
+available; borrowed window/app chain ownership, native Push/Pop/Remove and
+virtual overrides remain unbound.
 
 An observing callback can run and Skip while handled-p is NIL. Final veto state
 is independent of handled-p. Nested current-context lifetime rules and the nearer

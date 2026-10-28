@@ -93,11 +93,11 @@ contracts first. C2 remains partial; C3–C7 have no public bindings recorded.
 See the [C1 details](coverage/phase-c1.md), [C2 details](coverage/phase-c2.md) and
 [class index](coverage/classes.md) for the remaining work within bound families.
 
-The current bridge is ABI 25, with 113 public Lisp exports. The pending-delivery batch passes
-42 GUI scenarios on both local Apple Silicon macOS SBCL/CCL configurations and
+The current bridge is ABI 26, with 117 public Lisp exports. The standalone-chain batch passes
+43 GUI scenarios on both local Apple Silicon macOS SBCL/CCL configurations and
 five packaging checks. These are local results retained under
-`evidence/pending-events/` and `evidence/packaging/pending-events-20261028/`;
-they do not validate Linux/Windows or the graphical Cadre viewer. The pending-delivery
+`evidence/handler-chains/` and `evidence/packaging/handler-chains-20261028/`;
+they do not validate Linux/Windows or the graphical Cadre viewer. The standalone-chain
 implementation reruns the GUI suites; documentation-only
 updates must distinguish retained results from newly run checks.
 
@@ -169,6 +169,7 @@ widget classes has complete wxWidgets coverage yet.
 - [x] Registered same-family event-native-type SETF with actual native class checks; built-in/session/unknown tags reject. Origin retention and arbitrary tag mutation remain open.
 - [x] OWNED-EVENT construction/cloning/disposal/liveness, generic command text/integer SETF and copy-based native dispatch. Exact native classes and detached origins only; arbitrary classes, retained origin, source transfer and client/userData ownership remain open.
 - [x] GUI POST-EVENT copies, consuming TRANSFER-EVENT handoff, PROCESS-EVENT-LOCALLY copies and non-application DELETE-PENDING-EVENTS with pending-list synchronization. Worker posting, app-wide deletion and per-handler pending processing remain open.
+- [x] Standalone handler NEXT/PREVIOUS peer readers and reciprocal SETF, HANDLER-UNLINKED-P and UNLINK-EVENT-HANDLER. Strong canonical roots preserve wrapper identity; dispatch-time edits and borrowed window/app chains reject. Native Push/Pop/Remove remain open.
 - [x] Native errors translated to Lisp `native-error` conditions.
 - [x] Event snapshots: `event`, `event-p`, `event-kind`, `event-source`,
   `event-text`, `event-checked-p`, `event-selection` for four command kinds plus :close.
@@ -368,11 +369,11 @@ bindings; regeneration preserves those marks in the function lists and class
 index. Do not edit generated checkboxes directly. A new upstream version requires
 reviewing and migrating the exact declaration mappings before regeneration.
 
-The larger ABI 25 owned-event batch expands the runner to 41 scenarios. Its final
-full-suite/package evidence is pending during implementation; do not infer hosted
-platform or native OS-session validation from the local owned-resource checks.
+Native pending-list synchronization uses an implementation-header management
+method absent from the pinned documentation interface and remains a C7
+reconciliation dependency; target cancellation does not close app-wide deletion.
 
-The ABI 25 pending-event batch expands the runner to 42 scenarios. Final local
-GUI/package evidence is pending during implementation; native app pending-list
-synchronization uses an implementation-header management method absent from the
-pinned documentation interface and remains a C7 reconciliation dependency.
+The ABI 26 standalone-chain batch expands the runner to 43 scenarios. Final local
+GUI/package evidence is pending during implementation. Paired NIL edge-detach
+semantics follow native implementation/Unlink behavior although the pinned
+setter prose forbids NULL; retain that discrepancy for C7 reconciliation.

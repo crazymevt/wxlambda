@@ -90,5 +90,9 @@
   "pending-events.lisp": {
     "description": "Compare posted copies, consumed transfer inputs, local synchronous processing and handler-specific pending cancellation using owned events.",
     "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/pending-events.lisp --eval '(wxlambda-pending-events:start)'"
+  },
+  "handler-chains.lisp": {
+    "description": "Build reciprocal standalone handler links, observe native chain delivery and detach/splice handlers without changing native ownership.",
+    "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/handler-chains.lisp --eval '(wxlambda-handler-chains:start)'"
   }
 }

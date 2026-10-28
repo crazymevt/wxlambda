@@ -98,7 +98,11 @@ clone calls reject explicit payload overrides. No raw origin retention or
 client/userData ownership is exposed.
 
 The native-backed `event-handler` base supports standalone session-owned handlers;
-windows borrow their existing native widget identity. Public window wrapper
+windows borrow their existing native widget identity. Managed standalone chain
+links preserve reciprocal edges and canonical strongly rooted wrapper identity;
+structural edits reject RUN/pump/callback use and linked callback-time destruction
+rejects. Do not widen chain receivers/peers to borrowed window/app handlers or
+claim native Push/Pop/Remove ownership. Public window wrapper
 classes are `window` (abstract), `frame`, `panel`, `button`,
 `text-control`, `label`, `checkbox`, `choice` and `gauge`. Lisp subclassing does not imply
 native C++ subclassing or virtual-method callbacks; those need separate bridge

@@ -1,0 +1,28 @@
+;;; Load and call (wxlambda-handler-chains:start).
+(require :asdf)
+(load (merge-pathnames "../wxlambda.asd" *load-truename*))
+(asdf:load-system "wxlambda")
+(defpackage #:wxlambda-handler-chains (:use #:cl) (:export #:start #:exercise))
+(in-package #:wxlambda-handler-chains)
+(defun exercise ()
+  (wxlambda:register-event-type :chain-message :family :command)
+  (let* ((head (wxlambda:make-event-handler)) (tail (wxlambda:make-event-handler))
+         (source (wxlambda:make-event :kind :chain-message :text "Through a chain"))
+         (received nil)
+         (binding (wxlambda:bind-event tail :chain-message
+                    (lambda (event)
+                      (assert (eq tail (wxlambda:event-source event)))
+                      (push (wxlambda:event-text event) received)))))
+    (unwind-protect
+         (progn
+           (setf (wxlambda:next-handler head) tail)
+           (assert (eq head (wxlambda:previous-handler tail)))
+           (wxlambda:process-event-locally head source)
+           (assert (equal '("Through a chain") received))
+           (wxlambda:unlink-event-handler tail)
+           (assert (wxlambda:handler-unlinked-p head)))
+      (wxlambda:unbind-event binding)
+      (wxlambda:destroy-event source)
+      (wxlambda:destroy-event-handler tail)
+      (wxlambda:destroy-event-handler head))))
+(defun start () (wxlambda:with-application () (exercise)))

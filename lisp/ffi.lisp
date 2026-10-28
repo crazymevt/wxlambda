@@ -89,7 +89,7 @@
           (if (probe-file local)
               (cffi:load-foreign-library local)
               (cffi:use-foreign-library wxlambda-native))))
-    (unless (= 25 (%abi-version)) (error "Unsupported wxlambda native ABI"))
+    (unless (= 26 (%abi-version)) (error "Unsupported wxlambda native ABI"))
     (setf *native-loaded* t))
   t)
 
@@ -168,3 +168,8 @@
 (cffi:defcfun ("wxl_dispatch_owned" %dispatch-owned) :int (receiver :uint64) (event :uint64) (mode :int) (final-veto :pointer))
 
 (cffi:defcfun ("wxl_delete_pending_events" %delete-pending-events) :int (receiver :uint64))
+
+(cffi:defcfun ("wxl_handler_chain_peer" %handler-chain-peer) :int (handler :uint64) (previous :int) (peer :pointer))
+(cffi:defcfun ("wxl_handler_unlinked" %handler-unlinked) :int (handler :uint64))
+(cffi:defcfun ("wxl_link_handlers" %link-handlers) :int (handler :uint64) (peer :uint64) (previous :int))
+(cffi:defcfun ("wxl_unlink_handler" %unlink-handler) :int (handler :uint64))

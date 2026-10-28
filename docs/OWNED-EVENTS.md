@@ -1,6 +1,6 @@
 # Owned native events, detached clones and copied dispatch
 
-ABI 25 adds the native-backed `owned-event` CLOS class and `make-event`,
+ABI 26 adds the native-backed `owned-event` CLOS class and `make-event`,
 `clone-event`, `destroy-event` and `event-alive-p`. These are independently owned
 native resources, distinct from immutable `event` snapshots and borrowed
 callback-scoped `event-context` values. The baseline is wxWidgets 3.2.12.
@@ -168,3 +168,8 @@ See [event contexts](EVENT-CONTEXTS.md), [tag mutation](EVENT-TAGS.md),
 TRANSFER-EVENT ownership handoff, synchronous local copies and handler-specific
 pending deletion. PROCESS-EVENT/QUEUE-EVENT retain the copy semantics above;
 transferred source wrappers are consumed and cannot be reused or destroyed.
+
+[Standalone handler chains](HANDLER-CHAINS.md) now preserve canonical wrapper
+identity and session ownership while participating in normal/local/pending
+delivery. Structural edits and linked destruction during callbacks reject;
+borrowed window/application stacks remain unbound.

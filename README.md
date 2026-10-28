@@ -83,7 +83,7 @@ application with `(wxlambda:load-native-library #P"C:/path/to/wxlambda.dll")`.
 Dependent wxWidgets DLLs must also be discoverable by the OS loader.
 
 The bridge normally loads from `build/`, then falls back to the system library
-search path. The Lisp/native ABI version (currently 25) is checked on load; rebuild
+search path. The Lisp/native ABI version (currently 26) is checked on load; rebuild
 the bridge after updating the bindings. Installing the bridge with CMake does not
 install the ASDF system.
 
@@ -716,3 +716,6 @@ clones, payload SETF and copied dispatch without transferring source ownership.
 
 [Pending-event delivery](docs/PENDING-EVENTS.md) adds GUI posting, native ownership
 transfer, local processing and target-only queue deletion with explicit semantics.
+
+[Standalone handler chains](docs/HANDLER-CHAINS.md) add canonical peers, guarded
+reciprocal linking and unlinking while native ownership stays with the session.
