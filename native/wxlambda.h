@@ -17,12 +17,12 @@ extern "C" {
 typedef uint64_t wxl_handle;
 enum wxl_alignment { WXL_ALIGN_START = 0, WXL_ALIGN_CENTER = 1, WXL_ALIGN_END = 2 };
 enum wxl_event_family { WXL_FAMILY_COMMAND = 0, WXL_FAMILY_CLOSE = 1, WXL_FAMILY_NOTIFY = 2, WXL_FAMILY_IDLE = 3 };
-enum wxl_event_kind { WXL_EVENT_CLICK = 1, WXL_EVENT_TEXT_CHANGE = 2, WXL_EVENT_TOGGLE = 3, WXL_EVENT_SELECTION = 4, WXL_EVENT_CLOSE = 5, WXL_EVENT_QUERY_END_SESSION = 6, WXL_EVENT_END_SESSION = 7, WXL_EVENT_IDLE = 8, WXL_EVENT_MENU = 9, WXL_EVENT_NOTEBOOK_CHANGING = 10, WXL_EVENT_NOTEBOOK_CHANGED = 11 };
+enum wxl_event_kind { WXL_EVENT_CLICK = 1, WXL_EVENT_TEXT_CHANGE = 2, WXL_EVENT_TOGGLE = 3, WXL_EVENT_SELECTION = 4, WXL_EVENT_CLOSE = 5, WXL_EVENT_QUERY_END_SESSION = 6, WXL_EVENT_END_SESSION = 7, WXL_EVENT_IDLE = 8, WXL_EVENT_MENU = 9, WXL_EVENT_NOTEBOOK_CHANGING = 10, WXL_EVENT_NOTEBOOK_CHANGED = 11, WXL_EVENT_LISTBOX_SELECTION = 12, WXL_EVENT_LISTBOX_DOUBLE_CLICK = 13 };
 typedef struct wxl_event {
     int kind;
-    const char *text; /* UTF-8 for text changes and registered command/notify tags. */
+    const char *text; /* UTF-8 for text changes, listbox events and registered command/notify tags. */
     int checked;      /* Raw IsChecked for toggle/menu payloads; zero otherwise. */
-    int selection;    /* Zero-based choice or native notebook event selection; -1 for none/other kinds. */
+    int selection;    /* Zero-based choice/listbox or native notebook event selection; -1 for none/other kinds. */
     int id;
     size_t text_length; /* Explicit UTF-8 byte count when text is supplied. */
     uint64_t context; /* Scoped opaque token, zero for observers. */
@@ -195,6 +195,20 @@ WXL_API int wxl_remove_handler(wxl_handle window, wxl_handle handler);
 WXL_API wxl_handle wxl_frame(const char *title, int width, int height);
 WXL_API wxl_handle wxl_panel(wxl_handle parent);
 WXL_API wxl_handle wxl_button(wxl_handle parent, const char *label);
+/* Unsorted single-selection text lists. Item operations are silent.
+   Count/append: -1 error. Selection: -1 none, -2 error. Text: NULL error.
+   Other item/selection status operations: 0 success, -1 error. */
+WXL_API wxl_handle wxl_list_box(wxl_handle parent, const char **items, const size_t *lengths, size_t count, int selection);
+WXL_API int wxl_list_count(wxl_handle list);
+WXL_API const char *wxl_list_item(wxl_handle list, int index, size_t *length);
+WXL_API int wxl_set_list_item(wxl_handle list, int index, const char *value, size_t length);
+WXL_API int wxl_list_append(wxl_handle list, const char *value, size_t length);
+WXL_API int wxl_list_delete(wxl_handle list, int index);
+WXL_API int wxl_list_clear(wxl_handle list);
+WXL_API int wxl_list_selection(wxl_handle list);
+WXL_API int wxl_set_list_selection(wxl_handle list, int selection, int notify);
+WXL_API int wxl_on_list_selection(wxl_handle list, uint64_t token);
+WXL_API int wxl_off_list_selection(wxl_handle list);
 /* Fixed setup-time panel pages; no page removal/reparenting or raw ownership. */
 WXL_API wxl_handle wxl_notebook(wxl_handle parent);
 WXL_API int wxl_notebook_add(wxl_handle book, wxl_handle page, const char *label, size_t length, int select);

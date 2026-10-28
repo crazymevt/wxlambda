@@ -320,7 +320,7 @@ Class/struct definitions: 0 complete; 10 partial; 292 pending. Partial and pendi
 
 ## C2: Windows, layout, basic controls, and input
 
-Class/struct definitions: 0 complete; 11 partial; 121 pending. Partial and pending classes remain open.
+Class/struct definitions: 0 complete; 14 partial; 118 pending. Partial and pending classes remain open.
 
 [Declaration counts and remaining work](README.md).
 
@@ -353,8 +353,8 @@ Class/struct definitions: 0 complete; 11 partial; 121 pending. Partial and pendi
 - [ ] `wxCommandLinkButton` — [`wx/commandlinkbutton.h`](phase-c2.md), upstream line 46.
 - [ ] `wxNavigationEnabled` — [`wx/containr.h`](phase-c2.md), upstream line 45.
 - [ ] `wxControl` — [`wx/control.h`](phase-c2.md), upstream line 31.
-- [ ] `wxItemContainerImmutable` — [`wx/ctrlsub.h`](phase-c2.md), upstream line 29.
-- [ ] `wxItemContainer` — [`wx/ctrlsub.h`](phase-c2.md), upstream line 196.
+- [~] `wxItemContainerImmutable` — [`wx/ctrlsub.h`](phase-c2.md), upstream line 29. — **Partial**: `list-box`, `make-list-box`, `item-count`, `item-text`, `append-item`, `delete-item`, `clear-items`, `selection`, `on-selection`, `off-selection`; ABI: `wxl_list_box`, `wxl_list_count`, `wxl_list_item`, `wxl_set_list_item`, `wxl_list_append`, `wxl_list_delete`, `wxl_list_clear`, `wxl_list_selection`, `wxl_set_list_selection`. LIST-BOX only, unsorted single selection/text items. Finite UTF-8/NUL-checked construction; silent item edits preserve/adjust selection deterministically. Native list callback lifetime/pump guards; owned/simple command selection+activation events. Other item containers, multiselect/sort/client data/virtual models remain unbound.
+- [~] `wxItemContainer` — [`wx/ctrlsub.h`](phase-c2.md), upstream line 196. — **Partial**: `list-box`, `make-list-box`, `item-count`, `item-text`, `append-item`, `delete-item`, `clear-items`, `selection`, `on-selection`, `off-selection`; ABI: `wxl_list_box`, `wxl_list_count`, `wxl_list_item`, `wxl_set_list_item`, `wxl_list_append`, `wxl_list_delete`, `wxl_list_clear`, `wxl_list_selection`, `wxl_set_list_selection`. LIST-BOX only, unsorted single selection/text items. Finite UTF-8/NUL-checked construction; silent item edits preserve/adjust selection deterministically. Native list callback lifetime/pump guards; owned/simple command selection+activation events. Other item containers, multiselect/sort/client data/virtual models remain unbound.
 - [ ] `wxControlWithItems` — [`wx/ctrlsub.h`](phase-c2.md), upstream line 759.
 - [ ] `wxCursor` — [`wx/cursor.h`](phase-c2.md), upstream line 82.
 - [ ] `wxCustomBackgroundWindow` — [`wx/custombgwin.h`](phase-c2.md), upstream line 47.
@@ -382,7 +382,7 @@ Class/struct definitions: 0 complete; 11 partial; 121 pending. Partial and pendi
 - [ ] `wxSashLayoutWindow` — [`wx/laywin.h`](phase-c2.md), upstream line 173.
 - [ ] `wxQueryLayoutInfoEvent` — [`wx/laywin.h`](phase-c2.md), upstream line 305.
 - [ ] `wxCalculateLayoutEvent` — [`wx/laywin.h`](phase-c2.md), upstream line 394.
-- [ ] `wxListBox` — [`wx/listbox.h`](phase-c2.md), upstream line 72.
+- [~] `wxListBox` — [`wx/listbox.h`](phase-c2.md), upstream line 72. — **Partial**: `list-box`, `make-list-box`, `item-count`, `item-text`, `append-item`, `delete-item`, `clear-items`, `selection`, `on-selection`, `off-selection`; ABI: `wxl_list_box`, `wxl_list_count`, `wxl_list_item`, `wxl_set_list_item`, `wxl_list_append`, `wxl_list_delete`, `wxl_list_clear`, `wxl_list_selection`, `wxl_set_list_selection`. LIST-BOX only, unsorted single selection/text items. Finite UTF-8/NUL-checked construction; silent item edits preserve/adjust selection deterministically. Native list callback lifetime/pump guards; owned/simple command selection+activation events. Other item containers, multiselect/sort/client data/virtual models remain unbound.
 - [ ] `wxMouseEventsManager` — [`wx/mousemanager.h`](phase-c2.md), upstream line 36.
 - [ ] `wxMouseState` — [`wx/mousestate.h`](phase-c2.md), upstream line 56.
 - [ ] `wxNonOwnedWindow` — [`wx/nonownedwnd.h`](phase-c2.md), upstream line 28.

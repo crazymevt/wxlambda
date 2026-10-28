@@ -777,3 +777,7 @@ shows Unicode multiline edits; the persistent form stays a single-line form.
 [Notebook navigation](docs/NOTEBOOK.md) adds fixed editor/settings panel pages,
 native selection/veto events and guarded ownership. Run the notebook example START
 for interactive tabs or EXERCISE for bounded navigation checks.
+
+[Single-selection list boxes](docs/LIST-BOX.md) add mutable text items, selection
+and activation events. The list-manager example wires append/rename/delete/clear
+actions; stable domain IDs remain Lisp application data.

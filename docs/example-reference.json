@@ -142,5 +142,9 @@
   "notebook.lisp": {
     "description": "Editor/settings notebook with fixed panel pages, canonical lookup, native silent/notifying selection and contextual navigation veto. Bounded EXERCISE drives selection/veto; physical tab/keyboard interaction remains separate.",
     "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/notebook.lisp --eval '(wxlambda:with-application () (wxlambda-notebook:exercise))'"
+  },
+  "list-manager.lisp": {
+    "description": "Unsorted single-selection list manager with Append/Rename/Delete/Clear actions, native selection and activation feedback. Bounded EXERCISE tests silent item edits and selected-index adjustment without physical input.",
+    "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/list-manager.lisp --eval '(wxlambda:with-application () (wxlambda-list-manager:exercise))'"
   }
 }

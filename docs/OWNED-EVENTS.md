@@ -24,7 +24,7 @@ allocation. These wrappers do not install native C++ virtual overrides.
       (wxlambda:destroy-event event))))
 ```
 
-`:kind` defaults to :CLICK and accepts the nine constructible built-in kinds (not notebook page events) or a registered
+`:kind` defaults to :CLICK and accepts the eleven constructible built-in kinds (not notebook page events) or a registered
 command/notify name. The other base construction initargs match synthetic event
 payloads: `:id` defaults to 0, `:text` to an empty string, `:integer` to 0,
 `:checked-p` and `:selection` apply only to their built-in kinds, `:can-veto-p`
@@ -200,3 +200,7 @@ without requiring exhaustive foundation parity.
 
 [Menus and actions](MENUS.md) add built-in :MENU commands, including raw checked
 metadata. Event field writes do not synchronize a managed menu item.
+
+ABI38 includes simple `:listbox-selection`/`:listbox-double-click` command events
+with explicit `:text`/`:selection` payloads, owned cloning and dispatch to arbitrary
+handlers. Payload mutation does not change list items/selection. See [lists](LIST-BOX.md).

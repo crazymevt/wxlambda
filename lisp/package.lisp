@@ -1,6 +1,7 @@
 (defpackage #:wxlambda
   (:use #:cl)
-  (:export #:notebook #:make-notebook #:add-notebook-page #:notebook-page-count #:notebook-page #:notebook-page-label
+  (:export #:list-box #:make-list-box #:item-count #:item-text #:append-item #:delete-item #:clear-items
+           #:notebook #:make-notebook #:add-notebook-page #:notebook-page-count #:notebook-page #:notebook-page-label
            #:text-multiline-p #:text-editable-p #:text-selection #:text-insertion-point #:text-last-position #:replace-text
            #:clipboard-text #:clipboard-text-available-p #:flush-clipboard
            #:message-dialog #:file-dialog #:make-message-dialog #:make-file-dialog

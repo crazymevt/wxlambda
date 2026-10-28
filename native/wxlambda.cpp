@@ -5,6 +5,7 @@
 #include <wx/gauge.h>
 #include <wx/menu.h>
 #include <wx/notebook.h>
+#include <wx/listbox.h>
 #include <wx/textdlg.h>
 #include <wx/choicdlg.h>
 #include <wx/generic/msgdlgg.h>
@@ -102,7 +103,7 @@ public: using wxMenuItem::wxMenuItem; wxl_handle identity = 0;
 };
 struct RegisteredEvent { wxEventType type; int family; };
 std::unordered_map<int, RegisteredEvent> registered_events;
-constexpr int first_registered_event_kind = WXL_EVENT_NOTEBOOK_CHANGED + 1;
+constexpr int first_registered_event_kind = WXL_EVENT_LISTBOX_DOUBLE_CLICK + 1;
 int next_event_kind = first_registered_event_kind;
 wxWeakRef<wxDialog> active_modal;
 std::unordered_map<wxWindow*, size_t> dialog_choice_counts;
@@ -350,10 +351,29 @@ struct NotebookCallbackOperation {
     }
     ~NotebookCallbackOperation() { if (added) notebook_operations.pop_back(); }
 };
+std::vector<wxWeakRef<wxListBox>> list_callback_operations;
+bool protected_list_ancestor(wxWindow* object) {
+    for (const auto& list : list_callback_operations)
+        for (auto* node = static_cast<wxWindow*>(list.get()); node; node = node->GetParent())
+            if (node == object) return true;
+    return false;
+}
+struct ListCallbackOperation {
+    bool added = false, allow = true;
+    explicit ListCallbackOperation(wxEvent& event) {
+        if (event.GetEventType() != wxEVT_LISTBOX && event.GetEventType() != wxEVT_LISTBOX_DCLICK) return;
+        auto* list = dynamic_cast<wxListBox*>(event.GetEventObject());
+        if (!list) return; // Synthetic command events may target any handler.
+        if (window_destruction_pending(list)) { allow = false; return; }
+        for (const auto& active : list_callback_operations) if (active.get() == list) return;
+        list_callback_operations.emplace_back(list); added = true;
+    }
+    ~ListCallbackOperation() { if (added) list_callback_operations.pop_back(); }
+};
 int selected_event_index(wxEvent& event) {
     if (auto* book = dynamic_cast<wxBookCtrlEvent*>(&event)) return book->GetSelection();
     auto* command = dynamic_cast<wxCommandEvent*>(&event);
-    return command && event.GetEventType() == wxEVT_CHOICE ? command->GetSelection() : -1;
+    return command && (event.GetEventType() == wxEVT_CHOICE || event.GetEventType() == wxEVT_LISTBOX || event.GetEventType() == wxEVT_LISTBOX_DCLICK) ? command->GetSelection() : -1;
 }
 void make_box(wxl_handle id, int orientation) {
     auto* parent = window(id);
@@ -367,7 +387,7 @@ void invoke_callback(uint64_t token, const wxl_event& event) {
 }
 void require_dispatch_entry() {
     require(!active_modal.get() && actual_modals.empty(), "Cannot enter structural dispatch during a modal dialog");
-    require(notebook_operations.empty(), "Cannot enter structural dispatch during notebook navigation");
+    require(notebook_operations.empty() && list_callback_operations.empty(), "Cannot enter structural dispatch during notebook/list callbacks");
     require(!running, "Event loop is already running");
     require(!pumping && callback_depth == 0, "Cannot enter event dispatch from a pump or callback");
 }
@@ -391,6 +411,8 @@ wxEventTypeTag<wxEvent> native_event_type(int kind) {
         case WXL_EVENT_MENU: return wxEventTypeTag<wxEvent>(wxEVT_MENU);
         case WXL_EVENT_NOTEBOOK_CHANGING: return wxEventTypeTag<wxEvent>(wxEVT_NOTEBOOK_PAGE_CHANGING);
         case WXL_EVENT_NOTEBOOK_CHANGED: return wxEventTypeTag<wxEvent>(wxEVT_NOTEBOOK_PAGE_CHANGED);
+        case WXL_EVENT_LISTBOX_SELECTION: return wxEventTypeTag<wxEvent>(wxEVT_LISTBOX);
+        case WXL_EVENT_LISTBOX_DOUBLE_CLICK: return wxEventTypeTag<wxEvent>(wxEVT_LISTBOX_DCLICK);
         default: {
             const auto it = registered_events.find(kind);
             require(it != registered_events.end(), "Unsupported event kind");
@@ -402,7 +424,7 @@ int native_event_family(int kind) {
     if (kind >= WXL_EVENT_CLICK && kind <= WXL_EVENT_SELECTION) return WXL_FAMILY_COMMAND;
     if (kind >= WXL_EVENT_CLOSE && kind <= WXL_EVENT_END_SESSION) return WXL_FAMILY_CLOSE;
     if (kind == WXL_EVENT_IDLE) return WXL_FAMILY_IDLE;
-    if (kind == WXL_EVENT_MENU) return WXL_FAMILY_COMMAND;
+    if (kind == WXL_EVENT_MENU || kind == WXL_EVENT_LISTBOX_SELECTION || kind == WXL_EVENT_LISTBOX_DOUBLE_CLICK) return WXL_FAMILY_COMMAND;
     if (kind == WXL_EVENT_NOTEBOOK_CHANGING || kind == WXL_EVENT_NOTEBOOK_CHANGED) return WXL_FAMILY_NOTIFY;
     const auto it = registered_events.find(kind);
     require(it != registered_events.end(), "Unsupported event kind");
@@ -425,7 +447,7 @@ std::unique_ptr<wxEvent> synthetic_event(wxEvtHandler* receiver, int kind, int e
     const auto type = native_event_type(kind);
     const int family = native_event_family(kind);
     require(text || length == 0, "Null event text");
-    require(kind != WXL_EVENT_SELECTION || value >= -1, "Invalid selection event index");
+    require((kind != WXL_EVENT_SELECTION && kind != WXL_EVENT_LISTBOX_SELECTION && kind != WXL_EVENT_LISTBOX_DOUBLE_CLICK) || value >= -1, "Invalid selection event index");
     require(session_type(type) || logging_off == 0, "Logging-off applies only to session events");
     require(family == WXL_FAMILY_NOTIFY || vetoed == 0, "Initial veto applies only to notify types");
     std::unique_ptr<wxEvent> event;
@@ -448,16 +470,17 @@ std::unique_ptr<wxEvent> synthetic_event(wxEvtHandler* receiver, int kind, int e
         event = std::move(notify);
     } else {
         auto command = std::make_unique<wxCommandEvent>(type, event_id);
-        if (kind == WXL_EVENT_TEXT_CHANGE || kind >= first_registered_event_kind)
+        if (kind == WXL_EVENT_TEXT_CHANGE || kind == WXL_EVENT_LISTBOX_SELECTION || kind == WXL_EVENT_LISTBOX_DOUBLE_CLICK || kind >= first_registered_event_kind)
             command->SetString(wxString::FromUTF8(text ? text : "", length));
         command->SetInt(value);
+        if (kind == WXL_EVENT_LISTBOX_SELECTION || kind == WXL_EVENT_LISTBOX_DOUBLE_CLICK) command->SetExtraLong(value >= 0 ? 1 : 0);
         event = std::move(command);
     }
     event->SetEventObject(receiver);
     return event;
 }
 int kind_of(wxEvent& event) {
-    for (int kind = WXL_EVENT_CLICK; kind <= WXL_EVENT_NOTEBOOK_CHANGED; ++kind)
+    for (int kind = WXL_EVENT_CLICK; kind <= WXL_EVENT_LISTBOX_DOUBLE_CLICK; ++kind)
         if (native_event_type(kind) == event.GetEventType()) return kind;
     for (const auto& item : registered_events)
         if (item.second.type == event.GetEventType()) return item.first;
@@ -559,7 +582,7 @@ void write_event_field(wxEvent& event, int field, int64_t value) {
             require(command && (event.GetEventType() == wxEVT_CHECKBOX || event.GetEventType() == wxEVT_MENU), "Checked metadata requires a toggle/menu event");
             command->SetInt(value != 0 ? 1 : 0); break;
         case 16:
-            require(command && event.GetEventType() == wxEVT_CHOICE, "Selection metadata requires a selection event");
+            require(command && (event.GetEventType() == wxEVT_CHOICE || event.GetEventType() == wxEVT_LISTBOX || event.GetEventType() == wxEVT_LISTBOX_DCLICK), "Selection metadata requires a choice/listbox selection event");
             require(value >= -1 && value <= std::numeric_limits<int>::max(), "Selection index outside supported range");
             command->SetInt(static_cast<int>(value)); break;
         default: throw std::runtime_error("This event field is read-only or unknown");
@@ -585,7 +608,8 @@ struct Binding {
     }
     void on_event(wxEvent& event) {
         NotebookCallbackOperation notebook_guard(event);
-        if (!notebook_guard.allow) { event.Skip(); return; }
+        ListCallbackOperation list_guard(event);
+        if (!notebook_guard.allow || !list_guard.allow) { event.Skip(); return; }
         const auto found = bindings.find(token);
         if (found == bindings.end()) { event.Skip(); return; }
         // Keep the method receiver alive if this or another binding is removed.
@@ -596,7 +620,7 @@ struct Binding {
             for (const auto& item : registered_events)
                 if (item.second.type == event.GetEventType()) { snapshot_kind = item.first; break; }
             const int family = native_event_family(snapshot_kind);
-            const bool carries_text = snapshot_kind == WXL_EVENT_TEXT_CHANGE || snapshot_kind >= first_registered_event_kind;
+            const bool carries_text = snapshot_kind == WXL_EVENT_TEXT_CHANGE || snapshot_kind == WXL_EVENT_LISTBOX_SELECTION || snapshot_kind == WXL_EVENT_LISTBOX_DOUBLE_CLICK || snapshot_kind >= first_registered_event_kind;
             const auto text = command ? command->GetString() : wxString();
             const auto bytes = text.ToUTF8();
             wxl_event snapshot{snapshot_kind, carries_text ? (bytes.data() ? bytes.data() : "") : nullptr,
@@ -759,7 +783,7 @@ protected:
     int Enter(wxDialog* object) override {
         // Lisp may defer rethrow until its nearest notifying operation returns.
         // Do not open a new native prompt while its callback error is pending.
-        if (pending_callback_error || !notebook_operations.empty()) return wxID_CANCEL;
+        if (pending_callback_error || !notebook_operations.empty() || !list_callback_operations.empty()) return wxID_CANCEL;
         if (modal_cancel_requested && (active_modal.get() || !actual_modals.empty())) return wxID_CANCEL;
         // Native NSAlert modal loops cannot be aborted using wxDialog::EndModal.
         // Replace them before their platform ShowModal implementation is entered.
@@ -864,7 +888,7 @@ class ClipboardSession {
 public:
     ClipboardSession() {
         ready();
-        require(notebook_operations.empty(), "Defer clipboard operations until notebook navigation returns");
+        require(notebook_operations.empty() && list_callback_operations.empty(), "Defer clipboard operations until notebook/list callbacks return");
         require(!clipboard_busy, "Clipboard operation is already in progress");
 #ifdef WXLAMBDA_NATIVE_TESTS
         clipboard = test_clipboard ? test_clipboard : wxTheClipboard;
@@ -895,7 +919,7 @@ public:
 
 }
 extern "C" {
-int wxl_abi_version() { return 37; }
+int wxl_abi_version() { return 38; }
 const char* wxl_last_error() { return error.c_str(); }
 int wxl_clipboard_text_available() {
     return boolean_result([&] {
@@ -1151,7 +1175,7 @@ int wxl_dialog_show(wxl_handle id, int* code) {
     return status([&] {
         auto* object = as<wxDialog>(id);
         require(code, "Missing modal result output");
-        require(notebook_operations.empty(), "Defer dialogs until notebook navigation returns");
+        require(notebook_operations.empty() && list_callback_operations.empty(), "Defer dialogs until notebook/list callbacks return");
         require(!active_modal.get() && actual_modals.empty(), "Nested modal dialogs are not supported");
         require(!object->IsShown() && !object->IsModal(), "Dialog is already shown");
         struct ModalScope {
@@ -1623,7 +1647,7 @@ int wxl_context_set_logging_off(uint64_t token, int value) {
     });
 }
 int wxl_close(wxl_handle id, int force) {
-    return boolean_result([&] { auto* object = as<wxFrame>(id); require(!protected_modal_ancestor(object), "Cannot close an active modal dialog ancestor"); require(!protected_notebook_ancestor(object), "Cannot close a notebook operation ancestor"); return object->Close(force != 0); });
+    return boolean_result([&] { auto* object = as<wxFrame>(id); require(!protected_modal_ancestor(object), "Cannot close an active modal dialog ancestor"); require(!protected_notebook_ancestor(object) && !protected_list_ancestor(object), "Cannot close a notebook/list callback ancestor"); return object->Close(force != 0); });
 }
 int wxl_context_resume_propagation(uint64_t token, int level) {
     return status([&] {
@@ -1898,6 +1922,98 @@ wxl_handle wxl_button(wxl_handle parent, const char* label) {
         return id;
     });
 }
+wxl_handle wxl_list_box(wxl_handle parent, const char** items, const size_t* lengths, size_t count, int selection) {
+    return create([&] {
+        require(count <= static_cast<size_t>(std::numeric_limits<int>::max()), "Too many list items");
+        require(!count || (items && lengths), "Null list item arrays");
+        require(selection >= -1 && (selection == -1 || static_cast<size_t>(selection) < count), "List selection out of bounds");
+        wxArrayString strings;
+        for (size_t i = 0; i < count; ++i) strings.Add(text_value(items[i], lengths[i]));
+        auto control = std::make_unique<ManagedWindow<wxListBox>>(window(parent), wxID_ANY, wxDefaultPosition, wxDefaultSize, strings, wxLB_SINGLE);
+        { wxEventBlocker blocker(control.get(), wxEVT_LISTBOX); control->SetSelection(selection); }
+        const auto id = track(control.get());
+        control->Bind(wxEVT_LISTBOX, [id](wxCommandEvent& event) {
+            ListCallbackOperation list_guard(event);
+            if (!list_guard.allow) { event.Skip(); return; }
+            const auto text = event.GetString();
+            const auto bytes = text.ToUTF8();
+            emit_event(id, {WXL_EVENT_LISTBOX_SELECTION, bytes.data() ? bytes.data() : "", 0, event.GetSelection(), event.GetId(), bytes.length(), 0,
+                           event.GetEventType(), 0, 0, WXL_FAMILY_COMMAND, event.GetInt(), 0, event.GetTimestamp(), event.IsCommandEvent() ? 1 : 0,
+                           origin_id(event), static_cast<int>(event.GetEventCategory()), event.GetExtraLong(), event.IsSelection() ? 1 : 0, 0, 0});
+            event.Skip();
+        });
+        control.release(); return id;
+    });
+}
+int wxl_list_count(wxl_handle id) {
+    int count = -1;
+    status([&] { const auto n = as<wxListBox>(id)->GetCount(); require(n <= static_cast<unsigned>(std::numeric_limits<int>::max()), "Too many list items"); count = static_cast<int>(n); });
+    return count;
+}
+const char* wxl_list_item(wxl_handle id, int index, size_t* length) {
+    return metadata_string([&] {
+        auto* list = as<wxListBox>(id);
+        require(index >= 0 && static_cast<unsigned>(index) < list->GetCount(), "List item index out of bounds");
+        return list->GetString(static_cast<unsigned>(index));
+    }, length);
+}
+int wxl_set_list_item(wxl_handle id, int index, const char* value, size_t length) {
+    return status([&] {
+        auto* list = as<wxListBox>(id);
+        require(index >= 0 && static_cast<unsigned>(index) < list->GetCount(), "List item index out of bounds");
+        const auto text = text_value(value, length);
+        const auto selected = list->GetSelection();
+        wxEventBlocker blocker(list, wxEVT_LISTBOX);
+        list->SetString(static_cast<unsigned>(index), text);
+        list->SetSelection(selected);
+    });
+}
+int wxl_list_append(wxl_handle id, const char* value, size_t length) {
+    int index = -1;
+    const int result = status([&] {
+        auto* list = as<wxListBox>(id);
+        require(list->GetCount() < static_cast<unsigned>(std::numeric_limits<int>::max()), "Too many list items");
+        const auto text = text_value(value, length);
+        const auto selected = list->GetSelection();
+        wxEventBlocker blocker(list, wxEVT_LISTBOX);
+        index = list->Append(text);
+        require(index != wxNOT_FOUND, "Unable to append list item");
+        list->SetSelection(selected);
+    });
+    return result == 0 ? index : -1;
+}
+int wxl_list_delete(wxl_handle id, int index) {
+    return status([&] {
+        auto* list = as<wxListBox>(id);
+        require(index >= 0 && static_cast<unsigned>(index) < list->GetCount(), "List item index out of bounds");
+        const auto selected = list->GetSelection();
+        wxEventBlocker blocker(list, wxEVT_LISTBOX);
+        list->Delete(static_cast<unsigned>(index));
+        list->SetSelection(selected == index ? wxNOT_FOUND : selected > index ? selected - 1 : selected);
+    });
+}
+int wxl_list_clear(wxl_handle id) {
+    return status([&] { auto* list = as<wxListBox>(id); wxEventBlocker blocker(list, wxEVT_LISTBOX); list->Clear(); });
+}
+int wxl_list_selection(wxl_handle id) {
+    int selection = -2; status([&] { selection = as<wxListBox>(id)->GetSelection(); }); return selection;
+}
+int wxl_set_list_selection(wxl_handle id, int selection, int notify) {
+    return status([&] {
+        auto* list = as<wxListBox>(id);
+        require(notify == 0 || notify == 1, "Invalid list notification flag");
+        require(selection >= -1 && (selection == -1 || static_cast<unsigned>(selection) < list->GetCount()), "List selection out of bounds");
+        { wxEventBlocker blocker(list, wxEVT_LISTBOX); list->SetSelection(selection); }
+        if (notify) {
+            wxCommandEvent event(wxEVT_LISTBOX, list->GetId());
+            event.SetEventObject(list); event.SetInt(selection); event.SetExtraLong(selection >= 0 ? 1 : 0);
+            if (selection >= 0) event.SetString(list->GetString(static_cast<unsigned>(selection)));
+            list->GetEventHandler()->ProcessEvent(event);
+        }
+    });
+}
+int wxl_on_list_selection(wxl_handle id, uint64_t token) { return status([&] { as<wxListBox>(id); handlers[id] = token; }); }
+int wxl_off_list_selection(wxl_handle id) { return status([&] { as<wxListBox>(id); handlers.erase(id); }); }
 wxl_handle wxl_notebook(wxl_handle parent) {
     return create([&] { return track(new ManagedWindow<wxNotebook>(window(parent), wxID_ANY)); });
 }
@@ -2210,7 +2326,7 @@ int wxl_destroy(wxl_handle id) {
     return status([&] {
         auto* object = window(id);
         require(!protected_modal_ancestor(object), "Cannot destroy an active modal dialog or its ancestor");
-        require(!protected_notebook_ancestor(object), "Cannot destroy a notebook operation receiver or its ancestor");
+        require(!protected_notebook_ancestor(object) && !protected_list_ancestor(object), "Cannot destroy a notebook/list operation receiver or its ancestor");
         require(!attached_notebook_page(object), "Attached notebook pages are owned by the notebook");
         if (callback_depth) {
             wxWeakRef<wxWindow> weak(object);

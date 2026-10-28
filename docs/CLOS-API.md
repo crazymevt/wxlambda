@@ -1,7 +1,7 @@
 # CLOS widget API
 
 Widgets are native-backed CLOS instances. The public classes are `window`,
-`frame`, `panel`, `notebook`, `button`, `text-control`, `label`, `checkbox`, `choice`,
+`frame`, `panel`, `notebook`, `list-box`, `button`, `text-control`, `label`, `checkbox`, `choice`,
 `gauge`, abstract `dialog`, and its `text-entry-dialog`, `single-choice-dialog`,
 `message-dialog` and `file-dialog` concrete families.
 `window` inherits from `event-handler` and is abstract. Standalone `event-handler`
@@ -239,3 +239,7 @@ semantics, notifying replacements, read-only policy and limits.
 The concrete `notebook` window uses native-backed CLOS construction and fixed
 fully initialized `panel` pages. Page identity is rooted before native publication;
 page self-attachment during initialization rejects. See [notebook navigation](NOTEBOOK.md).
+
+`list-box` constructs an unsorted native single-selection list from `:items` and
+`:selection`; subclass AFTER hooks can query/edit it. Item text uses generic SETF.
+See [single-selection lists](LIST-BOX.md) for item and callback lifetime rules.

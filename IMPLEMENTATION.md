@@ -79,16 +79,16 @@ as if later features or platform checks already passed.
 - Idle batch: :IDLE family/resources, bounded RequestMore, session-restored
   automatic mode, own-window opt-in and native wake scheduling. Independent review
   and final verification pass.
-- Current bridge ABI: 37. Public API: 182 exports, fifteen window wrapper classes
-  (thirteen concrete kinds plus WINDOW/DIALOG abstract bases) plus the event-handler base and frame-owned menu resources, 127 named generics and
-  forty-one generic SETF writers. The application-handler is a borrowed view; no
+- Current bridge ABI: 38. Public API: 189 exports, sixteen window wrapper classes
+  (fourteen concrete kinds plus WINDOW/DIALOG abstract bases) plus the event-handler base and frame-owned menu resources, 133 named generics and
+  forty-two generic SETF writers. The application-handler is a borrowed view; no
   native application construction or arbitrary-event class binding exists yet; built-ins plus registered command/notify names have
   observer/contextual bindings.
-- Latest implementation verification: all 55 GUI scenarios and native preflight
+- Latest implementation verification: all 56 GUI scenarios and native preflight
   pass on local Apple Silicon macOS SBCL 2.6.9 and CCL 1.13. Final reports:
-  `evidence/notebook/{sbcl,ccl}-20261028-final/`. Native notebook/event, text and
+  `evidence/list-box/{sbcl,ccl}-20261028-final/`. Native list/notebook event, text and
   clipboard regressions pass with zero wx assertions; clipboard contents stay intact.
-  Five package checks pass in `evidence/packaging/notebook-20261028/`.
+  Five package checks pass in `evidence/packaging/list-box-20261028/`.
   Hosted Linux/Windows GUI behavior and the graphical Cadre viewer remain open.
 
 ### Feature priorities and working order
@@ -99,8 +99,9 @@ as if later features or platform checks already passed.
    slice. A persistent form now composes open/save workflows through generic
    message/file dialogs and Lisp-native document IO. Text clipboard support now extends
    the form/editor. Multiline text construction/editing now provides editor
-   primitives; notebook navigation adds fixed editor/settings pages. Next add
-   single-selection list boxes for the tree/list-manager slice; retain native OS dialog backends as unbound.
+   primitives; notebook navigation adds fixed editor/settings pages.
+   Single-selection list boxes now extend the tree/list-manager slice. Next add
+   bounded tree navigation/item ownership; retain native OS dialog backends as unbound.
    Add only necessary
    timer/value/lifetime prerequisites; do not drain native ownership/utilities.
 3. Expand controls/layout, navigation/notebooks, list/tree, clipboard and drawing
@@ -1917,3 +1918,62 @@ Physical tab/keyboard input, caption/native CHANGING behavior on hosted Windows/
 graphical Cadre, a full multi-document editor and external clipboard interoperability
 remain unverified. Next selected slice: single-selection list boxes, broadening the
 tree/list-manager workflow without native container/document parity prerequisites.
+
+## Single-selection list boxes (2026-10-28, verified)
+
+ABI38 adds LIST-BOX, thin MAKE-LIST-BOX, ITEM-COUNT, generic ITEM-TEXT/SETF,
+APPEND-ITEM, DELETE-ITEM and CLEAR-ITEMS. Existing SELECTION and ON/OFF-SELECTION
+specialize on lists. Unsorted single selection only; initial finite proper string
+list/index or NIL, direct/subclass CLOS/defaults/AFTER hooks and managed rollback.
+Explicit UTF-8 byte lengths validate NUL and native arrays. Empty/duplicate labels
+are valid. Counts: 189 exports, 133 named generics, 42 SETF generics, 16 window
+wrapper classes (14 concrete+2 abstract), 56 GUI scenarios, 37 examples, 264 entries.
+
+Append/rename preserve selection. Deleting the selected row clears it; deleting an
+earlier row shifts the selected index down one. Clear resets all. Item mutations
+are silent via temporary wxEventBlocker and restore managed handler-stack identity.
+:NOTIFY T selection emits one synthetic native list-selection event after state
+change, including unchanged/NIL assignments. Default writes are silent. No sorting,
+multiselect, item client data, arbitrary styles/virtual models or stable native IDs.
+Lisp domain models remain responsible for stable identity across item/index edits.
+
+Two command kinds :LISTBOX-SELECTION/:LISTBOX-DOUBLE-CLICK carry cached string/index
+payloads and raw action metadata. They support snapshots/contexts, contextual and
+owned cloning, synthetic/owned dispatch including non-list handlers. Payload writes
+do not change native items/selection. There are thirteen bindable built-ins, eleven
+constructible built-ins and seven command kinds. Registered numbering starts after
+both list types; ABI version protects mismatched libraries. No event record field
+or immutable Lisp snapshot slot was added.
+
+Independent review found a GTK activation post-callback native-widget dereference:
+list-origin generic/propagated/convenience callbacks now protect list/ancestors from
+destruction/close and reject modal/clipboard/native-loop entry until callback return.
+Deleting-origin events suppress; non-list synthetic targets remain allowed. Item
+edits and nested selection remain allowed. The native probe dispatches actual list
+commands outside setters across all three callback paths, including callback
+append/delete/clear and cloning. It passes with zero wx assertions, alongside both
+focused Lisp suites (quiet-run.3HU3EgDp). Initial selection now also blocks native
+selection events before publication. Additional standalone synthetic receiver and
+handler-stack tests distinguish metadata behavior from control model changes.
+
+examples/list-manager.lisp wires Append/Rename/Delete/Clear and selection/activation
+feedback; bounded EXERCISE runs real native list operations. Context snapshots stay
+unchanged after callback item edits, and handled callback errors preserve completed
+selection while allowing recovery. Independent API review corrected choice-only
+receiver/payload descriptions; shared ctrlsub inventory mappings were merged with
+existing CHOICE selection mappings instead of duplicated. Inventory+13 checks and
+264-entry zero-problem docset pass (quiet-run.Cr9JSlAg). Final native rebuild/harness
+and all 56 GUI scenarios plus preflight pass both Lisps (quiet-run.CDYTWOPL):
+evidence/list-box/{sbcl,ccl}-20261028-final/. Final inventory+13 checks, 264-entry
+zero-problem checker, isolated install/discovery/lookup, actual 189-export/class/
+SETF coverage on both Lisps and 16 Python unit checks pass (quiet-run.NmqyAM64).
+Five package checks pass (evidence/packaging/list-box-20261028/,
+quiet-run.FoJpsHAo); package: dist/wxlambda-form-list-box. This packages the existing
+form executable; the new list-manager example/docs remain repository/docset
+content. Final reference-field cleanup lists all thirteen native event types and
+broadened selection receiver classes; docset rebuilt after those/session-note edits.
+
+Physical mouse/keyboard activation, scrolling/accessibility, hosted Windows/Linux,
+graphical Cadre, full tree/list-manager workflows and external clipboard interop
+remain unverified. Next selected slice: bounded tree navigation and managed item
+ownership; deeper list/data-view/virtual models stay demand-driven.

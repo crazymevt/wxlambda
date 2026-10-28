@@ -397,12 +397,31 @@
       "status": "~",
       "symbol": "wxItemContainerImmutable::SetSelection",
       "lisp": [
-        "(setf selection)"
+        "(setf selection)",
+        "list-box",
+        "make-list-box",
+        "item-count",
+        "item-text",
+        "append-item",
+        "delete-item",
+        "clear-items",
+        "selection",
+        "on-selection",
+        "off-selection"
       ],
       "native": [
-        "wxl_set_selection"
+        "wxl_set_selection",
+        "wxl_list_box",
+        "wxl_list_count",
+        "wxl_list_item",
+        "wxl_set_list_item",
+        "wxl_list_append",
+        "wxl_list_delete",
+        "wxl_list_clear",
+        "wxl_list_selection",
+        "wxl_set_list_selection"
       ],
-      "scope": "Canonical SETF writer. Inherited interface exposed for wxChoice only; other item-container receivers remain open."
+      "scope": "Canonical SETF writer. Inherited interface exposed for wxChoice only; other item-container receivers remain open. ABI38 additionally: LIST-BOX only, unsorted single selection/text items. Finite UTF-8/NUL-checked construction; silent item edits preserve/adjust selection deterministically. Native list callback lifetime/pump guards; owned/simple command selection+activation events. Other item containers, multiselect/sort/client data/virtual models remain unbound."
     },
     {
       "header": "wx/ctrlsub.h",
@@ -411,12 +430,30 @@
       "status": "~",
       "symbol": "wxItemContainerImmutable::GetSelection",
       "lisp": [
-        "selection"
+        "selection",
+        "list-box",
+        "make-list-box",
+        "item-count",
+        "item-text",
+        "append-item",
+        "delete-item",
+        "clear-items",
+        "on-selection",
+        "off-selection"
       ],
       "native": [
-        "wxl_selection"
+        "wxl_selection",
+        "wxl_list_box",
+        "wxl_list_count",
+        "wxl_list_item",
+        "wxl_set_list_item",
+        "wxl_list_append",
+        "wxl_list_delete",
+        "wxl_list_clear",
+        "wxl_list_selection",
+        "wxl_set_list_selection"
       ],
-      "scope": "Inherited interface exposed for wxChoice only; other item-container receivers remain open."
+      "scope": "Inherited interface exposed for wxChoice only; other item-container receivers remain open. ABI38 additionally: LIST-BOX only, unsorted single selection/text items. Finite UTF-8/NUL-checked construction; silent item edits preserve/adjust selection deterministically. Native list callback lifetime/pump guards; owned/simple command selection+activation events. Other item containers, multiselect/sort/client data/virtual models remain unbound."
     },
     {
       "header": "wx/app.h",
@@ -4073,6 +4110,409 @@
         "wxl_event_field"
       ],
       "scope": "Native notebook events only; snapshots/borrowed contexts read native selection metadata, CHANGING semantics port-dependent. No metadata writer, old-selection, synthetic construction, detached clone or other book family support."
+    },
+    {
+      "header": "wx/listbox.h",
+      "line": 110,
+      "declaration": "wxListBox(wxWindow* parent, wxWindowID id, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, int n = 0, const wxString choices[] = NULL, long style = 0, const wxValidator& validator = wxDefaultValidator, const wxString& name = wxListBoxNameStr);",
+      "status": "~",
+      "symbol": "wxListBox::wxListBox",
+      "lisp": [
+        "list-box",
+        "make-list-box",
+        "item-count",
+        "item-text",
+        "append-item",
+        "delete-item",
+        "clear-items",
+        "selection",
+        "on-selection",
+        "off-selection"
+      ],
+      "native": [
+        "wxl_list_box",
+        "wxl_list_count",
+        "wxl_list_item",
+        "wxl_set_list_item",
+        "wxl_list_append",
+        "wxl_list_delete",
+        "wxl_list_clear",
+        "wxl_list_selection",
+        "wxl_set_list_selection"
+      ],
+      "scope": "LIST-BOX only, unsorted single selection/text items. Finite UTF-8/NUL-checked construction; silent item edits preserve/adjust selection deterministically. Native list callback lifetime/pump guards; owned/simple command selection+activation events. Other item containers, multiselect/sort/client data/virtual models remain unbound."
+    },
+    {
+      "header": "wx/listbox.h",
+      "line": 131,
+      "declaration": "wxListBox(wxWindow* parent, wxWindowID id, const wxPoint& pos, const wxSize& size, const wxArrayString& choices, long style = 0, const wxValidator& validator = wxDefaultValidator, const wxString& name = wxListBoxNameStr);",
+      "status": "~",
+      "symbol": "wxListBox::wxListBox",
+      "lisp": [
+        "list-box",
+        "make-list-box",
+        "item-count",
+        "item-text",
+        "append-item",
+        "delete-item",
+        "clear-items",
+        "selection",
+        "on-selection",
+        "off-selection"
+      ],
+      "native": [
+        "wxl_list_box",
+        "wxl_list_count",
+        "wxl_list_item",
+        "wxl_set_list_item",
+        "wxl_list_append",
+        "wxl_list_delete",
+        "wxl_list_clear",
+        "wxl_list_selection",
+        "wxl_set_list_selection"
+      ],
+      "scope": "LIST-BOX only, unsorted single selection/text items. Finite UTF-8/NUL-checked construction; silent item edits preserve/adjust selection deterministically. Native list callback lifetime/pump guards; owned/simple command selection+activation events. Other item containers, multiselect/sort/client data/virtual models remain unbound."
+    },
+    {
+      "header": "wx/listbox.h",
+      "line": 175,
+      "declaration": "virtual void SetSelection(int n);",
+      "status": "~",
+      "symbol": "wxListBox::SetSelection",
+      "lisp": [
+        "list-box",
+        "make-list-box",
+        "item-count",
+        "item-text",
+        "append-item",
+        "delete-item",
+        "clear-items",
+        "selection",
+        "on-selection",
+        "off-selection"
+      ],
+      "native": [
+        "wxl_list_box",
+        "wxl_list_count",
+        "wxl_list_item",
+        "wxl_set_list_item",
+        "wxl_list_append",
+        "wxl_list_delete",
+        "wxl_list_clear",
+        "wxl_list_selection",
+        "wxl_set_list_selection"
+      ],
+      "scope": "LIST-BOX only, unsorted single selection/text items. Finite UTF-8/NUL-checked construction; silent item edits preserve/adjust selection deterministically. Native list callback lifetime/pump guards; owned/simple command selection+activation events. Other item containers, multiselect/sort/client data/virtual models remain unbound."
+    },
+    {
+      "header": "wx/listbox.h",
+      "line": 189,
+      "declaration": "virtual int GetSelection() const;",
+      "status": "~",
+      "symbol": "wxListBox::GetSelection",
+      "lisp": [
+        "list-box",
+        "make-list-box",
+        "item-count",
+        "item-text",
+        "append-item",
+        "delete-item",
+        "clear-items",
+        "selection",
+        "on-selection",
+        "off-selection"
+      ],
+      "native": [
+        "wxl_list_box",
+        "wxl_list_count",
+        "wxl_list_item",
+        "wxl_set_list_item",
+        "wxl_list_append",
+        "wxl_list_delete",
+        "wxl_list_clear",
+        "wxl_list_selection",
+        "wxl_set_list_selection"
+      ],
+      "scope": "LIST-BOX only, unsorted single selection/text items. Finite UTF-8/NUL-checked construction; silent item edits preserve/adjust selection deterministically. Native list callback lifetime/pump guards; owned/simple command selection+activation events. Other item containers, multiselect/sort/client data/virtual models remain unbound."
+    },
+    {
+      "header": "wx/listbox.h",
+      "line": 357,
+      "declaration": "virtual unsigned int GetCount() const;",
+      "status": "~",
+      "symbol": "wxListBox::GetCount",
+      "lisp": [
+        "list-box",
+        "make-list-box",
+        "item-count",
+        "item-text",
+        "append-item",
+        "delete-item",
+        "clear-items",
+        "selection",
+        "on-selection",
+        "off-selection"
+      ],
+      "native": [
+        "wxl_list_box",
+        "wxl_list_count",
+        "wxl_list_item",
+        "wxl_set_list_item",
+        "wxl_list_append",
+        "wxl_list_delete",
+        "wxl_list_clear",
+        "wxl_list_selection",
+        "wxl_set_list_selection"
+      ],
+      "scope": "LIST-BOX only, unsorted single selection/text items. Finite UTF-8/NUL-checked construction; silent item edits preserve/adjust selection deterministically. Native list callback lifetime/pump guards; owned/simple command selection+activation events. Other item containers, multiselect/sort/client data/virtual models remain unbound."
+    },
+    {
+      "header": "wx/listbox.h",
+      "line": 358,
+      "declaration": "virtual wxString GetString(unsigned int n) const;",
+      "status": "~",
+      "symbol": "wxListBox::GetString",
+      "lisp": [
+        "list-box",
+        "make-list-box",
+        "item-count",
+        "item-text",
+        "append-item",
+        "delete-item",
+        "clear-items",
+        "selection",
+        "on-selection",
+        "off-selection"
+      ],
+      "native": [
+        "wxl_list_box",
+        "wxl_list_count",
+        "wxl_list_item",
+        "wxl_set_list_item",
+        "wxl_list_append",
+        "wxl_list_delete",
+        "wxl_list_clear",
+        "wxl_list_selection",
+        "wxl_set_list_selection"
+      ],
+      "scope": "LIST-BOX only, unsorted single selection/text items. Finite UTF-8/NUL-checked construction; silent item edits preserve/adjust selection deterministically. Native list callback lifetime/pump guards; owned/simple command selection+activation events. Other item containers, multiselect/sort/client data/virtual models remain unbound."
+    },
+    {
+      "header": "wx/listbox.h",
+      "line": 359,
+      "declaration": "virtual void SetString(unsigned int n, const wxString& s);",
+      "status": "~",
+      "symbol": "wxListBox::SetString",
+      "lisp": [
+        "list-box",
+        "make-list-box",
+        "item-count",
+        "item-text",
+        "append-item",
+        "delete-item",
+        "clear-items",
+        "selection",
+        "on-selection",
+        "off-selection"
+      ],
+      "native": [
+        "wxl_list_box",
+        "wxl_list_count",
+        "wxl_list_item",
+        "wxl_set_list_item",
+        "wxl_list_append",
+        "wxl_list_delete",
+        "wxl_list_clear",
+        "wxl_list_selection",
+        "wxl_set_list_selection"
+      ],
+      "scope": "LIST-BOX only, unsorted single selection/text items. Finite UTF-8/NUL-checked construction; silent item edits preserve/adjust selection deterministically. Native list callback lifetime/pump guards; owned/simple command selection+activation events. Other item containers, multiselect/sort/client data/virtual models remain unbound."
+    },
+    {
+      "header": "wx/ctrlsub.h",
+      "line": 42,
+      "declaration": "virtual unsigned int GetCount() const = 0;",
+      "status": "~",
+      "symbol": "wxItemContainerImmutable::GetCount",
+      "lisp": [
+        "list-box",
+        "make-list-box",
+        "item-count",
+        "item-text",
+        "append-item",
+        "delete-item",
+        "clear-items",
+        "selection",
+        "on-selection",
+        "off-selection"
+      ],
+      "native": [
+        "wxl_list_box",
+        "wxl_list_count",
+        "wxl_list_item",
+        "wxl_set_list_item",
+        "wxl_list_append",
+        "wxl_list_delete",
+        "wxl_list_clear",
+        "wxl_list_selection",
+        "wxl_set_list_selection"
+      ],
+      "scope": "LIST-BOX only, unsorted single selection/text items. Finite UTF-8/NUL-checked construction; silent item edits preserve/adjust selection deterministically. Native list callback lifetime/pump guards; owned/simple command selection+activation events. Other item containers, multiselect/sort/client data/virtual models remain unbound."
+    },
+    {
+      "header": "wx/ctrlsub.h",
+      "line": 63,
+      "declaration": "virtual wxString GetString(unsigned int n) const = 0;",
+      "status": "~",
+      "symbol": "wxItemContainerImmutable::GetString",
+      "lisp": [
+        "list-box",
+        "make-list-box",
+        "item-count",
+        "item-text",
+        "append-item",
+        "delete-item",
+        "clear-items",
+        "selection",
+        "on-selection",
+        "off-selection"
+      ],
+      "native": [
+        "wxl_list_box",
+        "wxl_list_count",
+        "wxl_list_item",
+        "wxl_set_list_item",
+        "wxl_list_append",
+        "wxl_list_delete",
+        "wxl_list_clear",
+        "wxl_list_selection",
+        "wxl_set_list_selection"
+      ],
+      "scope": "LIST-BOX only, unsorted single selection/text items. Finite UTF-8/NUL-checked construction; silent item edits preserve/adjust selection deterministically. Native list callback lifetime/pump guards; owned/simple command selection+activation events. Other item containers, multiselect/sort/client data/virtual models remain unbound."
+    },
+    {
+      "header": "wx/ctrlsub.h",
+      "line": 78,
+      "declaration": "virtual void SetString(unsigned int n, const wxString& string) = 0;",
+      "status": "~",
+      "symbol": "wxItemContainerImmutable::SetString",
+      "lisp": [
+        "list-box",
+        "make-list-box",
+        "item-count",
+        "item-text",
+        "append-item",
+        "delete-item",
+        "clear-items",
+        "selection",
+        "on-selection",
+        "off-selection"
+      ],
+      "native": [
+        "wxl_list_box",
+        "wxl_list_count",
+        "wxl_list_item",
+        "wxl_set_list_item",
+        "wxl_list_append",
+        "wxl_list_delete",
+        "wxl_list_clear",
+        "wxl_list_selection",
+        "wxl_set_list_selection"
+      ],
+      "scope": "LIST-BOX only, unsorted single selection/text items. Finite UTF-8/NUL-checked construction; silent item edits preserve/adjust selection deterministically. Native list callback lifetime/pump guards; owned/simple command selection+activation events. Other item containers, multiselect/sort/client data/virtual models remain unbound."
+    },
+    {
+      "header": "wx/ctrlsub.h",
+      "line": 212,
+      "declaration": "int Append(const wxString& item);",
+      "status": "~",
+      "symbol": "wxItemContainer::Append",
+      "lisp": [
+        "list-box",
+        "make-list-box",
+        "item-count",
+        "item-text",
+        "append-item",
+        "delete-item",
+        "clear-items",
+        "selection",
+        "on-selection",
+        "off-selection"
+      ],
+      "native": [
+        "wxl_list_box",
+        "wxl_list_count",
+        "wxl_list_item",
+        "wxl_set_list_item",
+        "wxl_list_append",
+        "wxl_list_delete",
+        "wxl_list_clear",
+        "wxl_list_selection",
+        "wxl_set_list_selection"
+      ],
+      "scope": "LIST-BOX only, unsorted single selection/text items. Finite UTF-8/NUL-checked construction; silent item edits preserve/adjust selection deterministically. Native list callback lifetime/pump guards; owned/simple command selection+activation events. Other item containers, multiselect/sort/client data/virtual models remain unbound."
+    },
+    {
+      "header": "wx/ctrlsub.h",
+      "line": 346,
+      "declaration": "void Clear();",
+      "status": "~",
+      "symbol": "wxItemContainer::Clear",
+      "lisp": [
+        "list-box",
+        "make-list-box",
+        "item-count",
+        "item-text",
+        "append-item",
+        "delete-item",
+        "clear-items",
+        "selection",
+        "on-selection",
+        "off-selection"
+      ],
+      "native": [
+        "wxl_list_box",
+        "wxl_list_count",
+        "wxl_list_item",
+        "wxl_set_list_item",
+        "wxl_list_append",
+        "wxl_list_delete",
+        "wxl_list_clear",
+        "wxl_list_selection",
+        "wxl_set_list_selection"
+      ],
+      "scope": "LIST-BOX only, unsorted single selection/text items. Finite UTF-8/NUL-checked construction; silent item edits preserve/adjust selection deterministically. Native list callback lifetime/pump guards; owned/simple command selection+activation events. Other item containers, multiselect/sort/client data/virtual models remain unbound."
+    },
+    {
+      "header": "wx/ctrlsub.h",
+      "line": 367,
+      "declaration": "void Delete(unsigned int n);",
+      "status": "~",
+      "symbol": "wxItemContainer::Delete",
+      "lisp": [
+        "list-box",
+        "make-list-box",
+        "item-count",
+        "item-text",
+        "append-item",
+        "delete-item",
+        "clear-items",
+        "selection",
+        "on-selection",
+        "off-selection"
+      ],
+      "native": [
+        "wxl_list_box",
+        "wxl_list_count",
+        "wxl_list_item",
+        "wxl_set_list_item",
+        "wxl_list_append",
+        "wxl_list_delete",
+        "wxl_list_clear",
+        "wxl_list_selection",
+        "wxl_set_list_selection"
+      ],
+      "scope": "LIST-BOX only, unsorted single selection/text items. Finite UTF-8/NUL-checked construction; silent item edits preserve/adjust selection deterministically. Native list callback lifetime/pump guards; owned/simple command selection+activation events. Other item containers, multiselect/sort/client data/virtual models remain unbound."
     }
   ],
   "classes": {
@@ -4855,6 +5295,87 @@
         "wxl_event_field"
       ],
       "scope": "Notebook changing/changed immutable snapshots and borrowed contexts only; notify veto on CHANGING, native selection metadata read-only. No public event class, old-selection, owned/synthetic/cloning support or other book events."
+    },
+    "wxListBox": {
+      "status": "~",
+      "lisp": [
+        "list-box",
+        "make-list-box",
+        "item-count",
+        "item-text",
+        "append-item",
+        "delete-item",
+        "clear-items",
+        "selection",
+        "on-selection",
+        "off-selection"
+      ],
+      "native": [
+        "wxl_list_box",
+        "wxl_list_count",
+        "wxl_list_item",
+        "wxl_set_list_item",
+        "wxl_list_append",
+        "wxl_list_delete",
+        "wxl_list_clear",
+        "wxl_list_selection",
+        "wxl_set_list_selection"
+      ],
+      "scope": "LIST-BOX only, unsorted single selection/text items. Finite UTF-8/NUL-checked construction; silent item edits preserve/adjust selection deterministically. Native list callback lifetime/pump guards; owned/simple command selection+activation events. Other item containers, multiselect/sort/client data/virtual models remain unbound."
+    },
+    "wxItemContainer": {
+      "status": "~",
+      "lisp": [
+        "list-box",
+        "make-list-box",
+        "item-count",
+        "item-text",
+        "append-item",
+        "delete-item",
+        "clear-items",
+        "selection",
+        "on-selection",
+        "off-selection"
+      ],
+      "native": [
+        "wxl_list_box",
+        "wxl_list_count",
+        "wxl_list_item",
+        "wxl_set_list_item",
+        "wxl_list_append",
+        "wxl_list_delete",
+        "wxl_list_clear",
+        "wxl_list_selection",
+        "wxl_set_list_selection"
+      ],
+      "scope": "LIST-BOX only, unsorted single selection/text items. Finite UTF-8/NUL-checked construction; silent item edits preserve/adjust selection deterministically. Native list callback lifetime/pump guards; owned/simple command selection+activation events. Other item containers, multiselect/sort/client data/virtual models remain unbound."
+    },
+    "wxItemContainerImmutable": {
+      "status": "~",
+      "lisp": [
+        "list-box",
+        "make-list-box",
+        "item-count",
+        "item-text",
+        "append-item",
+        "delete-item",
+        "clear-items",
+        "selection",
+        "on-selection",
+        "off-selection"
+      ],
+      "native": [
+        "wxl_list_box",
+        "wxl_list_count",
+        "wxl_list_item",
+        "wxl_set_list_item",
+        "wxl_list_append",
+        "wxl_list_delete",
+        "wxl_list_clear",
+        "wxl_list_selection",
+        "wxl_set_list_selection"
+      ],
+      "scope": "LIST-BOX only, unsorted single selection/text items. Finite UTF-8/NUL-checked construction; silent item edits preserve/adjust selection deterministically. Native list callback lifetime/pump guards; owned/simple command selection+activation events. Other item containers, multiselect/sort/client data/virtual models remain unbound."
     }
   }
 }

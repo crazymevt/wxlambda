@@ -19,17 +19,17 @@ and verify platforms when selected features or completeness claims require it.
 | Category | Headers | Tasks | Implemented | Partial | Pending | Context |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | [C1: Foundation, values, application, events, and base utilities](phase-c1.md) | 119 | 5292 | 7 | 96 | 5189 | 26 |
-| [C2: Windows, layout, basic controls, and input](phase-c2.md) | 82 | 2862 | 23 | 66 | 2773 | 0 |
+| [C2: Windows, layout, basic controls, and input](phase-c2.md) | 82 | 2862 | 23 | 82 | 2757 | 0 |
 | [C3: Dialogs, navigation, menus, and application services](phase-c3.md) | 57 | 1875 | 0 | 99 | 1776 | 0 |
 | [C4: Models, complex controls, and document frameworks](phase-c4.md) | 20 | 2328 | 0 | 0 | 2328 | 4 |
 | [C5: Drawing, images, graphics, and printing](phase-c5.md) | 52 | 2245 | 0 | 0 | 2245 | 0 |
 | [C6: Optional libraries, rich content, and integration](phase-c6.md) | 57 | 8912 | 0 | 0 | 8912 | 380 |
 | [C7: Platform extensions and remaining portability APIs](phase-c7.md) | 11 | 279 | 0 | 0 | 279 | 3 |
-| Total | 398 | 23793 | 30 | 261 | 23502 | 413 |
+| Total | 398 | 23793 | 30 | 277 | 23486 | 413 |
 
 ## Classes and widgets
 
-1016 class/struct definitions: 0 complete; 35 partial; 981 pending.
+1016 class/struct definitions: 0 complete; 38 partial; 978 pending.
 
 See the [complete class/widget index](classes.md) for partial scopes and missing
 types. An implemented constructor does not complete a class or its inherited API.
@@ -189,7 +189,7 @@ unreviewed inherited/platform behavior.
 | [wx/commandlinkbutton.h](phase-c2.md#wxcommandlinkbuttonh) | 0 | 0 | 11 | 0 |
 | [wx/containr.h](phase-c2.md#wxcontainrh) | 0 | 0 | 3 | 0 |
 | [wx/control.h](phase-c2.md#wxcontrolh) | 0 | 2 | 18 | 0 |
-| [wx/ctrlsub.h](phase-c2.md#wxctrlsubh) | 0 | 2 | 50 | 0 |
+| [wx/ctrlsub.h](phase-c2.md#wxctrlsubh) | 0 | 10 | 42 | 0 |
 | [wx/cursor.h](phase-c2.md#wxcursorh) | 0 | 0 | 16 | 0 |
 | [wx/custombgwin.h](phase-c2.md#wxcustombgwinh) | 0 | 0 | 3 | 0 |
 | [wx/datectrl.h](phase-c2.md#wxdatectrlh) | 0 | 0 | 17 | 0 |
@@ -205,7 +205,7 @@ unreviewed inherited/platform behavior.
 | [wx/kbdstate.h](phase-c2.md#wxkbdstateh) | 0 | 0 | 16 | 0 |
 | [wx/layout.h](phase-c2.md#wxlayouth) | 0 | 0 | 47 | 0 |
 | [wx/laywin.h](phase-c2.md#wxlaywinh) | 0 | 0 | 45 | 0 |
-| [wx/listbox.h](phase-c2.md#wxlistboxh) | 0 | 0 | 39 | 0 |
+| [wx/listbox.h](phase-c2.md#wxlistboxh) | 0 | 8 | 31 | 0 |
 | [wx/mousemanager.h](phase-c2.md#wxmousemanagerh) | 0 | 0 | 12 | 0 |
 | [wx/mousestate.h](phase-c2.md#wxmousestateh) | 0 | 0 | 22 | 0 |
 | [wx/nonownedwnd.h](phase-c2.md#wxnonownedwndh) | 0 | 0 | 4 | 0 |

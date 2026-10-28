@@ -35,9 +35,10 @@ void inspect_binding(uint64_t token, const wxl_event* event) {
     saved_context = event->context;
     binding_called = true;
 }
-std::function<void(uint64_t, const wxl_event*)> notebook_probe;
+std::function<void(uint64_t, const wxl_event*)> notebook_probe, list_probe;
 void ignore_event(uint64_t token, const wxl_event* event) {
     if ((token == 904 || token == 905) && notebook_probe) notebook_probe(token, event);
+    if (token >= 906 && token <= 908 && list_probe) list_probe(token, event);
     if (token == 901) inspect_binding(token, event);
     if (token == 903) { ++menu_calls; menu_checked_payload = event->checked; menu_integer_payload = event->integer; menu_origin = event->origin_id; }
 }
@@ -653,6 +654,69 @@ void exercise_notebook() {
     expect(wxl_notebook_count(book) == -1 && wxl_handler_alive(one) == 0 && wxl_handler_alive(two) == 0, "Notebook destruction did not invalidate pages");
 }
 
+
+void exercise_list_box() {
+    const auto frame = wxl_frame("List", 320, 260);
+    const char* labels[] = {"Alpha", "β"}; const size_t lengths[] = {5, std::strlen("β")};
+    const auto list = wxl_list_box(frame, labels, lengths, 2, 1);
+    expect(list && wxl_list_count(list) == 2 && wxl_list_selection(list) == 1, "List constructor failed");
+    expect(!wxl_list_box(frame, nullptr, nullptr, 1, -1) && !wxl_list_box(frame, labels, nullptr, 2, -1) &&
+           !wxl_list_box(frame, labels, lengths, 2, 2), "Invalid list arrays/selection must reject");
+    const char* invalid[] = {"a\0b", "\xff"}; const size_t invalid_lengths[] = {3, 1};
+    expect(!wxl_list_box(frame, invalid, invalid_lengths, 1, -1) &&
+           !wxl_list_box(frame, invalid + 1, invalid_lengths + 1, 1, -1), "Invalid list UTF8/NUL must reject");
+    size_t length = 0;
+    expect(!wxl_list_item(list, -1, &length) && !wxl_list_item(list, 0, nullptr) && wxl_list_count(frame) == -1 &&
+           wxl_list_delete(list, 2) == -1 && wxl_set_list_selection(list, 2, 0) == -1 &&
+           wxl_set_list_selection(list, 0, 2) == -1, "List raw type/bounds/output checks failed");
+    expect(wxl_list_append(list, "a\0b", 3) == -1 && wxl_set_list_item(list, 0, "\xff", 1) == -1,
+           "Invalid list item writes must reject");
+    const auto dialog = wxl_message_dialog(frame, "Guard", 5, "Guard", 5, 0, 0);
+    expect(dialog != 0, "List guard dialog setup failed");
+    unsigned generic_calls = 0, parent_calls = 0, convenience_calls = 0;
+    list_probe = [&](uint64_t token, const wxl_event* event) {
+        if (token == 906) ++generic_calls; else if (token == 907) ++parent_calls; else ++convenience_calls;
+        expect(event->origin_id == list && event->selection >= 0 && event->family == WXL_FAMILY_COMMAND &&
+               std::string(event->text, event->text_length) == "β", "List cached metadata lost");
+        int code = -1;
+        expect(wxl_destroy(list) == -1 && wxl_destroy(frame) == -1 && wxl_close(frame, 1) == -1 &&
+               wxl_dialog_show(dialog, &code) == -1 && wxl_clipboard_text_available() == -1,
+               "Actual list callback bypassed lifetime/native-loop guards");
+        if (token != 908) {
+            int64_t index = -1;
+            expect(wxl_event_field(event->context, 1, 16, &index) == 0 && index == event->selection, "List live selection metadata lost");
+            const auto clone = wxl_clone_event(event->context, 1);
+            expect(clone && wxl_event_destroy(clone) == 0, "List event clone failed");
+            expect(wxl_context_set_skipped(event->context, 1) == 0, "List propagation failed");
+        }
+        if (token == 906) {
+            if (event->kind == WXL_EVENT_LISTBOX_SELECTION) {
+                expect(wxl_list_append(list, "Added", 5) == 2 && wxl_list_delete(list, 0) == 0 && wxl_list_selection(list) == 0,
+                       "Callback item mutation/selection preservation failed");
+            } else expect(wxl_list_clear(list) == 0, "Activation callback clear failed");
+        }
+    };
+    expect(wxl_on_list_selection(list, 908) == 0, "List convenience binding failed");
+    for (const int kind : {WXL_EVENT_LISTBOX_SELECTION, WXL_EVENT_LISTBOX_DOUBLE_CLICK}) {
+        expect(wxl_bind(list, kind, 906, wxID_ANY, wxID_ANY, 1, 0) == 0 &&
+               wxl_bind(frame, kind, 907, wxID_ANY, wxID_ANY, 1, 0) == 0, "List generic bindings failed");
+        wxCommandEvent event(native_event_type(kind), window(list)->GetId());
+        event.SetEventObject(window(list)); event.SetInt(kind == WXL_EVENT_LISTBOX_SELECTION ? 1 : 0);
+        event.SetString(wxString::FromUTF8("β")); event.SetExtraLong(1);
+        // Actual native event dispatch, not the bridge selection setter.
+        window(list)->GetEventHandler()->ProcessEvent(event);
+        expect(wxl_unbind(906) == 1 && wxl_unbind(907) == 1 && list_callback_operations.empty(), "List callback guard/binding cleanup failed");
+    }
+    expect(generic_calls == 2 && parent_calls == 2 && convenience_calls == 1, "List callback paths were not all exercised");
+    list_probe = nullptr;
+    expect(wxl_off_list_selection(list) == 0 && wxl_list_count(list) == 0 && wxl_list_selection(list) == -1,
+           "Activation clear did not leave empty/unselected list");
+    const auto owned = wxl_owned_event(WXL_EVENT_LISTBOX_DOUBLE_CLICK, 1, "payload", 7, 0, 0, 0, 0);
+    expect(owned && wxl_event_destroy(owned) == 0, "Detached list command construction failed");
+    delete window(frame);
+    expect(wxl_list_count(list) == -1 && wxl_list_append(list, "stale", 5) == -1, "Stale list handle must reject");
+}
+
 int main() {
     std::thread([] { std::this_thread::sleep_for(std::chrono::seconds(10)); std::_Exit(124); }).detach();
     auto old_assert_handler = wxSetAssertHandler(capture_assert);
@@ -670,6 +734,7 @@ int main() {
         exercise_generic_dialogs();
         exercise_text_editing();
         exercise_notebook();
+        exercise_list_box();
 #if wxUSE_CLIPBOARD
         exercise_clipboard();
 #endif

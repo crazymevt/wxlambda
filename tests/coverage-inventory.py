@@ -158,6 +158,7 @@ class CoverageInventoryChecks(unittest.TestCase):
         required = {
             'wxFrame::wxFrame', 'wxPanel::wxPanel', 'wxButton::wxButton',
             'wxMessageDialog::wxMessageDialog', 'wxMessageDialog::GetMessage',
+            'wxListBox::wxListBox', 'wxItemContainer::Append', 'wxItemContainer::Delete',
             'wxNotebook::wxNotebook', 'wxBookCtrlBase::AddPage', 'wxBookCtrlEvent::GetSelection',
             'wxTextEntry::Replace', 'wxTextEntry::GetSelection', 'wxTextEntry::SetSelection',
             'wxTextCtrl::IsMultiLine', 'wxTextEntry::IsEditable', 'wxClipboard::GetData', 'wxClipboard::SetData', 'wxClipboard::Flush',
@@ -200,7 +201,7 @@ class CoverageInventoryChecks(unittest.TestCase):
         self.assertEqual(set(self.status['classes']), {
             'wxFrame', 'wxPanel', 'wxButton', 'wxTextCtrl', 'wxStaticText',
             'wxCheckBox', 'wxChoice', 'wxGauge', 'wxBoxSizer', 'wxWindow', 'wxTopLevelWindow',
-            'wxNotebook', 'wxBookCtrlBase', 'wxBookCtrlEvent', 'wxClipboard', 'wxTextDataObject', 'wxMessageDialog', 'wxFileDialog', 'wxModalDialogHook', 'wxDialog', 'wxTextEntryDialog', 'wxSingleChoiceDialog', 'wxMenuBar', 'wxMenu', 'wxMenuItem', 'wxAppConsole', 'wxApp', 'wxEvtHandler', 'wxClientData', 'wxObject', 'wxIdleEvent', 'wxEvent', 'wxCloseEvent', 'wxNotifyEvent', 'wxCommandEvent',
+            'wxListBox', 'wxItemContainer', 'wxItemContainerImmutable', 'wxNotebook', 'wxBookCtrlBase', 'wxBookCtrlEvent', 'wxClipboard', 'wxTextDataObject', 'wxMessageDialog', 'wxFileDialog', 'wxModalDialogHook', 'wxDialog', 'wxTextEntryDialog', 'wxSingleChoiceDialog', 'wxMenuBar', 'wxMenu', 'wxMenuItem', 'wxAppConsole', 'wxApp', 'wxEvtHandler', 'wxClientData', 'wxObject', 'wxIdleEvent', 'wxEvent', 'wxCloseEvent', 'wxNotifyEvent', 'wxCommandEvent',
         })
 
     def test_compiler_scaffolding_is_context_but_public_macros_are_tasks(self):

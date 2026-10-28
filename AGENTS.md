@@ -120,7 +120,7 @@ session ownership; actual native window destruction pops managed stacks without
 deleting those handlers. Explicit stack-aware processing differs from generic
 window receiver dispatch, which retains native stack bypass. Public window wrapper
 classes are `window` (abstract), `frame`, `panel`, `button`,
-`text-control`, `label`, `checkbox`, `choice`, `gauge` and `notebook` (plus the
+`text-control`, `label`, `checkbox`, `choice`, `gauge`, `notebook` and `list-box` (plus the
 DIALOG hierarchy described below). Lisp subclassing does not imply
 native C++ subclassing or virtual-method callbacks; those need separate bridge
 support. See `docs/CLOS-API.md`.
@@ -157,7 +157,7 @@ conversion. See `docs/DOCUMENT-FORM.md`. ABI35 adds bounded text
 clipboard support and form Edit Copy/Paste. Preserve isolated automatic transfer
 tests: do not overwrite/read system clipboard content in CI; live availability is
 the only automatic system query. See `docs/CLIPBOARD.md`. The next selected slice
-is single-selection list boxes for the tree/list-manager slice. ABI36 multiline text/basic editing uses native
+is bounded tree navigation/item ownership for the tree/list-manager slice. ABI36 multiline text/basic editing uses native
 offsets, never Lisp string indices; preserve explicit UTF-8 lengths, NUL validation,
 CLOS rollback and notifying Replace with callback/context protections. See
 `docs/TEXT-EDITING.md`. Do not drain wxDocument/native stream APIs.
@@ -168,3 +168,10 @@ prepublication canonical wrapper rooting and rollback, actual/native propagated
 page-callback lifetime guards, no same-book recursive selection and deferred modal/
 clipboard entry. Native event selection/caption semantics vary by port; no synthetic
 or owned notebook event support. See `docs/NOTEBOOK.md`.
+
+ABI38 list boxes are unsorted single-selection text containers. Preserve silent
+item mutations and deterministic selection adjustment, temporary event-blocker
+handler-stack restoration, and actual list-origin generic/propagated/convenience
+callback lifetime guards. Item edits/nested selection are allowed; destruction/
+close and modal/clipboard entry defer until return. Simple list command events
+remain constructible/cloneable and can target non-list handlers. See `docs/LIST-BOX.md`.
