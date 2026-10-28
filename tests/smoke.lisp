@@ -34,7 +34,10 @@
           (wxlambda:queue-click button)
           (wxlambda:run)
           ;; Parent destruction must invalidate children, too.
-          (expect-native-error (lambda () (wxlambda:set-text text "stale")))))
+          (expect-native-error (lambda () (wxlambda:set-text text "stale")))
+          ;; Native destruction does not notify the Lisp handler registry.
+          ;; Without explicit unbinding, this closure remains until cleanup.
+          (assert (= 1 (hash-table-count wxlambda::*handlers*)))))
     (error (condition)
       (setf observed-error t)
       (unless (and (member mode '("callback-error" "setup-error") :test #'string=)

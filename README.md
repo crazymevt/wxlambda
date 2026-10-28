@@ -9,6 +9,10 @@ static labels, two-state checkboxes, dropdown choices, row/column layouts, space
 removable click/text/toggle/selection handlers, copied event payloads, and queued clicks.
 Lisp objects wrap checked integer handles; native pointers never escape the bridge.
 
+First-release lifecycle limits: **one GUI session per process**. Closing a window
+does not release its registered Lisp handlers; unbind them before destruction,
+or they remain rooted until session cleanup. Restart Lisp for a new GUI session.
+
 ## Build
 
 Requirements: a C++17 compiler, CMake 3.16+, wxWidgets 3.2+, Common Lisp, ASDF,
@@ -329,6 +333,56 @@ apply. Editor REPLs such as SLIME and SLY are unsupported by this helper; use
 a terminal Lisp REPL. In particular, SBCL worker-thread startup is rejected. After leaving,
 start a fresh Lisp process for another session.
 
+For a complete live-development example, load `examples/live.lisp` and call
+`(wxlambda-live:start)` from a terminal REPL. While it runs, try:
+
+```lisp
+(wxlambda:set-text wxlambda-live:*text* "Changed live")
+(defun wxlambda-live:clicked ()
+  (wxlambda:set-text wxlambda-live:*text* "New callback implementation"))
+(wxlambda:queue-click wxlambda-live:*button*)
+(wxlambda-live:close-window) ; explicitly unbinds before destroying the frame
+(wxlambda-live:open-window)  ; another frame, within the same session
+(wxlambda:stop)
+```
+
+The registered callback resolves `clicked` on each invocation, so redefining it
+takes effect without replacing the handler. `close-window` releases the handler
+before destroying its controls. If the user has already closed the native
+window, its handles are stale and that handler remains rooted until session
+cleanup. Prefer `close-window` during repeated development cycles.
+
+Editor integration is explicitly deferred for the first release. Local Swank
+2.32 wire probes on Apple Silicon macOS found:
+
+| Probe | Observed execution |
+| --- | --- |
+| SBCL 2.6.9, `nil` / `:fd-handler` styles | Evaluation, application body, and callback on the launch thread |
+| SBCL 2.6.9, `:spawn` control | Worker GUI startup rejected by the native main-thread check |
+| CCL 1.13, `:spawn` | Caller on worker; application body and callback on initial process; caller dynamic binding absent |
+
+These probes execute one RPC containing a complete GUI session. They do not
+demonstrate an editor workflow with a persistent session, GUI responsiveness
+between requests, evaluation interruption, or debugger transport. The terminal
+application REPL is the first-release workflow. No editor adapter or background
+scheduler is selected; their ordering, values, conditions, shutdown, and
+reentrancy contracts must be established before future implementation.
+
+To reproduce these optional experiments with an existing Quicklisp installation
+containing Swank, run:
+
+```sh
+python3 tests/editor-probe.py nil sbcl --noinform --no-sysinit --no-userinit --non-interactive --load ~/quicklisp/setup.lisp
+python3 tests/editor-probe.py :fd-handler sbcl --noinform --no-sysinit --no-userinit --non-interactive --load ~/quicklisp/setup.lisp
+python3 tests/editor-probe.py :spawn sbcl --noinform --no-sysinit --no-userinit --non-interactive --load ~/quicklisp/setup.lisp
+python3 tests/editor-probe.py :spawn ccl --no-init --batch --load ~/quicklisp/setup.lisp
+```
+
+These are optional local experiments using Swank internals and loopback sockets,
+separate from pinned CI dependencies. `:spawn` probes use a persistent listener
+to keep Swank's accept loop off the launching thread. Their process and listener
+are shut down after the request. They are not supported editor configurations.
+
 The bridge catches native exceptions at exported operation boundaries and exposes
 error text through `wxl_last_error`. Its text is borrowed until the next bridge
 operation on the same thread. See `native/wxlambda.h` for the C interface.
@@ -337,7 +391,7 @@ operation on the same thread. See `native/wxlambda.h` for the C interface.
 
 These tests briefly open real windows, queue a button event, then exit. They need
 an interactive graphical session (or a suitable display server on Linux).
-The 20 scenarios each run in a fresh process with a 30-second timeout:
+The 21 scenarios each run in a fresh process with a 30-second timeout:
 
 ```sh
 python3 tests/run.py
@@ -373,6 +427,10 @@ Unicode rendering, manual mouse/keyboard input,
 and user-generated toggle events have not been visually verified; automated text
 and toggle events use notifying setters.
 
+The live-development example test exercises text updates, callback function
+redefinition, 50 explicit bind/unbind cycles with registry-release checks,
+unbinding before destruction, stale handles, and frame recreation in one session.
+
 Locally tested and intended combinations are distinct:
 
 | Platform | Lisp | Validation |
@@ -389,8 +447,8 @@ The configured jobs are:
 
 | Runner | Native build | Lisp GUI tests |
 | --- | --- | --- |
-| Ubuntu 24.04 | Distribution wxWidgets 3.2, GCC | SBCL, 20 scenarios under Xvfb |
-| macOS 15 | Homebrew wxWidgets 3.2, Clang | SBCL, 20 scenarios |
+| Ubuntu 24.04 | Distribution wxWidgets 3.2, GCC | SBCL, 21 scenarios under Xvfb |
+| macOS 15 | Homebrew wxWidgets 3.2, Clang | SBCL, 21 scenarios |
 | Windows Server 2022 x64 | wxWidgets 3.2.12 from source, MSVC | Not configured yet |
 
 These are configured checks, not a claim that the hosted jobs have passed. No
@@ -437,7 +495,7 @@ then Quicklisp, then pinned dependencies again in fresh processes. It checks
 CFFI source locations and the compiled output destination as well as actual
 native callback dispatch. Quicklisp must already be installed; set
 `QUICKLISP_SETUP` if its setup file is not `~/quicklisp/setup.lisp`.
-These three-process regressions are separate from the 20-scenario GUI suite
+These three-process regressions are separate from the 21-scenario GUI suite
 and are local checks, not configured hosted jobs.
 
 The fetcher verifies existing checkouts and refuses modified or mismatched ones.

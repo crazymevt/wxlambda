@@ -50,26 +50,51 @@ failures.
   the debugger, selected `RETURN-TO-APPLICATION-REPL`, evaluated another form,
   and stopped cleanly. CCL terminal debugger I/O remains unverified; its tests
   install hooks on the initial process because the adapter does not transfer
-  dynamic bindings. Editor integration remains open below.
-- [ ] Prototype SBCL Swank with `:communication-style nil` and `:fd-handler`,
+  dynamic bindings. Editor integration is explicitly deferred as recorded below.
+- [x] Prototype SBCL Swank with `:communication-style nil` and `:fd-handler`,
   checking where forms actually execute. These are candidates requiring
   verification, not supported configurations yet.
-- [ ] Prototype CCL integration using its initial-process adapter.
-- [ ] Review the prototypes and select a demonstrated editor workflow or
+- [x] Prototype CCL integration using its initial-process adapter.
+- [x] Review the prototypes and select a demonstrated editor workflow or
   explicitly defer editor support. If none works reliably, use the documented
   terminal REPL workflow as the release criterion and keep editor REPLs
   unsupported.
-- [ ] If scheduling is needed, define execution order, returned values, condition
+- [x] If scheduling is needed, define execution order, returned values, condition
   delivery, shutdown, and GUI-thread reentrancy before implementing it.
-- [ ] Implement and verify the selected editor adapter if a prototype succeeds.
-- [ ] Retain and prominently document one GUI session per process for the first
+
+  Not applicable to the selected terminal workflow: editor scheduling is deferred
+  with editor support. These contracts remain prerequisites for future work;
+  no scheduler has been implemented or advertised.
+- [x] Implement and verify the selected editor adapter if a prototype succeeds.
+
+  Not applicable after explicit deferral: no editor workflow or adapter was
+  selected. The thread probes below are not successful end-to-end editor
+  prototypes and do not establish editor support.
+- [x] Retain and prominently document one GUI session per process for the first
   release.
-- [ ] Retain and prominently document the current rule that handlers for
+- [x] Retain and prominently document the current rule that handlers for
   destroyed controls remain rooted until unbound or session cleanup.
-- [ ] Demonstrate explicit unbinding before destruction and verify that repeated
+- [x] Demonstrate explicit unbinding before destruction and verify that repeated
   bind/unbind cycles release registered closures.
-- [ ] Add a live-development example that updates controls and redefines callback
+- [x] Add a live-development example that updates controls and redefines callback
   functions within one session.
+
+Verified locally on 2026-10-28: both pinned SBCL/CCL suites pass 21 scenarios.
+The new `examples/live.lisp` is exercised by `tests/live.lisp`: text updates,
+callback redefinition, 50 bind/unbind cycles with registry-release checks,
+explicit unbinding before destruction, and frame recreation within one session.
+The smoke test also verifies handler retention after native destruction and
+release at session cleanup, plus rejection of a second application session.
+
+Optional Swank (SLIME 2.32) loopback RPC probes passed for SBCL `nil`,
+`:fd-handler`, and a `:spawn` rejection control, plus CCL `:spawn`. SBCL's first
+two styles execute evaluation/body/callback on the launch thread. Its worker
+control rejects GUI startup. CCL evaluates on a worker and runs the application
+body/callback on the initial process without transferring caller dynamic
+bindings. Reproduction commands and limits are in README.md. These experiments
+cover one request containing one complete session, not persistent editing,
+interruption, or editor debugger transport. SLIME/SLY support is explicitly
+deferred; the terminal application REPL meets the first-release workflow gate.
 
 **Acceptance:** The terminal workflow supports live updates, useful error
 diagnosis, and recovery without losing the session. Debugger behavior and
@@ -133,6 +158,9 @@ workflow.
 - D5 Default the application REPL to the host debugger and require explicit
   `:on-error :report` for automatic recovery because interactive diagnosis needs
   live evaluation restarts; rejected: silently discarding restarts by default.
+- D6 Defer editor integration and scheduling for the first release because thread
+  probes do not establish a persistent editor/debugger workflow; rejected:
+  advertising SLIME/SLY support from single-request thread checks.
 
 Implement these as separate reviewable changes, beginning with baseline
 corrections and REPL regression tests. Platform work can proceed alongside local
