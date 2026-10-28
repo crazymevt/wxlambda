@@ -1,6 +1,8 @@
 (defpackage #:wxlambda
   (:use #:cl)
-  (:export #:next-handler #:previous-handler #:handler-unlinked-p #:unlink-event-handler
+  (:export #:window-event-handler #:push-event-handler #:pop-event-handler #:remove-event-handler
+           #:process-window-event #:process-window-event-locally
+           #:next-handler #:previous-handler #:handler-unlinked-p #:unlink-event-handler
            #:post-event #:transfer-event #:process-event-locally #:delete-pending-events
            #:owned-event #:make-event #:clone-event #:destroy-event #:event-alive-p
            #:event-category #:event-category-mask

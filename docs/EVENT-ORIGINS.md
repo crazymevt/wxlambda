@@ -1,6 +1,6 @@
 # Native event type and origin identity
 
-ABI 26 extends EVENT-NATIVE-TYPE to a generic reader for immutable snapshots and
+ABI 27 extends EVENT-NATIVE-TYPE to a generic reader for immutable snapshots and
 current innermost contexts. EVENT-ORIGIN-ID is a new generic reader with the same
 saved/current lifetime distinction. Baseline: wxWidgets 3.2.12.
 

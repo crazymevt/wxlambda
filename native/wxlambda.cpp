@@ -27,6 +27,19 @@ bool session_type(wxEventType type) {
 }
 // Synthetic session probes must never fall through to wxApp's exit defaults.
 class StandaloneHandler final : public wxEvtHandler {
+    std::unordered_set<wxEvent*> queued_sessions;
+public:
+    void QueueEvent(wxEvent* event) override {
+        if (event && session_type(event->GetEventType())) queued_sessions.insert(event);
+        wxEvtHandler::QueueEvent(event);
+    }
+    bool ProcessEvent(wxEvent& event) override {
+        queued_sessions.erase(&event);
+        return wxEvtHandler::ProcessEvent(event);
+    }
+    bool HasQueuedSessions() const { return !queued_sessions.empty(); }
+    void ClearQueuedSessions() { queued_sessions.clear(); }
+private:
     bool TryAfter(wxEvent& event) override {
         return session_type(event.GetEventType()) ? false : wxEvtHandler::TryAfter(event);
     }
@@ -41,6 +54,8 @@ thread_local std::string label_result;
 thread_local std::string metadata_result;
 std::unordered_map<wxl_handle, wxWeakRef<wxWindow>> windows;
 std::unordered_map<wxl_handle, std::unique_ptr<wxEvtHandler>> owned_handlers;
+struct PushedHandler { wxWeakRef<wxWindow> window; wxl_handle window_id; };
+std::unordered_map<wxl_handle, PushedHandler> pushed_handlers;
 std::unordered_map<wxl_handle, std::unique_ptr<wxEvent>> owned_events;
 std::unordered_map<wxl_handle, uint64_t> handlers;
 struct Binding;
@@ -112,6 +127,7 @@ wxEvtHandler* event_handler(wxl_handle id) {
 wxEvtHandler* standalone_handler(wxl_handle id) {
     auto* object = event_handler(id);
     require(owned_handlers.count(id) != 0, "Handler chains require owned standalone handlers");
+    require(!pushed_handlers.count(id), "Pop/remove a pushed handler before standalone chain access");
     return object;
 }
 wxl_handle owned_handler_id(wxEvtHandler* object) {
@@ -145,6 +161,54 @@ wxl_handle origin_id(const wxEvent& event) {
         if (item.second.get() && origin == item.second.get()) return item.first;
     return 0;
 }
+bool isolated_handler(wxl_handle id) {
+    return owned_handlers.count(id) && !pushed_handlers.count(id);
+}
+wxl_handle find_owned_handler(wxEvtHandler* object) noexcept {
+    for (const auto& item : owned_handlers)
+        if (item.second.get() == object) return item.first;
+    return 0;
+}
+void validate_window_stack(wxWindow* owner) {
+    auto* node = owner->GetEventHandler();
+    wxEvtHandler* previous = nullptr;
+    size_t count = 0;
+    while (node != owner) {
+        require(node != nullptr && ++count <= owned_handlers.size(), "Invalid window handler stack");
+        const auto id = owned_handler_id(node);
+        const auto attached = pushed_handlers.find(id);
+        require(attached != pushed_handlers.end() && attached->second.window.get() == owner,
+                "Window stack contains an unmanaged handler");
+        require(node->GetPreviousHandler() == previous, "Inconsistent window handler stack");
+        previous = node;
+        node = node->GetNextHandler();
+    }
+}
+void detach_window_stack(wxWindow* owner) noexcept {
+    // Run before wxWindowBase destruction, even if destroy events were consumed.
+    while (auto* head = owner->GetEventHandler()) {
+        if (head == owner) return;
+        const auto id = find_owned_handler(head);
+        const auto attached = pushed_handlers.find(id);
+        if (!id || attached == pushed_handlers.end() || attached->second.window.get() != owner) return;
+        owner->PopEventHandler(false);
+        pushed_handlers.erase(attached);
+    }
+}
+void remove_pushed_handler(wxl_handle id) {
+    const auto attached = pushed_handlers.find(id);
+    if (attached == pushed_handlers.end()) return;
+    auto* owner = attached->second.window.get();
+    require(owner != nullptr, "Pushed handler owner is no longer live");
+    validate_window_stack(owner);
+    require(owner->RemoveEventHandler(owned_handlers.at(id).get()), "Pushed handler not found");
+    pushed_handlers.erase(attached);
+}
+template<class T> class ManagedWindow final : public T {
+public:
+    using T::T;
+    ~ManagedWindow() override { detach_window_stack(this); }
+};
 void set_registered_type(wxEvent& event, int type) {
         const RegisteredEvent* source = nullptr;
         const RegisteredEvent* target = nullptr;
@@ -436,7 +500,7 @@ wxString utf8(const char* value) {
 }
 }
 extern "C" {
-int wxl_abi_version() { return 26; }
+int wxl_abi_version() { return 27; }
 const char* wxl_last_error() { return error.c_str(); }
 int wxl_start(wxl_callback callback) {
     return status([&] {
@@ -501,10 +565,14 @@ int wxl_finish() {
         ready();
         require_dispatch_entry();
         while (!bindings.empty()) remove_binding(bindings.begin()->first);
+        // Detach stacks before any native window/handler teardown.
+        for (const auto& item : windows)
+            if (auto* live = item.second.get()) detach_window_stack(live);
         // Destroy remaining top-level windows before OnExit (also on setup failure).
         while (!wxTopLevelWindows.empty())
             delete wxTopLevelWindows.GetFirst()->GetData();
         owned_events.clear();
+        pushed_handlers.clear();
         owned_handlers.clear();
         application_handle = 0;
         wxTheApp->OnExit();
@@ -556,7 +624,10 @@ int wxl_handler_destroy(wxl_handle id) {
             try {
                 wxTheApp->CallAfter([id] { owned_handlers.erase(id); pending_destruction.erase(id); });
             } catch (...) { pending_destruction.erase(id); throw; }
-        } else owned_handlers.erase(it);
+        } else {
+            if (pushed_handlers.count(id)) { require_dispatch_entry(); remove_pushed_handler(id); }
+            owned_handlers.erase(it);
+        }
     });
 }
 int wxl_handler_chain_peer(wxl_handle id, int previous, wxl_handle* peer) {
@@ -567,7 +638,11 @@ int wxl_handler_chain_peer(wxl_handle id, int previous, wxl_handle* peer) {
     });
 }
 int wxl_handler_unlinked(wxl_handle id) {
-    return boolean_result([&] { return standalone_handler(id)->IsUnlinked(); });
+    return boolean_result([&] {
+        auto* object = event_handler(id);
+        require(owned_handlers.count(id), "Unlinked-state query requires an owned handler");
+        return object->IsUnlinked();
+    });
 }
 int wxl_link_handlers(wxl_handle id, wxl_handle peer_id, int previous) {
     return status([&] {
@@ -755,7 +830,7 @@ int wxl_bind(wxl_handle id, int kind, uint64_t token, int first, int last, int w
     return status([&] {
         auto* receiver = event_handler(id);
         const auto type = native_event_type(kind);
-        require(!session_type(type) || id == application_handle || owned_handlers.count(id),
+        require(!session_type(type) || id == application_handle || isolated_handler(id),
                 "Session bindings require the application view or an owned standalone handler");
         require(with_context == 0 || with_context == 1, "Invalid binding context mode");
         require(token && !bindings.count(token), "Invalid or duplicate binding token");
@@ -804,7 +879,7 @@ int wxl_queue_event(wxl_handle id, int kind, int event_id, const char* text, siz
                     int value, int can_veto, int vetoed, int logging_off) {
     return status([&] {
         auto* receiver = event_handler(id);
-        require(!session_type(native_event_type(kind)) || owned_handlers.count(id),
+        require(!session_type(native_event_type(kind)) || isolated_handler(id),
                 "Synthetic session events require an isolated owned standalone handler");
         auto event = synthetic_event(receiver, kind, event_id, text, length, value, can_veto, vetoed, logging_off);
         receiver->QueueEvent(event.release());
@@ -816,7 +891,7 @@ int wxl_process_event(wxl_handle id, int kind, int event_id, const char* text, s
         require(final_veto != nullptr, "Missing final veto output");
         *final_veto = 0;
         auto* receiver = event_handler(id);
-        require(!session_type(native_event_type(kind)) || owned_handlers.count(id),
+        require(!session_type(native_event_type(kind)) || isolated_handler(id),
                 "Synthetic session events require an isolated owned standalone handler");
         auto event = synthetic_event(receiver, kind, event_id, text, length, value, can_veto, vetoed, logging_off);
         const bool handled = receiver->ProcessEvent(*event);
@@ -890,13 +965,13 @@ int wxl_dispatch_owned(wxl_handle receiver_id, wxl_handle event_id, int mode, in
     return boolean_result([&] {
         require(final_veto != nullptr, "Missing final veto output");
         *final_veto = 0;
-        require(mode >= 0 && mode <= 4, "Unknown owned-event delivery mode");
+        require(mode >= 0 && mode <= 6, "Unknown owned-event delivery mode");
         auto* receiver = event_handler(receiver_id);
         auto& source = owned_event(event_id);
-        require(!session_type(source.GetEventType()) || owned_handlers.count(receiver_id),
+        require(!session_type(source.GetEventType()) || isolated_handler(receiver_id),
                 "Synthetic session events require an isolated owned standalone handler");
-        auto* window = dynamic_cast<wxWindow*>(receiver);
-        require(source.GetEventType() != wxEVT_TEXT || !window || !window->WXGetTextEntry(),
+        auto* receiver_window = dynamic_cast<wxWindow*>(receiver);
+        require(source.GetEventType() != wxEVT_TEXT || !receiver_window || !receiver_window->WXGetTextEntry(),
                 "Owned text-change dispatch to text-entry receivers would shadow the payload");
         if (mode == 3) {
             // All rejecting preflight checks precede the ownership handoff.
@@ -907,11 +982,18 @@ int wxl_dispatch_owned(wxl_handle receiver_id, wxl_handle event_id, int mode, in
             wxQueueEvent(receiver, event.release());
             return true;
         }
+        wxWindow* owner = nullptr;
+        if (mode >= 5) {
+            owner = window(receiver_id);
+            validate_window_stack(owner);
+        }
         auto copy = detached_clone(source);
         copy->SetEventObject(receiver);
         if (mode == 1) { receiver->QueueEvent(copy.release()); return true; }
         if (mode == 2) { wxPostEvent(receiver, *copy); return true; }
-        const bool handled = mode == 4 ? receiver->ProcessEventLocally(*copy) : receiver->ProcessEvent(*copy);
+        const bool handled = mode == 6 ? owner->ProcessWindowEventLocally(*copy)
+                           : mode == 5 ? owner->ProcessWindowEvent(*copy)
+                           : mode == 4 ? receiver->ProcessEventLocally(*copy) : receiver->ProcessEvent(*copy);
         *final_veto = event_vetoed(*copy) ? 1 : 0;
         return handled;
     });
@@ -923,21 +1005,79 @@ int wxl_delete_pending_events(wxl_handle id) {
         auto* receiver = event_handler(id);
         require(id != application_handle, "Cannot discard the application handler's deferred cleanup queue");
         receiver->DeletePendingEvents();
+        if (const auto found = owned_handlers.find(id); found != owned_handlers.end())
+            static_cast<StandaloneHandler*>(found->second.get())->ClearQueuedSessions();
         // DeletePendingEvents itself leaves the wxApp registration behind.
         // Remove it too, or a later app pump could invoke an empty-queue check.
         wxTheApp->RemovePendingEventHandler(receiver);
     });
 }
+int wxl_window_handler(wxl_handle window_id, wxl_handle* handler_id) {
+    return status([&] {
+        require(handler_id != nullptr, "Missing window handler output");
+        auto* owner = window(window_id);
+        validate_window_stack(owner);
+        auto* head = owner->GetEventHandler();
+        *handler_id = head == owner ? window_id : owned_handler_id(head);
+    });
+}
+int wxl_push_handler(wxl_handle window_id, wxl_handle handler_id) {
+    return status([&] {
+        ready(); require_dispatch_entry();
+        auto* owner = window(window_id);
+        auto* handler = standalone_handler(handler_id);
+        validate_window_stack(owner);
+        require(handler->IsUnlinked(), "Unlink the handler before pushing it on a window");
+        require(!static_cast<StandaloneHandler*>(handler)->HasQueuedSessions(), "Process/delete queued session events before pushing");
+        for (const auto& item : bindings)
+            require(item.second->source != handler_id || !session_type(native_event_type(item.second->kind)),
+                    "Unbind session callbacks before pushing a handler");
+        pushed_handlers.emplace(handler_id, PushedHandler{owner, window_id});
+        owner->PushEventHandler(handler);
+    });
+}
+int wxl_pop_handler(wxl_handle window_id, int destroy, wxl_handle* handler_id) {
+    return status([&] {
+        ready(); require_dispatch_entry();
+        require(handler_id != nullptr, "Missing popped handler output");
+        auto* owner = window(window_id);
+        validate_window_stack(owner);
+        require(owner->GetEventHandler() != owner, "No handler was pushed on this window");
+        const auto id = owned_handler_id(owner->GetEventHandler());
+        pushed_handlers.erase(id);
+        if (destroy) {
+            auto object = std::move(owned_handlers.at(id));
+            owned_handlers.erase(id);
+            object.release(); // Native Pop(true) now owns deletion.
+            owner->PopEventHandler(true);
+        } else owner->PopEventHandler(false);
+        *handler_id = id;
+    });
+}
+int wxl_remove_handler(wxl_handle window_id, wxl_handle handler_id) {
+    return boolean_result([&] {
+        ready(); require_dispatch_entry();
+        auto* owner = window(window_id);
+        auto* handler = event_handler(handler_id);
+        require(owned_handlers.count(handler_id), "Window stacks require owned handlers");
+        validate_window_stack(owner);
+        const auto attached = pushed_handlers.find(handler_id);
+        if (attached == pushed_handlers.end() || attached->second.window.get() != owner) return false;
+        require(owner->RemoveEventHandler(handler), "Managed pushed handler not found");
+        pushed_handlers.erase(attached);
+        return true;
+    });
+}
 wxl_handle wxl_frame(const char* title, int width, int height) {
     return create([&] {
         require(width > 0 && height > 0, "Frame dimensions must be positive");
-        return track(new wxFrame(nullptr, wxID_ANY, utf8(title), wxDefaultPosition, wxSize(width, height)));
+        return track(new ManagedWindow<wxFrame>(nullptr, wxID_ANY, utf8(title), wxDefaultPosition, wxSize(width, height)));
     });
 }
-wxl_handle wxl_panel(wxl_handle parent) { return create([&] { return track(new wxPanel(window(parent))); }); }
+wxl_handle wxl_panel(wxl_handle parent) { return create([&] { return track(new ManagedWindow<wxPanel>(window(parent))); }); }
 wxl_handle wxl_button(wxl_handle parent, const char* label) {
     return create([&] {
-        auto* control = new wxButton(window(parent), wxID_ANY, utf8(label));
+        auto* control = new ManagedWindow<wxButton>(window(parent), wxID_ANY, utf8(label));
         auto id = track(control);
         control->Bind(wxEVT_BUTTON, [id](wxCommandEvent& event) {
             emit_event(id, {WXL_EVENT_CLICK, nullptr, 0, -1, event.GetId(), 0, 0, event.GetEventType(), 0, 0, WXL_FAMILY_COMMAND, event.GetInt(), 0, event.GetTimestamp(), event.IsCommandEvent() ? 1 : 0, origin_id(event), static_cast<int>(event.GetEventCategory())});
@@ -948,7 +1088,7 @@ wxl_handle wxl_button(wxl_handle parent, const char* label) {
 }
 wxl_handle wxl_text(wxl_handle parent, const char* value) {
     return create([&] {
-        auto* control = new wxTextCtrl(window(parent), wxID_ANY, utf8(value));
+        auto* control = new ManagedWindow<wxTextCtrl>(window(parent), wxID_ANY, utf8(value));
         const auto id = track(control);
         control->Bind(wxEVT_TEXT, [id](wxCommandEvent& event) {
             const auto it = handlers.find(id);
@@ -966,7 +1106,7 @@ wxl_handle wxl_text(wxl_handle parent, const char* value) {
     });
 }
 wxl_handle wxl_label(wxl_handle parent, const char* label) {
-    return create([&] { return track(new wxStaticText(window(parent), wxID_ANY, utf8(label))); });
+    return create([&] { return track(new ManagedWindow<wxStaticText>(window(parent), wxID_ANY, utf8(label))); });
 }
 int wxl_set_label(wxl_handle id, const char* value) {
     return status([&] { as<wxStaticText>(id)->SetLabel(utf8(value)); });
@@ -984,7 +1124,7 @@ wxl_handle wxl_gauge(wxl_handle parent, int range, int value, int vertical) {
         require(range > 0, "Gauge range must be positive");
         require(value >= 0 && value <= range, "Gauge value out of range");
         require(vertical == 0 || vertical == 1, "Invalid gauge orientation");
-        auto* control = new wxGauge(window(parent), wxID_ANY, range,
+        auto* control = new ManagedWindow<wxGauge>(window(parent), wxID_ANY, range,
                                    wxDefaultPosition, wxDefaultSize,
                                    vertical ? wxGA_VERTICAL : wxGA_HORIZONTAL);
         control->SetValue(value);
@@ -1025,7 +1165,7 @@ int wxl_gauge_pulse(wxl_handle id) {
 }
 wxl_handle wxl_checkbox(wxl_handle parent, const char* label, int checked) {
     return create([&] {
-        auto* control = new wxCheckBox(window(parent), wxID_ANY, utf8(label));
+        auto* control = new ManagedWindow<wxCheckBox>(window(parent), wxID_ANY, utf8(label));
         control->SetValue(checked != 0);
         const auto id = track(control);
         control->Bind(wxEVT_CHECKBOX, [id](wxCommandEvent& event) {
@@ -1065,7 +1205,7 @@ wxl_handle wxl_choice(wxl_handle parent, const char** items, int count, int sele
         require(selection >= -1 && selection < count, "Choice selection out of range");
         wxArrayString strings;
         for (int i = 0; i < count; ++i) strings.Add(utf8(items[i]));
-        auto* control = new wxChoice(owner, wxID_ANY, wxDefaultPosition, wxDefaultSize, strings);
+        auto* control = new ManagedWindow<wxChoice>(owner, wxID_ANY, wxDefaultPosition, wxDefaultSize, strings);
         control->SetSelection(selection);
         const auto id = track(control);
         control->Bind(wxEVT_CHOICE, [id](wxCommandEvent& event) {

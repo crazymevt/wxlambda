@@ -181,3 +181,9 @@ origin retention and client/userData ownership remain open.
 identity and session ownership while participating in normal/local/pending
 delivery. Structural edits and linked destruction during callbacks reject;
 borrowed window/application stacks remain unbound.
+
+[Managed window handler stacks](WINDOW-HANDLER-STACKS.md) now attach owned
+standalone handlers without transferring native ownership, detach them on actual
+window destruction and provide explicit stack-aware copy processing. Standalone
+peer editing excludes attached nodes; arbitrary SetEventHandler/external adoption
+remain unbound.

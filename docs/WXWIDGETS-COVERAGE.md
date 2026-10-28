@@ -93,11 +93,11 @@ contracts first. C2 remains partial; C3–C7 have no public bindings recorded.
 See the [C1 details](coverage/phase-c1.md), [C2 details](coverage/phase-c2.md) and
 [class index](coverage/classes.md) for the remaining work within bound families.
 
-The current bridge is ABI 26, with 117 public Lisp exports. The standalone-chain batch passes
-43 GUI scenarios on both local Apple Silicon macOS SBCL/CCL configurations and
+The current bridge is ABI 27, with 123 public Lisp exports. The window-stack batch passes
+44 GUI scenarios on both local Apple Silicon macOS SBCL/CCL configurations and
 five packaging checks. These are local results retained under
-`evidence/handler-chains/` and `evidence/packaging/handler-chains-20261028/`;
-they do not validate Linux/Windows or the graphical Cadre viewer. The standalone-chain
+`evidence/window-handler-stacks/` and `evidence/packaging/window-handler-stacks-20261028/`;
+they do not validate Linux/Windows or the graphical Cadre viewer. The window-stack
 implementation reruns the GUI suites; documentation-only
 updates must distinguish retained results from newly run checks.
 
@@ -170,6 +170,7 @@ widget classes has complete wxWidgets coverage yet.
 - [x] OWNED-EVENT construction/cloning/disposal/liveness, generic command text/integer SETF and copy-based native dispatch. Exact native classes and detached origins only; arbitrary classes, retained origin, source transfer and client/userData ownership remain open.
 - [x] GUI POST-EVENT copies, consuming TRANSFER-EVENT handoff, PROCESS-EVENT-LOCALLY copies and non-application DELETE-PENDING-EVENTS with pending-list synchronization. Worker posting, app-wide deletion and per-handler pending processing remain open.
 - [x] Standalone handler NEXT/PREVIOUS peer readers and reciprocal SETF, HANDLER-UNLINKED-P and UNLINK-EVENT-HANDLER. Strong canonical roots preserve wrapper identity; dispatch-time edits and borrowed window/app chains reject. Native Push/Pop/Remove remain open.
+- [x] Managed window Get/Push/Pop/RemoveEventHandler and explicit ProcessWindowEvent/Locally copies. Push preserves bridge ownership; actual native window destruction detaches handlers. External stack adoption/SetEventHandler remain open.
 - [x] Native errors translated to Lisp `native-error` conditions.
 - [x] Event snapshots: `event`, `event-p`, `event-kind`, `event-source`,
   `event-text`, `event-checked-p`, `event-selection` for four command kinds plus :close.
@@ -373,7 +374,11 @@ Native pending-list synchronization uses an implementation-header management
 method absent from the pinned documentation interface and remains a C7
 reconciliation dependency; target cancellation does not close app-wide deletion.
 
-The ABI 26 standalone-chain batch expands the runner to 43 scenarios. Final local
-GUI/package evidence is pending during implementation. Paired NIL edge-detach
-semantics follow native implementation/Unlink behavior although the pinned
-setter prose forbids NULL; retain that discrepancy for C7 reconciliation.
+Paired NIL standalone edge-detach semantics follow native implementation/Unlink
+behavior although the pinned setter prose forbids NULL; retain that discrepancy
+for C7 reconciliation.
+
+The ABI 27 managed window-stack batch expands the runner to 44 scenarios. Final
+local GUI/package evidence is pending during implementation. Native window
+teardown requires pushed handlers to be removed; bridge-managed destructors pop
+without deleting session-owned handlers before the base assertion.

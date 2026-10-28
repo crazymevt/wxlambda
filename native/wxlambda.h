@@ -116,9 +116,14 @@ WXL_API int wxl_set_event_field(uint64_t source, int contextual, int field, int6
 WXL_API const char *wxl_event_text(uint64_t source, int contextual, size_t *length);
 WXL_API int wxl_set_event_text(uint64_t source, int contextual, const char *text, size_t length);
 WXL_API int wxl_owned_stop(wxl_handle event);
-/* Modes: 0 process-copy, 1 queue-copy, 2 post-copy, 3 queue-transfer, 4 local-copy. */
+/* Modes: 0 process-copy, 1 queue-copy, 2 post-copy, 3 queue-transfer, 4 local-copy, 5 window-copy, 6 window-local-copy. */
 WXL_API int wxl_delete_pending_events(wxl_handle receiver);
 WXL_API int wxl_dispatch_owned(wxl_handle receiver, wxl_handle event, int mode, int *final_veto);
+/* Window stacks borrow session-owned handlers. Window destruction detaches them. */
+WXL_API int wxl_window_handler(wxl_handle window, wxl_handle *handler);
+WXL_API int wxl_push_handler(wxl_handle window, wxl_handle handler);
+WXL_API int wxl_pop_handler(wxl_handle window, int destroy, wxl_handle *handler);
+WXL_API int wxl_remove_handler(wxl_handle window, wxl_handle handler);
 WXL_API wxl_handle wxl_frame(const char *title, int width, int height);
 WXL_API wxl_handle wxl_panel(wxl_handle parent);
 WXL_API wxl_handle wxl_button(wxl_handle parent, const char *label);

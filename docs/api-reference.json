@@ -714,7 +714,7 @@
     "kind": "class",
     "arguments": "Superclass STANDARD-OBJECT. No native initargs; subclasses may add slot initargs and defaults.",
     "returns": "A native-backed owned standalone handler, or the base identity of an existing window subclass.",
-    "description": "Concrete standalone wxEvtHandler wrapper and superclass of WINDOW. Standalone native objects are owned by the application session, explicitly destroyed or automatically freed at session cleanup, without a Lisp GC finalizer. Windows borrow their own native wxWindow base identity and retain window/parent lifetime. Neither case exposes an arbitrary GetEventHandler chain or permits user-supplied native handles. Standalone wrappers are now strongly canonicalized by session identity for EQ chain peer lookup; no new native ownership or finalizer is introduced.",
+    "description": "Concrete standalone wxEvtHandler wrapper and superclass of WINDOW. Standalone native objects are owned by the application session, explicitly destroyed or automatically freed at session cleanup, without a Lisp GC finalizer. Windows borrow their own native wxWindow base identity and retain window/parent lifetime. Neither case exposes an arbitrary GetEventHandler chain or permits user-supplied native handles. Standalone wrappers are now strongly canonicalized by session identity for EQ chain peer lookup; no new native ownership or finalizer is introduced. Managed window push leaves native ownership/session rooting unchanged; window destruction detaches handlers rather than deleting them.",
     "scope": "Active main-thread GUI session required; otherwise NATIVE-ERROR, including after cleanup. Invalid/stale native handles signal NATIVE-ERROR except HANDLER-ALIVE-P, which returns NIL for destroyed/unknown IDs during an active session. Unsupported Lisp receivers use CLOS dispatch errors. Generic observer/contextual bindings cover built-ins and registered command/notify names, including on the borrowed application view. Arbitrary native classes, validated OS session delivery, pushed handler chains and native virtual overrides remain unbound. Construction rollback releases created resources/roots but does not undo arbitrary external chain edits; native destruction splices survivors around the failed node.",
     "wxwidgets": "wxEvtHandler constructor/destructor (wxWidgets 3.2.12 baseline); window identity uses wxWindow inheritance.",
     "syntax": "wxlambda:event-handler",
@@ -737,7 +737,7 @@
     "kind": "generic-function",
     "arguments": "HANDLER is an owned standalone EVENT-HANDLER.",
     "returns": "T after successful native deletion.",
-    "description": "Destroy an owned standalone native handler. Outside callbacks deletion is immediate; during callbacks identity becomes invalid immediately and deletion is queued on the application after the current native dispatch stack. Repeated destruction is an error. Window and application identities are borrowed and reject this operation; use DESTROY-WINDOW for windows. Only session cleanup destroys the application. Destroying a linked standalone handler during a callback now rejects; outside callbacks native destruction splices reciprocal neighbors. Unlinked callback destruction retains existing deferral.",
+    "description": "Destroy an owned standalone native handler. Outside callbacks deletion is immediate; during callbacks identity becomes invalid immediately and deletion is queued on the application after the current native dispatch stack. Repeated destruction is an error. Window and application identities are borrowed and reject this operation; use DESTROY-WINDOW for windows. Only session cleanup destroys the application. Destroying a linked standalone handler during a callback now rejects; outside callbacks native destruction splices reciprocal neighbors. Unlinked callback destruction retains existing deferral. Attached handlers are removed from their managed window before outside-callback deletion; linked/attached callback destruction rejects.",
     "scope": "Active main-thread GUI session required; otherwise NATIVE-ERROR, including after cleanup. Invalid/stale native handles signal NATIVE-ERROR except HANDLER-ALIVE-P, which returns NIL for destroyed/unknown IDs during an active session. Unsupported Lisp receivers use CLOS dispatch errors. Generic observer/contextual bindings cover built-ins and registered command/notify names, including on the borrowed application view. Arbitrary native classes, validated OS session delivery, pushed handler chains and native virtual overrides remain unbound. Explicit destruction removes the canonical standalone wrapper root after successful native request.",
     "wxwidgets": "wxEvtHandler::~wxEvtHandler (wxWidgets 3.2.12 baseline), owned standalone handlers only."
   },
@@ -789,7 +789,7 @@
     "arguments": "HANDLER is an EVENT-HANDLER/window; KIND is :CLICK, :TEXT-CHANGE, :TOGGLE, :SELECTION, :CLOSE, :QUERY-END-SESSION, :END-SESSION or a registered command/notify name. FUNCTION takes one immutable EVENT. ID defaults NIL (any); LAST-ID defaults NIL (exact ID when ID is given). WITH-CONTEXT defaults NIL; when true FUNCTION takes (EVENT CONTEXT) instead of just EVENT.",
     "returns": "A new independent EVENT-BINDING.",
     "description": "Register an observer without replacing any existing generic or control-specific registration. Signed 32-bit IDs are supported except -1 (reserved as native wxID_ANY; use NIL). LAST-ID requires ID and an ordered inclusive range. Observer bindings automatically Skip; contextual bindings start unskipped and control native Skip explicitly; relative callback order follows wxWidgets and is not a Lisp API guarantee. Failed registration releases temporary roots. Contextual access is limited to the innermost callback and expires at return, including on errors.",
-    "scope": "Active main-thread GUI session required; otherwise NATIVE-ERROR. Stale/deleting receivers reject registration/queuing. Invalid event kinds, IDs and payload options signal Lisp errors; wrong receiver types use CLOS dispatch errors. Built-ins and registered command/notify types. Contexts support scoped Skip/propagation and checked close/notify veto. Arbitrary native events, native control-specific notify subclasses, userData, pushed handlers and worker-thread dispatch remain unbound. Session bindings accept only the borrowed application view or an isolated owned handler; windows reject. Real OS delivery remains unverified. Skipped application END_SESSION callbacks can reach process-exiting defaults.",
+    "scope": "Active main-thread GUI session required; otherwise NATIVE-ERROR. Stale/deleting receivers reject registration/queuing. Invalid event kinds, IDs and payload options signal Lisp errors; wrong receiver types use CLOS dispatch errors. Built-ins and registered command/notify types. Contexts support scoped Skip/propagation and checked close/notify veto. Arbitrary native events, native control-specific notify subclasses, userData, pushed handlers and worker-thread dispatch remain unbound. Session bindings accept only the borrowed application view or an isolated owned handler; windows reject. Real OS delivery remains unverified. Skipped application END_SESSION callbacks can reach process-exiting defaults. Session bindings on attached pushed handlers reject so a window tail cannot route them to app defaults.",
     "wxwidgets": "wxEvtHandler::Bind member-method overload with a wxEvent base receiver; built-ins and registered command/notify tags, no userData."
   },
   {
@@ -816,7 +816,7 @@
     "arguments": "HANDLER is live; KIND is a built-in keyword or registered name. ID defaults 0; TEXT defaults empty. CHECKED-P is toggle-only; SELECTION is NIL/nonnegative index for selection. CAN-VETO-P is close-family-only (default T). Registered types accept signed INTEGER (default 0) and copied TEXT; registered notify types accept initial VETOED-P (default NIL). LOGGING-OFF-P defaults NIL and is accepted only for :QUERY-END-SESSION/:END-SESSION; CAN-VETO-P applies to all close-family kinds. The second positional argument may instead be a live OWNED-EVENT, with no payload keyword overrides.",
     "returns": "The supplied handler.",
     "description": "Queue a copied synthetic event: wxCommandEvent for four command kinds, wxCloseEvent for :CLOSE. Ordinary control properties are not changed directly. A queued close on a frame may run its native default closing action; use CLOSE-WINDOW for a synchronous acceptance result. Explicit UTF-8 lengths preserve text. Close events take no command payload, may be vetoable or non-vetoable, and do not normally propagate to parents. Registry types create wxCommandEvent or wxNotifyEvent according to their declared family. Initial veto applies only to custom notify types. Queuing offers no final veto/handled result; use PROCESS-EVENT when a synchronous decision is required. Owned-event dispatch always clones, attaches the receiver as copy origin and never consumes or mutates the source. The original can be destroyed after queueing or inside callbacks. Processing returns final state from its copy; contextual CLONE-EVENT can retain changed state detached from origin.",
-    "scope": "Active main-thread GUI session required; otherwise NATIVE-ERROR. Stale/deleting receivers reject registration/queuing. Invalid event kinds, IDs and payload options signal Lisp errors; wrong receiver types use CLOS dispatch errors. Built-ins and registered command/notify types. Contexts support scoped Skip/propagation and checked close/notify veto. Arbitrary native events, native control-specific notify subclasses, userData, pushed handlers and worker-thread dispatch remain unbound. Synthetic session kinds require isolated owned standalone handlers; application/window receivers reject before emission. Standalone session fallback to wxApp is suppressed even for skipped, disabled or unmatched delivery. Native application session bindings are distinct from synthetic probes. Owned session event copies retain isolated standalone-receiver guards. Copies carrying borrowed userdata/client pointers or unsupported exact native classes reject. Copied owned :TEXT-CHANGE delivery to text-entry receivers rejects before emission, preventing lazy GetString from shadowing the owned payload. Keyword synthetic behavior is unchanged. Managed standalone chains participate in native traversal; linking does not change pending queue ownership or introduce window/app pushed chains.",
+    "scope": "Active main-thread GUI session required; otherwise NATIVE-ERROR. Stale/deleting receivers reject registration/queuing. Invalid event kinds, IDs and payload options signal Lisp errors; wrong receiver types use CLOS dispatch errors. Built-ins and registered command/notify types. Contexts support scoped Skip/propagation and checked close/notify veto. Arbitrary native events, native control-specific notify subclasses, userData, pushed handlers and worker-thread dispatch remain unbound. Synthetic session kinds require isolated owned standalone handlers; application/window receivers reject before emission. Standalone session fallback to wxApp is suppressed even for skipped, disabled or unmatched delivery. Native application session bindings are distinct from synthetic probes. Owned session event copies retain isolated standalone-receiver guards. Copies carrying borrowed userdata/client pointers or unsupported exact native classes reject. Copied owned :TEXT-CHANGE delivery to text-entry receivers rejects before emission, preventing lazy GetString from shadowing the owned payload. Keyword synthetic behavior is unchanged. Managed standalone chains participate in native traversal; linking does not change pending queue ownership or introduce window/app pushed chains. Window receivers retain wxEvtHandler semantics and bypass pushed stacks; explicit PROCESS-WINDOW-EVENT/LOCALLY provide stack-aware synchronous routing. Synthetic session delivery to attached pushed handlers rejects before emission/transfer.",
     "wxwidgets": "wxEvtHandler::QueueEvent; wxCommandEvent or wxCloseEvent construction, SetCanVeto at close-event creation only.",
     "syntax": "(wxlambda:queue-event handler kind &key id text checked-p selection can-veto-p integer vetoed-p logging-off-p)\n(wxlambda:queue-event handler owned-event)"
   },
@@ -986,7 +986,7 @@
     "arguments": "HANDLER is a live EVENT-HANDLER/window. KIND and keyword payloads match QUEUE-EVENT. LOGGING-OFF-P defaults NIL and is accepted only for :QUERY-END-SESSION/:END-SESSION; CAN-VETO-P applies to all close-family kinds. The second positional argument may instead be a live OWNED-EVENT, with no payload keyword overrides.",
     "returns": "Two values: native handled-p and final vetoed-p.",
     "description": "Synchronously dispatch a fresh owned synthetic event through ProcessEvent, copy final veto state and then delete the event. Observer callbacks may run while handled-p is NIL because they Skip; native consumption/default handling determines the first result. Final veto is independent of handled-p and may be true from initial VETOED-P even without a matching handler. Close dispatch can run frame defaults. Callback errors re-signal at the nearer Lisp boundary; handled nested errors do not stop RUN. No final values are returned when a condition escapes, and earlier callback mutations are not rolled back. Owned-event dispatch always clones, attaches the receiver as copy origin and never consumes or mutates the source. The original can be destroyed after queueing or inside callbacks. Processing returns final state from its copy; contextual CLONE-EVENT can retain changed state detached from origin.",
-    "scope": "Active main-thread session required for registration/dispatch and scoped native access; inactive calls signal NATIVE-ERROR before FFI. Wrong receiver types use CLOS dispatch errors. Registry metadata lasts until session cleanup; snapshot data is immutable. Borrowed application dispatch is supported; no worker dispatch, validated OS session delivery or arbitrary native class construction is provided. Synthetic session kinds require isolated owned standalone handlers; application/window receivers reject before emission. Standalone session fallback to wxApp is suppressed even for skipped, disabled or unmatched delivery. Native application session bindings are distinct from synthetic probes. Owned session event copies retain isolated standalone-receiver guards. Copies carrying borrowed userdata/client pointers or unsupported exact native classes reject. Copied owned :TEXT-CHANGE delivery to text-entry receivers rejects before emission, preventing lazy GetString from shadowing the owned payload. Keyword synthetic behavior is unchanged. Managed standalone chains participate in native traversal; linking does not change pending queue ownership or introduce window/app pushed chains.",
+    "scope": "Active main-thread session required for registration/dispatch and scoped native access; inactive calls signal NATIVE-ERROR before FFI. Wrong receiver types use CLOS dispatch errors. Registry metadata lasts until session cleanup; snapshot data is immutable. Borrowed application dispatch is supported; no worker dispatch, validated OS session delivery or arbitrary native class construction is provided. Synthetic session kinds require isolated owned standalone handlers; application/window receivers reject before emission. Standalone session fallback to wxApp is suppressed even for skipped, disabled or unmatched delivery. Native application session bindings are distinct from synthetic probes. Owned session event copies retain isolated standalone-receiver guards. Copies carrying borrowed userdata/client pointers or unsupported exact native classes reject. Copied owned :TEXT-CHANGE delivery to text-entry receivers rejects before emission, preventing lazy GetString from shadowing the owned payload. Keyword synthetic behavior is unchanged. Managed standalone chains participate in native traversal; linking does not change pending queue ownership or introduce window/app pushed chains. Window receivers retain wxEvtHandler semantics and bypass pushed stacks; explicit PROCESS-WINDOW-EVENT/LOCALLY provide stack-aware synchronous routing. Synthetic session delivery to attached pushed handlers rejects before emission/transfer.",
     "wxwidgets": "wxEvtHandler::ProcessEvent; wxCloseEvent::GetVeto or NOT wxNotifyEvent::IsAllowed after dispatch. (wxWidgets 3.2.12 baseline).",
     "syntax": "(wxlambda:process-event handler kind &key id text checked-p selection can-veto-p integer vetoed-p logging-off-p)\n(wxlambda:process-event handler owned-event)"
   },
@@ -1147,7 +1147,7 @@
     "arguments": "HANDLER is a live EVENT-HANDLER/window, EVENT is a live OWNED-EVENT. No synthetic payload overrides.",
     "returns": "HANDLER after successful GUI posting.",
     "description": "Post an independent detached copy with wxPostEvent/AddPendingEvent; attach the receiver as copy origin. Input stays live/unchanged and may be destroyed or changed immediately. Delivery is asynchronous in the managed GUI session.",
-    "scope": "Active main-thread GUI session required. Existing session-isolated receiver and lazy text-entry-origin restrictions apply before emission. No non-GUI immediate dispatch, worker posting or ownership transfer. Managed standalone chains participate in native traversal; linking does not change pending queue ownership or introduce window/app pushed chains.",
+    "scope": "Active main-thread GUI session required. Existing session-isolated receiver and lazy text-entry-origin restrictions apply before emission. No non-GUI immediate dispatch, worker posting or ownership transfer. Managed standalone chains participate in native traversal; linking does not change pending queue ownership or introduce window/app pushed chains. Window receivers retain wxEvtHandler semantics and bypass pushed stacks; explicit PROCESS-WINDOW-EVENT/LOCALLY provide stack-aware synchronous routing. Synthetic session delivery to attached pushed handlers rejects before emission/transfer.",
     "wxwidgets": "wxPostEvent / wxEvtHandler::AddPendingEvent, bounded GUI copy mapping (wxWidgets 3.2.12 baseline)."
   },
   {
@@ -1157,7 +1157,7 @@
     "arguments": "HANDLER is a live EVENT-HANDLER/window; EVENT is a live OWNED-EVENT to consume. No payload overrides.",
     "returns": "HANDLER after native handoff.",
     "description": "Validate before consuming, then remove the actual event from the owned registry, attach receiver origin and hand it to wxQueueEvent. Input becomes non-live and cannot be accessed, cloned or destroyed by its former owner. Destination deletion or pending-event cancellation does not restore it.",
-    "scope": "Active main-thread GUI session required. Preflight failures leave the owned input live; no rollback or delivery guarantee after handoff, including a post-handoff error. Existing session/text-entry receiver restrictions apply before consumption. No raw pointer or arbitrary native class transfer. Managed standalone chains participate in native traversal; linking does not change pending queue ownership or introduce window/app pushed chains.",
+    "scope": "Active main-thread GUI session required. Preflight failures leave the owned input live; no rollback or delivery guarantee after handoff, including a post-handoff error. Existing session/text-entry receiver restrictions apply before consumption. No raw pointer or arbitrary native class transfer. Managed standalone chains participate in native traversal; linking does not change pending queue ownership or introduce window/app pushed chains. Window receivers retain wxEvtHandler semantics and bypass pushed stacks; explicit PROCESS-WINDOW-EVENT/LOCALLY provide stack-aware synchronous routing. Synthetic session delivery to attached pushed handlers rejects before emission/transfer.",
     "wxwidgets": "wxQueueEvent / wxEvtHandler::QueueEvent native ownership handoff for supported owned events (wxWidgets 3.2.12 baseline)."
   },
   {
@@ -1167,7 +1167,7 @@
     "arguments": "HANDLER is a live EVENT-HANDLER/window; EVENT is a live OWNED-EVENT. No payload overrides.",
     "returns": "Two values: native handled-p and final-vetoed-p of the processing copy.",
     "description": "Synchronously process an independent detached copy with ProcessEventLocally, including local pre-processing and native chained handlers, without normal outer global-filter/parent/application fallback. Source remains live/unchanged. Observer delivery can return handled NIL; final veto is independent. Native local static/default handlers may still execute, including frame-close behavior; local processing is not observer-only or a no-default-action mode.",
-    "scope": "Active main-thread GUI session required. Existing supported-class, session-isolation, text-entry receiver and callback/context protections apply. Callback conditions re-signal at the nearer Lisp boundary. No pending queue pump, pushed-handler API or native virtual override is added. Managed standalone chains participate in native traversal; linking does not change pending queue ownership or introduce window/app pushed chains.",
+    "scope": "Active main-thread GUI session required. Existing supported-class, session-isolation, text-entry receiver and callback/context protections apply. Callback conditions re-signal at the nearer Lisp boundary. No pending queue pump, pushed-handler API or native virtual override is added. Managed standalone chains participate in native traversal; linking does not change pending queue ownership or introduce window/app pushed chains. Window receivers retain wxEvtHandler semantics and bypass pushed stacks; explicit PROCESS-WINDOW-EVENT/LOCALLY provide stack-aware synchronous routing. Synthetic session delivery to attached pushed handlers rejects before emission/transfer.",
     "wxwidgets": "wxEvtHandler::ProcessEventLocally on a supported detached copy (wxWidgets 3.2.12 baseline)."
   },
   {
@@ -1187,7 +1187,7 @@
     "arguments": "HANDLER is a live owned standalone EVENT-HANDLER/subclass. SETF PEER is another owned standalone handler or NIL.",
     "returns": "The EQ canonical managed next wrapper or NIL; SETF returns PEER.",
     "description": "Read the native next link through the session canonical wrapper map. SETF joins reciprocal vacant source-next/peer-previous endpoints, including existing segments, or detaches one reciprocal edge for NIL. Repeating an existing pair is idempotent; self/cycle/conflicting occupied endpoints reject before mutation.",
-    "scope": "Active main-thread session and valid standalone handles required. Reads are permitted in callbacks; SETF rejects RUN/pump/callback use. Window/application sources and peers reject. Wrappers are strongly rooted until destruction/rollback/session end; no ownership transfer, raw pointer or GC finalizer.",
+    "scope": "Active main-thread session and valid standalone handles required. Reads are permitted in callbacks; SETF rejects RUN/pump/callback use. Window/application sources and peers reject. Wrappers are strongly rooted until destruction/rollback/session end; no ownership transfer, raw pointer or GC finalizer. Attached pushed nodes reject both peer reads and writes; use WINDOW-EVENT-HANDLER/POP/REMOVE so the standalone protocol cannot expose the borrowed window tail.",
     "wxwidgets": "wxEvtHandler::GetNextHandler / SetNextHandler with managed reciprocal SetPreviousHandler (wxWidgets 3.2.12 baseline).",
     "setf": {
       "syntax": "(setf (wxlambda:next-handler handler) peer-or-nil)",
@@ -1201,7 +1201,7 @@
     "arguments": "HANDLER is a live owned standalone EVENT-HANDLER/subclass. SETF PEER is another owned standalone handler or NIL.",
     "returns": "The EQ canonical managed previous wrapper or NIL; SETF returns PEER.",
     "description": "Read the native previous link. SETF mirrors NEXT-HANDLER, joining vacant source-previous/peer-next endpoints reciprocally or detaching one edge for NIL. Self/cycle/conflicting occupied endpoints reject before mutation; an existing reciprocal pair is idempotent.",
-    "scope": "Active main-thread session and valid owned standalone handles. Reads are permitted during callbacks; SETF rejects RUN/pump/callback use. Borrowed window/application sources and peers reject. Strong canonical roots preserve wrapper/subclass identity, not new native ownership.",
+    "scope": "Active main-thread session and valid owned standalone handles. Reads are permitted during callbacks; SETF rejects RUN/pump/callback use. Borrowed window/application sources and peers reject. Strong canonical roots preserve wrapper/subclass identity, not new native ownership. Attached pushed nodes reject both peer reads and writes; use WINDOW-EVENT-HANDLER/POP/REMOVE so the standalone protocol cannot expose the borrowed window tail.",
     "wxwidgets": "wxEvtHandler::GetPreviousHandler / SetPreviousHandler with managed reciprocal SetNextHandler (wxWidgets 3.2.12 baseline).",
     "setf": {
       "syntax": "(setf (wxlambda:previous-handler handler) peer-or-nil)",
@@ -1215,7 +1215,7 @@
     "arguments": "HANDLER is a live owned standalone EVENT-HANDLER/subclass.",
     "returns": "T when both native next/previous links are NIL; otherwise NIL.",
     "description": "Read native IsUnlinked without changing native ownership or queue membership. An unlinked wrapper remains strongly registered and its native object remains session-owned until explicit destruction or cleanup.",
-    "scope": "Active main-thread session and valid owned standalone handle; reads may run inside callbacks. Borrowed window/application and stale/pending handles reject. No borrowed native stack or pointer access.",
+    "scope": "Active main-thread session and valid owned standalone handle; reads may run inside callbacks. Borrowed window/application and stale/pending handles reject. No borrowed native stack or pointer access. Attached owned pushed handlers are supported by this query and return NIL; generic peer operations remain excluded.",
     "wxwidgets": "wxEvtHandler::IsUnlinked (wxWidgets 3.2.12 baseline)."
   },
   {
@@ -1225,7 +1225,67 @@
     "arguments": "HANDLER is a live owned standalone EVENT-HANDLER/subclass.",
     "returns": "HANDLER, detached and still alive.",
     "description": "Splice the native previous/next neighbors together, then detach both source edges. Does not destroy the handler, transfer ownership or move its pending queue. Already unlinked input is harmless. This differs from SETF NIL, which detaches one edge only.",
-    "scope": "Active main-thread non-dispatch boundary required. RUN/pump/callback use and borrowed window/application sources reject before mutation. Linked callback-time destruction also rejects; outside callbacks native destruction can unlink/splice normally.",
+    "scope": "Active main-thread non-dispatch boundary required. RUN/pump/callback use and borrowed window/application sources reject before mutation. Linked callback-time destruction also rejects; outside callbacks native destruction can unlink/splice normally. Attached nodes reject: use POP-EVENT-HANDLER or REMOVE-EVENT-HANDLER to detach from a window first.",
     "wxwidgets": "wxEvtHandler::Unlink for managed standalone chains (wxWidgets 3.2.12 baseline)."
+  },
+  {
+    "name": "window-event-handler",
+    "kind": "generic-function",
+    "syntax": "(wxlambda:window-event-handler window)",
+    "arguments": "WINDOW is a valid bridge-managed window/subclass.",
+    "returns": "Canonical top pushed handler wrapper, or the identical WINDOW when no managed handler is pushed.",
+    "description": "Read native GetEventHandler through the bridge managed-stack identity map. It does not reconstruct or adopt unknown native handlers and has no SETF writer.",
+    "scope": "Active main-thread session; reads allowed in callbacks while window is valid/non-deleting. No arbitrary SetEventHandler, external native stack adoption or raw pointer access.",
+    "wxwidgets": "wxWindow::GetEventHandler, managed stack only (wxWidgets 3.2.12 baseline)."
+  },
+  {
+    "name": "push-event-handler",
+    "kind": "generic-function",
+    "syntax": "(wxlambda:push-event-handler window handler)",
+    "arguments": "WINDOW is bridge-managed; HANDLER is a live unlinked standalone owned EVENT-HANDLER/subclass, not already attached.",
+    "returns": "HANDLER after managed push.",
+    "description": "Push above the existing stack top while keeping native ownership in the bridge registry. Reject linked/attached or borrowed window/app peers, active session bindings and queued session events before mutation.",
+    "scope": "Active main-thread non-dispatch boundary; RUN/pump/callback use rejects. Canonical wrapper rooting continues. No raw native adoption or window ownership transfer.",
+    "wxwidgets": "wxWindow::PushEventHandler with managed ownership/session guards (wxWidgets 3.2.12 baseline)."
+  },
+  {
+    "name": "pop-event-handler",
+    "kind": "generic-function",
+    "syntax": "(wxlambda:pop-event-handler window &key delete)",
+    "arguments": "WINDOW is bridge-managed with a nonempty managed stack. DELETE defaults NIL; true requests native deletion.",
+    "returns": "Popped canonical handler, alive/unlinked, or NIL when DELETE is true.",
+    "description": "Detach the top entry. Default preserves native owned registry/root; DELETE true releases bridge ownership before native PopEventHandler deletion and clears canonical roots/bindings. Empty stacks reject instead of invoking native assertions.",
+    "scope": "Active main-thread non-dispatch boundary; RUN/pump/callback use rejects. Consumed/deleted wrappers reject later native access. No deletion of the base window or arbitrary native stack entry.",
+    "wxwidgets": "wxWindow::PopEventHandler(bool) (wxWidgets 3.2.12 baseline)."
+  },
+  {
+    "name": "remove-event-handler",
+    "kind": "generic-function",
+    "syntax": "(wxlambda:remove-event-handler window handler)",
+    "arguments": "WINDOW is bridge-managed; HANDLER is a live owned standalone handler.",
+    "returns": "T if removed from this window; NIL for a valid nonmember.",
+    "description": "Preflight membership and detach without deletion. A live detached handler or handler belonging to another window returns NIL unchanged; only present entries reach native RemoveEventHandler, avoiding its absent-entry assertion.",
+    "scope": "Active main-thread non-dispatch boundary; RUN/pump/callback use, stale peers and borrowed window/application peers reject. Own pending queue and native ownership survive; other stack entries remain intact.",
+    "wxwidgets": "wxWindow::RemoveEventHandler with safe managed membership probe (wxWidgets 3.2.12 baseline)."
+  },
+  {
+    "name": "process-window-event",
+    "kind": "generic-function",
+    "syntax": "(wxlambda:process-window-event window owned-event)",
+    "arguments": "WINDOW is bridge-managed; EVENT is a live supported OWNED-EVENT. No payload overrides.",
+    "returns": "Two values: native handled-p and final-vetoed-p of an independent copy.",
+    "description": "Process a detached copy through native GetEventHandler stack routing, window and normal parent/application fallback. Source remains alive/unchanged; copy origin is WINDOW and callback source can be a pushed handler. Callback conditions re-signal at the nearer Lisp boundary.",
+    "scope": "Active main-thread session with copied-event exact-class/session/lazy-text guards. Synthetic session delivery rejects; no origin retention or native class replacement. Generic PROCESS-EVENT and queued window operations still bypass pushed handlers.",
+    "wxwidgets": "wxWindow::ProcessWindowEvent on an independent owned-event copy (wxWidgets 3.2.12 baseline)."
+  },
+  {
+    "name": "process-window-event-locally",
+    "kind": "generic-function",
+    "syntax": "(wxlambda:process-window-event-locally window owned-event)",
+    "arguments": "WINDOW is bridge-managed; EVENT is a live supported OWNED-EVENT. No payload overrides.",
+    "returns": "Two values: native handled-p and final-vetoed-p of the local copy.",
+    "description": "Search the window and its pushed handlers with local pre-processing/validators, without normal upward window propagation. Process an independent detached copy with receiver-window origin and unchanged source. Observer delivery may still return handled NIL. Native local static/default handlers can still run, including frame-close behavior; local routing is not observer-only.",
+    "scope": "Active main-thread session and existing copied-event/session/lazy-text guards. Current contexts stay innermost-scoped; callback errors re-signal at the nearer boundary. No pending pump, external native chain adoption or native virtual Lisp hooks.",
+    "wxwidgets": "wxWindow::ProcessWindowEventLocally on an independent copy (wxWidgets 3.2.12 baseline)."
   }
 ]

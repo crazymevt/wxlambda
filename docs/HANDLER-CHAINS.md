@@ -1,11 +1,12 @@
 # Managed standalone event-handler chains
 
-ABI 26 adds NEXT-HANDLER, PREVIOUS-HANDLER, HANDLER-UNLINKED-P and
+ABI 27 adds NEXT-HANDLER, PREVIOUS-HANDLER, HANDLER-UNLINKED-P and
 UNLINK-EVENT-HANDLER for session-owned standalone EVENT-HANDLER objects and
 subclasses. The two peer properties have generic SETF writers. The baseline is
 wxWidgets 3.2.12. Borrowed window/application sources and peers reject these
-operations; window PushEventHandler/PopEventHandler/RemoveEventHandler and
-ownership transfer remain unbound.
+operations; dedicated managed [window stack APIs](WINDOW-HANDLER-STACKS.md) now cover
+Push/Pop/Remove while preserving bridge ownership. General standalone peer
+operations still exclude attached/borrowed window chains.
 
 ## Canonical peers and native ownership
 
@@ -75,7 +76,9 @@ Unlinking an already detached handler is harmless.
 All mutations require a non-dispatch boundary: RUN, native pumps and callbacks
 reject linking, edge detachment and UNLINK, even if the requested change would
 be idempotent. Read peers during a callback and schedule structural changes for
-after dispatch instead. No new asynchronous mutation scheduler is supplied.
+after dispatch instead. No new asynchronous mutation scheduler is supplied. Attached pushed nodes also
+reject general peer reads/SETF/UNLINK; HANDLER-UNLINKED-P can report false. Use the
+window stack APIs to inspect or detach those nodes.
 
 ## Dispatch and lifetime
 
@@ -135,3 +138,7 @@ Build/check with `python3 tools/docset.py build` and `check`; install with
 (default `~/.local/share/docsets/wxlambda/`) for Cadre discovery and lookup.
 See [handler lifetime](EVENT-HANDLERS.md), [pending delivery](PENDING-EVENTS.md),
 [bindings](EVENT-BINDINGS.md) and [docset installation](DOCSET.md).
+
+[Managed window stacks](WINDOW-HANDLER-STACKS.md) now provide bounded Push/Pop/
+Remove and explicit stack-aware synchronous processing; external adoption and
+general SetEventHandler remain gaps.

@@ -94,5 +94,9 @@
   "handler-chains.lisp": {
     "description": "Build reciprocal standalone handler links, observe native chain delivery and detach/splice handlers without changing native ownership.",
     "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/handler-chains.lisp --eval '(wxlambda-handler-chains:start)'"
+  },
+  "window-handler-stacks.lisp": {
+    "description": "Push managed standalone handlers on a window, compare explicit stack-aware and generic bypass routing, then pop/remove without transferring native ownership.",
+    "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/window-handler-stacks.lisp --eval '(wxlambda-window-handler-stacks:start)'"
   }
 }

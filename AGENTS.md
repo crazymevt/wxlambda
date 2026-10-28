@@ -101,8 +101,11 @@ The native-backed `event-handler` base supports standalone session-owned handler
 windows borrow their existing native widget identity. Managed standalone chain
 links preserve reciprocal edges and canonical strongly rooted wrapper identity;
 structural edits reject RUN/pump/callback use and linked callback-time destruction
-rejects. Do not widen chain receivers/peers to borrowed window/app handlers or
-claim native Push/Pop/Remove ownership. Public window wrapper
+rejects. Do not widen standalone peer operations to borrowed window/app tails or
+attached nodes. Dedicated managed window Push/Pop/Remove APIs preserve bridge
+session ownership; actual native window destruction pops managed stacks without
+deleting those handlers. Explicit stack-aware processing differs from generic
+window receiver dispatch, which retains native stack bypass. Public window wrapper
 classes are `window` (abstract), `frame`, `panel`, `button`,
 `text-control`, `label`, `checkbox`, `choice` and `gauge`. Lisp subclassing does not imply
 native C++ subclassing or virtual-method callbacks; those need separate bridge

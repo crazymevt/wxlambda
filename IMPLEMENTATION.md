@@ -64,15 +64,18 @@ must reconcile additional documented public interfaces beyond those headers.
 - Standalone-chain batch: canonical next/previous peers, reciprocal guarded SETF,
   unlinked-state query and splice/unlink with unchanged session native ownership.
   Final verification and independent review pass.
-- Current bridge ABI: 26. Public API: 117 exports, nine window wrapper classes
-  (eight concrete widget kinds) plus the event-handler base, 77 named generics and
+- Window-stack batch: managed Get/Push/Pop/Remove, preserving session-owned
+  handler lifetime, and explicit stack-aware synchronous copy processing. Final
+  verification and independent review pass.
+- Current bridge ABI: 27. Public API: 123 exports, nine window wrapper classes
+  (eight concrete widget kinds) plus the event-handler base, 83 named generics and
   twenty-two generic SETF writers. The application-handler is a borrowed view; no
   native application construction or arbitrary-event class binding exists yet; built-ins plus registered command/notify names have
   observer/contextual bindings.
-- Latest implementation verification: 43 GUI scenarios and native preflight
+- Latest implementation verification: 44 GUI scenarios and native preflight
   pass on local Apple Silicon macOS SBCL 2.6.9 and CCL 1.13. Final reports:
-  `evidence/handler-chains/{sbcl,ccl}-20261028/`. Five package checks
-  pass in `evidence/packaging/handler-chains-20261028/`.
+  `evidence/window-handler-stacks/{sbcl,ccl}-20261028/`. Five package checks
+  pass in `evidence/packaging/window-handler-stacks-20261028/`.
   Hosted Linux/Windows GUI behavior and the graphical Cadre viewer remain open.
 
 ### Next dependency and working order
@@ -82,7 +85,8 @@ must reconcile additional documented public interfaces beyond those headers.
 2. Reuse the implemented event-handler ownership/state base: standalone objects
    are session-owned; windows borrow their existing native identity, with weak
    tracking independent of destroy-event delivery. There is no pushed-handler
-   ownership; standalone dispatch supports command observers and the non-command close family.
+   ownership transfer; managed window stack APIs preserve session ownership.
+   Standalone dispatch supports command observers and the close family.
    Preserve native-backed subclass
    initargs, defaults, AFTER hooks and mixed-resource rollback.
 3. Generic binding/unbinding supports command and close kinds with ID filters. Optional
@@ -92,8 +96,8 @@ must reconcile additional documented public interfaces beyond those headers.
    The borrowed application handler view and query/end-session metadata/bindings
    are implemented, as are scoped CanVeto mutation, timestamp and command metadata.
    Scoped native ID mutation and routing semantics are implemented. Next define
-   borrowed window handler-stack ownership and remaining origin retention after
-   detached events, pending delivery and standalone chains. Bounded registered-tag mutation
+   remaining external/native stack adoption and origin retention after managed
+   window stacks, detached events, pending delivery and standalone chains. Bounded registered-tag mutation
    with actual native class checks is implemented. Category metadata is implemented. Current type
    reads and bounded origin identities are implemented; arbitrary native tag/origin
    writers and general wxObject wrappers remain open. Native OS session delivery is unverified. Native session events are
@@ -105,7 +109,7 @@ must reconcile additional documented public interfaces beyond those headers.
    Native control-specific notify subclasses and remaining event ownership stay open. Preserve immutable
    snapshots and opaque binding/context identities; never expose a native event
    pointer after callback return. Arbitrary native event classes/userData, session routing and
-   borrowed/pushed handler stacks remain gaps.
+   arbitrary borrowed/native stack adoption remains a gap.
 4. Build timer/idle, event propagation/skip/veto and worker-to-GUI dispatch on
    those contracts, adding prerequisite value types before their consumers.
    Existing immutable event snapshots do not provide mutable native event access
@@ -1209,6 +1213,61 @@ previous inaccessible pointer/class-mismatch branches remain unverified.
 Next define borrowed window handler-stack ownership before widening chain peers
 or adding Push/Pop; preserve reciprocal identity, session lifetime and dispatch
 mutation restrictions.
+
+## Managed window handler stacks and explicit routing (2026-10-28)
+
+ABI 27 adds WINDOW-EVENT-HANDLER, PUSH/POP/REMOVE-EVENT-HANDLER and copied
+PROCESS-WINDOW-EVENT/LOCALLY. Push requires unlinked unattached owned standalone
+handlers and preserves bridge native ownership/canonical roots. Default pop and
+remove detach alive; deleting pop releases registry ownership before native
+Pop(true) deletion and clears roots/bindings. Empty pop rejects; valid detached
+or other-window remove probes return NIL without native assertion. Getter returns
+canonical pushed handler or the identical window when empty, never an adopted
+external native pointer.
+
+All structural stack operations reject RUN/pump/callback use. Attached nodes
+reject general next/previous reads/SETF and Unlink, avoiding exposure of borrowed
+window tails; IsUnlinked returns false. Attached handler destruction removes it
+before outside-callback deletion; linked/attached callback deletion rejects.
+All eight concrete native widget types use internal managed destructors that
+Pop(false) before wxWindowBase teardown, so handlers survive actual window or
+ancestor destruction independent of destroy-event Skip/enabled flags. A destroy
+request is not completed detachment; asynchronous native deletion still applies.
+Session finish detaches stacks before window cleanup. Native window teardown
+requires stack removal and does not take deleting ownership of these handlers.
+Constructor rollback cleans resources, not arbitrary restoration of external edits.
+
+Explicit window processing enters managed pushed stacks; generic/local/queued
+window APIs retain wxEvtHandler stack bypass. Copy origin is the window and
+snapshot receiver can be a pushed handler. Session binding/delivery on attached
+handlers rejects; push also rejects active session bindings or queued session
+events, tracked until native processing/deletion. No real OS session event,
+worker facility, arbitrary SetEventHandler or native virtual Lisp hook is added.
+
+An initial C++ variable-shadow build error was corrected before example checks.
+Coverage validation rejected approximate ProcessWindowEvent source lines; exact
+pinned declarations at lines 2669/2682 were used before regeneration. Broad focused
+regression/example passes both Lisps (quiet-run.kZR9FBII), covering all eight
+widget destructors/parent cascade with disabled event processing, session guards,
+pending delivery after detachment and rollback directions. Public wxEVT_DESTROY
+binding is absent: consuming a real destroy notification remains untested, while
+ManagedWindow destructor cleanup is structurally independent of observer Skip.
+
+Final counts: 123 exports, 83 named generics, 22 generic SETF writers,
+44 GUI scenarios, 174 docset entries and twenty-five examples. Independent runtime
+and documentation reviews pass with no remaining actionable findings. All 44
+local GUI scenarios plus native preflight pass on SBCL and CCL. The five rebuilt
+relocated-package checks pass. Python/inventory regressions, actual export/SETF
+lookup, isolated docset install/discovery and API/guide/example reading pass;
+checker reports zero problems. Evidence:
+`evidence/window-handler-stacks/{sbcl,ccl}-20261028/` and
+`evidence/packaging/window-handler-stacks-20261028/`; package:
+`dist/wxlambda-form-window-handler-stacks`. Two user-authorized subagents handled
+tests and docs/coverage in parallel; independent review remained separate.
+Hosted Windows/Linux GUI, native OS-session delivery, graphical Cadre and
+prior inaccessible pointer/class-mismatch branches remain unverified. Continue
+C1 external stack adoption/retained origin or other lifetime prerequisites before
+exposing arbitrary borrowed native chains.
 
 ## Decisions
 

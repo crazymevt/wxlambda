@@ -89,7 +89,7 @@
           (if (probe-file local)
               (cffi:load-foreign-library local)
               (cffi:use-foreign-library wxlambda-native))))
-    (unless (= 26 (%abi-version)) (error "Unsupported wxlambda native ABI"))
+    (unless (= 27 (%abi-version)) (error "Unsupported wxlambda native ABI"))
     (setf *native-loaded* t))
   t)
 
@@ -173,3 +173,8 @@
 (cffi:defcfun ("wxl_handler_unlinked" %handler-unlinked) :int (handler :uint64))
 (cffi:defcfun ("wxl_link_handlers" %link-handlers) :int (handler :uint64) (peer :uint64) (previous :int))
 (cffi:defcfun ("wxl_unlink_handler" %unlink-handler) :int (handler :uint64))
+
+(cffi:defcfun ("wxl_window_handler" %window-handler) :int (window :uint64) (handler :pointer))
+(cffi:defcfun ("wxl_push_handler" %push-handler) :int (window :uint64) (handler :uint64))
+(cffi:defcfun ("wxl_pop_handler" %pop-handler) :int (window :uint64) (destroy :int) (handler :pointer))
+(cffi:defcfun ("wxl_remove_handler" %remove-handler) :int (window :uint64) (handler :uint64))

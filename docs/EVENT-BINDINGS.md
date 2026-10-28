@@ -3,7 +3,7 @@
 This C1 slice adds independent observer bindings on standalone `event-handler`
 objects and borrowed window identities. It covers `:click` (`wxEVT_BUTTON`),
 `:text-change` (`wxEVT_TEXT`), `:toggle` (`wxEVT_CHECKBOX`) and `:selection`
-(`wxEVT_CHOICE`), using the wxWidgets 3.2.12 baseline. The bridge is ABI 26.
+(`wxEVT_CHOICE`), using the wxWidgets 3.2.12 baseline. The bridge is ABI 27.
 Optional [scoped contexts](EVENT-CONTEXTS.md) now support Skip/propagation;
 close-veto support is now available through the [close family](CLOSE-EVENTS.md).
 Registered [notify/command types](NOTIFY-EVENTS.md) now add named native tags and
@@ -161,3 +161,9 @@ remain unbound.
 identity and session ownership while participating in normal/local/pending
 delivery. Structural edits and linked destruction during callbacks reject;
 borrowed window/application stacks remain unbound.
+
+[Managed window handler stacks](WINDOW-HANDLER-STACKS.md) now attach owned
+standalone handlers without transferring native ownership, detach them on actual
+window destruction and provide explicit stack-aware copy processing. Standalone
+peer editing excludes attached nodes; arbitrary SetEventHandler/external adoption
+remain unbound.

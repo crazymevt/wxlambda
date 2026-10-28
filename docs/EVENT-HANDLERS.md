@@ -118,7 +118,7 @@ python3 tools/docset.py build
 python3 tools/docset.py check
 ```
 
-Use the project quiet-command wrapper in agent sessions. Rebuild the ABI 26
+Use the project quiet-command wrapper in agent sessions. Rebuild the ABI 27
 bridge alongside the bindings. The GUI runner includes this scenario; broader
 platform and graphical Cadre verification remain separate. The API, this guide
 and example are included in the [Cadre docset](DOCSET.md), installable under
@@ -142,3 +142,9 @@ remain unbound.
 [Managed standalone chains](HANDLER-CHAINS.md) now have canonical peer access,
 reciprocal SETF joins/splits and explicit unlink. Window/application sources and
 peers remain excluded; native ownership stays with the session.
+
+[Managed window handler stacks](WINDOW-HANDLER-STACKS.md) now attach owned
+standalone handlers without transferring native ownership, detach them on actual
+window destruction and provide explicit stack-aware copy processing. Standalone
+peer editing excludes attached nodes; arbitrary SetEventHandler/external adoption
+remain unbound.

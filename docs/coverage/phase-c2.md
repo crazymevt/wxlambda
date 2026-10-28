@@ -16,7 +16,7 @@ class or constructor does not imply full upstream coverage.
 
 ## Current coverage and remaining work
 
-23 implemented; 40 partial; 2799 pending; 0 context entries. Partial and pending entries remain open.
+23 implemented; 46 partial; 2793 pending; 0 context entries. Partial and pending entries remain open.
 
 Counts describe inventory entries, not distinct APIs or percent completion.
 See the [coverage summary](README.md) for phase/header comparisons.
@@ -1000,7 +1000,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [ ] [L48](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/gauge.h#L48) `documented style: wxGA_SMOOTH`
 - [ ] [L51](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/gauge.h#L51) `documented style: wxGA_TEXT`
 - [ ] [L56](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/gauge.h#L56) `documented style: wxGA_PROGRESS`
-- [~] [L69](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/gauge.h#L69) `class wxGauge : public wxControl {` — **Partial**: `gauge`, `make-gauge`, `gauge-value`, `gauge-range`, `gauge-vertical-p`, `pulse-gauge`; ABI: `wxl_gauge`, `wxl_gauge_value`, `wxl_gauge_range`, `wxl_set_gauge_value`, `wxl_set_gauge_range`, `wxl_gauge_vertical`, `wxl_gauge_pulse`. Parent-owned progress gauge: positive range, value, horizontal/vertical orientation and pulsing. Constructor options, two-step creation and full inherited API remain open. Gauge support introduced in ABI 10; current bridge ABI 26; see docs/GAUGE.md and tests/gauge.lisp.
+- [~] [L69](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/gauge.h#L69) `class wxGauge : public wxControl {` — **Partial**: `gauge`, `make-gauge`, `gauge-value`, `gauge-range`, `gauge-vertical-p`, `pulse-gauge`; ABI: `wxl_gauge`, `wxl_gauge_value`, `wxl_gauge_range`, `wxl_set_gauge_value`, `wxl_set_gauge_range`, `wxl_gauge_vertical`, `wxl_gauge_pulse`. Parent-owned progress gauge: positive range, value, horizontal/vertical orientation and pulsing. Constructor options, two-step creation and full inherited API remain open. Gauge support introduced in ABI 10; current bridge ABI 27; see docs/GAUGE.md and tests/gauge.lisp.
 - [ ] [L75](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/gauge.h#L75) `wxGauge();`
 - [~] [L101](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/gauge.h#L101) `wxGauge(wxWindow* parent, wxWindowID id, int range, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxGA_HORIZONTAL, const wxValidator& validator = wxDefaultValidator, const wxString& name = wxGaugeNameStr);` — **Partial**: `gauge`, `make-gauge`; ABI: `wxl_gauge`. Native-backed CLOS construction with parent, positive range, initial value and horizontal/vertical orientation. Fixed wxID_ANY and default position, size, validator and name; remaining constructor styles/options open.
 - [ ] [L111](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/gauge.h#L111) `virtual ~wxGauge();`
@@ -2994,7 +2994,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h)
 
-10 implemented; 4 partial; 372 pending; 0 context entries. Partial and pending entries remain open.
+10 implemented; 10 partial; 366 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L12](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L12) `enum wxShowEffect {`
 - [ ] [L19](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L19) `wxSHOW_EFFECT_NONE, wxSHOW_EFFECT_ROLL_TO_LEFT, wxSHOW_EFFECT_ROLL_TO_RIGHT, wxSHOW_EFFECT_ROLL_TO_TOP, wxSHOW_EFFECT_ROLL_TO_BOTTOM, wxSHOW_EFFECT_SLIDE_TO_LEFT, wxSHOW_EFFECT_SLIDE_TO_RIGHT, wxSHOW_EFFECT_SLIDE_TO_TOP, wxSHOW_EFFECT_SLIDE_TO_BOTTOM, wxSHOW_EFFECT_BLEND, wxSHOW_EFFECT_EXPAND, wxSHOW_EFFECT_MAX }`
@@ -3054,7 +3054,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [ ] [L332](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L332) `documented event: EVT_SET_CURSOR(func)`
 - [ ] [L334](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L334) `documented event: EVT_SIZE(func)`
 - [ ] [L336](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L336) `documented event: EVT_SYS_COLOUR_CHANGED(func)`
-- [~] [L345](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L345) `class wxWindow : public wxEvtHandler {` — **Partial**: `show-window`, `shown-p`, `enable-window`, `enabled-p`; ABI: `wxl_show_state`, `wxl_shown`, `wxl_enable`, `wxl_enabled`. Logical names, visibility and effective enabled state, layout, geometry and destruction are exposed; the remaining wxWindow API stays open.
+- [~] [L345](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L345) `class wxWindow : public wxEvtHandler {` — **Partial**: `show-window`, `shown-p`, `enable-window`, `enabled-p`, `window-event-handler`, `push-event-handler`, `pop-event-handler`, `remove-event-handler`, `process-window-event`, `process-window-event-locally`; ABI: `wxl_show_state`, `wxl_shown`, `wxl_enable`, `wxl_enabled`, `wxl_window_handler`, `wxl_push_handler`, `wxl_pop_handler`, `wxl_remove_handler`, `wxl_dispatch_owned`. Logical names, visibility and effective enabled state, layout, geometry and destruction are exposed; the remaining wxWindow API stays open. Managed handler stacks and explicit stack-aware copied routing are now supported. Push preserves bridge ownership; default pop/remove detach alive, deleting pop consumes native resource. All eight managed native widget destructors pop(false) before base teardown, independent of destroy observers/enabled flags. No external adoption/SetEventHandler or retained origins.
 - [ ] [L351](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L351) `wxWindow();`
 - [ ] [L376](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L376) `wxWindow(wxWindow* parent, wxWindowID id, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = 0, const wxString& name = wxPanelNameStr);`
 - [ ] [L392](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L392) `virtual ~wxWindow();`
@@ -3241,14 +3241,14 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [ ] [L2600](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2600) `virtual bool GetThemeEnabled() const;`
 - [ ] [L2607](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2607) `virtual bool CanSetTransparent();`
 - [ ] [L2618](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2618) `virtual bool SetTransparent(wxByte alpha);`
-- [ ] [L2638](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2638) `wxEvtHandler* GetEventHandler() const;`
+- [~] [L2638](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2638) `wxEvtHandler* GetEventHandler() const;` — **Partial**: `window-event-handler`; ABI: `wxl_window_handler`. Managed windows only: canonical top pushed handler or identical receiver window when empty. Validate known native stack; no SetEventHandler, external adoption, raw pointer or generic borrowed peer exposure.
 - [ ] [L2649](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2649) `bool HandleAsNavigationKey(const wxKeyEvent& event);`
 - [ ] [L2659](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2659) `bool HandleWindowEvent(wxEvent& event) const;`
-- [ ] [L2669](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2669) `bool ProcessWindowEvent(wxEvent& event);`
-- [ ] [L2682](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2682) `bool ProcessWindowEventLocally(wxEvent& event);`
-- [ ] [L2702](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2702) `wxEvtHandler* PopEventHandler(bool deleteHandler = false);`
-- [ ] [L2734](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2734) `void PushEventHandler(wxEvtHandler* handler);`
-- [ ] [L2752](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2752) `bool RemoveEventHandler(wxEvtHandler* handler);`
+- [~] [L2669](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2669) `bool ProcessWindowEvent(wxEvent& event);` — **Partial**: `process-window-event`; ABI: `wxl_dispatch_owned`. Stack-aware synchronous routing on an independent detached owned-event copy; window origin, pushed callback receiver source, normal parent/app fallback. Source unchanged; exact-class/session/lazy-text guards apply. Generic/queued window APIs retain stack bypass.
+- [~] [L2682](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2682) `bool ProcessWindowEventLocally(wxEvent& event);` — **Partial**: `process-window-event-locally`; ABI: `wxl_dispatch_owned`. Local copied routing through this window and managed pushed handlers/validators without normal upward window propagation. Source alive/unchanged; no pending pump, external chain adoption or arbitrary native event class.
+- [~] [L2702](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2702) `wxEvtHandler* PopEventHandler(bool deleteHandler = false);` — **Partial**: `pop-event-handler`; ABI: `wxl_pop_handler`. Managed nonempty stack only at non-dispatch boundary. Default detach returns alive canonical handler; delete true releases registry ownership before native deletion and clears Lisp roots/bindings, returning NIL. Empty/callback/pump/RUN use rejects.
+- [~] [L2734](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2734) `void PushEventHandler(wxEvtHandler* handler);` — **Partial**: `push-event-handler`; ABI: `wxl_push_handler`. Push unlinked unattached owned standalone handler while retaining bridge session ownership. Linked/borrowed peers, active session bindings, queued session events and dispatch-time mutation reject. Managed native widget destructors detach stacks before wxWindowBase teardown.
+- [~] [L2752](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2752) `bool RemoveEventHandler(wxEvtHandler* handler);` — **Partial**: `remove-event-handler`; ABI: `wxl_remove_handler`. Managed membership probe returns T after nondeleting removal or NIL for a live detached/other-window handler, avoiding native absent-entry assert. Stale/borrowed peers and dispatch-time mutation reject; other entries/own pending queue survive.
 - [ ] [L2766](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2766) `void SetEventHandler(wxEvtHandler* handler);`
 - [ ] [L2776](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2776) `virtual void SetNextHandler(wxEvtHandler* handler);`
 - [ ] [L2786](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2786) `virtual void SetPreviousHandler(wxEvtHandler* handler);`
