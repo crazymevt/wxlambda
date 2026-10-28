@@ -51,6 +51,7 @@ WXL_API int wxl_stop(void);
 WXL_API int wxl_finish(void);
 /* Standalone handlers are session-owned; window handlers borrow window identity.
    Queries return 0/1, or -1 on failure. ALIVE returns 0 for stale/unknown IDs. */
+WXL_API wxl_handle wxl_application_handler(void);
 WXL_API wxl_handle wxl_event_handler(void);
 WXL_API int wxl_handler_alive(wxl_handle handler);
 WXL_API int wxl_handler_enabled(wxl_handle handler);

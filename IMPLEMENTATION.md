@@ -40,15 +40,17 @@ must reconcile additional documented public interfaces beyond those headers.
 - Registered-notify milestone: session keyword declarations for custom command/
   notify types, copied text/integer payloads, scoped Veto/Allow and synchronous
   dispatch with native handled/final-veto results. Session routing remains open.
-- Current bridge ABI: 16. Public API: 96 exports, nine window wrapper classes
+- Borrowed application milestone: cached application-handler view with inherited
+  bindings, dispatch and enabled state; no native ownership transfer or construction.
+- Current bridge ABI: 17. Public API: 98 exports, nine window wrapper classes
   (eight concrete widget kinds) plus the event-handler base, 55 named generics and
-  thirteen generic SETF writers. No public application wrapper or arbitrary-event
-  class binding exists yet; built-ins plus registered command/notify names have
+  thirteen generic SETF writers. The application-handler is a borrowed view; no
+  native application construction or arbitrary-event class binding exists yet; built-ins plus registered command/notify names have
   observer/contextual bindings.
-- Latest implementation verification: 33 GUI scenarios and native preflight
+- Latest implementation verification: 34 GUI scenarios and native preflight
   pass on local Apple Silicon macOS SBCL 2.6.9 and CCL 1.13. Final reports:
-  `evidence/notify-events/{sbcl,ccl}-20261028/`. Five package checks
-  pass in `evidence/packaging/notify-events-20261028/`.
+  `evidence/application-handler/{sbcl,ccl}-20261028/`. Five package checks
+  pass in `evidence/packaging/application-handler-20261028/`.
   Hosted Linux/Windows GUI behavior and the graphical Cadre viewer remain open.
 
 ### Next dependency and working order
@@ -65,8 +67,8 @@ must reconcile additional documented public interfaces beyond those headers.
    borrowed contexts now control Skip/propagation in the innermost callback; saved
    snapshots carry process-local native type IDs. Close veto and frame request
    policy are implemented. Registered command/notify types and synchronous dispatch are implemented.
-   Next define a borrowed application handler view and its lifetime, then native
-   query/end-session routing and logging-off state. Native session events are
+   The borrowed application handler view and its lifetime are implemented. Next add
+   query/end-session metadata and controlled routing, plus logging-off state. Native session events are
    wxApp-only, and default END_SESSION handling can exit the process: never
    synthesize live application end-session events as an ordinary test. Use owned
    handlers for synthetic family tests and distinguish OS validation from them.
@@ -845,6 +847,36 @@ the process. Complete that prerequisite before query/end-session and logging-off
 support. Derived notify classes, broader event ownership and all remaining C1–C7
 backlog items remain open. Hosted Windows/Linux GUI and graphical Cadre checks
 remain unverified.
+
+## Borrowed application handler prerequisite (2026-10-28)
+
+Bridge ABI 17 adds APPLICATION-HANDLER and CURRENT-APPLICATION-HANDLER as a
+cached, borrowed view of the bridge-managed wxApp. It reuses inherited event
+binding, queueing, synchronous processing, liveness and enabled-state generics.
+Direct construction (including subclasses/factories) and explicit destruction
+are rejected. Bindings are removed before native wxApp cleanup; saved snapshots
+remain readable while saved views reject native operations outside the session.
+Every lookup validates the native main-thread/session boundary, even when cached.
+
+Actual-package docset validation caught a missing Construction section for the
+borrowed class; review independently identified it, and the section was added
+before repeating the checks. Independent static review found no runtime issue. Its documentation note was
+applied: disabling the real application handler can delay application-queued
+work, including deferred disposal, until restoration or cleanup. The example
+and regression test cover identity, delivery, notify veto, enable/restore,
+rejected construction/disposal, session cleanup and saved snapshots.
+
+Local SBCL and CCL pass all 34 GUI scenarios plus native preflight. The Python
+and pinned inventory tests pass; five relocated package checks pass. The docset
+has 129 entries for all 98 exports, guides and fifteen examples; checker,
+actual-package export/SETF coverage, isolated-install discovery and guide/example
+navigation checks pass. Evidence paths are in the handoff. Hosted Linux/Windows
+GUI and graphical Cadre validation remain unverified.
+
+Continue C1 with session-family metadata and synthetic owned-handler tests before
+validating OS application routing. Default END_SESSION may exit the process;
+never emit it on the managed application as an ordinary regression test.
+All required missing/partial C1–C7 APIs remain open in the coverage inventory.
 
 ## Decisions
 

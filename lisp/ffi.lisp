@@ -84,7 +84,7 @@
           (if (probe-file local)
               (cffi:load-foreign-library local)
               (cffi:use-foreign-library wxlambda-native))))
-    (unless (= 16 (%abi-version)) (error "Unsupported wxlambda native ABI"))
+    (unless (= 17 (%abi-version)) (error "Unsupported wxlambda native ABI"))
     (setf *native-loaded* t))
   t)
 
@@ -102,6 +102,7 @@
 (cffi:defcfun ("wxl_gauge_vertical" %gauge-vertical) :int (gauge :uint64))
 (cffi:defcfun ("wxl_gauge_pulse" %gauge-pulse) :int (gauge :uint64))
 
+(cffi:defcfun ("wxl_application_handler" %application-handler) :uint64)
 (cffi:defcfun ("wxl_event_handler" %event-handler) :uint64)
 (cffi:defcfun ("wxl_handler_alive" %handler-alive) :int (handler :uint64))
 (cffi:defcfun ("wxl_handler_enabled" %handler-enabled) :int (handler :uint64))

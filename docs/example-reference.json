@@ -54,5 +54,9 @@
   "notify-events.lisp": {
     "description": "A registered notify event validates a proposed change synchronously before applying it. A checkbox selects Veto or Allow; the reusable exercise verifies blocked and accepted changes, both callback paths and cleanup.",
     "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/notify-events.lisp --eval '(wxlambda-notify-events:start)'"
+  },
+  "application-handler.lisp": {
+    "description": "Borrow the cached application event-handler view, queue a registered command, verify delivery and release the binding without destroying wxApp.",
+    "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/application-handler.lisp --eval '(wxlambda-application-handler:start)'"
   }
 }

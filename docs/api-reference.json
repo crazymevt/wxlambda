@@ -711,7 +711,7 @@
     "arguments": "Superclass STANDARD-OBJECT. No native initargs; subclasses may add slot initargs and defaults.",
     "returns": "A native-backed owned standalone handler, or the base identity of an existing window subclass.",
     "description": "Concrete standalone wxEvtHandler wrapper and superclass of WINDOW. Standalone native objects are owned by the application session, explicitly destroyed or automatically freed at session cleanup, without a Lisp GC finalizer. Windows borrow their own native wxWindow base identity and retain window/parent lifetime. Neither case exposes an arbitrary GetEventHandler chain or permits user-supplied native handles.",
-    "scope": "Active main-thread GUI session required; otherwise NATIVE-ERROR, including after cleanup. Invalid/stale native handles signal NATIVE-ERROR except HANDLER-ALIVE-P, which returns NIL for destroyed/unknown IDs during an active session. Unsupported Lisp receivers use CLOS dispatch errors. Generic observer bindings cover four command-event kinds; arbitrary event types, pushed handler chains and native virtual overrides remain unbound.",
+    "scope": "Active main-thread GUI session required; otherwise NATIVE-ERROR, including after cleanup. Invalid/stale native handles signal NATIVE-ERROR except HANDLER-ALIVE-P, which returns NIL for destroyed/unknown IDs during an active session. Unsupported Lisp receivers use CLOS dispatch errors. Generic observer/contextual bindings cover built-ins and registered command/notify names, including on the borrowed application view. Arbitrary native classes, session-event routing, pushed handler chains and native virtual overrides remain unbound.",
     "wxwidgets": "wxEvtHandler constructor/destructor (wxWidgets 3.2.12 baseline); window identity uses wxWindow inheritance.",
     "syntax": "wxlambda:event-handler",
     "construction": {
@@ -725,7 +725,7 @@
     "arguments": "Keyword :CLASS is an EVENT-HANDLER subclass symbol or class object, default EVENT-HANDLER. Additional initargs are forwarded.",
     "returns": "A new owned standalone handler instance of CLASS.",
     "description": "Thin MAKE-INSTANCE factory. Rejects WINDOW subclasses and non-handler classes before construction; no parent or native-enabled initarg is provided.",
-    "scope": "Active main-thread GUI session required; otherwise NATIVE-ERROR, including after cleanup. Invalid/stale native handles signal NATIVE-ERROR except HANDLER-ALIVE-P, which returns NIL for destroyed/unknown IDs during an active session. Unsupported Lisp receivers use CLOS dispatch errors. Generic observer bindings cover four command-event kinds; arbitrary event types, pushed handler chains and native virtual overrides remain unbound.",
+    "scope": "Active main-thread GUI session required; otherwise NATIVE-ERROR, including after cleanup. Invalid/stale native handles signal NATIVE-ERROR except HANDLER-ALIVE-P, which returns NIL for destroyed/unknown IDs during an active session. Unsupported Lisp receivers use CLOS dispatch errors. Generic observer/contextual bindings cover built-ins and registered command/notify names, including on the borrowed application view. Arbitrary native classes, session-event routing, pushed handler chains and native virtual overrides remain unbound.",
     "wxwidgets": "wxEvtHandler::wxEvtHandler (wxWidgets 3.2.12 baseline)."
   },
   {
@@ -733,8 +733,8 @@
     "kind": "generic-function",
     "arguments": "HANDLER is an owned standalone EVENT-HANDLER.",
     "returns": "T after successful native deletion.",
-    "description": "Destroy an owned standalone native handler. Outside callbacks deletion is immediate; during callbacks identity becomes invalid immediately and deletion is queued on the application after the current native dispatch stack. Repeated destruction is an error. Window identities are borrowed and reject this operation; use DESTROY-WINDOW.",
-    "scope": "Active main-thread GUI session required; otherwise NATIVE-ERROR, including after cleanup. Invalid/stale native handles signal NATIVE-ERROR except HANDLER-ALIVE-P, which returns NIL for destroyed/unknown IDs during an active session. Unsupported Lisp receivers use CLOS dispatch errors. Generic observer bindings cover four command-event kinds; arbitrary event types, pushed handler chains and native virtual overrides remain unbound.",
+    "description": "Destroy an owned standalone native handler. Outside callbacks deletion is immediate; during callbacks identity becomes invalid immediately and deletion is queued on the application after the current native dispatch stack. Repeated destruction is an error. Window and application identities are borrowed and reject this operation; use DESTROY-WINDOW for windows. Only session cleanup destroys the application.",
+    "scope": "Active main-thread GUI session required; otherwise NATIVE-ERROR, including after cleanup. Invalid/stale native handles signal NATIVE-ERROR except HANDLER-ALIVE-P, which returns NIL for destroyed/unknown IDs during an active session. Unsupported Lisp receivers use CLOS dispatch errors. Generic observer/contextual bindings cover built-ins and registered command/notify names, including on the borrowed application view. Arbitrary native classes, session-event routing, pushed handler chains and native virtual overrides remain unbound.",
     "wxwidgets": "wxEvtHandler::~wxEvtHandler (wxWidgets 3.2.12 baseline), owned standalone handlers only."
   },
   {
@@ -743,7 +743,7 @@
     "arguments": "HANDLER is an EVENT-HANDLER or a WINDOW subclass.",
     "returns": "T if native identity exists and is not being deleted; NIL for stale/destroyed identity during an active session.",
     "description": "Observe native lifetime without dereferencing dead windows. Native weak tracking makes window destruction safe even with event processing disabled. A failed/uninitialized Lisp wrapper has no handle and signals NATIVE-ERROR. Session cleanup invalidates every identity; outside a session this query signals NATIVE-ERROR.",
-    "scope": "Active main-thread GUI session required; otherwise NATIVE-ERROR, including after cleanup. Invalid/stale native handles signal NATIVE-ERROR except HANDLER-ALIVE-P, which returns NIL for destroyed/unknown IDs during an active session. Unsupported Lisp receivers use CLOS dispatch errors. Generic observer bindings cover four command-event kinds; arbitrary event types, pushed handler chains and native virtual overrides remain unbound.",
+    "scope": "Active main-thread GUI session required; otherwise NATIVE-ERROR, including after cleanup. Invalid/stale native handles signal NATIVE-ERROR except HANDLER-ALIVE-P, which returns NIL for destroyed/unknown IDs during an active session. Unsupported Lisp receivers use CLOS dispatch errors. Generic observer/contextual bindings cover built-ins and registered command/notify names, including on the borrowed application view. Arbitrary native classes, session-event routing, pushed handler chains and native virtual overrides remain unbound.",
     "wxwidgets": "Bridge lifetime predicate using native registries and wxWeakRef<wxWindow>/IsBeingDeleted; no standalone public wxWeakRef wrapper."
   },
   {
@@ -751,8 +751,8 @@
     "kind": "generic-function",
     "arguments": "HANDLER is an EVENT-HANDLER or WINDOW subclass; SETF VALUE is a generalized boolean.",
     "returns": "T/NIL for the own native handler flag; SETF returns the supplied value.",
-    "description": "Read or write the native wxEvtHandler event-processing flag. Separate from window ENABLED-P/input state: disabled handlers can skip callbacks without greying the control. Native propagation rules still apply. Does not implement arbitrary pushed handlers or mutable event contexts.",
-    "scope": "Active main-thread GUI session required; otherwise NATIVE-ERROR, including after cleanup. Invalid/stale native handles signal NATIVE-ERROR except HANDLER-ALIVE-P, which returns NIL for destroyed/unknown IDs during an active session. Unsupported Lisp receivers use CLOS dispatch errors. Generic observer bindings cover four command-event kinds; arbitrary event types, pushed handler chains and native virtual overrides remain unbound.",
+    "description": "Read or write the native wxEvtHandler event-processing flag. Separate from window ENABLED-P/input state: disabled handlers can skip callbacks without greying the control. Native propagation rules still apply. Scoped contexts support Skip/propagation and checked close/notify veto; arbitrary pushed handlers remain unbound.",
+    "scope": "Active main-thread GUI session required; otherwise NATIVE-ERROR, including after cleanup. Invalid/stale native handles signal NATIVE-ERROR except HANDLER-ALIVE-P, which returns NIL for destroyed/unknown IDs during an active session. Unsupported Lisp receivers use CLOS dispatch errors. Generic observer/contextual bindings cover built-ins and registered command/notify names, including on the borrowed application view. Arbitrary native classes, session-event routing, pushed handler chains and native virtual overrides remain unbound. On APPLICATION-HANDLER this is the real wxApp flag; disabling can delay app-queued work and deferred disposal until restoration or cleanup.",
     "wxwidgets": "wxEvtHandler::GetEvtHandlerEnabled / SetEvtHandlerEnabled (wxWidgets 3.2.12 baseline).",
     "setf": {
       "syntax": "(setf (wxlambda:handler-enabled-p handler) value)",
@@ -765,7 +765,7 @@
     "arguments": "Opaque read-only structure returned by BIND-EVENT; no public constructor.",
     "returns": "An independent binding identity.",
     "description": "Keep the returned object to query or remove exactly this registration. A binding records its receiving Lisp object and kind but not the callback function; active callback roots are held by the session registry. Native registration is session-scoped.",
-    "scope": "Active main-thread GUI session required; otherwise NATIVE-ERROR. Stale/deleting receivers reject registration/queuing. Invalid event kinds, IDs and payload options signal Lisp errors; wrong receiver types use CLOS dispatch errors. Built-ins and registered command/notify types. Contexts support scoped Skip/propagation and close-veto access. Arbitrary native events, native control-specific notify subclasses/session families, userData, pushed handlers and worker-thread dispatch remain unbound.",
+    "scope": "Active main-thread GUI session required; otherwise NATIVE-ERROR. Stale/deleting receivers reject registration/queuing. Invalid event kinds, IDs and payload options signal Lisp errors; wrong receiver types use CLOS dispatch errors. Built-ins and registered command/notify types. Contexts support scoped Skip/propagation and checked close/notify veto. Arbitrary native events, native control-specific notify subclasses/session families, userData, pushed handlers and worker-thread dispatch remain unbound.",
     "wxwidgets": "Bridge identity for wxEvtHandler::Bind/Unbind (wxWidgets 3.2.12 baseline).",
     "syntax": "wxlambda:event-binding"
   },
@@ -782,11 +782,11 @@
   {
     "name": "bind-event",
     "kind": "generic-function",
-    "arguments": "HANDLER is an EVENT-HANDLER/window; KIND is :CLICK, :TEXT-CHANGE, :TOGGLE, :SELECTION or :CLOSE. FUNCTION takes one immutable EVENT. ID defaults NIL (any); LAST-ID defaults NIL (exact ID when ID is given). WITH-CONTEXT defaults NIL; when true FUNCTION takes (EVENT CONTEXT) instead of just EVENT.",
+    "arguments": "HANDLER is an EVENT-HANDLER/window; KIND is :CLICK, :TEXT-CHANGE, :TOGGLE, :SELECTION, :CLOSE or a registered command/notify name. FUNCTION takes one immutable EVENT. ID defaults NIL (any); LAST-ID defaults NIL (exact ID when ID is given). WITH-CONTEXT defaults NIL; when true FUNCTION takes (EVENT CONTEXT) instead of just EVENT.",
     "returns": "A new independent EVENT-BINDING.",
     "description": "Register an observer without replacing any existing generic or control-specific registration. Signed 32-bit IDs are supported except -1 (reserved as native wxID_ANY; use NIL). LAST-ID requires ID and an ordered inclusive range. Observer bindings automatically Skip; contextual bindings start unskipped and control native Skip explicitly; relative callback order follows wxWidgets and is not a Lisp API guarantee. Failed registration releases temporary roots. Contextual access is limited to the innermost callback and expires at return, including on errors.",
-    "scope": "Active main-thread GUI session required; otherwise NATIVE-ERROR. Stale/deleting receivers reject registration/queuing. Invalid event kinds, IDs and payload options signal Lisp errors; wrong receiver types use CLOS dispatch errors. Built-ins and registered command/notify types. Contexts support scoped Skip/propagation and close-veto access. Arbitrary native events, native control-specific notify subclasses/session families, userData, pushed handlers and worker-thread dispatch remain unbound.",
-    "wxwidgets": "wxEvtHandler::Bind member-method overload with a wxEvent base receiver; supported command and close tags, no userData."
+    "scope": "Active main-thread GUI session required; otherwise NATIVE-ERROR. Stale/deleting receivers reject registration/queuing. Invalid event kinds, IDs and payload options signal Lisp errors; wrong receiver types use CLOS dispatch errors. Built-ins and registered command/notify types. Contexts support scoped Skip/propagation and checked close/notify veto. Arbitrary native events, native control-specific notify subclasses/session families, userData, pushed handlers and worker-thread dispatch remain unbound.",
+    "wxwidgets": "wxEvtHandler::Bind member-method overload with a wxEvent base receiver; built-ins and registered command/notify tags, no userData."
   },
   {
     "name": "unbind-event",
@@ -794,7 +794,7 @@
     "arguments": "BINDING is an EVENT-BINDING.",
     "returns": "T if this active registration was removed; NIL if already unbound or receiver expired.",
     "description": "Remove exactly one registration, including from inside itself or another callback. The current callback may finish; later deliveries cannot invoke the removed function. Releases generic callback roots. A live native binding object is retained until an active callback returns.",
-    "scope": "Active main-thread GUI session required; otherwise NATIVE-ERROR. Stale/deleting receivers reject registration/queuing. Invalid event kinds, IDs and payload options signal Lisp errors; wrong receiver types use CLOS dispatch errors. Built-ins and registered command/notify types. Contexts support scoped Skip/propagation and close-veto access. Arbitrary native events, native control-specific notify subclasses/session families, userData, pushed handlers and worker-thread dispatch remain unbound.",
+    "scope": "Active main-thread GUI session required; otherwise NATIVE-ERROR. Stale/deleting receivers reject registration/queuing. Invalid event kinds, IDs and payload options signal Lisp errors; wrong receiver types use CLOS dispatch errors. Built-ins and registered command/notify types. Contexts support scoped Skip/propagation and checked close/notify veto. Arbitrary native events, native control-specific notify subclasses/session families, userData, pushed handlers and worker-thread dispatch remain unbound.",
     "wxwidgets": "wxEvtHandler::Unbind member-method overload, exact receiver/type/ID-range/native binding identity (wxWidgets 3.2.12 baseline)."
   },
   {
@@ -803,7 +803,7 @@
     "arguments": "BINDING is an EVENT-BINDING.",
     "returns": "T if still registered on a live receiver, NIL after unbinding or receiver destruction/requested disposal.",
     "description": "Query active-session registration and reap stale generic callback roots. Root pruning also runs at returned RUN/pump/notifying-setter boundaries and after explicit destruction. During a blocking RUN, native window closure may retain roots until a Lisp boundary or explicit unbinding. This does not change the control-specific callback-root contract.",
-    "scope": "Active main-thread GUI session required; otherwise NATIVE-ERROR. Stale/deleting receivers reject registration/queuing. Invalid event kinds, IDs and payload options signal Lisp errors; wrong receiver types use CLOS dispatch errors. Built-ins and registered command/notify types. Contexts support scoped Skip/propagation and close-veto access. Arbitrary native events, native control-specific notify subclasses/session families, userData, pushed handlers and worker-thread dispatch remain unbound.",
+    "scope": "Active main-thread GUI session required; otherwise NATIVE-ERROR. Stale/deleting receivers reject registration/queuing. Invalid event kinds, IDs and payload options signal Lisp errors; wrong receiver types use CLOS dispatch errors. Built-ins and registered command/notify types. Contexts support scoped Skip/propagation and checked close/notify veto. Arbitrary native events, native control-specific notify subclasses/session families, userData, pushed handlers and worker-thread dispatch remain unbound.",
     "wxwidgets": "Bridge registration/weak-lifetime predicate for wxEvtHandler bindings."
   },
   {
@@ -812,7 +812,7 @@
     "arguments": "HANDLER is live; KIND is a built-in keyword or registered name. ID defaults 0; TEXT defaults empty. CHECKED-P is toggle-only; SELECTION is NIL/nonnegative index for selection. CAN-VETO-P is close-only (default T). Registered types accept signed INTEGER (default 0) and copied TEXT; registered notify types accept initial VETOED-P (default NIL).",
     "returns": "The supplied handler.",
     "description": "Queue a copied synthetic event: wxCommandEvent for four command kinds, wxCloseEvent for :CLOSE. Ordinary control properties are not changed directly. A queued close on a frame may run its native default closing action; use CLOSE-WINDOW for a synchronous acceptance result. Explicit UTF-8 lengths preserve text. Close events take no command payload, may be vetoable or non-vetoable, and do not normally propagate to parents. Registry types create wxCommandEvent or wxNotifyEvent according to their declared family. Initial veto applies only to custom notify types. Queuing offers no final veto/handled result; use PROCESS-EVENT when a synchronous decision is required.",
-    "scope": "Active main-thread GUI session required; otherwise NATIVE-ERROR. Stale/deleting receivers reject registration/queuing. Invalid event kinds, IDs and payload options signal Lisp errors; wrong receiver types use CLOS dispatch errors. Built-ins and registered command/notify types. Contexts support scoped Skip/propagation and close-veto access. Arbitrary native events, native control-specific notify subclasses/session families, userData, pushed handlers and worker-thread dispatch remain unbound.",
+    "scope": "Active main-thread GUI session required; otherwise NATIVE-ERROR. Stale/deleting receivers reject registration/queuing. Invalid event kinds, IDs and payload options signal Lisp errors; wrong receiver types use CLOS dispatch errors. Built-ins and registered command/notify types. Contexts support scoped Skip/propagation and checked close/notify veto. Arbitrary native events, native control-specific notify subclasses/session families, userData, pushed handlers and worker-thread dispatch remain unbound.",
     "wxwidgets": "wxEvtHandler::QueueEvent; wxCommandEvent or wxCloseEvent construction, SetCanVeto at close-event creation only."
   },
   {
@@ -909,7 +909,7 @@
     "kind": "function",
     "arguments": "KIND is a built-in event keyword or a name registered in this active session.",
     "returns": "The corresponding process-local native wxEventType integer.",
-    "description": "Look up a process-local native type ID. Five built-in kinds plus registered command/notify names are supported. Registry names are session-scoped; saved snapshot native IDs remain plain data after cleanup. No arbitrary native event-class binding or borrowed application/session-event routing is provided.",
+    "description": "Look up a process-local native type ID. Five built-in kinds plus registered command/notify names are supported. Registry names are session-scoped; saved snapshot native IDs remain plain data after cleanup. Borrowed application handler access is supported; arbitrary native event-class binding and session-event routing remain unbound.",
     "scope": "Active main-thread session required; inactive calls signal NATIVE-ERROR before native-library lookup. Native IDs are process-local and may change between runs.",
     "wxwidgets": "wxEVT_BUTTON / wxEVT_TEXT / wxEVT_CHECKBOX / wxEVT_CHOICE / wxEVT_CLOSE_WINDOW; wxNewEventType for registered command/notify names (wxWidgets 3.2.12 baseline)."
   },
@@ -960,7 +960,7 @@
     "arguments": "NAME is a unique keyword not reserved by a built-in kind. FAMILY is :NOTIFY (default) or :COMMAND.",
     "returns": "The supplied NAME keyword.",
     "description": "Allocate a process-local native event type and map NAME in the active session. Duplicate names, built-ins and unsupported families are rejected before registration. Names cannot be unregistered or replaced during this session. Registrations are session-wide metadata, not rolled back when an unrelated resource initializer fails. Native type IDs are not stable across processes.",
-    "scope": "Active main-thread session required for registration/dispatch and scoped native access; inactive calls signal NATIVE-ERROR before FFI. Wrong receiver types use CLOS dispatch errors. Registry metadata lasts until session cleanup; snapshot data is immutable. No worker dispatch, wxApp session-event view or arbitrary native class construction is provided.",
+    "scope": "Active main-thread session required for registration/dispatch and scoped native access; inactive calls signal NATIVE-ERROR before FFI. Wrong receiver types use CLOS dispatch errors. Registry metadata lasts until session cleanup; snapshot data is immutable. Borrowed application dispatch is supported; no worker dispatch, session-event routing or arbitrary native class construction is provided.",
     "wxwidgets": "wxNewEventType; synthetic wxCommandEvent/wxNotifyEvent family registration (wxWidgets 3.2.12 baseline)."
   },
   {
@@ -969,7 +969,7 @@
     "arguments": "HANDLER is a live EVENT-HANDLER/window. KIND and keyword payloads match QUEUE-EVENT.",
     "returns": "Two values: native handled-p and final vetoed-p.",
     "description": "Synchronously dispatch a fresh owned synthetic event through ProcessEvent, copy final veto state and then delete the event. Observer callbacks may run while handled-p is NIL because they Skip; native consumption/default handling determines the first result. Final veto is independent of handled-p and may be true from initial VETOED-P even without a matching handler. Close dispatch can run frame defaults. Callback errors re-signal at the nearer Lisp boundary; handled nested errors do not stop RUN. No final values are returned when a condition escapes, and earlier callback mutations are not rolled back.",
-    "scope": "Active main-thread session required for registration/dispatch and scoped native access; inactive calls signal NATIVE-ERROR before FFI. Wrong receiver types use CLOS dispatch errors. Registry metadata lasts until session cleanup; snapshot data is immutable. No worker dispatch, wxApp session-event view or arbitrary native class construction is provided.",
+    "scope": "Active main-thread session required for registration/dispatch and scoped native access; inactive calls signal NATIVE-ERROR before FFI. Wrong receiver types use CLOS dispatch errors. Registry metadata lasts until session cleanup; snapshot data is immutable. Borrowed application dispatch is supported; no worker dispatch, session-event routing or arbitrary native class construction is provided.",
     "wxwidgets": "wxEvtHandler::ProcessEvent; wxCloseEvent::GetVeto or NOT wxNotifyEvent::IsAllowed after dispatch. (wxWidgets 3.2.12 baseline)."
   },
   {
@@ -981,5 +981,29 @@
     "scope": "No active native session required for saved snapshots. Wrong argument types signal Lisp type errors.",
     "wxwidgets": "wxCommandEvent::GetInt copied into a Lisp-owned snapshot. (wxWidgets 3.2.12 baseline).",
     "syntax": "(wxlambda:event-integer event)"
+  },
+  {
+    "name": "application-handler",
+    "kind": "class",
+    "syntax": "wxlambda:application-handler",
+    "arguments": "No public constructor; obtain the session view with CURRENT-APPLICATION-HANDLER.",
+    "returns": "An EVENT-HANDLER subclass representing the managed wxApp.",
+    "description": "Borrowed native identity with inherited binding, dispatch, liveness and enabled state. Direct construction and subclass construction are rejected; explicit destruction signals NATIVE-ERROR. Session cleanup owns the native wxApp.",
+    "scope": "One cached view in the active main-thread session. No native wxApp subclassing, replacement, session-family routing or ownership transfer. Saved views reject native access outside the session.",
+    "wxwidgets": "wxApp / wxAppConsole::GetInstance and wxTheApp, managed instance only (wxWidgets 3.2.12 baseline).",
+    "construction": {
+      "syntax": "(wxlambda:current-application-handler)",
+      "description": "Obtain the cached borrowed application view. Direct MAKE-INSTANCE, subclass construction and MAKE-EVENT-HANDLER construction are forbidden; only session cleanup owns native wxApp destruction."
+    }
+  },
+  {
+    "name": "current-application-handler",
+    "kind": "function",
+    "syntax": "(wxlambda:current-application-handler)",
+    "arguments": "None.",
+    "returns": "The EQ-identical APPLICATION-HANDLER view for the current session.",
+    "description": "Borrow the bridge application event handler without constructing or taking ownership of wxApp. Native main-thread/session validation runs on every lookup, including cached lookups.",
+    "scope": "Active main-thread session required; otherwise NATIVE-ERROR. One session per process. No external application adoption or session events.",
+    "wxwidgets": "wxAppConsole::GetInstance / wxTheApp, bridge-managed application only (wxWidgets 3.2.12 baseline)."
   }
 ]

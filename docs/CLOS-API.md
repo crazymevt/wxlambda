@@ -167,3 +167,5 @@ requests use the generic `close-window`; see [close-family scope](CLOSE-EVENTS.m
 `process-event` synchronously dispatches supported copied events and returns
 native handled/final-veto values. Registered custom families remain session-scoped
 metadata; see [notify type scope](NOTIFY-EVENTS.md).
+
+See the [borrowed application-handler view](APPLICATION-HANDLER.md) for managed wxApp identity, inherited dispatch and lifetime restrictions. Session-event routing remains unbound.

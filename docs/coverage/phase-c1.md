@@ -16,7 +16,7 @@ class or constructor does not imply full upstream coverage.
 
 ## Current coverage and remaining work
 
-3 implemented; 40 partial; 5249 pending; 26 context entries. Partial and pending entries remain open.
+3 implemented; 41 partial; 5248 pending; 26 context entries. Partial and pending entries remain open.
 
 Counts describe inventory entries, not distinct APIs or percent completion.
 See the [coverage summary](README.md) for phase/header comparisons.
@@ -94,9 +94,9 @@ See the [coverage summary](README.md) for phase/header comparisons.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h)
 
-0 implemented; 8 partial; 96 pending; 0 context entries. Partial and pending entries remain open.
+0 implemented; 9 partial; 95 pending; 0 context entries. Partial and pending entries remain open.
 
-- [~] [L39](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L39) `class wxAppConsole : public wxEvtHandler, public wxEventFilter {` — **Partial**: `call-with-application`, `run`, `stop`, `process-events`, `main-loop-running-p`, `pending-events-p`, `process-pending-events`; ABI: `wxl_start`, `wxl_run`, `wxl_stop`, `wxl_poll`, `wxl_main_loop_running`, `wxl_pending_events`, `wxl_process_pending_events`. Managed bridge application only: session lifetime, native main loop, polling, queued-event status/dispatch and callback/pump guards. No public application wrapper, application traits, arbitrary event loops, command-line hooks or native virtual overrides. Arbitrary event-handler binding and mutable events, pushed-handler ownership, filters, propagation, idle handlers, timers and worker dispatch remain open.
+- [~] [L39](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L39) `class wxAppConsole : public wxEvtHandler, public wxEventFilter {` — **Partial**: `call-with-application`, `run`, `stop`, `process-events`, `main-loop-running-p`, `pending-events-p`, `process-pending-events`, `application-handler`, `current-application-handler`; ABI: `wxl_start`, `wxl_run`, `wxl_stop`, `wxl_poll`, `wxl_main_loop_running`, `wxl_pending_events`, `wxl_process_pending_events`, `wxl_application_handler`. Managed bridge application only: session lifetime, native main loop, polling, queued-event status/dispatch and callback/pump guards. No constructible application wrapper, application traits, arbitrary event loops, command-line hooks or native virtual overrides. Arbitrary event-handler binding and mutable events, pushed-handler ownership, filters, propagation, idle handlers, timers and worker dispatch remain open. Borrowed managed application handler view supports inherited binding/dispatch/state; construction and explicit deletion reject. Session-family routing and native application subclass hooks remain open.
 - [ ] [L48](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L48) `virtual wxAppTraits* CreateTraits();`
 - [ ] [L55](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L55) `virtual ~wxAppConsole();`
 - [ ] [L72](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L72) `virtual int MainLoop();`
@@ -114,7 +114,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [ ] [L220](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L220) `bool IsScheduledForDestruction(wxObject *object) const;`
 - [~] [L237](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L237) `bool Yield(bool onlyIfNeeded = false);` — **Partial**: `process-events`; ABI: `wxl_poll`. Active bridge application only; onlyIfNeeded is fixed true and native boolean result is discarded. Dispatch is forbidden during RUN, pumps or native-to-Lisp callbacks; idle processing also runs.
 - [ ] [L248](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L248) `static void SetInstance(wxAppConsole* app);`
-- [ ] [L256](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L256) `static wxAppConsole* GetInstance();`
+- [~] [L256](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L256) `static wxAppConsole* GetInstance();` — **Partial**: `application-handler`, `current-application-handler`; ABI: `wxl_application_handler`. Borrow the active bridge-owned wxApp as one cached event-handler view. No external application adoption, native application replacement or inactive access.
 - [~] [L266](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L266) `static bool IsMainLoopRunning();` — **Partial**: `main-loop-running-p`; ABI: `wxl_main_loop_running`. Active bridge application only. Native main-loop state; false during standalone pumps and the cooperative application REPL.
 - [ ] [L295](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L295) `virtual void OnAssertFailure(const wxChar *file, int line, const wxChar *func, const wxChar *cond, const wxChar *msg);`
 - [ ] [L311](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L311) `virtual bool OnCmdLineError(wxCmdLineParser& parser);`
@@ -153,7 +153,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [ ] [L832](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L832) `documented event: EVT_DIALUP_CONNECTED(func)`
 - [ ] [L834](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L834) `documented event: EVT_DIALUP_DISCONNECTED(func)`
 - [ ] [L836](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L836) `documented event: EVT_IDLE(func)`
-- [~] [L845](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L845) `class wxApp : public wxAppConsole {` — **Partial**: `call-with-application`, `with-application`; ABI: `wxl_start`, `wxl_finish`. One managed GUI application per process on its main thread. Native initialization/cleanup only; application subclass hooks, traits, top-window APIs and remaining GUI-application interfaces are unbound. This is not a public CLOS application class.
+- [~] [L845](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L845) `class wxApp : public wxAppConsole {` — **Partial**: `call-with-application`, `with-application`, `application-handler`, `current-application-handler`; ABI: `wxl_start`, `wxl_finish`, `wxl_application_handler`. One managed GUI application per process on its main thread. Native initialization/cleanup only; application subclass hooks, traits, top-window APIs and remaining GUI-application interfaces are unbound. The CLOS APPLICATION-HANDLER is a borrowed event-handler view only. Borrowed managed application handler view supports inherited binding/dispatch/state; construction and explicit deletion reject. Session-family routing and native application subclass hooks remain open.
 - [ ] [L851](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L851) `wxApp();`
 - [ ] [L857](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L857) `virtual ~wxApp();`
 - [ ] [L863](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L863) `virtual wxVideoMode GetDisplayMode() const;`

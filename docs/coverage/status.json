@@ -1267,6 +1267,21 @@
         "wxl_process_event"
       ],
       "scope": "Copied synthetic text initialization for text-change or registered command/notify kinds. No mutable context string setter."
+    },
+    {
+      "header": "wx/app.h",
+      "line": 256,
+      "declaration": "static wxAppConsole* GetInstance();",
+      "status": "~",
+      "symbol": "wxAppConsole::GetInstance",
+      "lisp": [
+        "application-handler",
+        "current-application-handler"
+      ],
+      "native": [
+        "wxl_application_handler"
+      ],
+      "scope": "Borrow the active bridge-owned wxApp as one cached event-handler view. No external application adoption, native application replacement or inactive access."
     }
   ],
   "classes": {
@@ -1408,7 +1423,7 @@
         "wxl_gauge_vertical",
         "wxl_gauge_pulse"
       ],
-      "scope": "Parent-owned progress gauge: positive range, value, horizontal/vertical orientation and pulsing. Constructor options, two-step creation and full inherited API remain open. Gauge support introduced in ABI 10; current bridge ABI 16; see docs/GAUGE.md and tests/gauge.lisp."
+      "scope": "Parent-owned progress gauge: positive range, value, horizontal/vertical orientation and pulsing. Constructor options, two-step creation and full inherited API remain open. Gauge support introduced in ABI 10; current bridge ABI 17; see docs/GAUGE.md and tests/gauge.lisp."
     },
     "wxAppConsole": {
       "status": "~",
@@ -1419,7 +1434,9 @@
         "process-events",
         "main-loop-running-p",
         "pending-events-p",
-        "process-pending-events"
+        "process-pending-events",
+        "application-handler",
+        "current-application-handler"
       ],
       "native": [
         "wxl_start",
@@ -1428,21 +1445,25 @@
         "wxl_poll",
         "wxl_main_loop_running",
         "wxl_pending_events",
-        "wxl_process_pending_events"
+        "wxl_process_pending_events",
+        "wxl_application_handler"
       ],
-      "scope": "Managed bridge application only: session lifetime, native main loop, polling, queued-event status/dispatch and callback/pump guards. No public application wrapper, application traits, arbitrary event loops, command-line hooks or native virtual overrides. Arbitrary event-handler binding and mutable events, pushed-handler ownership, filters, propagation, idle handlers, timers and worker dispatch remain open."
+      "scope": "Managed bridge application only: session lifetime, native main loop, polling, queued-event status/dispatch and callback/pump guards. No constructible application wrapper, application traits, arbitrary event loops, command-line hooks or native virtual overrides. Arbitrary event-handler binding and mutable events, pushed-handler ownership, filters, propagation, idle handlers, timers and worker dispatch remain open. Borrowed managed application handler view supports inherited binding/dispatch/state; construction and explicit deletion reject. Session-family routing and native application subclass hooks remain open."
     },
     "wxApp": {
       "status": "~",
       "lisp": [
         "call-with-application",
-        "with-application"
+        "with-application",
+        "application-handler",
+        "current-application-handler"
       ],
       "native": [
         "wxl_start",
-        "wxl_finish"
+        "wxl_finish",
+        "wxl_application_handler"
       ],
-      "scope": "One managed GUI application per process on its main thread. Native initialization/cleanup only; application subclass hooks, traits, top-window APIs and remaining GUI-application interfaces are unbound. This is not a public CLOS application class."
+      "scope": "One managed GUI application per process on its main thread. Native initialization/cleanup only; application subclass hooks, traits, top-window APIs and remaining GUI-application interfaces are unbound. The CLOS APPLICATION-HANDLER is a borrowed event-handler view only. Borrowed managed application handler view supports inherited binding/dispatch/state; construction and explicit deletion reject. Session-family routing and native application subclass hooks remain open."
     },
     "wxEvtHandler": {
       "status": "~",

@@ -83,7 +83,7 @@ application with `(wxlambda:load-native-library #P"C:/path/to/wxlambda.dll")`.
 Dependent wxWidgets DLLs must also be discoverable by the OS loader.
 
 The bridge normally loads from `build/`, then falls back to the system library
-search path. The Lisp/native ABI version (currently 16) is checked on load; rebuild
+search path. The Lisp/native ABI version (currently 17) is checked on load; rebuild
 the bridge after updating the bindings. Installing the bridge with CMake does not
 install the ASDF system.
 
@@ -696,3 +696,5 @@ and groups remaining widgets and API declarations into coverage phases C1–C7.
 Hosted platform validation (including the configured Windows Lisp/GUI tests),
 packaging on additional platforms, and richer interactive development support
 remain open as described in the roadmap.
+
+The [borrowed application handler](docs/APPLICATION-HANDLER.md) supports application-level registered messages without transferring ownership of wxApp.

@@ -50,8 +50,8 @@ feature detection and clear unavailable-feature errors.
   arguments/receivers and remaining limits stated inline, and `[ ]` means pending.
   The class index uses `[~]` for the managed `wxAppConsole`/`wxApp` interfaces,
   `wxEvtHandler`, eight bound widgets, `wxBoxSizer`, `wxWindow` and `wxTopLevelWindow`; none has
-  complete class coverage. Applications have lifecycle functions, not public
-  application wrapper classes.
+  complete class coverage. Applications have lifecycle functions and a borrowed application-handler view;
+  native application construction and subclass hooks remain unbound.
   Constructors with fixed IDs/styles remain partial.
 - [status.json](coverage/status.json) is the persistent source of declaration and
   class statuses, Lisp exports, native ABI names and supported scopes. Exact
@@ -88,16 +88,16 @@ and queuing, and eight concrete widget kinds with a subset of inherited/layout/c
 C1 remains the active priority: event-handler ownership/state now has bounded
 support. Generic bindings, scoped Skip/propagation and copied native type IDs
 cover command and close kinds. Checked close veto is implemented; registered notify support is also implemented. Native notify subclasses,
-a borrowed application handler view and OS session routing remain next, then timer/idle and worker dispatch, with required value and lifetime
+the borrowed application handler view is implemented; OS session routing remains next, then timer/idle and worker dispatch, with required value and lifetime
 contracts first. C2 remains partial; C3–C7 have no public bindings recorded.
 See the [C1 details](coverage/phase-c1.md), [C2 details](coverage/phase-c2.md) and
 [class index](coverage/classes.md) for the remaining work within bound families.
 
-The current bridge is ABI 16, with 96 public Lisp exports. The latest code passes
-33 GUI scenarios on both local Apple Silicon macOS SBCL/CCL configurations and
+The current bridge is ABI 17, with 98 public Lisp exports. The latest code passes
+34 GUI scenarios on both local Apple Silicon macOS SBCL/CCL configurations and
 five packaging checks. These are local results retained under
-`evidence/notify-events/` and `evidence/packaging/notify-events-20261028/`;
-they do not validate Linux/Windows or the graphical Cadre viewer. The registered-notify
+`evidence/application-handler/` and `evidence/packaging/application-handler-20261028/`;
+they do not validate Linux/Windows or the graphical Cadre viewer. The borrowed-application-handler
 implementation reruns the GUI suites; documentation-only
 updates must distinguish retained results from newly run checks.
 
@@ -159,7 +159,8 @@ widget classes has complete wxWidgets coverage yet.
 - [x] `register-event-type` for unique session command/notify names, copied
   `event-integer`/text metadata, scoped notify Veto/Allow and `process-event`
   with native handled plus final-veto results. No unregister or type-declaration
-  rollback; session events need an application view. See [notify limits](NOTIFY-EVENTS.md).
+  rollback; session-event routing remains open. See [notify limits](NOTIFY-EVENTS.md).
+- [x] Borrowed `application-handler` identity via `current-application-handler`, with inherited binding/dispatch/state and rejected construction/destruction. Native application hooks and session routing remain open.
 - [x] Native errors translated to Lisp `native-error` conditions.
 - [x] Event snapshots: `event`, `event-p`, `event-kind`, `event-source`,
   `event-text`, `event-checked-p`, `event-selection` for four command kinds plus :close.

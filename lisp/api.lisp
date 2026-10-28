@@ -5,6 +5,18 @@
   (:report (lambda (condition stream) (write-string (native-error-message condition) stream))))
 
 (defclass event-handler () ((handle :initform nil :reader handle)))
+(defclass application-handler (event-handler) ()
+  (:documentation "Borrowed bridge application identity; obtain with CURRENT-APPLICATION-HANDLER."))
+(defvar *application-handler* nil)
+(defun current-application-handler ()
+  "Return the unique borrowed application handler for the active session."
+  (require-active-application)
+  (let ((id (%application-handler)))
+    (when (zerop id) (error 'native-error :message (%last-error)))
+    (or *application-handler*
+        (let ((view (allocate-instance (find-class 'application-handler))))
+          (setf (slot-value view 'handle) id
+                *application-handler* view)))))
 (defclass window (event-handler) ())
 (defmethod handle :around ((object event-handler))
   (let ((id (and (slot-boundp object 'handle) (call-next-method))))
@@ -116,7 +128,7 @@
 Run explicitly with RUN. Only one session per process is currently supported."
   (when *active* (error "An application session is already active"))
   (load-native-library)
-  (let ((*active* t) (*handlers* (make-hash-table)) (*event-bindings* (make-hash-table)) (*callback-error* nil)
+  (let ((*active* t) (*application-handler* nil) (*handlers* (make-hash-table)) (*event-bindings* (make-hash-table)) (*callback-error* nil)
         (*registered-event-types* (make-hash-table)) (*registered-event-kinds* (make-hash-table))
         (*registered-event-families* (make-hash-table)))
     (check-status (%start (cffi:callback dispatch-event)))
@@ -294,6 +306,8 @@ RETURN-TO-APPLICATION-REPL restart. Setup errors propagate to the caller."
 
 (defmethod initialize-instance :around ((object event-handler) &rest initargs)
   (declare (ignore initargs))
+  (when (typep object 'application-handler)
+    (error "APPLICATION-HANDLER is borrowed; use CURRENT-APPLICATION-HANDLER"))
   (when (and (typep object 'window)
              (/= 1 (count-if (lambda (kind) (typep object kind))
                          '(frame panel button text-control label checkbox choice gauge))))

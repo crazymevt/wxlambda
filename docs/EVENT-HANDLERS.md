@@ -81,13 +81,14 @@ cleanup but cannot be dereferenced. This is internal tracking, not a public
 All operations are restricted to the main-thread GUI session. Callback roots
 for the existing control-specific handlers still require explicit unbinding
 before window destruction, or they remain rooted until session cleanup.
-Standalone handlers and windows now support four command-event observer kinds,
+Standalone handlers, windows and the borrowed application view support built-in and registered command/notify observer kinds,
 ID filters, safe generic unbinding and copied synthetic queues; see
 [command-event bindings](EVENT-BINDINGS.md). Arbitrary event types, pushed/linked
-handler ownership, filters, notify/session event classes and general propagation, timer/idle handlers,
+handler ownership, filters, derived notify/session event classes, timer/idle handlers,
 worker dispatch and native virtual overrides remain open C1 work.
-[Scoped contexts](EVENT-CONTEXTS.md) now provide Skip/propagation for the four
-current command kinds without making saved snapshots mutable.
+[Scoped contexts](EVENT-CONTEXTS.md) provide Skip/propagation for supported
+built-in and registered kinds, plus checked close/notify veto, without making
+saved snapshots mutable.
 Immutable event snapshots retain their existing contract.
 
 ## Example and verification
@@ -117,7 +118,7 @@ python3 tools/docset.py build
 python3 tools/docset.py check
 ```
 
-Use the project quiet-command wrapper in agent sessions. Rebuild the ABI 16
+Use the project quiet-command wrapper in agent sessions. Rebuild the ABI 17
 bridge alongside the bindings. The GUI runner includes this scenario; broader
 platform and graphical Cadre verification remain separate. The API, this guide
 and example are included in the [Cadre docset](DOCSET.md), installable under
@@ -128,3 +129,5 @@ and real frame close requests; standalone handlers can receive synthetic close e
 
 Registered command/notify names and synchronous `process-event` extend the
 standalone/window interface; see [notify payload and dispatch scope](NOTIFY-EVENTS.md).
+
+See the [borrowed application-handler view](APPLICATION-HANDLER.md) for managed wxApp identity, inherited dispatch and lifetime restrictions. Session-event routing remains unbound.

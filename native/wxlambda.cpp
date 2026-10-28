@@ -35,6 +35,7 @@ struct RegisteredEvent { wxEventType type; int family; };
 std::unordered_map<int, RegisteredEvent> registered_events;
 int next_event_kind = 8;
 wxl_handle next_handle = 1;
+wxl_handle application_handle = 0;
 wxl_callback dispatch = nullptr;
 bool started = false, used = false, running = false, pumping = false;
 unsigned callback_depth = 0;
@@ -87,6 +88,7 @@ wxWindow* window(wxl_handle id) {
 wxEvtHandler* event_handler(wxl_handle id) {
     ready();
     require(!pending_destruction.count(id), "Handler destruction is pending");
+    if (id && id == application_handle) return wxTheApp;
     if (windows.find(id) != windows.end()) return window(id);
     const auto it = owned_handlers.find(id);
     require(it != owned_handlers.end(), "Invalid or destroyed event-handler handle");
@@ -283,7 +285,7 @@ wxString utf8(const char* value) {
 }
 }
 extern "C" {
-int wxl_abi_version() { return 16; }
+int wxl_abi_version() { return 17; }
 const char* wxl_last_error() { return error.c_str(); }
 int wxl_start(wxl_callback callback) {
     return status([&] {
@@ -304,6 +306,7 @@ int wxl_start(wxl_callback callback) {
             throw std::runtime_error("wxWidgets application initialization failed");
         }
         dispatch = callback;
+        application_handle = next_handle++;
         started = true;
     });
 }
@@ -351,10 +354,14 @@ int wxl_finish() {
         while (!wxTopLevelWindows.empty())
             delete wxTopLevelWindows.GetFirst()->GetData();
         owned_handlers.clear();
+        application_handle = 0;
         wxTheApp->OnExit();
         wxEntryCleanup();
         windows.clear(); handlers.clear(); pending_destruction.clear(); registered_events.clear(); dispatch = nullptr; started = false;
     });
+}
+wxl_handle wxl_application_handler() {
+    return create([] { return application_handle; });
 }
 wxl_handle wxl_event_handler() {
     return create([] {
@@ -367,6 +374,7 @@ wxl_handle wxl_event_handler() {
 int wxl_handler_alive(wxl_handle id) {
     return boolean_result([&] {
         ready();
+        if (id && id == application_handle) return true;
         if (pending_destruction.count(id)) return false;
         const auto it = windows.find(id);
         if (it != windows.end()) {
@@ -385,6 +393,7 @@ int wxl_set_handler_enabled(wxl_handle id, int enabled) {
 int wxl_handler_destroy(wxl_handle id) {
     return status([&] {
         ready();
+        require(id != application_handle, "Application event handler is borrowed and cannot be destroyed");
         require(windows.find(id) == windows.end(), "Window event handlers are borrowed; use destroy-window");
         const auto it = owned_handlers.find(id);
         require(it != owned_handlers.end(), "Invalid or destroyed event-handler handle");

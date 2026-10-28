@@ -2,7 +2,7 @@
 
 This C1 slice binds `wxNewEventType`, synthetic `wxCommandEvent`/`wxNotifyEvent`
 families and synchronous `wxEvtHandler::ProcessEvent`. The baseline is wxWidgets
-3.2.12 and the native bridge is ABI 16. It does not bind native control-specific
+3.2.12 and the native bridge is ABI 17. It does not bind native control-specific
 notify subclasses or OS session routing.
 
 ## Register a named native type
@@ -105,11 +105,10 @@ Worker-to-GUI dispatch is not supplied here.
 ## Session and remaining family prerequisites
 
 Native query/end-session events belong to `wxApp`, not a window handler. The
-default end-session action may exit the process. The current bridge has no
-public borrowed application handler view, so this slice deliberately does not
-register, bind or synthesize OS session tags. That application identity and
-lifetime contract is the next prerequisite for session routing and logging-off
-metadata. Tests do not emit real OS logout/shutdown events.
+default end-session action may exit the process. A borrowed application handler
+view is now available; this notify slice still does not register, bind or
+synthesize OS session tags. Session-family metadata and routing remain the next
+C1 work. Tests do not emit real OS logout/shutdown events.
 
 Native control-specific notify subclasses, arbitrary native class registration,
 userData, persistent event ownership/cloning, remaining native payload fields,
@@ -140,3 +139,5 @@ disposal, initializer rollback and nested error recovery while RUN continues.
 The API, guide and example are indexed in the [Cadre docset](DOCSET.md), installable
 under `$XDG_DATA_HOME/docsets/wxlambda/` (default `~/.local/share/docsets/wxlambda/`).
 Hosted GUI and graphical Cadre remain separate validation work.
+
+See the [borrowed application-handler view](APPLICATION-HANDLER.md) for managed wxApp identity, inherited dispatch and lifetime restrictions. Session-event routing remains unbound.
