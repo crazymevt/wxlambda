@@ -1,0 +1,56 @@
+# Project instructions
+
+## Implementation deliverables
+
+Every implementation change must include corresponding documentation, examples,
+and docset updates. Keep all three aligned with the implemented behavior and
+its supported scope; examples are required, not optional.
+
+The docset is the primary documentation deliverable. Use the format consumed by
+Cadre: the `docset` Common Lisp library's **format version 1**, specified in
+[docset/docs/format.md](https://github.com/crazymevt/docset/blob/481f57e7222925c3157e41a7e3deaeb628ecc9a7/docs/format.md).
+Build it in `docs/docset/` as three UTF-8 Lisp-data files: `manifest.sexp`,
+`index.sexp`, and `entries.sexp`. Use docset ID `wxlambda` and package
+`WXLAMBDA`, with a table of contents and indexed entries readable by Cadre.
+
+Include these three content groups together in that docset:
+
+- **Standard library reference content:** indexed entries for every implemented
+  public wxlambda export, including callable APIs, event types/accessors and
+  conditions. Document syntax, arguments, return values, behavior, errors and
+  supported scope as applicable; identify related wxWidgets APIs and versions.
+- **Project documentation:** installation, usage, development/debugging,
+  packaging guides and documented limitations.
+- **Project examples:** the example source code, explanations and commands to
+  run it, accessible from the docset's index and table of contents.
+
+Generate these as Cadre-readable entries, including code blocks for examples.
+Keep the standalone documentation and example sources available as well.
+
+Before marking implementation work complete, verify the documentation matches
+its public interfaces, run the relevant examples, and build and verify the
+docset includes all three content groups. Run `docset:check-docset` on the
+output and require zero reported problems; also verify public-export coverage,
+links, and Cadre discovery, symbol lookup and access to guides/examples.
+Document how to install it for Cadre (for example, under
+`$XDG_DATA_HOME/docsets/wxlambda/`, defaulting to
+`~/.local/share/docsets/wxlambda/`). Report the checks and any failures or checks
+not run; do not claim unfinished deliverables are complete.
+
+See `IMPLEMENTATION.md` and `docs/WXWIDGETS-COVERAGE.md` for the roadmap and
+binding completion criteria. Establish the pending docset build tooling first
+in Phase 7, before subsequent implementation work (including Phase 3 fixes and
+C1–C7 bindings), so required docset updates can be built and verified.
+
+## Shell output
+
+Always run noisy non-interactive shell commands (including installs, builds,
+tests, linters, and verbose batch jobs) through
+`/Users/jessie/.local/bin/quiet-run.sh -- <command> [args...]`.
+For shell pipelines or compound commands, wrap the entire operation with
+`/Users/jessie/.local/bin/quiet-run.sh -- bash -lc '<script>'`, quoting safely.
+Use the wrapper's status and log path; inspect only relevant excerpts of the
+full log when needed to diagnose failures or retrieve results. Preserve and
+respect the wrapped command's exit code.
+Short, targeted reads and interactive commands may run directly. If the wrapper
+is missing or unusable, report that and use bounded output as a fallback.

@@ -225,10 +225,19 @@ Focused generator/inventory verification (using the same extracted sources):
 ```
 
 Each phase closes only when its detailed inventory is reviewed and its required
-bindings have public Lisp exports, native/FFI mappings, documentation, examples
-where useful, and focused positive/error/lifetime/event checks. Platform-only
-work must be verified on its supported platform; local macOS success cannot
-close Linux/Windows work. Existing Phase 3 hosted checks remain pending.
+bindings have public Lisp exports, native/FFI mappings, matching documentation,
+required runnable examples, docset updates, and focused positive/error/lifetime/
+event checks. Follow the [project implementation rule](../AGENTS.md) for every
+implementation change: build the Cadre-format version 1 docset in `docs/docset/`
+(`manifest.sexp`, `index.sexp`, `entries.sexp`), containing the indexed reference
+for every implemented public wxlambda export, project guides and explained
+example sources together. Run the relevant examples, require zero problems from
+`docset:check-docset`, and verify export coverage, links and Cadre discovery,
+symbol lookup and guide/example navigation. The docset is the primary
+documentation deliverable. Its initial build tooling is the first prerequisite
+in implementation Phase 7, before subsequent implementation work. Platform-only work must be verified on its supported
+platform; local macOS success cannot close Linux/Windows work. Existing Phase 3
+hosted checks remain pending.
 
 To reproduce the baseline inventory, extract the pinned release's `interface/`
 directory and run through the project's shell-output wrapper:

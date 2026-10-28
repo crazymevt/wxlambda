@@ -6,6 +6,17 @@ coverage is inventoried in Phase 6; its implementation remains future work.
 This is a plan; unchecked steps are not claims of implemented or verified
 behavior.
 
+## Implementation rule: documentation, examples, and docset
+
+Every implementation change must include matching documentation, examples,
+and docset updates, as required by [AGENTS.md](AGENTS.md). The docset is the
+primary documentation deliverable: use Cadre's `docset` library format version 1
+(`manifest.sexp`, `index.sexp`, `entries.sexp`). Standard content means the
+indexed reference for every implemented public wxlambda export; include project
+guides and explained, runnable example sources in the same docset. Verify these
+deliverables alongside implementation; examples are required rather than optional.
+Docset tooling and its initial deliverable remain unchecked Phase 7 work below.
+
 ## Phase 1: Establish the release baseline
 
 - [x] Correct README coverage and CI counts to match the GUI runner.
@@ -241,14 +252,32 @@ The plan is complete; implementing its unchecked bindings remains future work.
 
 ## Phase 7: Prepare the release
 
+The docset build is a prerequisite for subsequent implementation work, including
+Phase 3 fixes and C1–C7 bindings, so their required docset updates can be built
+and verified. Establish it before starting those changes.
+
+- [ ] Establish a reproducible Cadre-format docset build and update workflow for
+  implementation changes, with documented build/check/install commands. Generate
+  format version 1 in `docs/docset/` with `manifest.sexp`, `index.sexp` and
+  `entries.sexp`, docset ID `wxlambda`, and package `WXLAMBDA`.
 - [ ] Review exports, documentation, examples, ABI compatibility, and limitations.
 - [ ] Run supported-platform and packaged-application checks.
 - [ ] Align ASDF and CMake release versions.
 - [ ] Prepare release notes and installation, development, debugging, and
   packaging instructions.
+- [ ] Produce the docset containing an indexed reference for every implemented
+  public wxlambda export, project guides/limitations, and example sources with
+  explanations and run commands, all accessible through its index and contents.
+- [ ] Require zero problems from `docset:check-docset`; verify public-export
+  coverage and links, run the included examples, and verify Cadre discovery,
+  symbol lookup and navigation to guides/examples using documented installation.
 
 **Acceptance:** A new user can follow the documented installation-to-packaging
-workflow.
+workflow. Documentation and runnable examples match the implemented interfaces;
+the built docset uses Cadre's format version 1 and includes the public wxlambda
+reference, project guides and example sources together. All three files are
+present; `docset:check-docset` reports zero problems; export coverage, links,
+example execution and Cadre discovery/lookup/navigation checks pass.
 
 ## Decisions
 
