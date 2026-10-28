@@ -15,10 +15,15 @@ extern "C" {
 #endif
 typedef uint64_t wxl_handle;
 enum wxl_alignment { WXL_ALIGN_START = 0, WXL_ALIGN_CENTER = 1, WXL_ALIGN_END = 2 };
-enum wxl_event_kind { WXL_EVENT_CLICK = 1, WXL_EVENT_TEXT_CHANGE = 2 };
-/* text is NULL for clicks, UTF-8 for text changes, and borrowed only until
-   this callback returns. Callbacks must never unwind across this boundary. */
-typedef void (*wxl_callback)(uint64_t token, int kind, const char *text);
+enum wxl_event_kind { WXL_EVENT_CLICK = 1, WXL_EVENT_TEXT_CHANGE = 2, WXL_EVENT_TOGGLE = 3 };
+typedef struct wxl_event {
+    int kind;
+    const char *text; /* UTF-8 for text changes; NULL otherwise. */
+    int checked;      /* Boolean snapshot for toggles; zero otherwise. */
+} wxl_event;
+/* The record and its text are borrowed only until this callback returns.
+   Callbacks must never unwind across this boundary. */
+typedef void (*wxl_callback)(uint64_t token, const wxl_event *event);
 WXL_API int wxl_abi_version(void);
 /* Error text is borrowed until the next bridge call on this thread. */
 WXL_API const char *wxl_last_error(void);
@@ -30,6 +35,17 @@ WXL_API wxl_handle wxl_frame(const char *title, int width, int height);
 WXL_API wxl_handle wxl_panel(wxl_handle parent);
 WXL_API wxl_handle wxl_button(wxl_handle parent, const char *label);
 WXL_API wxl_handle wxl_text(wxl_handle parent, const char *value);
+WXL_API wxl_handle wxl_label(wxl_handle parent, const char *label);
+WXL_API int wxl_set_label(wxl_handle label, const char *value);
+/* Borrowed until the next wxl_get_label on this thread; NULL indicates failure. */
+WXL_API const char *wxl_get_label(wxl_handle label);
+WXL_API wxl_handle wxl_checkbox(wxl_handle parent, const char *label, int checked);
+/* Returns 0/1 for unchecked/checked, or -1 on failure. */
+WXL_API int wxl_checked(wxl_handle checkbox);
+/* notify=0 is silent; nonzero synchronously emits a toggle event. */
+WXL_API int wxl_set_checked(wxl_handle checkbox, int checked, int notify);
+WXL_API int wxl_on_toggle(wxl_handle checkbox, uint64_t token);
+WXL_API int wxl_off_toggle(wxl_handle checkbox);
 WXL_API int wxl_column(wxl_handle parent);
 WXL_API int wxl_row(wxl_handle parent);
 /* Alignment is across the layout's minor axis. Non-start alignment requires

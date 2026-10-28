@@ -5,6 +5,11 @@
   (:unix "libwxlambda.so")
   (:windows "wxlambda.dll"))
 
+(cffi:defcstruct native-event
+  (kind :int)
+  (text :pointer)
+  (checked :int))
+
 (cffi:defcfun ("wxl_abi_version" %abi-version) :int)
 (cffi:defcfun ("wxl_last_error" %last-error) :string)
 (cffi:defcfun ("wxl_start" %start) :int (callback :pointer))
@@ -15,6 +20,15 @@
 (cffi:defcfun ("wxl_panel" %panel) :uint64 (parent :uint64))
 (cffi:defcfun ("wxl_button" %button) :uint64 (parent :uint64) (label (:string :encoding :utf-8)))
 (cffi:defcfun ("wxl_text" %text) :uint64 (parent :uint64) (value (:string :encoding :utf-8)))
+(cffi:defcfun ("wxl_label" %label) :uint64 (parent :uint64) (label (:string :encoding :utf-8)))
+(cffi:defcfun ("wxl_set_label" %set-label) :int (label :uint64) (value (:string :encoding :utf-8)))
+(cffi:defcfun ("wxl_get_label" %get-label) :pointer (label :uint64))
+(cffi:defcfun ("wxl_checkbox" %checkbox) :uint64
+  (parent :uint64) (label (:string :encoding :utf-8)) (checked :int))
+(cffi:defcfun ("wxl_checked" %checked) :int (checkbox :uint64))
+(cffi:defcfun ("wxl_set_checked" %set-checked) :int (checkbox :uint64) (checked :int) (notify :int))
+(cffi:defcfun ("wxl_on_toggle" %on-toggle) :int (checkbox :uint64) (token :uint64))
+(cffi:defcfun ("wxl_off_toggle" %off-toggle) :int (checkbox :uint64))
 (cffi:defcfun ("wxl_column" %column) :int (parent :uint64))
 (cffi:defcfun ("wxl_row" %row) :int (parent :uint64))
 (cffi:defcfun ("wxl_add" %add) :int
@@ -45,6 +59,6 @@
       (cond (path (cffi:load-foreign-library path))
             ((probe-file local) (cffi:load-foreign-library local))
             (t (cffi:use-foreign-library wxlambda-native)))
-      (unless (= 4 (%abi-version)) (error "Unsupported wxlambda native ABI"))
+      (unless (= 5 (%abi-version)) (error "Unsupported wxlambda native ABI"))
       (setf *native-loaded* t)))
   t)

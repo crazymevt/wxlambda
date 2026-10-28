@@ -12,11 +12,16 @@
 (defclass text-control (window)
   ((handler-token :initform nil :accessor handler-token)))
 
-(defstruct (event (:constructor %make-event (kind source text)))
+(defclass label (window) ())
+(defclass checkbox (window)
+  ((handler-token :initform nil :accessor handler-token)))
+
+(defstruct (event (:constructor %make-event (kind source text checked-p)))
   "A Lisp-owned snapshot. Slots are read-only; TEXT is an independent string."
   (kind nil :read-only t)
   (source nil :read-only t)
-  (text nil :read-only t))
+  (text nil :read-only t)
+  (checked-p nil :read-only t))
 
 (defstruct handler source function)
 (defvar *active* nil)
@@ -32,20 +37,23 @@
   (when (zerop id) (error 'native-error :message (%last-error)))
   (make-instance class :handle id))
 
-(cffi:defcallback dispatch-event :void ((token :uint64) (kind :int) (text :pointer))
+(cffi:defcallback dispatch-event :void ((token :uint64) (payload :pointer))
   ;; Copy borrowed payloads before user code, including reentrant native calls.
   ;; Unwinding through C++ is unsafe. Re-signal after the native call returns.
   (handler-case
       (unless *callback-error*
         (let ((handler (gethash token *handlers*)))
           (when handler
-            (let* ((event-kind (ecase kind (1 :click) (2 :text-change)))
-                   (value (when (= kind 2)
-                            (when (cffi:null-pointer-p text)
-                              (error "Missing text-change payload"))
-                            (cffi:foreign-string-to-lisp text :encoding :utf-8)))
-                   (event (%make-event event-kind (handler-source handler) value)))
-              (funcall (handler-function handler) event)))))
+            (when (cffi:null-pointer-p payload) (error "Missing event payload"))
+            (cffi:with-foreign-slots ((kind text checked) payload (:struct native-event))
+              (let* ((event-kind (ecase kind (1 :click) (2 :text-change) (3 :toggle)))
+                     (value (when (= kind 2)
+                              (when (cffi:null-pointer-p text)
+                                (error "Missing text-change payload"))
+                              (cffi:foreign-string-to-lisp text :encoding :utf-8)))
+                     (checked-p (and (= kind 3) (not (zerop checked))))
+                     (event (%make-event event-kind (handler-source handler) value checked-p)))
+                (funcall (handler-function handler) event))))))
     (error (condition)
       (unless *callback-error* (setf *callback-error* condition))
       ;; Notifying setters have a nearer Lisp boundary where their caller can
@@ -101,6 +109,26 @@ while native GUI code runs. The REPL blocks until FUNCTION returns."
   (wrap-window 'button (%button (handle parent) label)))
 (defun make-text (parent &key (value ""))
   (wrap-window 'text-control (%text (handle parent) value)))
+(defun make-label (parent &key (label ""))
+  "Create non-editable static text using wxWidgets label/mnemonic syntax."
+  (wrap-window 'label (%label (handle parent) label)))
+(defun set-label (label value)
+  "Set static LABEL's text. Call LAYOUT-WINDOW on its parent to reflow if needed."
+  (check-status (%set-label (handle label) value)) value)
+(defun get-label (label)
+  "Return an independent string containing static LABEL's raw text."
+  (let ((pointer (%get-label (handle label))))
+    (when (cffi:null-pointer-p pointer)
+      (error 'native-error :message (%last-error)))
+    (cffi:foreign-string-to-lisp pointer :encoding :utf-8)))
+(defun make-checkbox (parent &key (label "") checked)
+  "Create a two-state checkbox. CHECKED is a generalized boolean."
+  (wrap-window 'checkbox (%checkbox (handle parent) label (if checked 1 0))))
+(defun checked-p (checkbox)
+  "Return T or NIL for CHECKBOX's current state."
+  (let ((result (%checked (handle checkbox))))
+    (when (minusp result) (error 'native-error :message (%last-error)))
+    (not (zerop result))))
 (defun make-column (parent) (check-status (%column (handle parent))) parent)
 (defun make-row (parent) (check-status (%row (handle parent))) parent)
 (defun add-child (parent child &key (proportion 0) (border 8) (expand t) (align :start))
@@ -136,15 +164,24 @@ BORDER is nonnegative spacing on all four sides, in wxWidgets coordinates."
     (values width height)))
 (defun show-window (window) (check-status (%show (handle window))) window)
 (defun destroy-window (window) (check-status (%destroy (handle window))))
+(defun call-setter (function notify)
+  (let ((*in-notifying-setter* (or notify *in-notifying-setter*)))
+    (check-status (funcall function)))
+  ;; Restore the enclosing boundary before re-signaling. An unhandled error
+  ;; will reach the outer callback, which then requests the loop stop.
+  (check-callback-error))
+(defun set-checked (checkbox checked &key notify)
+  "Set a generalized boolean state silently, or emit a synchronous :TOGGLE event
+with :NOTIFY T. Return the requested state as T or NIL, even if a handler changes
+it again. Handler errors can be caught by this caller."
+  (call-setter (lambda () (%set-checked (handle checkbox) (if checked 1 0) (if notify 1 0)))
+               notify)
+  (not (null checked)))
 (defun set-text (control value &key notify)
   "Set CONTROL's text silently, or emit a text-change event when NOTIFY is true.
 Handlers may run synchronously. Their errors are re-signaled after the native
 setter returns, including when RUN has not yet been called."
-  (let ((*in-notifying-setter* (or notify *in-notifying-setter*)))
-    (check-status (%set-text (handle control) value (if notify 1 0))))
-  ;; Restore the enclosing boundary before re-signaling. An unhandled error
-  ;; will reach the outer callback, which then requests the loop stop.
-  (check-callback-error)
+  (call-setter (lambda () (%set-text (handle control) value (if notify 1 0))) notify)
   value)
 (defun get-text (control)
   "Return an independent Lisp string containing CONTROL's current text."
@@ -201,5 +238,13 @@ Replaces and releases the previous text handler. User edits and SET-TEXT with
   "Remove CONTROL's text-change handler and release its closure. Idempotent
 for a live text control; safe to call from inside the handler."
   (unregister-handler control #'%off-text-change))
+
+(defun on-toggle (checkbox function)
+  "Register FUNCTION taking one :TOGGLE event with an EVENT-CHECKED-P snapshot."
+  (register-handler checkbox function #'%on-toggle))
+(defun off-toggle (checkbox)
+  "Remove CHECKBOX's toggle handler and release its closure. Idempotent for a
+live checkbox, including when called from inside its handler."
+  (unregister-handler checkbox #'%off-toggle))
 
 (defun queue-click (button) (check-status (%click (handle button))))

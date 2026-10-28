@@ -15,6 +15,7 @@ public:
 };
 thread_local std::string error;
 thread_local std::string text_result;
+thread_local std::string label_result;
 std::unordered_map<wxl_handle, wxWindow*> windows;
 std::unordered_map<wxl_handle, uint64_t> handlers;
 wxl_handle next_handle = 1;
@@ -53,6 +54,13 @@ void make_box(wxl_handle id, int orientation) {
     require(parent->GetSizer() == nullptr, "Window already has a sizer");
     parent->SetSizer(new wxBoxSizer(orientation));
 }
+void emit_event(wxl_handle id, const wxl_event& event) {
+    const auto it = handlers.find(id);
+    if (it != handlers.end() && dispatch) {
+        const auto token = it->second;
+        dispatch(token, &event);
+    }
+}
 wxl_handle track(wxWindow* object) {
     const auto id = next_handle++;
     windows.emplace(id, object);
@@ -83,7 +91,7 @@ wxString utf8(const char* value) {
 }
 }
 extern "C" {
-int wxl_abi_version() { return 4; }
+int wxl_abi_version() { return 5; }
 const char* wxl_last_error() { return error.c_str(); }
 int wxl_start(wxl_callback callback) {
     return status([&] {
@@ -143,8 +151,7 @@ wxl_handle wxl_button(wxl_handle parent, const char* label) {
         auto* control = new wxButton(window(parent), wxID_ANY, utf8(label));
         auto id = track(control);
         control->Bind(wxEVT_BUTTON, [id](wxCommandEvent&) {
-            const auto it = handlers.find(id);
-            if (it != handlers.end() && dispatch) dispatch(it->second, WXL_EVENT_CLICK, nullptr);
+            emit_event(id, {WXL_EVENT_CLICK, nullptr, 0});
         });
         return id;
     });
@@ -160,11 +167,60 @@ wxl_handle wxl_text(wxl_handle parent, const char* value) {
                 // Both objects must survive reentrant callbacks and conversion.
                 const auto text = event.GetString();
                 const auto bytes = text.ToUTF8();
-                dispatch(token, WXL_EVENT_TEXT_CHANGE, bytes.data() ? bytes.data() : "");
+                const wxl_event payload{WXL_EVENT_TEXT_CHANGE, bytes.data() ? bytes.data() : "", 0};
+                dispatch(token, &payload);
             }
         });
         return id;
     });
+}
+wxl_handle wxl_label(wxl_handle parent, const char* label) {
+    return create([&] { return track(new wxStaticText(window(parent), wxID_ANY, utf8(label))); });
+}
+int wxl_set_label(wxl_handle id, const char* value) {
+    return status([&] { as<wxStaticText>(id)->SetLabel(utf8(value)); });
+}
+const char* wxl_get_label(wxl_handle id) {
+    const int result = status([&] {
+        const auto text = as<wxStaticText>(id)->GetLabel();
+        const auto bytes = text.ToUTF8();
+        label_result.assign(bytes.data() ? bytes.data() : "", bytes.length());
+    });
+    return result == 0 ? label_result.c_str() : nullptr;
+}
+wxl_handle wxl_checkbox(wxl_handle parent, const char* label, int checked) {
+    return create([&] {
+        auto* control = new wxCheckBox(window(parent), wxID_ANY, utf8(label));
+        control->SetValue(checked != 0);
+        const auto id = track(control);
+        control->Bind(wxEVT_CHECKBOX, [id](wxCommandEvent& event) {
+            emit_event(id, {WXL_EVENT_TOGGLE, nullptr, event.IsChecked() ? 1 : 0});
+        });
+        return id;
+    });
+}
+int wxl_checked(wxl_handle id) {
+    int checked = 0;
+    const int result = status([&] { checked = as<wxCheckBox>(id)->GetValue() ? 1 : 0; });
+    return result == 0 ? checked : -1;
+}
+int wxl_set_checked(wxl_handle id, int checked, int notify) {
+    return status([&] {
+        auto* control = as<wxCheckBox>(id);
+        control->SetValue(checked != 0);
+        if (notify) {
+            wxCommandEvent event(wxEVT_CHECKBOX, control->GetId());
+            event.SetEventObject(control);
+            event.SetInt(control->GetValue() ? 1 : 0);
+            control->GetEventHandler()->ProcessEvent(event);
+        }
+    });
+}
+int wxl_on_toggle(wxl_handle id, uint64_t token) {
+    return status([&] { as<wxCheckBox>(id); handlers[id] = token; });
+}
+int wxl_off_toggle(wxl_handle id) {
+    return status([&] { as<wxCheckBox>(id); handlers.erase(id); });
 }
 int wxl_column(wxl_handle parent) {
     return status([&] { make_box(parent, wxVERTICAL); });

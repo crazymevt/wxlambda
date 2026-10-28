@@ -4,9 +4,9 @@ Common Lisp bindings for wxWidgets, using CFFI and a small C++ bridge with a
 versioned C ABI. This is an application lifecycle prototype, not a complete
 wxWidgets binding.
 
-Implemented: application startup/shutdown, frames, panels, buttons, editable text
-controls, row/column layouts, spacers, text reading/writing, removable click and text-change
-handlers, copied event payloads, and programmatically queued clicks.
+Implemented: application startup/shutdown, frames, panels, buttons, editable text,
+static labels, two-state checkboxes, row/column layouts, spacers, text/state access,
+removable click/text/toggle handlers, copied event payloads, and queued clicks.
 Lisp objects wrap checked integer handles; native pointers never escape the bridge.
 
 ## Build
@@ -38,7 +38,7 @@ application with `(wxlambda:load-native-library #P"C:/path/to/wxlambda.dll")`.
 Dependent wxWidgets DLLs must also be discoverable by the OS loader.
 
 The bridge normally loads from `build/`, then falls back to the system library
-search path. The Lisp/native ABI version (currently 4) is checked on load; rebuild
+search path. The Lisp/native ABI version (currently 5) is checked on load; rebuild
 the bridge after updating the bindings. Installing the bridge with CMake does not
 install the ASDF system.
 
@@ -76,6 +76,50 @@ The basic API is:
       (lambda () (wxlambda:set-text text "Hello from Lisp!")))
     (wxlambda:show-window frame)
     (wxlambda:run)))
+```
+
+## Labels and checkboxes
+
+`make-label` creates non-editable static text. `get-label` returns an independent
+Lisp string and `set-label` updates it. These accessors take a label created by
+`make-label`; raw strings use wxWidgets' label/mnemonic syntax. After changing a
+label's preferred size, call `layout-window` on its parent to reflow the layout.
+
+`make-checkbox` creates a two-state checkbox, unchecked by default. `checked-p`
+returns `t` or `nil`. The `:checked` constructor keyword and `set-checked` accept
+generalized booleans: `nil` means unchecked, any other value means checked.
+`set-checked` returns the requested state normalized to `t` or `nil`; a handler
+may change the live state again before the setter returns.
+
+```lisp
+(let ((caption (wxlambda:make-label panel :label "Preferences"))
+      (box (wxlambda:make-checkbox panel :label "Include a greeting" :checked t)))
+  (wxlambda:add-child panel caption)
+  (wxlambda:add-child panel box :expand nil)
+  (wxlambda:on-toggle box
+    (lambda (event)
+      (wxlambda:set-label caption
+        (if (wxlambda:event-checked-p event) "Greeting enabled" "Greeting disabled"))
+      (wxlambda:layout-window panel)))
+  (wxlambda:set-checked box nil)            ; silent
+  (wxlambda:set-checked box t :notify t)    ; synchronous toggle event
+  (wxlambda:off-toggle box))
+```
+
+`on-toggle` takes a function accepting one event, with kind `:toggle`, the original
+checkbox as its source, and a boolean `event-checked-p` snapshot. Native user
+interaction emits events. `set-checked` is silent by default; `:notify t` emits one
+synchronous event, including when the value is unchanged. The snapshot survives
+nested changes to the control and later window destruction. Replacing a handler
+releases its registered closure; `off-toggle` releases it and is idempotent for a
+live checkbox, including from inside the handler. Setter errors follow the same
+recoverable boundary as text-change handlers.
+
+Run [examples/form.lisp](examples/form.lisp) for a form using labels, text input,
+a checkbox, and a submit button:
+
+```sh
+sbcl --load ~/quicklisp/setup.lisp --load examples/form.lisp
 ```
 
 ## Layout
@@ -149,11 +193,12 @@ Opt into an event argument with `:with-event t`:
 
 `event-p` recognizes event snapshots. Their read-only slots are exposed through:
 
-| Accessor | Click event | Text-change event |
-| --- | --- | --- |
-| `event-kind` | `:click` | `:text-change` |
-| `event-source` | Original button wrapper | Original text-control wrapper |
-| `event-text` | `nil` | Copied Lisp string, including `""` for empty text |
+| Accessor | Click event | Text-change event | Toggle event |
+| --- | --- | --- | --- |
+| `event-kind` | `:click` | `:text-change` | `:toggle` |
+| `event-source` | Original button | Original text control | Original checkbox |
+| `event-text` | `nil` | Copied string, including `""` for empty text | `nil` |
+| `event-checked-p` | `nil` | `nil` | Copied `t` or `nil` state |
 
 Text-change handlers always take one event argument. Typing into the native text
 field emits events. `set-text` stays silent by default to avoid update loops;
@@ -166,7 +211,7 @@ Event text is an independent Lisp string; callers can retain or modify their cop
 The source wrapper remains available, but native operations on it fail after its
 window is destroyed. Event slots do not expose any borrowed native pointers.
 
-Use `off-click` or `off-text-change` to release a handler. Registering again
+Use `off-click`, `off-text-change`, or `off-toggle` to release a handler. Registering again
 replaces and releases the previous closure. Both removals are idempotent for a
 live control of the correct type and may be called inside the handler itself.
 
@@ -185,13 +230,13 @@ live control of the correct type and may be called inside the handler itself.
   handles. Lisp wrapper objects may survive, but subsequent operations signal
   `native-error`. Destruction can be deferred by wxWidgets until event processing.
 - Click handlers take zero arguments by default, or one event with
-  `:with-event t`. Text-change handlers take one event. Handler replacement or
+  `:with-event t`. Text-change and toggle handlers take one event. Handler replacement or
   explicit unbinding releases the registered closure. Queued clicks use the
   handler present when they are dispatched, so unbinding suppresses queued clicks
   and rebinding redirects them to the new handler. Closures for destroyed controls
   remain rooted until session cleanup unless explicitly unbound before
   destruction. There are no GC-driven native destructors.
-- Errors in synchronous text-change callbacks are saved until the notifying
+- Errors in synchronous text-change or toggle callbacks are saved until the notifying
   setter returns to Lisp, then re-signaled so its caller can handle them without
   stopping the loop. Errors escaping the outer event callback request a loop stop
   and are re-signaled after the event loop returns. This also covers notifying
@@ -231,9 +276,11 @@ empty text payloads, nested updates, silent versus notifying setters, self-unbin
 and text-handler errors before and during the loop, including caught errors that
 must leave the loop running. Layout tests verify actual child geometry for rows,
 columns, proportional allocation, fixed/flexible spacing, borders, and alignment,
-plus invalid options and stale handles. Unicode rendering, manual mouse input,
-and keyboard-generated text events have not been visually verified
-by these tests; text events are triggered using the native notifying setter.
+plus invalid options and stale handles. Control tests cover label text copies,
+checked-state access, nested toggle snapshots, handler replacement/unbinding,
+and caught/uncaught toggle errors. Unicode rendering, manual mouse/keyboard input,
+and user-generated toggle events have not been visually verified; automated text
+and toggle events use notifying setters.
 
 Validated locally on Apple Silicon macOS with wxWidgets 3.2.12, SBCL 2.6.9, and
 CCL 1.13. Windows and Linux are intended targets but have not been tested.
@@ -245,8 +292,8 @@ The configured jobs are:
 
 | Runner | Native build | Lisp GUI tests |
 | --- | --- | --- |
-| Ubuntu 24.04 | Distribution wxWidgets 3.2, GCC | SBCL, nine scenarios under Xvfb |
-| macOS 15 | Homebrew wxWidgets 3.2, Clang | SBCL, nine scenarios |
+| Ubuntu 24.04 | Distribution wxWidgets 3.2, GCC | SBCL, thirteen scenarios under Xvfb |
+| macOS 15 | Homebrew wxWidgets 3.2, Clang | SBCL, thirteen scenarios |
 | Windows Server 2022 x64 | wxWidgets 3.2.12 from source, MSVC | Not configured yet |
 
 These are configured checks, not a claim that the hosted jobs have passed. No
