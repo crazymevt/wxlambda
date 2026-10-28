@@ -1,6 +1,6 @@
 (defpackage #:wxlambda
   (:use #:cl)
-  (:export #:load-native-library #:call-with-application #:with-application
+  (:export #:load-native-library #:call-with-application #:with-application #:with-repl-application #:process-events
            #:run #:stop #:make-frame #:make-panel #:make-button #:make-text
            #:make-column #:make-row #:add-child #:add-spacer #:add-stretch
            #:layout-window #:window-position #:window-size #:show-window #:destroy-window

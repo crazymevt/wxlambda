@@ -25,6 +25,7 @@
 
 (defstruct handler source function)
 (defvar *active* nil)
+(defvar *repl-running* nil)
 (defvar *handlers* nil)
 (defvar *callback-error* nil)
 (defvar *in-notifying-setter* nil)
@@ -99,9 +100,61 @@ while native GUI code runs. The REPL blocks until FUNCTION returns."
 
 (defun run ()
   "Block in the GUI event loop until the last frame closes or STOP is called."
+  (when *repl-running*
+    (error "RUN is unavailable inside the application REPL; events are already being processed"))
   (check-status (%run))
   (check-callback-error))
-(defun stop () (check-status (%stop)))
+(defun stop ()
+  "Leave RUN or the application REPL."
+  (if *repl-running* (setf *repl-running* nil) (check-status (%stop))))
+
+(defun process-events ()
+  "Process pending GUI events on the application thread without blocking."
+  (check-status (%poll))
+  (check-callback-error))
+
+(defun repl-input-ready-p (input)
+  "Skip available standard whitespace without waiting. Return READY-P, EOF-P."
+  (let ((eof (gensym "EOF")))
+    (loop for character = (read-char-no-hang input nil eof) do
+      (cond ((eq character eof) (return (values nil t)))
+            ((null character) (return (values nil nil)))
+            ((find character '(#\Space #\Tab #\Newline #\Return #\Page)))
+            (t (unread-char character input)
+               (return (values t nil)))))))
+
+(defun application-repl (input output)
+  (let ((*repl-running* t)
+        (eof (gensym "EOF")))
+    (loop while *repl-running* do
+      (handler-case
+          (progn
+            (process-events)
+            (unless *repl-running* (return))
+            (multiple-value-bind (ready-p eof-p) (repl-input-ready-p input)
+              (when eof-p (return))
+              (when ready-p
+                (let ((form (read input nil eof)))
+                  (when (eq form eof) (return))
+                  (dolist (value (multiple-value-list (eval form)))
+                    (prin1 value output)
+                    (terpri output))
+                  (finish-output output)))))
+        (error (condition)
+          (format output "~&~A~%" condition)
+          (finish-output output)))
+      (unless *repl-running* (return))
+      (sleep 0.01))))
+
+(defmacro with-repl-application ((&key (input '*standard-input*)
+                                     (output '*standard-output*)) &body body)
+  "Run BODY, then a cooperative terminal REPL in the same GUI session.
+Use STOP or EOF to leave. Live objects can be kept in special variables.
+Incomplete input, evaluation, and the debugger suspend event processing."
+  `(call-with-application
+    (lambda ()
+      ,@body
+      (application-repl ,input ,output))))
 (defun make-frame (&key (title "wxlambda") (width 480) (height 240))
   (wrap-window 'frame (%frame title width height)))
 (defun make-panel (parent) (wrap-window 'panel (%panel (handle parent))))

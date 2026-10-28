@@ -32,3 +32,11 @@ for mode in ("normal", "error-before-run", "error-in-loop", "error-handled-in-lo
     subprocess.run(command + ["--load", str(root / "tests/controls.lisp")],
                    cwd=root, env={**os.environ, "WXLAMBDA_CONTROL_TEST_MODE": mode},
                    check=True, timeout=30)
+
+print(f"Testing cooperative application REPL: {command[0]}", flush=True)
+subprocess.run(command + ["--load", str(root / "tests/repl.lisp")],
+               cwd=root, check=True, timeout=30)
+
+print(f"Testing application REPL EOF: {command[0]}", flush=True)
+subprocess.run(command + ["--load", str(root / "tests/repl-eof.lisp")],
+               cwd=root, check=True, timeout=30)

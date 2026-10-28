@@ -29,6 +29,8 @@ WXL_API int wxl_abi_version(void);
 WXL_API const char *wxl_last_error(void);
 WXL_API int wxl_start(wxl_callback callback);
 WXL_API int wxl_run(void);
+/* Process pending events without blocking; forbidden inside wxl_run. */
+WXL_API int wxl_poll(void);
 WXL_API int wxl_stop(void);
 WXL_API int wxl_finish(void);
 WXL_API wxl_handle wxl_frame(const char *title, int width, int height);

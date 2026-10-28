@@ -38,7 +38,7 @@ application with `(wxlambda:load-native-library #P"C:/path/to/wxlambda.dll")`.
 Dependent wxWidgets DLLs must also be discoverable by the OS loader.
 
 The bridge normally loads from `build/`, then falls back to the system library
-search path. The Lisp/native ABI version (currently 5) is checked on load; rebuild
+search path. The Lisp/native ABI version (currently 6) is checked on load; rebuild
 the bridge after updating the bindings. Installing the bridge with CMake does not
 install the ASDF system.
 
@@ -249,8 +249,38 @@ live control of the correct type and may be called inside the handler itself.
   until the next getter call on that thread and is copied immediately by Lisp.
   A null pointer reports failure; an empty string is a successful empty value.
   Strings containing embedded NUL characters are not supported by this interface.
-- One GUI session per process; no application restart, interactive REPL event-loop
-  integration, background-thread GUI scheduling, or virtual-method overrides yet.
+- One GUI session per process; no application restart, background-thread GUI
+  scheduling, or virtual-method overrides yet.
+
+## REPL development
+
+From a main-thread terminal Lisp REPL, initialize an application and enter its
+cooperative REPL (do not call `run` in the setup body):
+
+```lisp
+(defvar *frame*)
+(defvar *text*)
+(wxlambda:with-repl-application ()
+  (setf *frame* (wxlambda:make-frame :title "Live development")
+        *text* (wxlambda:make-text *frame* :value "Edit me"))
+  (wxlambda:show-window *frame*))
+```
+
+Then evaluate `(wxlambda:set-text *text* "Updated live")`, redefine functions
+used by callbacks, or replace handlers without closing the application. Evaluate
+`(wxlambda:stop)` or send EOF to leave and clean up. Closing the last window
+keeps this REPL available so you can create another frame in the same session.
+`run` signals an error inside this REPL because events are already being processed.
+Errors are printed and the application REPL continues. This small REPL prints
+all returned values; it does not provide the host REPL's history variables or
+editor integration. Optional `:input` and `:output` streams default to standard I/O.
+
+Events are pumped while waiting for input. Incomplete forms, long evaluations,
+and debugger stops pause GUI processing; call `process-events` explicitly during
+long interactive work when useful. The main-thread requirements above still
+apply. Editor REPLs such as SLIME and SLY are unsupported by this helper; use
+a terminal Lisp REPL. In particular, SBCL worker-thread startup is rejected. After leaving,
+start a fresh Lisp process for another session.
 
 The bridge catches native exceptions at exported operation boundaries and exposes
 error text through `wxl_last_error`. Its text is borrowed until the next bridge
@@ -333,6 +363,6 @@ pinned Babel revision emits a warning about `HANDLE-ERROR` in its Korean codec;
 the UTF-8 paths exercised by these tests pass on both local Lisps.
 
 Next milestones: hosted platform validation, Windows Lisp/GUI testing, more
-controls, standalone application packaging, and interactive
+controls, standalone application packaging, and richer interactive
 development support. Establish those contracts before generating larger binding
 coverage.

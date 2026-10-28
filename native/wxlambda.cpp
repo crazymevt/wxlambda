@@ -91,7 +91,7 @@ wxString utf8(const char* value) {
 }
 }
 extern "C" {
-int wxl_abi_version() { return 5; }
+int wxl_abi_version() { return 6; }
 const char* wxl_last_error() { return error.c_str(); }
 int wxl_start(wxl_callback callback) {
     return status([&] {
@@ -124,6 +124,14 @@ int wxl_run() {
         try { wxTheApp->OnRun(); }
         catch (...) { running = false; throw; }
         running = false;
+    });
+}
+int wxl_poll() {
+    return status([] {
+        ready();
+        require(!running, "Cannot poll inside the blocking event loop");
+        wxTheApp->Yield(true);
+        wxTheApp->ProcessIdle();
     });
 }
 int wxl_stop() { return status([] { ready(); require(running, "Event loop is not running"); wxTheApp->ExitMainLoop(); }); }
