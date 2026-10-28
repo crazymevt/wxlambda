@@ -81,8 +81,10 @@ is not required. Do not add setter aliases or receiver fallbacks solely for
 compatibility. Keep native handle/type checks and callback/lifetime protections.
 Application lifecycle functions, keyword-only factories, macros and the FFI can
 remain ordinary functions/macros. Event snapshots and binding identities remain
-immutable structures. Command callbacks currently observe and automatically Skip;
-mutable event access needs a separate scoped-lifetime design, not mutable snapshots.
+immutable structures. Default command callbacks observe and automatically Skip. Generic
+`:with-context t` bindings receive a borrowed event-context for explicit Skip and
+propagation control; it is valid only in its current innermost callback. Preserve
+that lifetime isolation and immutable snapshots when extending native event families.
 
 The native-backed `event-handler` base supports standalone session-owned handlers;
 windows borrow their existing native widget identity. Public window wrapper

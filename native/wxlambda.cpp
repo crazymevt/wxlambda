@@ -6,6 +6,7 @@
 #include <wx/weakref.h>
 #include <memory>
 #include <unordered_set>
+#include <vector>
 #include <algorithm>
 #include <stdexcept>
 #include <string>
@@ -37,6 +38,16 @@ struct CallbackScope {
     CallbackScope() { ++callback_depth; }
     ~CallbackScope() { --callback_depth; }
 };
+struct EventScope {
+    uint64_t token;
+    static uint64_t next;
+    struct Borrow { uint64_t token; wxEvent* event; unsigned depth; };
+    static std::vector<Borrow> stack;
+    explicit EventScope(wxEvent& event) : token(++next) { stack.push_back({token, &event, callback_depth + 1}); }
+    ~EventScope() { stack.pop_back(); }
+};
+uint64_t EventScope::next = 0;
+std::vector<EventScope::Borrow> EventScope::stack;
 struct PumpScope {
     PumpScope() { pumping = true; }
     ~PumpScope() { pumping = false; }
@@ -52,6 +63,13 @@ void main_thread() {
     require(wxIsMainThread(), "GUI calls must run on the main thread");
 }
 void ready() { main_thread(); require(started, "Application is not initialized"); }
+wxEvent& current_event(uint64_t token) {
+    ready();
+    require(token && !EventScope::stack.empty() && EventScope::stack.back().token == token
+            && EventScope::stack.back().depth == callback_depth,
+            "Event context is expired or is not the current callback");
+    return *EventScope::stack.back().event;
+}
 wxWindow* window(wxl_handle id) {
     ready();
     const auto it = windows.find(id);
@@ -114,6 +132,7 @@ struct Binding {
     wxl_handle source;
     uint64_t token;
     int kind, id, last_id;
+    bool with_context;
     bool live() const {
         auto* object = receiver.get();
         auto* widget = dynamic_cast<wxWindow*>(object);
@@ -127,13 +146,21 @@ struct Binding {
         if (live() && dispatch) {
             const auto text = event.GetString();
             const auto bytes = text.ToUTF8();
-            const wxl_event snapshot{kind, kind == WXL_EVENT_TEXT_CHANGE ? (bytes.data() ? bytes.data() : "") : nullptr,
+            wxl_event snapshot{kind, kind == WXL_EVENT_TEXT_CHANGE ? (bytes.data() ? bytes.data() : "") : nullptr,
                                      kind == WXL_EVENT_TOGGLE && event.IsChecked() ? 1 : 0,
                                      kind == WXL_EVENT_SELECTION ? event.GetSelection() : -1,
-                                     event.GetId(), kind == WXL_EVENT_TEXT_CHANGE ? bytes.length() : 0};
+                                     event.GetId(), kind == WXL_EVENT_TEXT_CHANGE ? bytes.length() : 0,
+                                     0, event.GetEventType()};
+            if (with_context) {
+                event.Skip(false);
+                EventScope scope(event);
+                snapshot.context = scope.token;
+                invoke_callback(token, snapshot);
+                return;
+            }
             invoke_callback(token, snapshot);
         }
-        // These bindings are observers; mutable Skip/veto contexts are future work.
+        // Observer bindings continue dispatch; contextual bindings decide explicitly.
         event.Skip();
     }
 };
@@ -197,7 +224,7 @@ wxString utf8(const char* value) {
 }
 }
 extern "C" {
-int wxl_abi_version() { return 13; }
+int wxl_abi_version() { return 14; }
 const char* wxl_last_error() { return error.c_str(); }
 int wxl_start(wxl_callback callback) {
     return status([&] {
@@ -311,16 +338,51 @@ int wxl_handler_destroy(wxl_handle id) {
         } else owned_handlers.erase(it);
     });
 }
-int wxl_bind(wxl_handle id, int kind, uint64_t token, int first, int last) {
+int wxl_command_event_type(int kind) {
+    int type = 0;
+    const int result = status([&] { ready(); type = command_type(kind); });
+    return result == 0 ? type : -1;
+}
+int wxl_context_active(uint64_t token) {
+    return boolean_result([&] {
+        ready();
+        return token && !EventScope::stack.empty() && EventScope::stack.back().token == token
+            && EventScope::stack.back().depth == callback_depth;
+    });
+}
+int wxl_context_skipped(uint64_t token) {
+    return boolean_result([&] { return current_event(token).GetSkipped(); });
+}
+int wxl_context_set_skipped(uint64_t token, int skip) {
+    return status([&] { current_event(token).Skip(skip != 0); });
+}
+int wxl_context_propagates(uint64_t token) {
+    return boolean_result([&] { return current_event(token).ShouldPropagate(); });
+}
+int wxl_context_stop_propagation(uint64_t token) {
+    int level = 0;
+    const int result = status([&] { level = current_event(token).StopPropagation(); });
+    return result == 0 ? level : -1;
+}
+int wxl_context_resume_propagation(uint64_t token, int level) {
+    return status([&] {
+        auto& event = current_event(token);
+        require(level >= 0, "Propagation level must be nonnegative");
+        event.ResumePropagation(level);
+    });
+}
+int wxl_bind(wxl_handle id, int kind, uint64_t token, int first, int last, int with_context) {
     return status([&] {
         auto* receiver = event_handler(id);
         const auto type = command_type(kind);
+        require(with_context == 0 || with_context == 1, "Invalid binding context mode");
         require(token && !bindings.count(token), "Invalid or duplicate binding token");
         require(last == wxID_ANY || (first != wxID_ANY && first <= last), "Invalid event ID range");
         auto binding = std::make_shared<Binding>();
         binding->receiver = receiver;
         binding->source = id; binding->token = token;
         binding->kind = kind; binding->id = first; binding->last_id = last;
+        binding->with_context = with_context != 0;
         bindings.emplace(token, binding);
         try { receiver->Bind(type, &Binding::on_event, binding.get(), first, last); }
         catch (...) { bindings.erase(token); throw; }
@@ -370,7 +432,7 @@ wxl_handle wxl_button(wxl_handle parent, const char* label) {
         auto* control = new wxButton(window(parent), wxID_ANY, utf8(label));
         auto id = track(control);
         control->Bind(wxEVT_BUTTON, [id](wxCommandEvent& event) {
-            emit_event(id, {WXL_EVENT_CLICK, nullptr, 0, -1, event.GetId(), 0});
+            emit_event(id, {WXL_EVENT_CLICK, nullptr, 0, -1, event.GetId(), 0, 0, event.GetEventType()});
             event.Skip();
         });
         return id;
@@ -387,7 +449,7 @@ wxl_handle wxl_text(wxl_handle parent, const char* value) {
                 // Both objects must survive reentrant callbacks and conversion.
                 const auto text = event.GetString();
                 const auto bytes = text.ToUTF8();
-                const wxl_event payload{WXL_EVENT_TEXT_CHANGE, bytes.data() ? bytes.data() : "", 0, -1, event.GetId(), bytes.length()};
+                const wxl_event payload{WXL_EVENT_TEXT_CHANGE, bytes.data() ? bytes.data() : "", 0, -1, event.GetId(), bytes.length(), 0, event.GetEventType()};
                 invoke_callback(token, payload);
             }
             event.Skip();
@@ -459,7 +521,7 @@ wxl_handle wxl_checkbox(wxl_handle parent, const char* label, int checked) {
         control->SetValue(checked != 0);
         const auto id = track(control);
         control->Bind(wxEVT_CHECKBOX, [id](wxCommandEvent& event) {
-            emit_event(id, {WXL_EVENT_TOGGLE, nullptr, event.IsChecked() ? 1 : 0, -1, event.GetId(), 0});
+            emit_event(id, {WXL_EVENT_TOGGLE, nullptr, event.IsChecked() ? 1 : 0, -1, event.GetId(), 0, 0, event.GetEventType()});
             event.Skip();
         });
         return id;
@@ -499,7 +561,7 @@ wxl_handle wxl_choice(wxl_handle parent, const char** items, int count, int sele
         control->SetSelection(selection);
         const auto id = track(control);
         control->Bind(wxEVT_CHOICE, [id](wxCommandEvent& event) {
-            emit_event(id, {WXL_EVENT_SELECTION, nullptr, 0, event.GetSelection(), event.GetId(), 0});
+            emit_event(id, {WXL_EVENT_SELECTION, nullptr, 0, event.GetSelection(), event.GetId(), 0, 0, event.GetEventType()});
             event.Skip();
         });
         return id;

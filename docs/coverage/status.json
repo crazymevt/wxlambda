@@ -888,7 +888,7 @@
       "native": [
         "wxl_bind"
       ],
-      "scope": "Independent observer bindings for four wxCommandEvent kinds, exact IDs/ranges and one immutable Lisp snapshot per matching binding. Automatic Skip, no userData. Arbitrary types, mutable event contexts and native-origin objects remain open."
+      "scope": "Independent observer bindings for four wxCommandEvent kinds, exact IDs/ranges and one immutable Lisp snapshot per matching binding. Observer Skip or optional two-argument scoped contextual callback controlling Skip/propagation. No userData, arbitrary event types or native-origin lookup."
     },
     {
       "header": "wx/event.h",
@@ -932,6 +932,92 @@
         "wxl_queue_event"
       ],
       "scope": "Copied ID in immutable snapshots for the four exposed command-event kinds and control-specific callbacks. No general wxEvent wrapper or arbitrary event classes."
+    },
+    {
+      "header": "wx/event.h",
+      "line": 148,
+      "declaration": "wxEventType GetEventType() const;",
+      "symbol": "wxEvent::GetEventType",
+      "status": "~",
+      "lisp": [
+        "event-native-type",
+        "command-event-type"
+      ],
+      "native": [
+        "wxl_command_event_type",
+        "wxl_bind"
+      ],
+      "scope": "Copied process-local type IDs for four exposed command kinds; no general native type registration or arbitrary event classes."
+    },
+    {
+      "header": "wx/event.h",
+      "line": 179,
+      "declaration": "bool GetSkipped() const;",
+      "symbol": "wxEvent::GetSkipped",
+      "status": "~",
+      "lisp": [
+        "event-skipped-p"
+      ],
+      "native": [
+        "wxl_context_skipped"
+      ],
+      "scope": "Scoped borrowed context from BIND-EVENT :WITH-CONTEXT T for four command kinds only; innermost callback validation, no stale/native pointer escape."
+    },
+    {
+      "header": "wx/event.h",
+      "line": 203,
+      "declaration": "void ResumePropagation(int propagationLevel);",
+      "symbol": "wxEvent::ResumePropagation",
+      "status": "~",
+      "lisp": [
+        "resume-event-propagation"
+      ],
+      "native": [
+        "wxl_context_resume_propagation"
+      ],
+      "scope": "Restore nonnegative signed-32-bit propagation level during the current contextual callback only; does not change Skip."
+    },
+    {
+      "header": "wx/event.h",
+      "line": 229,
+      "declaration": "bool ShouldPropagate() const;",
+      "symbol": "wxEvent::ShouldPropagate",
+      "status": "~",
+      "lisp": [
+        "event-propagates-p"
+      ],
+      "native": [
+        "wxl_context_propagates"
+      ],
+      "scope": "Current scoped context query, independent of Skip; arbitrary event families remain unbound."
+    },
+    {
+      "header": "wx/event.h",
+      "line": 245,
+      "declaration": "void Skip(bool skip = true);",
+      "symbol": "wxEvent::Skip",
+      "status": "~",
+      "lisp": [
+        "(setf event-skipped-p)"
+      ],
+      "native": [
+        "wxl_context_set_skipped"
+      ],
+      "scope": "Canonical generalized-boolean writer on current contextual command events. Contextual bindings default to consume; observer bindings still automatically Skip."
+    },
+    {
+      "header": "wx/event.h",
+      "line": 253,
+      "declaration": "int StopPropagation();",
+      "symbol": "wxEvent::StopPropagation",
+      "status": "~",
+      "lisp": [
+        "stop-event-propagation"
+      ],
+      "native": [
+        "wxl_context_stop_propagation"
+      ],
+      "scope": "Current callback scope only. Returns previous level for restoration; no mutable access through saved snapshots."
     }
   ],
   "classes": {
@@ -1071,7 +1157,7 @@
         "wxl_gauge_vertical",
         "wxl_gauge_pulse"
       ],
-      "scope": "Parent-owned progress gauge: positive range, value, horizontal/vertical orientation and pulsing. Constructor options, two-step creation and full inherited API remain open. Gauge support introduced in ABI 10; current bridge ABI 13; see docs/GAUGE.md and tests/gauge.lisp."
+      "scope": "Parent-owned progress gauge: positive range, value, horizontal/vertical orientation and pulsing. Constructor options, two-step creation and full inherited API remain open. Gauge support introduced in ABI 10; current bridge ABI 14; see docs/GAUGE.md and tests/gauge.lisp."
     },
     "wxAppConsole": {
       "status": "~",
@@ -1132,7 +1218,30 @@
         "wxl_binding_active",
         "wxl_queue_event"
       ],
-      "scope": "Owned/borrowed handler identities and four-kind command observer bindings with exact IDs/ranges, safe unbinding, copied queue payloads and weak invalidation. Callback-time receiver disposal is deferred; generic roots are reaped at Lisp boundaries. Arbitrary event types/userData, mutable Skip/veto/propagation, pushed chains and worker dispatch remain open. See docs/EVENT-BINDINGS.md."
+      "scope": "Owned/borrowed handler identities and four-kind command observer bindings with exact IDs/ranges, safe unbinding, copied queue payloads and weak invalidation. Callback-time receiver disposal is deferred; generic roots are reaped at Lisp boundaries. Optional contextual callbacks now control Skip/propagation for four kinds. Arbitrary event types/userData, veto-capable classes, pushed chains and worker dispatch remain open. See docs/EVENT-CONTEXTS.md."
+    },
+    "wxEvent": {
+      "status": "~",
+      "lisp": [
+        "event",
+        "event-context",
+        "event-context-active-p",
+        "event-native-type",
+        "event-skipped-p",
+        "event-propagates-p",
+        "stop-event-propagation",
+        "resume-event-propagation"
+      ],
+      "native": [
+        "wxl_bind",
+        "wxl_context_active",
+        "wxl_context_skipped",
+        "wxl_context_set_skipped",
+        "wxl_context_propagates",
+        "wxl_context_stop_propagation",
+        "wxl_context_resume_propagation"
+      ],
+      "scope": "Immutable four-command snapshots plus borrowed current-callback contexts for Skip and propagation control. Private monotonic tokens and callback-depth checks reject stale/nested outer access. Native construction/cloning, mutable IDs/type/origin, timestamps/userData, veto and arbitrary event families remain open. See docs/EVENT-CONTEXTS.md."
     }
   }
 }

@@ -3,8 +3,9 @@
 This C1 slice adds independent observer bindings on standalone `event-handler`
 objects and borrowed window identities. It covers `:click` (`wxEVT_BUTTON`),
 `:text-change` (`wxEVT_TEXT`), `:toggle` (`wxEVT_CHECKBOX`) and `:selection`
-(`wxEVT_CHOICE`), using the wxWidgets 3.2.12 baseline. The bridge is ABI 13.
-Arbitrary native event types and mutable event contexts remain open work.
+(`wxEVT_CHOICE`), using the wxWidgets 3.2.12 baseline. The bridge is ABI 14.
+Optional [scoped contexts](EVENT-CONTEXTS.md) now support Skip/propagation;
+arbitrary native event families and veto remain open work.
 
 ## Register and remove independent observers
 
@@ -46,17 +47,20 @@ is provided, including for bindings added during dispatch.
 
 ## Observer and source semantics
 
-Each callback takes one immutable `event` snapshot. Generic bindings and the
+Each observer callback takes one immutable `event` snapshot. With
+`:with-context t`, a generic callback instead receives `(snapshot context)` and
+starts unskipped; it must explicitly set Skip to continue routing. Generic bindings and the
 control-specific `on-click`, `on-text-change`, `on-toggle` and `on-selection`
-callbacks are observers: their native hooks call `Skip` after delivery, including
+callbacks are observers by default: their native hooks call `Skip` after delivery, including
 when no control-specific callback is installed. Remaining matching native
 handlers and normal command-parent routing can therefore continue. The
 control-specific APIs still provide one replacement slot per control; generic
 registrations coexist independently and are removed with `unbind-event`.
 
-This automatic observer policy does not expose mutable `Skip`, veto, consumption,
-propagation-level control or native virtual overrides. Those APIs remain missing;
-do not infer full wxEvent/propagation coverage from ordinary command routing.
+The default observer policy is unchanged. Contextual bindings can now consume
+commands and control Skip/propagation levels through borrowed, callback-scoped
+access. Veto, arbitrary event families and native virtual overrides remain
+missing; do not infer full wxEvent coverage from these command APIs.
 `handler-enabled-p` still controls only the receiving handler's own processing.
 
 `event-source` is the **Lisp receiver on which that callback was registered**.

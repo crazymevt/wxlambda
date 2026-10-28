@@ -11,7 +11,9 @@
   (checked :int)
   (selection :int)
   (id :int)
-  (text-length :size))
+  (text-length :size)
+  (context :uint64)
+  (native-type :int))
 
 (cffi:defcfun ("wxl_abi_version" %abi-version) :int)
 (cffi:defcfun ("wxl_last_error" %last-error) :string)
@@ -78,7 +80,7 @@
           (if (probe-file local)
               (cffi:load-foreign-library local)
               (cffi:use-foreign-library wxlambda-native))))
-    (unless (= 13 (%abi-version)) (error "Unsupported wxlambda native ABI"))
+    (unless (= 14 (%abi-version)) (error "Unsupported wxlambda native ABI"))
     (setf *native-loaded* t))
   t)
 
@@ -102,7 +104,15 @@
 (cffi:defcfun ("wxl_set_handler_enabled" %set-handler-enabled) :int (handler :uint64) (enabled :int))
 (cffi:defcfun ("wxl_handler_destroy" %handler-destroy) :int (handler :uint64))
 
-(cffi:defcfun ("wxl_bind" %bind) :int (handler :uint64) (kind :int) (token :uint64) (id :int) (last-id :int))
+(cffi:defcfun ("wxl_bind" %bind) :int (handler :uint64) (kind :int) (token :uint64) (id :int) (last-id :int) (with-context :int))
 (cffi:defcfun ("wxl_unbind" %unbind) :int (token :uint64))
 (cffi:defcfun ("wxl_binding_active" %binding-active) :int (token :uint64))
 (cffi:defcfun ("wxl_queue_event" %queue-event) :int (handler :uint64) (kind :int) (id :int) (text :pointer) (length :size) (value :int))
+
+(cffi:defcfun ("wxl_command_event_type" %command-event-type) :int (kind :int))
+(cffi:defcfun ("wxl_context_active" %context-active) :int (context :uint64))
+(cffi:defcfun ("wxl_context_skipped" %context-skipped) :int (context :uint64))
+(cffi:defcfun ("wxl_context_set_skipped" %context-set-skipped) :int (context :uint64) (skip :int))
+(cffi:defcfun ("wxl_context_propagates" %context-propagates) :int (context :uint64))
+(cffi:defcfun ("wxl_context_stop_propagation" %context-stop-propagation) :int (context :uint64))
+(cffi:defcfun ("wxl_context_resume_propagation" %context-resume-propagation) :int (context :uint64) (level :int))

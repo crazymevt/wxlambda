@@ -24,6 +24,8 @@ typedef struct wxl_event {
     int selection;    /* Zero-based index, -1 for none; kind 4 only. */
     int id;
     size_t text_length; /* Explicit UTF-8 bytes, kind 2 only. */
+    uint64_t context; /* Scoped opaque token, zero for observers. */
+    int native_type;
 } wxl_event;
 /* The record and its text are borrowed only until this callback returns.
    Callbacks must never unwind across this boundary. */
@@ -52,8 +54,18 @@ WXL_API int wxl_set_handler_enabled(wxl_handle handler, int enabled);
 WXL_API int wxl_handler_destroy(wxl_handle handler);
 /* Independent observer bindings for the four command-event kinds. Bind/queue
    return 0 or -1. Unbind/active return 0/1 or -1. Filters use -1 for wxID_ANY.
-   All observer callbacks Skip; native callback order is not guaranteed here. */
-WXL_API int wxl_bind(wxl_handle handler, int kind, uint64_t token, int first_id, int last_id);
+   Observer callbacks Skip; contextual callbacks control Skip. Native callback
+   order is not guaranteed here. */
+WXL_API int wxl_bind(wxl_handle handler, int kind, uint64_t token, int first_id, int last_id, int with_context);
+/* Contexts refer only to their currently executing innermost native callback; no raw event pointer
+   escapes. Queries use 0/1/-1, stop returns the old level or -1, writers 0/-1. */
+WXL_API int wxl_command_event_type(int kind);
+WXL_API int wxl_context_active(uint64_t context);
+WXL_API int wxl_context_skipped(uint64_t context);
+WXL_API int wxl_context_set_skipped(uint64_t context, int skip);
+WXL_API int wxl_context_propagates(uint64_t context);
+WXL_API int wxl_context_stop_propagation(uint64_t context);
+WXL_API int wxl_context_resume_propagation(uint64_t context, int level);
 WXL_API int wxl_unbind(uint64_t token);
 WXL_API int wxl_binding_active(uint64_t token);
 WXL_API int wxl_queue_event(wxl_handle handler, int kind, int id, const char *text, size_t length, int value);

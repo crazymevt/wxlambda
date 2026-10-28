@@ -31,15 +31,17 @@ must reconcile additional documented public interfaces beyond those headers.
 - Command-observer binding milestone: independent registrations, ID/range filters,
   copied standalone queues, self/peer unbinding and deferred callback-time disposal.
   Four command kinds only; see the latest commit and the binding section below.
-- Current bridge ABI: 13. Public API: 80 exports, nine window wrapper classes
-  (eight concrete widget kinds) plus the event-handler base, 46 named generics and
-  eleven generic SETF writers. No public application wrapper, arbitrary-event
-  binding or mutable event context exists yet; four command observer
-  kinds have independent generic bindings.
-- Latest implementation verification: 30 GUI scenarios and native preflight
+- Scoped-event milestone: optional current-callback contexts control native Skip
+  and propagation, with nested-callback isolation and copied native type IDs.
+  Four command kinds only; veto-capable classes and broader families remain open.
+- Current bridge ABI: 14. Public API: 89 exports, nine window wrapper classes
+  (eight concrete widget kinds) plus the event-handler base, 51 named generics and
+  twelve generic SETF writers. No public application wrapper or arbitrary-event
+  binding exists yet; four command kinds have independent observer/contextual bindings.
+- Latest implementation verification: 31 GUI scenarios and native preflight
   pass on local Apple Silicon macOS SBCL 2.6.9 and CCL 1.13. Final reports:
-  `evidence/event-bindings/{sbcl,ccl}-observers-20261028/`. Five package checks
-  pass in `evidence/packaging/event-bindings-reviewed-20261028/`.
+  `evidence/event-contexts/{sbcl,ccl}-20261028/`. Five package checks
+  pass in `evidence/packaging/event-contexts-20261028/`.
   Hosted Linux/Windows GUI behavior and the graphical Cadre viewer remain open.
 
 ### Next dependency and working order
@@ -52,12 +54,14 @@ must reconcile additional documented public interfaces beyond those headers.
    ownership; standalone dispatch supports four command-event observer kinds.
    Preserve native-backed subclass
    initargs, defaults, AFTER hooks and mixed-resource rollback.
-3. Generic binding/unbinding now supports four command observer kinds and ID
-   filters. Next establish native event class/type representation and a separate
-   scoped, borrowed mutable event context for Skip/propagation/veto before adding
-   dependent event families. Preserve immutable snapshots and opaque binding
-   identities; do not expose a native event pointer after callback return.
-   Arbitrary native event types/userData and linked/pushed handlers remain gaps.
+3. Generic binding/unbinding supports four command kinds and ID filters. Optional
+   borrowed contexts now control Skip/propagation in the innermost callback; saved
+   snapshots carry process-local native type IDs. Next extend native event-family
+   representation/registration and bind veto-capable classes with appropriate
+   payload and lifetime checks before dependent families. Preserve immutable
+   snapshots and opaque binding/context identities; never expose a native event
+   pointer after callback return. Arbitrary native events/userData, veto and
+   linked/pushed handlers remain gaps.
 4. Build timer/idle, event propagation/skip/veto and worker-to-GUI dispatch on
    those contracts, adding prerequisite value types before their consumers.
    Existing immutable event snapshots do not provide mutable native event access
@@ -708,6 +712,54 @@ isolation, relocation, REPL and missing-library checks, recorded in
 `evidence/packaging/event-bindings-reviewed-20261028/`. Next establish native
 event class/type representation and separate scoped mutable event contexts before
 dependent event families. This does not complete wxEvtHandler or C1 coverage.
+
+## C1 foundation: scoped native event contexts
+
+- [x] Add `event-context` values for `bind-event :with-context t`; contextual
+  callbacks receive `(snapshot context)` and explicitly control native Skip.
+- [x] Add generic `event-skipped-p` with canonical SETF, `event-propagates-p`,
+  stop/resume propagation actions and `event-context-active-p`.
+- [x] Guard native event borrowing with monotonically allocated tokens, native
+  callback depth and an RAII scope stack. Nested contextual, observer and
+  control-specific callbacks cannot use a suspended outer context; it becomes
+  usable again when they return. Expired readers/writers reject native access.
+- [x] Copy native event type integers into immutable snapshots, with lookup for
+  four existing command tags; add guides, runnable example and C1 coverage.
+
+Native ABI 14 extends snapshot metadata and the binding mode. Observer mode
+keeps automatic Skip; contextual mode starts unskipped and consumes unless the
+callback sets Skip true. Propagation level is separate from Skip. Unbinding or
+deferred disposal does not invalidate a context before its current callback
+returns; errors expire it on return without rolling back native mutations.
+Snapshot and context tokens remain immutable. Native type IDs are process-local
+metadata, not stable serialized identifiers or arbitrary type registration.
+
+Local Apple Silicon macOS native preflight and all 31 GUI scenarios pass on
+SBCL 2.6.9 and CCL 1.13, with reports in
+`evidence/event-contexts/{sbcl,ccl}-20261028/`. Focused checks also pass on both
+Lisps for native type copying in all four control-specific callback modes and
+outer-context restoration after a handled nested contextual error. Tests cover
+consumption/forwarding, propagation stop/restore/zero, nested suspension, stale
+readers/writers, callback conditions, self-unbinding and deferred receiver disposal.
+The first compile caught an extra closing parenthesis in the extended native
+binding call; it was corrected before the passing focused and full-suite runs.
+
+Independent runtime and documentation review found no actionable correctness
+issues. A docstring was clarified to distinguish contextual consumption from
+observer mode. Python and pinned-upstream inventory regressions pass. The docset
+contains 114 entries covering all 89 exports, guides and twelve example sources,
+with zero checker problems. Actual-package/SETF lookup, links, shared-reader
+discovery and isolated-install guide/example checks accompany this slice.
+Hosted Linux/Windows GUI and the graphical Cadre viewer remain unverified.
+
+The rebuilt `dist/wxlambda-form-event-contexts` passes all five packaging
+isolation, relocation, REPL and missing-library checks, recorded in
+`evidence/packaging/event-contexts-20261028/`. Full wxEvent/C1 coverage remains open:
+veto-capable classes, arbitrary event-family/type registration, native event
+construction/cloning, origin/ID/type mutation, userData, linked/pushed handlers,
+timer/idle and worker dispatch remain future work. The next dependency is broader
+event-family representation and veto-capable event classes with checked borrowed
+lifetimes, before dependent event families.
 
 ## Decisions
 

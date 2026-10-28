@@ -1,6 +1,9 @@
 (defpackage #:wxlambda
   (:use #:cl)
-  (:export #:event-binding #:event-binding-p #:bind-event #:unbind-event #:binding-active-p #:queue-event #:event-id
+  (:export #:event-context #:event-context-p #:event-context-active-p #:event-skipped-p
+           #:event-propagates-p #:stop-event-propagation #:resume-event-propagation
+           #:event-native-type #:command-event-type
+           #:event-binding #:event-binding-p #:bind-event #:unbind-event #:binding-active-p #:queue-event #:event-id
            #:event-handler #:make-event-handler #:destroy-event-handler #:handler-enabled-p #:handler-alive-p
            #:window #:frame #:panel #:button #:text-control #:label #:checkbox #:choice
            #:load-native-library #:call-with-application #:with-application #:with-repl-application #:process-events #:main-loop-running-p #:pending-events-p #:process-pending-events

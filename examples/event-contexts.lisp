@@ -1,0 +1,55 @@
+;;; Load and call (wxlambda-event-contexts:start).
+(require :asdf)
+(load (merge-pathnames "../wxlambda.asd" *load-truename*))
+(asdf:load-system "wxlambda")
+(defpackage #:wxlambda-event-contexts
+  (:use #:cl)
+  (:export #:start #:exercise))
+(in-package #:wxlambda-event-contexts)
+
+(defun open-window ()
+  (let* ((frame (wxlambda:make-frame :title "Scoped event contexts"))
+         (panel (wxlambda:make-panel frame))
+         (forward (wxlambda:make-checkbox panel :label "Forward button commands" :checked t))
+         (button (wxlambda:make-button panel :label "Dispatch a command"))
+         (caption (wxlambda:make-label panel :label "No commands"))
+         (local 0) (parent 0) saved-context saved-event
+         (display (lambda ()
+                    (setf (wxlambda:label-text caption)
+                          (format nil "Local: ~D; parent: ~D" local parent))))
+         (child-binding
+           (wxlambda:bind-event button :click
+             (lambda (event context)
+               (incf local)
+               (setf saved-context context saved-event event)
+               (assert (wxlambda:event-context-active-p context))
+               (setf (wxlambda:event-skipped-p context) (wxlambda:checked-p forward))
+               (funcall display))
+             :with-context t))
+         (parent-binding
+           (wxlambda:bind-event frame :click
+             (lambda (event) (declare (ignore event)) (incf parent) (funcall display)))))
+    (wxlambda:make-column panel)
+    (dolist (child (list forward button caption)) (wxlambda:add-child panel child))
+    (wxlambda:show-window frame)
+    (values frame forward button (list child-binding parent-binding)
+            (lambda () (values local parent saved-event saved-context)))))
+
+(defun exercise ()
+  (multiple-value-bind (frame forward button bindings state) (open-window)
+    (wxlambda:queue-click button)
+    (wxlambda:process-pending-events)
+    (multiple-value-bind (local parent event context) (funcall state)
+      (assert (= 1 local parent))
+      (assert (= (wxlambda:command-event-type :click) (wxlambda:event-native-type event)))
+      (assert (not (wxlambda:event-context-active-p context))))
+    (setf (wxlambda:checked-p forward) nil)
+    (wxlambda:queue-click button)
+    (wxlambda:process-pending-events)
+    (multiple-value-bind (local parent) (funcall state)
+      (assert (= 2 local)) (assert (= 1 parent)))
+    (dolist (binding bindings) (wxlambda:unbind-event binding))
+    (wxlambda:destroy-window frame)))
+
+(defun start ()
+  (wxlambda:with-application () (open-window) (wxlambda:run)))
