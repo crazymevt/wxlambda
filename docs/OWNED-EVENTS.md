@@ -1,6 +1,6 @@
 # Owned native events, detached clones and copied dispatch
 
-ABI 24 adds the native-backed `owned-event` CLOS class and `make-event`,
+ABI 25 adds the native-backed `owned-event` CLOS class and `make-event`,
 `clone-event`, `destroy-event` and `event-alive-p`. These are independently owned
 native resources, distinct from immutable `event` snapshots and borrowed
 callback-scoped `event-context` values. The baseline is wxWidgets 3.2.12.
@@ -152,7 +152,7 @@ receiver guards.
 
 This is partial native ownership coverage. Arbitrary derived event classes,
 retained origin objects, client/userData ownership, snapshot-to-native conversion,
-direct source-event transfer/consumption, origin writes and broader worker or
+arbitrary native source transfer, origin writes and broader worker or
 pushed-handler ownership remain open. Existing null/untracked-origin lookup and
 actual-class mismatch rejection branches are not manufactured by the safe public
 API. Hosted Windows/Linux GUI, native OS session delivery and graphical Cadre
@@ -163,3 +163,8 @@ with `python3 tools/docset.py install` under `$XDG_DATA_HOME/docsets/wxlambda/`
 (default `~/.local/share/docsets/wxlambda/`) for Cadre discovery and lookup.
 See [event contexts](EVENT-CONTEXTS.md), [tag mutation](EVENT-TAGS.md),
 [session events](SESSION-EVENTS.md) and [docset installation](DOCSET.md).
+
+[Pending delivery modes](PENDING-EVENTS.md) now add GUI posting copies, genuine
+TRANSFER-EVENT ownership handoff, synchronous local copies and handler-specific
+pending deletion. PROCESS-EVENT/QUEUE-EVENT retain the copy semantics above;
+transferred source wrappers are consumed and cannot be reused or destroyed.

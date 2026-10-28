@@ -67,7 +67,7 @@ C++; they are recorded and re-signaled when the native operation returns.
 Handled boundary failures allow the callback to continue; an escaping condition
 uses the existing callback-error recovery rules. A subsequent pump remains usable.
 
-Application dispatch was introduced in ABI 11; the current bridge is ABI 24. Rebuild it alongside the Lisp bindings. This uses
+Application dispatch was introduced in ABI 11; the current bridge is ABI 25. Rebuild it alongside the Lisp bindings. This uses
 the wxWidgets 3.2.12 inventory baseline; application traits, arbitrary event-loop
 objects, generic event binding, pending-event suspension/deletion, filters,
 propagation, idle handlers, timers and worker dispatch remain open C1 work.
@@ -105,3 +105,8 @@ the example together.
 See the [borrowed application-handler view](APPLICATION-HANDLER.md) for managed wxApp identity, inherited dispatch and lifetime restrictions. Session bindings and logging-off metadata are available; real OS delivery remains unverified.
 
 [Session events](SESSION-EVENTS.md) extend the close family with query/end-session kinds, scoped logging-off metadata and isolated synthetic dispatch. Native OS session delivery remains unverified.
+
+[Pending-event operations](PENDING-EVENTS.md) now distinguish GUI post copies,
+consuming native transfer, local copy processing and non-application target
+cancellation. Per-handler pending processing and application-wide cancellation
+remain unbound.

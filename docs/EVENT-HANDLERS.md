@@ -118,7 +118,7 @@ python3 tools/docset.py build
 python3 tools/docset.py check
 ```
 
-Use the project quiet-command wrapper in agent sessions. Rebuild the ABI 24
+Use the project quiet-command wrapper in agent sessions. Rebuild the ABI 25
 bridge alongside the bindings. The GUI runner includes this scenario; broader
 platform and graphical Cadre verification remain separate. The API, this guide
 and example are included in the [Cadre docset](DOCSET.md), installable under
@@ -133,3 +133,8 @@ standalone/window interface; see [notify payload and dispatch scope](NOTIFY-EVEN
 See the [borrowed application-handler view](APPLICATION-HANDLER.md) for managed wxApp identity, inherited dispatch and lifetime restrictions. Session bindings and logging-off metadata are available; real OS delivery remains unverified.
 
 [Session events](SESSION-EVENTS.md) extend the close family with query/end-session kinds, scoped logging-off metadata and isolated synthetic dispatch. Native OS session delivery remains unverified.
+
+[Pending-event operations](PENDING-EVENTS.md) now distinguish GUI post copies,
+consuming native transfer, local copy processing and non-application target
+cancellation. Per-handler pending processing and application-wide cancellation
+remain unbound.

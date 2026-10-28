@@ -1096,7 +1096,7 @@
     "arguments": "Construct with MAKE-INSTANCE or MAKE-EVENT; KIND/payload options match supported synthetic events. CLONE-FROM accepts an owned event/current context.",
     "returns": "A detached session-owned native event resource, not a snapshot or borrowed context.",
     "description": "Native-backed CLOS construction supports subclasses, slot initargs, defaults and AFTER hooks. Native origin is NIL. Mixed ancestry with EVENT-HANDLER/window is invalid. Explicit destruction or session cleanup owns deletion; there is no GC finalizer.",
-    "scope": "Exact supported command/notify/close native classes only; one active main-thread session. No native handle initarg, arbitrary derived event class, origin retention or userdata/client ownership.",
+    "scope": "Exact supported command/notify/close native classes only; one active main-thread session. No native handle initarg, arbitrary derived event class, origin retention or userdata/client ownership. TRANSFER-EVENT supports bounded native ownership handoff of this resource; copy APIs preserve it.",
     "wxwidgets": "wxCommandEvent / wxNotifyEvent / wxCloseEvent construction and wxEvent::Clone (wxWidgets 3.2.12 baseline).",
     "construction": {
       "syntax": "(make-instance 'wxlambda:owned-event :kind :click)\n(wxlambda:make-event :kind registered-name :text \"payload\" :integer 1)",
@@ -1128,16 +1128,56 @@
     "arguments": "EVENT is a live OWNED-EVENT.",
     "returns": "T after immediate native deletion.",
     "description": "Release this independent native event. Copies already queued/processing remain valid; repeated destruction rejects. Session cleanup releases undisposed owned events, even if the Lisp wrapper was collected.",
-    "scope": "Active main-thread session required; dead/invalid native resource or failed wrapper signals NATIVE-ERROR. No snapshot/context destruction or transfer of an event already owned by wxWidgets.",
+    "scope": "Active main-thread session required; dead/invalid native resource or failed wrapper signals NATIVE-ERROR. No snapshot/context destruction or transfer of an event already owned by wxWidgets. A source consumed by TRANSFER-EVENT is no longer bridge-owned and cannot be destroyed through its former wrapper.",
     "wxwidgets": "Bridge unique ownership of supported wxEvent instances (wxWidgets 3.2.12 baseline)."
   },
   {
     "name": "event-alive-p",
     "kind": "generic-function",
     "arguments": "EVENT is an OWNED-EVENT wrapper.",
-    "returns": "T for a live native owned resource; NIL for explicitly destroyed IDs during the active session.",
-    "description": "Query the independent owned-event registry. Failed/uninitialized wrappers have no native handle and signal NATIVE-ERROR. This is not context activity or native origin liveness.",
+    "returns": "T for a live native owned resource; NIL for explicitly destroyed or transferred IDs during the active session.",
+    "description": "Query the independent owned-event registry. Failed/uninitialized wrappers have no native handle and signal NATIVE-ERROR. This is not context activity or native origin liveness. TRANSFER-EVENT consumes the source registry handle; queued copies from POST-EVENT/QUEUE-EVENT do not.",
     "scope": "Active main-thread session required, including for dead-ID queries. After session cleanup native access signals NATIVE-ERROR. No GC finalization or cross-session reuse.",
     "wxwidgets": "Bridge-owned wxEvent registry predicate (wxWidgets 3.2.12 baseline)."
+  },
+  {
+    "name": "post-event",
+    "kind": "generic-function",
+    "syntax": "(wxlambda:post-event handler owned-event)",
+    "arguments": "HANDLER is a live EVENT-HANDLER/window, EVENT is a live OWNED-EVENT. No synthetic payload overrides.",
+    "returns": "HANDLER after successful GUI posting.",
+    "description": "Post an independent detached copy with wxPostEvent/AddPendingEvent; attach the receiver as copy origin. Input stays live/unchanged and may be destroyed or changed immediately. Delivery is asynchronous in the managed GUI session.",
+    "scope": "Active main-thread GUI session required. Existing session-isolated receiver and lazy text-entry-origin restrictions apply before emission. No non-GUI immediate dispatch, worker posting or ownership transfer.",
+    "wxwidgets": "wxPostEvent / wxEvtHandler::AddPendingEvent, bounded GUI copy mapping (wxWidgets 3.2.12 baseline)."
+  },
+  {
+    "name": "transfer-event",
+    "kind": "generic-function",
+    "syntax": "(wxlambda:transfer-event handler owned-event)",
+    "arguments": "HANDLER is a live EVENT-HANDLER/window; EVENT is a live OWNED-EVENT to consume. No payload overrides.",
+    "returns": "HANDLER after native handoff.",
+    "description": "Validate before consuming, then remove the actual event from the owned registry, attach receiver origin and hand it to wxQueueEvent. Input becomes non-live and cannot be accessed, cloned or destroyed by its former owner. Destination deletion or pending-event cancellation does not restore it.",
+    "scope": "Active main-thread GUI session required. Preflight failures leave the owned input live; no rollback or delivery guarantee after handoff, including a post-handoff error. Existing session/text-entry receiver restrictions apply before consumption. No raw pointer or arbitrary native class transfer.",
+    "wxwidgets": "wxQueueEvent / wxEvtHandler::QueueEvent native ownership handoff for supported owned events (wxWidgets 3.2.12 baseline)."
+  },
+  {
+    "name": "process-event-locally",
+    "kind": "generic-function",
+    "syntax": "(wxlambda:process-event-locally handler owned-event)",
+    "arguments": "HANDLER is a live EVENT-HANDLER/window; EVENT is a live OWNED-EVENT. No payload overrides.",
+    "returns": "Two values: native handled-p and final-vetoed-p of the processing copy.",
+    "description": "Synchronously process an independent detached copy with ProcessEventLocally, including local pre-processing and native chained handlers, without normal outer global-filter/parent/application fallback. Source remains live/unchanged. Observer delivery can return handled NIL; final veto is independent. Native local static/default handlers may still execute, including frame-close behavior; local processing is not observer-only or a no-default-action mode.",
+    "scope": "Active main-thread GUI session required. Existing supported-class, session-isolation, text-entry receiver and callback/context protections apply. Callback conditions re-signal at the nearer Lisp boundary. No pending queue pump, pushed-handler API or native virtual override is added.",
+    "wxwidgets": "wxEvtHandler::ProcessEventLocally on a supported detached copy (wxWidgets 3.2.12 baseline)."
+  },
+  {
+    "name": "delete-pending-events",
+    "kind": "generic-function",
+    "syntax": "(wxlambda:delete-pending-events handler)",
+    "arguments": "HANDLER is a live non-application EVENT-HANDLER/window.",
+    "returns": "T after deleting the target queue, including an empty queue.",
+    "description": "Delete queued native events without invoking callbacks; bindings and other handler queues remain intact. Synchronize wxApp pending-handler membership after deletion. Transferred input wrappers remain consumed; later queueing/posting still works.",
+    "scope": "Active main-thread GUI session at a non-dispatch boundary required. Borrowed APPLICATION-HANDLER, RUN/pump/callback use and invalid/stale receivers reject. No application-wide deletion, count, cancellation rollback or per-handler pending query/processing is supplied.",
+    "wxwidgets": "wxEvtHandler::DeletePendingEvents plus native pending-handler-list synchronization (wxWidgets 3.2.12 baseline)."
   }
 ]

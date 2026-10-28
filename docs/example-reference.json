@@ -86,5 +86,9 @@
   "owned-events.lisp": {
     "description": "Construct a reusable native message, mutate only a dispatch copy, retain a detached context clone, queue an independent copy and destroy its source before delivery.",
     "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/owned-events.lisp --eval '(wxlambda-owned-events:start)'"
+  },
+  "pending-events.lisp": {
+    "description": "Compare posted copies, consumed transfer inputs, local synchronous processing and handler-specific pending cancellation using owned events.",
+    "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/pending-events.lisp --eval '(wxlambda-pending-events:start)'"
   }
 }

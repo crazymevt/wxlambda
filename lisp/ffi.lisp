@@ -89,7 +89,7 @@
           (if (probe-file local)
               (cffi:load-foreign-library local)
               (cffi:use-foreign-library wxlambda-native))))
-    (unless (= 24 (%abi-version)) (error "Unsupported wxlambda native ABI"))
+    (unless (= 25 (%abi-version)) (error "Unsupported wxlambda native ABI"))
     (setf *native-loaded* t))
   t)
 
@@ -165,4 +165,6 @@
 (cffi:defcfun ("wxl_event_text" %event-text) :pointer (source :uint64) (contextual :int) (length :pointer))
 (cffi:defcfun ("wxl_set_event_text" %set-event-text) :int (source :uint64) (contextual :int) (text :pointer) (length :size))
 (cffi:defcfun ("wxl_owned_stop" %owned-stop) :int (event :uint64))
-(cffi:defcfun ("wxl_dispatch_owned" %dispatch-owned) :int (receiver :uint64) (event :uint64) (queued :int) (final-veto :pointer))
+(cffi:defcfun ("wxl_dispatch_owned" %dispatch-owned) :int (receiver :uint64) (event :uint64) (mode :int) (final-veto :pointer))
+
+(cffi:defcfun ("wxl_delete_pending_events" %delete-pending-events) :int (receiver :uint64))

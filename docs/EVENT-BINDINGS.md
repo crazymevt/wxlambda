@@ -3,7 +3,7 @@
 This C1 slice adds independent observer bindings on standalone `event-handler`
 objects and borrowed window identities. It covers `:click` (`wxEVT_BUTTON`),
 `:text-change` (`wxEVT_TEXT`), `:toggle` (`wxEVT_CHECKBOX`) and `:selection`
-(`wxEVT_CHOICE`), using the wxWidgets 3.2.12 baseline. The bridge is ABI 24.
+(`wxEVT_CHOICE`), using the wxWidgets 3.2.12 baseline. The bridge is ABI 25.
 Optional [scoped contexts](EVENT-CONTEXTS.md) now support Skip/propagation;
 close-veto support is now available through the [close family](CLOSE-EVENTS.md).
 Registered [notify/command types](NOTIFY-EVENTS.md) now add named native tags and
@@ -151,3 +151,8 @@ Graphical Cadre and hosted-platform GUI verification remain separate checks.
 [Session events](SESSION-EVENTS.md) extend the close family with query/end-session kinds, scoped logging-off metadata and isolated synthetic dispatch. Native OS session delivery remains unverified.
 
 [Scoped event IDs](EVENT-ROUTING.md) now provide current ID reads/SETF and document effects on later matching. Snapshots remain immutable.
+
+[Pending-event operations](PENDING-EVENTS.md) now distinguish GUI post copies,
+consuming native transfer, local copy processing and non-application target
+cancellation. Per-handler pending processing and application-wide cancellation
+remain unbound.

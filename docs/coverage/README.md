@@ -18,14 +18,14 @@ public-header/documentation reconciliation and platform verification in C7.
 
 | Phase | Headers | Tasks | Implemented | Partial | Pending | Context |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| [C1: Foundation, values, application, events, and base utilities](phase-c1.md) | 119 | 5292 | 5 | 57 | 5230 | 26 |
+| [C1: Foundation, values, application, events, and base utilities](phase-c1.md) | 119 | 5292 | 5 | 62 | 5225 | 26 |
 | [C2: Windows, layout, basic controls, and input](phase-c2.md) | 82 | 2862 | 23 | 40 | 2799 | 0 |
 | [C3: Dialogs, navigation, menus, and application services](phase-c3.md) | 57 | 1875 | 0 | 0 | 1875 | 0 |
 | [C4: Models, complex controls, and document frameworks](phase-c4.md) | 20 | 2328 | 0 | 0 | 2328 | 4 |
 | [C5: Drawing, images, graphics, and printing](phase-c5.md) | 52 | 2245 | 0 | 0 | 2245 | 0 |
 | [C6: Optional libraries, rich content, and integration](phase-c6.md) | 57 | 8912 | 0 | 0 | 8912 | 380 |
 | [C7: Platform extensions and remaining portability APIs](phase-c7.md) | 11 | 279 | 0 | 0 | 279 | 3 |
-| Total | 398 | 23793 | 28 | 97 | 23668 | 413 |
+| Total | 398 | 23793 | 28 | 102 | 23663 | 413 |
 
 ## Classes and widgets
 
@@ -68,7 +68,7 @@ unreviewed inherited/platform behavior.
 | [wx/dynarray.h](phase-c1.md#wxdynarrayh) | 0 | 0 | 58 | 0 |
 | [wx/dynlib.h](phase-c1.md#wxdynlibh) | 0 | 0 | 34 | 0 |
 | [wx/encconv.h](phase-c1.md#wxencconvh) | 0 | 0 | 13 | 0 |
-| [wx/event.h](phase-c1.md#wxeventh) | 5 | 46 | 609 | 16 |
+| [wx/event.h](phase-c1.md#wxeventh) | 5 | 51 | 604 | 16 |
 | [wx/eventfilter.h](phase-c1.md#wxeventfilterh) | 0 | 0 | 6 | 0 |
 | [wx/evtloop.h](phase-c1.md#wxevtlooph) | 0 | 0 | 26 | 0 |
 | [wx/ffile.h](phase-c1.md#wxffileh) | 0 | 0 | 37 | 0 |

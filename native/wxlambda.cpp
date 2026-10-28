@@ -411,7 +411,7 @@ wxString utf8(const char* value) {
 }
 }
 extern "C" {
-int wxl_abi_version() { return 24; }
+int wxl_abi_version() { return 25; }
 const char* wxl_last_error() { return error.c_str(); }
 int wxl_start(wxl_callback callback) {
     return status([&] {
@@ -807,22 +807,46 @@ int wxl_owned_stop(wxl_handle id) {
     const auto result = status([&] { level = owned_event(id).StopPropagation(); });
     return result == 0 ? level : -1;
 }
-int wxl_dispatch_owned(wxl_handle receiver_id, wxl_handle event_id, int queued, int* final_veto) {
+int wxl_dispatch_owned(wxl_handle receiver_id, wxl_handle event_id, int mode, int* final_veto) {
     return boolean_result([&] {
         require(final_veto != nullptr, "Missing final veto output");
         *final_veto = 0;
+        require(mode >= 0 && mode <= 4, "Unknown owned-event delivery mode");
         auto* receiver = event_handler(receiver_id);
-        auto copy = detached_clone(owned_event(event_id));
-        require(!session_type(copy->GetEventType()) || owned_handlers.count(receiver_id),
+        auto& source = owned_event(event_id);
+        require(!session_type(source.GetEventType()) || owned_handlers.count(receiver_id),
                 "Synthetic session events require an isolated owned standalone handler");
         auto* window = dynamic_cast<wxWindow*>(receiver);
-        require(copy->GetEventType() != wxEVT_TEXT || !window || !window->WXGetTextEntry(),
+        require(source.GetEventType() != wxEVT_TEXT || !window || !window->WXGetTextEntry(),
                 "Owned text-change dispatch to text-entry receivers would shadow the payload");
+        if (mode == 3) {
+            // All rejecting preflight checks precede the ownership handoff.
+            // Native QueueEvent owns the actual event, not another clone.
+            source.SetEventObject(receiver);
+            auto event = std::move(owned_events.at(event_id));
+            owned_events.erase(event_id);
+            wxQueueEvent(receiver, event.release());
+            return true;
+        }
+        auto copy = detached_clone(source);
         copy->SetEventObject(receiver);
-        if (queued) { receiver->QueueEvent(copy.release()); return true; }
-        const bool handled = receiver->ProcessEvent(*copy);
+        if (mode == 1) { receiver->QueueEvent(copy.release()); return true; }
+        if (mode == 2) { wxPostEvent(receiver, *copy); return true; }
+        const bool handled = mode == 4 ? receiver->ProcessEventLocally(*copy) : receiver->ProcessEvent(*copy);
         *final_veto = event_vetoed(*copy) ? 1 : 0;
         return handled;
+    });
+}
+int wxl_delete_pending_events(wxl_handle id) {
+    return status([&] {
+        ready();
+        require_dispatch_entry();
+        auto* receiver = event_handler(id);
+        require(id != application_handle, "Cannot discard the application handler's deferred cleanup queue");
+        receiver->DeletePendingEvents();
+        // DeletePendingEvents itself leaves the wxApp registration behind.
+        // Remove it too, or a later app pump could invoke an empty-queue check.
+        wxTheApp->RemovePendingEventHandler(receiver);
     });
 }
 wxl_handle wxl_frame(const char* title, int width, int height) {

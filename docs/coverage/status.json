@@ -912,13 +912,14 @@
       "status": "~",
       "lisp": [
         "queue-event",
-        "owned-event"
+        "owned-event",
+        "transfer-event"
       ],
       "native": [
         "wxl_queue_event",
         "wxl_dispatch_owned"
       ],
-      "scope": "Copied four-command or :CLOSE wxCloseEvent queues on exposed handlers, main-thread only. Kind-specific payloads and synthetic CanVeto option; queued frame close may run defaults. Arbitrary types, session events, native-origin override and worker dispatch remain open. OWNED-EVENT arguments dispatch independent detached clones, with receiver origin; source survives and may be destroyed after copying. Session receiver guards remain. Copied owned wxEVT_TEXT to text-entry receivers rejects before emission; keyword synthetic behavior is unchanged."
+      "scope": "Copied four-command or :CLOSE wxCloseEvent queues on exposed handlers, main-thread only. Kind-specific payloads and synthetic CanVeto option; queued frame close may run defaults. Arbitrary types, session events, native-origin override and worker dispatch remain open. OWNED-EVENT arguments dispatch independent detached clones, with receiver origin; source survives and may be destroyed after copying. Session receiver guards remain. Copied owned wxEVT_TEXT to text-entry receivers rejects before emission; keyword synthetic behavior is unchanged. TRANSFER-EVENT also hands off the actual supported owned native object after validation; the former source handle is consumed, with no post-handoff rollback/delivery guarantee."
     },
     {
       "header": "wx/event.h",
@@ -1048,7 +1049,7 @@
         "wxl_queue_event",
         "wxl_owned_event"
       ],
-      "scope": "Supported close/session snapshots and scoped contexts, including checked veto and logging-off metadata. Native app bindings exist; real OS session delivery is unverified. Synthetic session queue/process requires isolated owned handlers and blocks wxApp fallback. No persistent event ownership or arbitrary close types. Session-owned detached exact command/notify/close events now support native construction, cloning, disposal and copied dispatch; no arbitrary derived class, retained origin, client/userData ownership or source transfer. Native wxEVT_TEXT payload guards prevent lazy text-entry origin shadowing; detached clones freeze effective strings."
+      "scope": "Supported close/session snapshots and scoped contexts, including checked veto and logging-off metadata. Native app bindings exist; real OS session delivery is unverified. Synthetic session queue/process requires isolated owned handlers and blocks wxApp fallback. No persistent event ownership or arbitrary close types. Session-owned detached exact command/notify/close events now support native construction, cloning, disposal and copied dispatch; no arbitrary derived class, retained origin, client/userData ownership or arbitrary native transfer. Native wxEVT_TEXT payload guards prevent lazy text-entry origin shadowing; detached clones freeze effective strings."
     },
     {
       "header": "wx/event.h",
@@ -1180,7 +1181,7 @@
         "wxl_process_event",
         "wxl_owned_event"
       ],
-      "scope": "Registered custom notify tags only, copied ID/text/integer and optional initial veto. No native control-specific derived events or persistent event wrapper. Session-owned detached exact command/notify/close events now support native construction, cloning, disposal and copied dispatch; no arbitrary derived class, retained origin, client/userData ownership or source transfer. Native wxEVT_TEXT payload guards prevent lazy text-entry origin shadowing; detached clones freeze effective strings."
+      "scope": "Registered custom notify tags only, copied ID/text/integer and optional initial veto. No native control-specific derived events or persistent event wrapper. Session-owned detached exact command/notify/close events now support native construction, cloning, disposal and copied dispatch; no arbitrary derived class, retained origin, client/userData ownership or arbitrary native transfer. Native wxEVT_TEXT payload guards prevent lazy text-entry origin shadowing; detached clones freeze effective strings."
     },
     {
       "header": "wx/event.h",
@@ -1248,7 +1249,7 @@
         "wxl_process_event",
         "wxl_owned_event"
       ],
-      "scope": "Built-in and registered command tags, copied ID/text/integer. Arbitrary native subclasses and persistent event objects are not exposed. Session-owned detached exact command/notify/close events now support native construction, cloning, disposal and copied dispatch; no arbitrary derived class, retained origin, client/userData ownership or source transfer. Native wxEVT_TEXT payload guards prevent lazy text-entry origin shadowing; detached clones freeze effective strings."
+      "scope": "Built-in and registered command tags, copied ID/text/integer. Arbitrary native subclasses and persistent event objects are not exposed. Session-owned detached exact command/notify/close events now support native construction, cloning, disposal and copied dispatch; no arbitrary derived class, retained origin, client/userData ownership or arbitrary native transfer. Native wxEVT_TEXT payload guards prevent lazy text-entry origin shadowing; detached clones freeze effective strings."
     },
     {
       "header": "wx/event.h",
@@ -1673,6 +1674,76 @@
         "wxl_clone_event"
       ],
       "scope": "Detached exact wxCommandEvent/wxNotifyEvent/wxCloseEvent clones from live owned resources or innermost contexts. Effective command text is frozen before clearing origin. Borrowed userdata/client pointers and arbitrary native subclasses reject; no general native ownership transfer or retained origin."
+    },
+    {
+      "header": "wx/event.h",
+      "line": 485,
+      "declaration": "virtual void AddPendingEvent(const wxEvent& event);",
+      "status": "~",
+      "symbol": "wxEvtHandler::AddPendingEvent",
+      "lisp": [
+        "post-event"
+      ],
+      "native": [
+        "wxl_dispatch_owned"
+      ],
+      "scope": "GUI wxPostEvent/AddPendingEvent independent detached copies for supported owned events, main thread only. Source remains alive/unchanged; receiver becomes copy origin. Existing session/text-entry receiver guards apply. No worker/string thread-safety or non-GUI immediate posting."
+    },
+    {
+      "header": "wx/event.h",
+      "line": 656,
+      "declaration": "bool ProcessEventLocally(wxEvent& event);",
+      "status": "~",
+      "symbol": "wxEvtHandler::ProcessEventLocally",
+      "lisp": [
+        "process-event-locally"
+      ],
+      "native": [
+        "wxl_dispatch_owned"
+      ],
+      "scope": "Independent detached processing copy, local receiver/pre-processing/native chains without normal outer global-filter/parent/application fallback. Returns handled/final-veto independently; source alive. No pushed-chain API, native overrides or queue pump."
+    },
+    {
+      "header": "wx/event.h",
+      "line": 696,
+      "declaration": "void DeletePendingEvents();",
+      "status": "~",
+      "symbol": "wxEvtHandler::DeletePendingEvents",
+      "lisp": [
+        "delete-pending-events"
+      ],
+      "native": [
+        "wxl_delete_pending_events"
+      ],
+      "scope": "Target handler/window deletion without callbacks or binding removal; synchronizes native app pending-handler membership. Application-handler and RUN/pump/callback use reject. No application-wide cancellation or per-handler pending query/processing."
+    },
+    {
+      "header": "wx/event.h",
+      "line": 5132,
+      "declaration": "void wxPostEvent(wxEvtHandler* dest, const wxEvent& event);",
+      "status": "~",
+      "symbol": "wxPostEvent",
+      "lisp": [
+        "post-event"
+      ],
+      "native": [
+        "wxl_dispatch_owned"
+      ],
+      "scope": "Managed GUI wxPostEvent/AddPendingEvent copy only, from supported owned events. Source survives; no non-GUI immediate dispatch or worker posting. Existing supported-class, session and lazy-text restrictions apply."
+    },
+    {
+      "header": "wx/event.h",
+      "line": 5148,
+      "declaration": "void wxQueueEvent(wxEvtHandler* dest, wxEvent *event);",
+      "status": "~",
+      "symbol": "wxQueueEvent",
+      "lisp": [
+        "transfer-event"
+      ],
+      "native": [
+        "wxl_dispatch_owned"
+      ],
+      "scope": "Genuine handoff of supported owned event after preflight; original registry handle consumed before native handoff. Validation failure preserves input. No rollback/delivery guarantee after handoff or arbitrary native pointer transfer; receiver/session/text guards apply."
     }
   ],
   "classes": {
@@ -1814,7 +1885,7 @@
         "wxl_gauge_vertical",
         "wxl_gauge_pulse"
       ],
-      "scope": "Parent-owned progress gauge: positive range, value, horizontal/vertical orientation and pulsing. Constructor options, two-step creation and full inherited API remain open. Gauge support introduced in ABI 10; current bridge ABI 24; see docs/GAUGE.md and tests/gauge.lisp."
+      "scope": "Parent-owned progress gauge: positive range, value, horizontal/vertical orientation and pulsing. Constructor options, two-step creation and full inherited API remain open. Gauge support introduced in ABI 10; current bridge ABI 25; see docs/GAUGE.md and tests/gauge.lisp."
     },
     "wxAppConsole": {
       "status": "~",
@@ -1868,7 +1939,11 @@
         "bind-event",
         "unbind-event",
         "binding-active-p",
-        "queue-event"
+        "queue-event",
+        "post-event",
+        "transfer-event",
+        "process-event-locally",
+        "delete-pending-events"
       ],
       "native": [
         "wxl_event_handler",
@@ -1879,9 +1954,11 @@
         "wxl_bind",
         "wxl_unbind",
         "wxl_binding_active",
-        "wxl_queue_event"
+        "wxl_queue_event",
+        "wxl_dispatch_owned",
+        "wxl_delete_pending_events"
       ],
-      "scope": "Owned/borrowed handler identities and command/close-family bindings with exact IDs/ranges, safe unbinding, copied queue payloads and weak invalidation. Callback-time receiver disposal is deferred; generic roots are reaped at Lisp boundaries. Optional contextual callbacks now control Skip/propagation for supported command/close kinds. Arbitrary event types/userData, derived notify classes, pushed chains and worker dispatch remain open. See docs/EVENT-CONTEXTS.md. Registered command/notify names and synchronous ProcessEvent are now supported; native OS session delivery remains unverified. Query/end-session binding is available on the managed app and isolated owned handlers; synthetic app/window session emission rejects; OS delivery remains unverified."
+      "scope": "Owned/borrowed handler identities and command/close-family bindings with exact IDs/ranges, safe unbinding, copied queue payloads and weak invalidation. Callback-time receiver disposal is deferred; generic roots are reaped at Lisp boundaries. Optional contextual callbacks now control Skip/propagation for supported command/close kinds. Arbitrary event types/userData, derived notify classes, pushed chains and worker dispatch remain open. See docs/EVENT-CONTEXTS.md. Registered command/notify names and synchronous ProcessEvent are now supported; native OS session delivery remains unverified. Query/end-session binding is available on the managed app and isolated owned handlers; synthetic app/window session emission rejects; OS delivery remains unverified. GUI post copies, native owned-event handoff, local copy processing and target-only pending deletion are supported. Delete rejects app/dispatch boundaries and synchronizes native pending-handler membership. Source consumption occurs only for transfer; per-handler pending processing and app-wide deletion remain open."
     },
     "wxEvent": {
       "status": "~",
@@ -1912,7 +1989,10 @@
         "event-text",
         "event-integer",
         "(setf event-text)",
-        "(setf event-integer)"
+        "(setf event-integer)",
+        "post-event",
+        "transfer-event",
+        "process-event-locally"
       ],
       "native": [
         "wxl_bind",
@@ -1943,7 +2023,7 @@
         "wxl_event_text",
         "wxl_set_event_text"
       ],
-      "scope": "Immutable supported command/close snapshots and current-callback wxEvent base views for Skip/propagation; close veto is checked through wxCloseEvent only. Arbitrary native construction/cloning, mutable type/origin, userData and broader families remain open. See docs/CLOSE-EVENTS.md. Timestamp/command classification snapshots and current reads, bounded native LONG timestamp SETF and close-only CanVeto SETF are implemented; snapshots stay immutable. Scoped ID reads/SETF are implemented; native routing after mutation is verified separately from snapshot immutability. Current native type and bounded registered-origin identity reads are implemented; native type/origin mutation and general wxObject wrappers remain open. Captured/current virtual category reads are supported; no selective pumping. Bounded registered same-family native type SETF is now supported with actual native class checks; arbitrary and built-in/session tag mutation remains open. Session-owned detached exact command/notify/close events now support native construction, cloning, disposal and copied dispatch; no arbitrary derived class, retained origin, client/userData ownership or source transfer. Native wxEVT_TEXT payload guards prevent lazy text-entry origin shadowing; detached clones freeze effective strings."
+      "scope": "Immutable supported command/close snapshots and current-callback wxEvent base views for Skip/propagation; close veto is checked through wxCloseEvent only. Arbitrary native construction/cloning, mutable type/origin, userData and broader families remain open. See docs/CLOSE-EVENTS.md. Timestamp/command classification snapshots and current reads, bounded native LONG timestamp SETF and close-only CanVeto SETF are implemented; snapshots stay immutable. Scoped ID reads/SETF are implemented; native routing after mutation is verified separately from snapshot immutability. Current native type and bounded registered-origin identity reads are implemented; native type/origin mutation and general wxObject wrappers remain open. Captured/current virtual category reads are supported; no selective pumping. Bounded registered same-family native type SETF is now supported with actual native class checks; arbitrary and built-in/session tag mutation remains open. Session-owned detached exact command/notify/close events now support native construction, cloning, disposal and copied dispatch; no arbitrary derived class, retained origin, client/userData ownership or arbitrary native transfer. Native wxEVT_TEXT payload guards prevent lazy text-entry origin shadowing; detached clones freeze effective strings. Supported owned events can now be transferred through wxQueueEvent after preflight; the original handle is consumed. Post/local operations preserve source through independent copies."
     },
     "wxCloseEvent": {
       "status": "~",
@@ -1970,7 +2050,10 @@
         "event-text",
         "event-integer",
         "(setf event-text)",
-        "(setf event-integer)"
+        "(setf event-integer)",
+        "post-event",
+        "transfer-event",
+        "process-event-locally"
       ],
       "native": [
         "wxl_bind",
@@ -1996,7 +2079,7 @@
         "wxl_event_text",
         "wxl_set_event_text"
       ],
-      "scope": "Supported close/session snapshots and scoped contexts, including checked veto and logging-off metadata. Native app bindings exist; real OS session delivery is unverified. Synthetic session queue/process requires isolated owned handlers and blocks wxApp fallback. No persistent event ownership or arbitrary close types. Timestamp/command classification snapshots and current reads, bounded native LONG timestamp SETF and close-only CanVeto SETF are implemented; snapshots stay immutable. Session-owned detached exact command/notify/close events now support native construction, cloning, disposal and copied dispatch; no arbitrary derived class, retained origin, client/userData ownership or source transfer. Native wxEVT_TEXT payload guards prevent lazy text-entry origin shadowing; detached clones freeze effective strings."
+      "scope": "Supported close/session snapshots and scoped contexts, including checked veto and logging-off metadata. Native app bindings exist; real OS session delivery is unverified. Synthetic session queue/process requires isolated owned handlers and blocks wxApp fallback. No persistent event ownership or arbitrary close types. Timestamp/command classification snapshots and current reads, bounded native LONG timestamp SETF and close-only CanVeto SETF are implemented; snapshots stay immutable. Session-owned detached exact command/notify/close events now support native construction, cloning, disposal and copied dispatch; no arbitrary derived class, retained origin, client/userData ownership or arbitrary native transfer. Native wxEVT_TEXT payload guards prevent lazy text-entry origin shadowing; detached clones freeze effective strings. Supported owned events can now be transferred through wxQueueEvent after preflight; the original handle is consumed. Post/local operations preserve source through independent copies."
     },
     "wxNotifyEvent": {
       "status": "~",
@@ -2016,7 +2099,10 @@
         "event-alive-p",
         "event-text",
         "(setf event-text)",
-        "(setf event-integer)"
+        "(setf event-integer)",
+        "post-event",
+        "transfer-event",
+        "process-event-locally"
       ],
       "native": [
         "wxl_register_event_type",
@@ -2035,7 +2121,7 @@
         "wxl_event_text",
         "wxl_set_event_text"
       ],
-      "scope": "Registered synthetic notify types, immutable payload/family snapshots and scoped Veto/Allow. No native control-specific notify subclasses, persistent native event ownership/cloning, validated OS session delivery or userData. See docs/NOTIFY-EVENTS.md. Session-owned detached exact command/notify/close events now support native construction, cloning, disposal and copied dispatch; no arbitrary derived class, retained origin, client/userData ownership or source transfer. Native wxEVT_TEXT payload guards prevent lazy text-entry origin shadowing; detached clones freeze effective strings."
+      "scope": "Registered synthetic notify types, immutable payload/family snapshots and scoped Veto/Allow. No native control-specific notify subclasses, persistent native event ownership/cloning, validated OS session delivery or userData. See docs/NOTIFY-EVENTS.md. Session-owned detached exact command/notify/close events now support native construction, cloning, disposal and copied dispatch; no arbitrary derived class, retained origin, client/userData ownership or arbitrary native transfer. Native wxEVT_TEXT payload guards prevent lazy text-entry origin shadowing; detached clones freeze effective strings. Supported owned events can now be transferred through wxQueueEvent after preflight; the original handle is consumed. Post/local operations preserve source through independent copies."
     },
     "wxCommandEvent": {
       "status": "~",
@@ -2052,7 +2138,10 @@
         "event-alive-p",
         "event-text",
         "(setf event-text)",
-        "(setf event-integer)"
+        "(setf event-integer)",
+        "post-event",
+        "transfer-event",
+        "process-event-locally"
       ],
       "native": [
         "wxl_register_event_type",
@@ -2069,7 +2158,7 @@
         "wxl_event_text",
         "wxl_set_event_text"
       ],
-      "scope": "Built-in and registered command tags with copied string/integer payloads and scoped dispatch. Remaining native fields/mutators, arbitrary derived classes, persistent ownership/cloning and worker dispatch remain open. Session-owned detached exact command/notify/close events now support native construction, cloning, disposal and copied dispatch; no arbitrary derived class, retained origin, client/userData ownership or source transfer. Native wxEVT_TEXT payload guards prevent lazy text-entry origin shadowing; detached clones freeze effective strings."
+      "scope": "Built-in and registered command tags with copied string/integer payloads and scoped dispatch. Remaining native fields/mutators, arbitrary derived classes, persistent ownership/cloning and worker dispatch remain open. Session-owned detached exact command/notify/close events now support native construction, cloning, disposal and copied dispatch; no arbitrary derived class, retained origin, client/userData ownership or arbitrary native transfer. Native wxEVT_TEXT payload guards prevent lazy text-entry origin shadowing; detached clones freeze effective strings. Supported owned events can now be transferred through wxQueueEvent after preflight; the original handle is consumed. Post/local operations preserve source through independent copies."
     }
   }
 }

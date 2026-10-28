@@ -58,15 +58,18 @@ must reconcile additional documented public interfaces beyond those headers.
 - Owned-event batch: detached native-backed event construction, independent clone/
   disposal/liveness, mutable command payloads and copy-based queue/process dispatch.
   Final batch verification and independent review pass; exact classes and detached origins only.
-- Current bridge ABI: 24. Public API: 109 exports, nine window wrapper classes
-  (eight concrete widget kinds) plus the event-handler base, 69 named generics and
+- Pending-delivery batch: GUI posting copies, consuming native transfer, local
+  synchronous copies and non-application target queue deletion. Final verification
+  and independent review pass.
+- Current bridge ABI: 25. Public API: 113 exports, nine window wrapper classes
+  (eight concrete widget kinds) plus the event-handler base, 73 named generics and
   twenty generic SETF writers. The application-handler is a borrowed view; no
   native application construction or arbitrary-event class binding exists yet; built-ins plus registered command/notify names have
   observer/contextual bindings.
-- Latest implementation verification: 41 GUI scenarios and native preflight
+- Latest implementation verification: 42 GUI scenarios and native preflight
   pass on local Apple Silicon macOS SBCL 2.6.9 and CCL 1.13. Final reports:
-  `evidence/owned-events/{sbcl,ccl}-20261028/`. Five package checks
-  pass in `evidence/packaging/owned-events-20261028/`.
+  `evidence/pending-events/{sbcl,ccl}-20261028/`. Five package checks
+  pass in `evidence/packaging/pending-events-20261028/`.
   Hosted Linux/Windows GUI behavior and the graphical Cadre viewer remain open.
 
 ### Next dependency and working order
@@ -86,8 +89,8 @@ must reconcile additional documented public interfaces beyond those headers.
    The borrowed application handler view and query/end-session metadata/bindings
    are implemented, as are scoped CanVeto mutation, timestamp and command metadata.
    Scoped native ID mutation and routing semantics are implemented. Next define
-   remaining origin retention/native ownership contracts after the detached
-   owned-event batch. Bounded registered-tag mutation
+   remaining origin retention/native ownership contracts after detached owned
+   events and the posting/transfer/local/cancellation batch. Bounded registered-tag mutation
    with actual native class checks is implemented. Category metadata is implemented. Current type
    reads and bounded origin identities are implemented; arbitrary native tag/origin
    writers and general wxObject wrappers remain open. Native OS session delivery is unverified. Native session events are
@@ -1112,6 +1115,51 @@ delivery and graphical Cadre remain unverified, as do safe-public-API-inaccessib
 null/untracked origins and incompatible actual-class rejection branches.
 Next define explicit origin retention/ownership or another prerequisite C1 slice
 before widening pointer-bearing native events; retain no unchecked native pointer.
+
+## Pending posting, consuming transfer, local copies and cancellation (2026-10-28)
+
+ABI 25 adds POST-EVENT (GUI wxPostEvent/AddPendingEvent copy), TRANSFER-EVENT
+(genuine wxQueueEvent handoff), PROCESS-EVENT-LOCALLY (independent local copy)
+and DELETE-PENDING-EVENTS (one non-application receiver, no callbacks). Post and
+local processing preserve the source; transfer validates before consuming it,
+then removes bridge ownership before native handoff. No rollback or delivery
+guarantee exists after handoff. Session-isolated receivers, exact supported
+classes and lazy wxEVT_TEXT/text-entry receiver restrictions remain in force.
+
+Local processing avoids normal outer global-filter/parent/application fallback,
+retaining native local pre-processing/chain behavior. Target deletion rejects the
+borrowed application handler and callback/pump/RUN use, removes pending events
+without bindings/callbacks, then synchronizes wxApp's pending-handler membership.
+Native DeletePendingEvents alone leaves that list entry, so the wrapper uses
+RemovePendingEventHandler from the implementation header. It is not present in
+the pinned documentation interface and must remain a C7 reconciliation dependency,
+not an asserted public binding. wxAppConsole::DeletePendingEvents and per-handler
+ProcessPendingEvents remain unbound; the latter requires a nonempty target queue
+without a safe public per-handler pending query. Existing app-wide processing
+is unchanged.
+
+Final batch counts: 113 exports, 73 named generics, 20 generic SETF writers,
+42 GUI scenarios, 160 docset entries and twenty-three examples. Independent
+runtime and documentation review pass. Local native static/default handlers can
+still execute under local processing, as clarified in the guide/reference.
+All 42 GUI scenarios plus native preflight pass locally on SBCL and CCL. Five
+rebuilt relocated-package checks pass. Python/inventory regressions, actual
+export/SETF lookup, isolated docset installation/discovery and API/guide/example
+navigation pass; the docset checker reports zero problems. Evidence is in
+`evidence/pending-events/{sbcl,ccl}-20261028/` and
+`evidence/packaging/pending-events-20261028/`; package:
+`dist/wxlambda-form-pending-events`.
+
+An initial script reused the package text buffer while appending API methods,
+temporarily replacing lisp/api.lisp and causing CLASS-NOT-FOUND on example load.
+The committed source was restored and only the intended 28 new lines reapplied;
+the example and all subsequent checks pass. Expanded regression tests passed on
+both Lisps on their first run. Two user-authorized subagents handled docs/coverage
+and regressions in parallel, with independent review separate.
+Hosted Windows/Linux GUI, actual OS-session delivery, graphical
+Cadre and prior inaccessible pointer/class-mismatch branches remain unverified.
+Next continue C1 origin retention/ownership or handler-chain prerequisites;
+worker posting, arbitrary native pointers and global queue cancellation remain gaps.
 
 ## Decisions
 
