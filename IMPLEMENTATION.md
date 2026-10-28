@@ -7,17 +7,31 @@ implemented or verified behavior.
 
 ## Phase 1: Establish the release baseline
 
-- [ ] Correct README coverage and CI counts to 19 scenarios.
-- [ ] Record tested and intended OS/Lisp combinations separately.
-- [ ] Run the pinned-dependency suite and cache-switch regression checks.
+- [x] Correct README coverage and CI counts to 19 scenarios.
+- [x] Record tested and intended OS/Lisp combinations separately.
+- [x] Run the pinned-dependency suite and cache-switch regression checks.
+
+Verified locally on 2026-10-28 on Apple Silicon macOS with wxWidgets 3.2.12,
+SBCL 2.6.9, and CCL 1.13. The dependency fetcher verified all four pinned
+checkouts. Both Lisps passed all 19 GUI scenarios and the separate three-process
+pinned → Quicklisp → pinned callback regression. The runner previously had 18
+scenarios; the delayed-input test below adds the nineteenth. Cache-switch checks
+are not included in that count. Reproduction commands are in README.md.
+Hosted-platform validation remains Phase 3 work.
 
 **Acceptance:** Documented commands reproduce the baseline without unexplained
 failures.
 
 ## Phase 2: Finish REPL-driven development
 
-- [ ] Add delayed-input tests for whitespace, CRLF, EOF, error recovery, and GUI
+- [x] Add delayed-input tests for whitespace, CRLF, EOF, error recovery, and GUI
   responsiveness.
+
+  `tests/repl-delayed.lisp` uses a timed Gray stream on SBCL/CCL. It verifies
+  callback dispatch while input is unavailable, separate evaluation/callback
+  error recovery under the current message-only policy, and EOF cleanup. It
+  rejects blocking reads during whitespace-only waits. Actual terminal/editor
+  transport and the debugger policy below still need validation.
 - [ ] Replace message-only error handling for interactive use with a debugger
   policy. Preserve the original condition and its available restarts; provide a
   restart that abandons the current form and returns to the application REPL.

@@ -318,7 +318,7 @@ operation on the same thread. See `native/wxlambda.h` for the C interface.
 
 These tests briefly open real windows, queue a button event, then exit. They need
 an interactive graphical session (or a suitable display server on Linux).
-Each scenario runs in a fresh process with a 30-second timeout:
+The 19 scenarios each run in a fresh process with a 30-second timeout:
 
 ```sh
 python3 tests/run.py
@@ -339,12 +339,22 @@ must leave the loop running. Layout tests verify actual child geometry for rows,
 columns, proportional allocation, fixed/flexible spacing, borders, and alignment,
 plus invalid options and stale handles. Control tests cover label text copies,
 checked-state access, nested toggle snapshots, handler replacement/unbinding,
-and caught/uncaught toggle errors. Unicode rendering, manual mouse/keyboard input,
+and caught/uncaught toggle errors. A timed Gray input stream tests delayed
+whitespace/CRLF, GUI callback dispatch while input is unavailable, separate
+evaluation/callback error recovery, and delayed EOF cleanup on SBCL and CCL.
+This simulates delayed terminal input; it does not validate an actual terminal
+or editor transport. Unicode rendering, manual mouse/keyboard input,
 and user-generated toggle events have not been visually verified; automated text
 and toggle events use notifying setters.
 
-Validated locally on Apple Silicon macOS with wxWidgets 3.2.12, SBCL 2.6.9, and
-CCL 1.13. Windows and Linux are intended targets but have not been tested.
+Locally tested and intended combinations are distinct:
+
+| Platform | Lisp | Validation |
+| --- | --- | --- |
+| Apple Silicon macOS, wxWidgets 3.2.12 | SBCL 2.6.9, CCL 1.13 | Local GUI suites and dependency cache switching |
+| Linux | SBCL | Intended; hosted job configured, no hosted results recorded |
+| macOS hosted runner | SBCL | Intended; hosted job configured, no hosted results recorded |
+| Windows x64 | Lisp runtime not validated | Intended; native build job only |
 
 ## Continuous integration
 
@@ -353,8 +363,8 @@ The configured jobs are:
 
 | Runner | Native build | Lisp GUI tests |
 | --- | --- | --- |
-| Ubuntu 24.04 | Distribution wxWidgets 3.2, GCC | SBCL, thirteen scenarios under Xvfb |
-| macOS 15 | Homebrew wxWidgets 3.2, Clang | SBCL, thirteen scenarios |
+| Ubuntu 24.04 | Distribution wxWidgets 3.2, GCC | SBCL, 19 scenarios under Xvfb |
+| macOS 15 | Homebrew wxWidgets 3.2, Clang | SBCL, 19 scenarios |
 | Windows Server 2022 x64 | wxWidgets 3.2.12 from source, MSVC | Not configured yet |
 
 These are configured checks, not a claim that the hosted jobs have passed. No
@@ -388,6 +398,21 @@ CCL can use the same dependencies with:
 ```sh
 python3 tests/run.py ccl --no-init --batch --load ci/setup.lisp
 ```
+
+For the separate dependency-cache regression, run:
+
+```sh
+python3 tests/cache-switch.py
+python3 tests/cache-switch.py ccl --no-init --batch
+```
+
+Each command runs the callback/handler API scenario with pinned dependencies,
+then Quicklisp, then pinned dependencies again in fresh processes. It checks
+CFFI source locations and the compiled output destination as well as actual
+native callback dispatch. Quicklisp must already be installed; set
+`QUICKLISP_SETUP` if its setup file is not `~/quicklisp/setup.lisp`.
+These three-process regressions are separate from the 19-scenario GUI suite
+and are local checks, not configured hosted jobs.
 
 The fetcher verifies existing checkouts and refuses modified or mismatched ones.
 After deliberately changing a locked revision, remove the corresponding generated
