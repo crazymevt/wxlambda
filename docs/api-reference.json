@@ -393,7 +393,7 @@
     "kind": "function",
     "arguments": "EVENT is an event snapshot.",
     "returns": ":CLICK, :TEXT-CHANGE, :TOGGLE, :SELECTION, :CLOSE, :QUERY-END-SESSION, :END-SESSION or a registered command/notify keyword name.",
-    "description": "Read the event kind.",
+    "description": "Read the event kind. The captured kind reflects the actual supported native tag at callback entry, even if an earlier callback changed it; binding registration identity does not change.",
     "scope": "No active GUI session required for saved snapshots. Wrong argument types signal Lisp type errors.",
     "wxwidgets": "Lisp-owned wxCommandEvent snapshot.",
     "syntax": "(wxlambda:event-kind event)"
@@ -901,12 +901,16 @@
   {
     "name": "event-native-type",
     "kind": "generic-function",
-    "arguments": "EVENT is an immutable snapshot or current innermost event context.",
+    "arguments": "EVENT is an immutable snapshot or current innermost event context. SETF VALUE is a signed32 native type returned by EVENT-TYPE for a registered name.",
     "returns": "Captured/current process-local native wxEventType integer.",
-    "description": "Read copied/current GetEventType. Saved values remain data after callback/source/session cleanup. Compare to EVENT-TYPE in the same active session; numeric tags are not stable serialized IDs or native cast authority.",
-    "scope": "Saved snapshots need no native session. Context reads require active main-thread session and innermost callback; stale/suspended contexts signal NATIVE-ERROR. No SETF native type writer or native class replacement. Arbitrary tags and general native class binding remain open.",
-    "wxwidgets": "wxEvent::GetEventType copied into a Lisp-owned snapshot (wxWidgets 3.2.12 baseline).",
-    "syntax": "(wxlambda:event-native-type event)"
+    "description": "Read copied/current GetEventType. Saved values remain data after callback/source/session cleanup. Compare to EVENT-TYPE in the same active session; numeric tags are not stable serialized IDs or native cast authority. Context SETF accepts only registered same-family source/target tags and validates actual native command/notify class before SetEventType. Earlier snapshots and registration identities remain unchanged; later snapshots report the current native tag. No dispatch restart or local delivery-order guarantee.",
+    "scope": "Saved snapshots need no session. Current reads/writes require active main-thread session and innermost callback; stale/suspended contexts signal NATIVE-ERROR. SETF rejects built-in/session/unknown/cross-family types before mutation. Malformed integers signal TYPE-ERROR. Arbitrary tag mutation, class replacement and native ownership remain unbound.",
+    "wxwidgets": "wxEvent::GetEventType / bounded SetEventType for registered same-family tags (wxWidgets 3.2.12 baseline).",
+    "syntax": "(wxlambda:event-native-type event)",
+    "setf": {
+      "syntax": "(setf (wxlambda:event-native-type context) value)",
+      "description": "Assign a registered same-family native type after actual-class checks; return VALUE. Built-in/session sources or targets reject. No snapshot writer, rebind, dispatch restart or local callback-order guarantee."
+    }
   },
   {
     "name": "event-type",

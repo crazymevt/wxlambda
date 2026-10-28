@@ -148,7 +148,7 @@ class CoverageInventoryChecks(unittest.TestCase):
             'wxEvtHandler::wxEvtHandler', 'wxEvtHandler::~wxEvtHandler',
             'wxEvtHandler::GetEvtHandlerEnabled', 'wxEvtHandler::SetEvtHandlerEnabled',
             'wxEvtHandler::Bind', 'wxEvtHandler::Unbind', 'wxEvtHandler::QueueEvent', 'wxEvent::GetId',
-            'wxEvent::GetEventCategory', 'wxEVT_CATEGORY_ALL', 'wxEventCategory', 'wxEvent::GetEventObject', 'wxEvent::SetId', 'wxEvent::GetTimestamp', 'wxEvent::SetTimestamp', 'wxEvent::IsCommandEvent', 'wxEvent::GetEventType', 'wxEvent::GetSkipped', 'wxEvent::Skip',
+            'wxEvent::SetEventType', 'wxEvent::GetEventCategory', 'wxEVT_CATEGORY_ALL', 'wxEventCategory', 'wxEvent::GetEventObject', 'wxEvent::SetId', 'wxEvent::GetTimestamp', 'wxEvent::SetTimestamp', 'wxEvent::IsCommandEvent', 'wxEvent::GetEventType', 'wxEvent::GetSkipped', 'wxEvent::Skip',
             'wxEvent::ShouldPropagate', 'wxEvent::StopPropagation', 'wxEvent::ResumePropagation',
             'wxCloseEvent::wxCloseEvent', 'wxCloseEvent::CanVeto', 'wxCloseEvent::Veto',
             'wxCloseEvent::GetLoggingOff', 'wxCloseEvent::SetLoggingOff', 'wxEVT_END_SESSION', 'wxEVT_QUERY_END_SESSION', 'wxCloseEvent::GetVeto', 'wxCloseEvent::SetCanVeto', 'wxWindow::Close',

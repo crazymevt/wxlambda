@@ -1042,3 +1042,11 @@ live checkbox, including when called from inside its handler."
   (cffi:with-foreign-object (value :int)
     (check-status (%context-category (event-context-token context) value))
     (cffi:mem-ref value :int)))
+
+(defgeneric (setf event-native-type) (value context)
+  (:documentation "Assign a registered same-family native type after actual-class validation; snapshots stay immutable."))
+(defmethod (setf event-native-type) (value (context event-context))
+  (require-active-application)
+  (check-type value (integer -2147483648 2147483647))
+  (check-status (%context-set-native-type (event-context-token context) value))
+  value)

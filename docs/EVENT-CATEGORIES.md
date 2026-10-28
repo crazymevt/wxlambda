@@ -1,6 +1,6 @@
 # Event-category metadata
 
-ABI 22 adds EVENT-CATEGORY for saved immutable snapshots and current innermost
+ABI 23 adds EVENT-CATEGORY for saved immutable snapshots and current innermost
 contexts, plus EVENT-CATEGORY-MASK for compiled native category values. The
 coverage baseline is wxWidgets 3.2.12. Categories are numeric flags, not native
 type IDs, EVENT-ID routing values or EVENT-FAMILY keywords.
@@ -63,3 +63,5 @@ Build/check with `python3 tools/docset.py build` and `check`; install with
 (default `~/.local/share/docsets/wxlambda/`) for Cadre lookup and examples.
 See [metadata](EVENT-METADATA.md), [origin/type readers](EVENT-ORIGINS.md) and
 [docset installation](DOCSET.md).
+
+[Registered-tag mutation](EVENT-TAGS.md) now supports same-family SETF with actual native class checks; built-in/session tags and origin writes remain excluded.

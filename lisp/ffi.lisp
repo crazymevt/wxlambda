@@ -89,7 +89,7 @@
           (if (probe-file local)
               (cffi:load-foreign-library local)
               (cffi:use-foreign-library wxlambda-native))))
-    (unless (= 22 (%abi-version)) (error "Unsupported wxlambda native ABI"))
+    (unless (= 23 (%abi-version)) (error "Unsupported wxlambda native ABI"))
     (setf *native-loaded* t))
   t)
 
@@ -153,3 +153,5 @@
 (cffi:defcfun ("wxl_context_category" %context-category) :int (context :uint64) (value :pointer))
 
 (cffi:defcfun ("wxl_event_category_mask" %event-category-mask) :int (category :int))
+
+(cffi:defcfun ("wxl_context_set_native_type" %context-set-native-type) :int (context :uint64) (type :int))

@@ -1591,6 +1591,20 @@
         "wxl_event_category_mask"
       ],
       "scope": "All six documented category constants map to compiled native masks through keyword lookup. ALL includes actual implementation bits (local3.2.12=127 versus interface31); no internal names, selective YieldFor or category-specific event-family bindings. Inventory groups the enumerators in one source entry."
+    },
+    {
+      "header": "wx/event.h",
+      "line": 213,
+      "declaration": "void SetEventType(wxEventType type);",
+      "status": "~",
+      "symbol": "wxEvent::SetEventType",
+      "lisp": [
+        "(setf event-native-type)"
+      ],
+      "native": [
+        "wxl_context_set_native_type"
+      ],
+      "scope": "Current registered source/target tags only, same command/notify family and actual native class checked. Built-in/session/arbitrary tags reject before mutation. Snapshot immutability and registration identity preserved; no dispatch restart or local callback-order guarantee."
     }
   ],
   "classes": {
@@ -1732,7 +1746,7 @@
         "wxl_gauge_vertical",
         "wxl_gauge_pulse"
       ],
-      "scope": "Parent-owned progress gauge: positive range, value, horizontal/vertical orientation and pulsing. Constructor options, two-step creation and full inherited API remain open. Gauge support introduced in ABI 10; current bridge ABI 22; see docs/GAUGE.md and tests/gauge.lisp."
+      "scope": "Parent-owned progress gauge: positive range, value, horizontal/vertical orientation and pulsing. Constructor options, two-step creation and full inherited API remain open. Gauge support introduced in ABI 10; current bridge ABI 23; see docs/GAUGE.md and tests/gauge.lisp."
     },
     "wxAppConsole": {
       "status": "~",
@@ -1820,7 +1834,8 @@
         "(setf event-id)",
         "event-origin-id",
         "event-category",
-        "event-category-mask"
+        "event-category-mask",
+        "(setf event-native-type)"
       ],
       "native": [
         "wxl_bind",
@@ -1839,9 +1854,10 @@
         "wxl_context_origin_id",
         "wxl_context_native_type",
         "wxl_context_category",
-        "wxl_event_category_mask"
+        "wxl_event_category_mask",
+        "wxl_context_set_native_type"
       ],
-      "scope": "Immutable supported command/close snapshots and current-callback wxEvent base views for Skip/propagation; close veto is checked through wxCloseEvent only. Arbitrary native construction/cloning, mutable type/origin, userData and broader families remain open. See docs/CLOSE-EVENTS.md. Timestamp/command classification snapshots and current reads, bounded native LONG timestamp SETF and close-only CanVeto SETF are implemented; snapshots stay immutable. Scoped ID reads/SETF are implemented; native routing after mutation is verified separately from snapshot immutability. Current native type and bounded registered-origin identity reads are implemented; native type/origin mutation and general wxObject wrappers remain open. Captured/current virtual category reads are supported; no selective pumping."
+      "scope": "Immutable supported command/close snapshots and current-callback wxEvent base views for Skip/propagation; close veto is checked through wxCloseEvent only. Arbitrary native construction/cloning, mutable type/origin, userData and broader families remain open. See docs/CLOSE-EVENTS.md. Timestamp/command classification snapshots and current reads, bounded native LONG timestamp SETF and close-only CanVeto SETF are implemented; snapshots stay immutable. Scoped ID reads/SETF are implemented; native routing after mutation is verified separately from snapshot immutability. Current native type and bounded registered-origin identity reads are implemented; native type/origin mutation and general wxObject wrappers remain open. Captured/current virtual category reads are supported; no selective pumping. Bounded registered same-family native type SETF is now supported with actual native class checks; arbitrary and built-in/session tag mutation remains open."
     },
     "wxCloseEvent": {
       "status": "~",

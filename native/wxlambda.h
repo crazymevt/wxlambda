@@ -79,6 +79,7 @@ WXL_API int wxl_context_stop_propagation(uint64_t context);
 WXL_API int wxl_context_set_can_veto(uint64_t context, int value);
 WXL_API int wxl_event_category_mask(int category);
 WXL_API int wxl_context_category(uint64_t context, int *value);
+WXL_API int wxl_context_set_native_type(uint64_t context, int type);
 WXL_API int wxl_context_native_type(uint64_t context, int *value);
 WXL_API int wxl_context_origin_id(uint64_t context, wxl_handle *value);
 WXL_API int wxl_context_id(uint64_t context, int *value);

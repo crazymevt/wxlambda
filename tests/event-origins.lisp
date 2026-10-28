@@ -35,7 +35,6 @@
         (wxlambda:process-event receiver :close)
         (wxlambda:unbind-event binding) (wxlambda:unbind-event inner))
       (assert (not (fboundp '(setf wxlambda:event-origin-id))))
-      (assert (not (fboundp '(setf wxlambda:event-native-type))))
       (wxlambda:destroy-event-handler receiver)
       (assert (= captured (wxlambda:event-origin-id saved)))))
   (assert (= captured (wxlambda:event-origin-id saved)))

@@ -53,15 +53,17 @@ must reconcile additional documented public interfaces beyond those headers.
   origin IDs for registered bridge objects; no unchecked pointer/class access.
 - Category milestone: saved/current virtual category flags and compiled native
   keyword mask lookup; selective YieldFor remains open.
-- Current bridge ABI: 22. Public API: 104 exports, nine window wrapper classes
+- Tag-mutation milestone: registered same-family native type SETF with actual
+  native class checks; built-in/session tags remain excluded.
+- Current bridge ABI: 23. Public API: 104 exports, nine window wrapper classes
   (eight concrete widget kinds) plus the event-handler base, 62 named generics and
-  seventeen generic SETF writers. The application-handler is a borrowed view; no
+  eighteen generic SETF writers. The application-handler is a borrowed view; no
   native application construction or arbitrary-event class binding exists yet; built-ins plus registered command/notify names have
   observer/contextual bindings.
-- Latest implementation verification: 39 GUI scenarios and native preflight
+- Latest implementation verification: 40 GUI scenarios and native preflight
   pass on local Apple Silicon macOS SBCL 2.6.9 and CCL 1.13. Final reports:
-  `evidence/event-categories/{sbcl,ccl}-20261028/`. Five package checks
-  pass in `evidence/packaging/event-categories-20261028/`.
+  `evidence/event-tags/{sbcl,ccl}-20261028/`. Five package checks
+  pass in `evidence/packaging/event-tags-20261028/`.
   Hosted Linux/Windows GUI behavior and the graphical Cadre viewer remain open.
 
 ### Next dependency and working order
@@ -81,9 +83,9 @@ must reconcile additional documented public interfaces beyond those headers.
    The borrowed application handler view and query/end-session metadata/bindings
    are implemented, as are scoped CanVeto mutation, timestamp and command metadata.
    Scoped native ID mutation and routing semantics are implemented. Next define
-   bounded registered-tag mutation using actual native class checks, then
-   origin retention/native ownership contracts. Category metadata is implemented. Current type
-   reads and bounded origin identities are implemented; native type/origin
+   origin retention/native ownership contracts. Bounded registered-tag mutation
+   with actual native class checks is implemented. Category metadata is implemented. Current type
+   reads and bounded origin identities are implemented; arbitrary native tag/origin
    writers and general wxObject wrappers remain open. Native OS session delivery is unverified. Native session events are
    wxApp-only, and default END_SESSION handling can exit the process: never
    synthesize live application end-session events as an ordinary test. Use owned
@@ -1029,6 +1031,33 @@ paths are in the handoff. Hosted Windows/Linux GUI, real OS session delivery and
 graphical Cadre remain unverified. Next implement bounded registered-tag mutation
 using actual native class checks; preserve session fallback isolation and reject
 incompatible tags before broader native ownership/origin-retention contracts.
+
+## Bounded registered native tag mutation (2026-10-28)
+
+ABI 23 adds context SETF EVENT-NATIVE-TYPE: registered source+target, same family,
+actual wxCommandEvent without wxNotifyEvent for command tags or wxNotifyEvent
+for notify tags. Built-in/session/unknown/incompatible tags reject before mutation.
+Snapshots report actual current tags; binding identities retain registration tags.
+The writer never changes native class/storage, restarts dispatch or guarantees
+local callback delivery/order. Native origin and arbitrary tag writers stay open.
+
+An initial focused test incorrectly required an old-tag local observer after
+mutation; the backend rematched the changed tag and skipped it. That ordering
+assumption was removed. Parent routing verifies changed tags with structural
+order for synchronous/queued delivery. Command/notify checks also cover rejected
+targets, unchanged state after failure, veto after change and nested/expired
+contexts. Public APIs cannot create a mismatched native object with a registered
+tag; actual-class rejection is statically reviewed, not directly exercised.
+
+Independent runtime/documentation review found no remaining actionable issue.
+All 40 GUI scenarios plus preflight pass locally on SBCL/CCL, as do focused
+example/regressions, Python/inventory tests and five relocated-package checks.
+The 147-entry docset covers all 104 exports, guides and twenty-one examples, with
+zero checker problems, actual export/SETF lookup, isolated discovery/install and
+guide/example checks on both Lisps. Evidence paths are in the handoff. Hosted
+Windows/Linux GUI, actual OS session delivery and graphical Cadre remain
+unverified. Next define origin retention and persistent native event ownership
+contracts; preserve actual-class checks and isolated session fallback.
 
 ## Decisions
 

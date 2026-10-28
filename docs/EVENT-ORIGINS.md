@@ -1,6 +1,6 @@
 # Native event type and origin identity
 
-ABI 22 extends EVENT-NATIVE-TYPE to a generic reader for immutable snapshots and
+ABI 23 extends EVENT-NATIVE-TYPE to a generic reader for immutable snapshots and
 current innermost contexts. EVENT-ORIGIN-ID is a new generic reader with the same
 saved/current lifetime distinction. Baseline: wxWidgets 3.2.12.
 
@@ -8,9 +8,11 @@ EVENT-NATIVE-TYPE returns the actual process-local native type integer from
 GetEventType. Compare it with EVENT-TYPE during the active session; registry
 names expire at cleanup, while saved integer metadata remains readable. Type
 numbers are not stable serialized IDs or authority to cast native objects.
-No SETF writer exists for native type or origin. Changing a type tag does not
+A bounded [registered-tag writer](EVENT-TAGS.md) now exists for native type;
+origin remains read-only. Changing a type tag does not
 change the native C++ event class, so unvalidated type mutation could make native
-handlers cast incompatible storage. This slice introduces no such mutation.
+handlers cast incompatible storage. Unrestricted mutation remains unbound; the registered-tag writer checks both
+registry families and actual native class.
 
 EVENT-ORIGIN-ID returns a positive opaque bridge identity if GetEventObject
 matches a currently registered application, owned handler or tracked window.

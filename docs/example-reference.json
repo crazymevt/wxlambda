@@ -78,5 +78,9 @@
   "event-categories.lisp": {
     "description": "Compare current/saved native category for a synthetic registered command and test USER_INPUT membership; no selective pumping or OS events.",
     "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/event-categories.lisp --eval '(wxlambda-event-categories:start)'"
+  },
+  "event-tags.lisp": {
+    "description": "Translate a registered command tag in a child callback, then verify payload-preserving parent delivery for synchronous and queued dispatch; clean up all resources.",
+    "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/event-tags.lisp --eval '(wxlambda-event-tags:start)'"
   }
 }

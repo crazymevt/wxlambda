@@ -230,13 +230,16 @@ struct Binding {
         auto keep = found->second;
         if (live() && dispatch) {
             auto* command = dynamic_cast<wxCommandEvent*>(&event);
-            const int family = native_event_family(kind);
-            const bool carries_text = kind == WXL_EVENT_TEXT_CHANGE || kind >= 8;
+            int snapshot_kind = kind;
+            for (const auto& item : registered_events)
+                if (item.second.type == event.GetEventType()) { snapshot_kind = item.first; break; }
+            const int family = native_event_family(snapshot_kind);
+            const bool carries_text = snapshot_kind == WXL_EVENT_TEXT_CHANGE || snapshot_kind >= 8;
             const auto text = command ? command->GetString() : wxString();
             const auto bytes = text.ToUTF8();
-            wxl_event snapshot{kind, carries_text ? (bytes.data() ? bytes.data() : "") : nullptr,
-                                     kind == WXL_EVENT_TOGGLE && command && command->IsChecked() ? 1 : 0,
-                                     kind == WXL_EVENT_SELECTION && command ? command->GetSelection() : -1,
+            wxl_event snapshot{snapshot_kind, carries_text ? (bytes.data() ? bytes.data() : "") : nullptr,
+                                     snapshot_kind == WXL_EVENT_TOGGLE && command && command->IsChecked() ? 1 : 0,
+                                     snapshot_kind == WXL_EVENT_SELECTION && command ? command->GetSelection() : -1,
                                      event.GetId(), carries_text ? bytes.length() : 0,
                                      0, event.GetEventType(), event_can_veto(event) ? 1 : 0, event_vetoed(event) ? 1 : 0,
                                      family, command ? command->GetInt() : 0,
@@ -315,7 +318,7 @@ wxString utf8(const char* value) {
 }
 }
 extern "C" {
-int wxl_abi_version() { return 22; }
+int wxl_abi_version() { return 23; }
 const char* wxl_last_error() { return error.c_str(); }
 int wxl_start(wxl_callback callback) {
     return status([&] {
@@ -489,6 +492,25 @@ int wxl_context_category(uint64_t token, int* value) {
     return status([&] {
         require(value != nullptr, "Missing event category output");
         *value = static_cast<int>(current_event(token).GetEventCategory());
+    });
+}
+int wxl_context_set_native_type(uint64_t token, int type) {
+    return status([&] {
+        auto& event = current_event(token);
+        const RegisteredEvent* source = nullptr;
+        const RegisteredEvent* target = nullptr;
+        for (const auto& item : registered_events) {
+            if (item.second.type == event.GetEventType()) source = &item.second;
+            if (item.second.type == type) target = &item.second;
+        }
+        require(source && target, "Type mutation requires registered source and target tags");
+        require(source->family == target->family, "Type mutation cannot change event family");
+        auto* command = dynamic_cast<wxCommandEvent*>(&event);
+        auto* notify = dynamic_cast<wxNotifyEvent*>(&event);
+        require((source->family == WXL_FAMILY_COMMAND && command && !notify) ||
+                (source->family == WXL_FAMILY_NOTIFY && notify),
+                "Registered tag does not match the actual native event class");
+        event.SetEventType(type);
     });
 }
 int wxl_context_native_type(uint64_t token, int* value) {
