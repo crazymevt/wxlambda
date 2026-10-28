@@ -43,6 +43,16 @@ template<class T> T* as(wxl_handle id) {
     require(object != nullptr, "Wrong control type");
     return object;
 }
+wxBoxSizer* box(wxWindow* parent) {
+    auto* sizer = dynamic_cast<wxBoxSizer*>(parent->GetSizer());
+    require(sizer != nullptr, "Create a row or column before adding layout items");
+    return sizer;
+}
+void make_box(wxl_handle id, int orientation) {
+    auto* parent = window(id);
+    require(parent->GetSizer() == nullptr, "Window already has a sizer");
+    parent->SetSizer(new wxBoxSizer(orientation));
+}
 wxl_handle track(wxWindow* object) {
     const auto id = next_handle++;
     windows.emplace(id, object);
@@ -73,7 +83,7 @@ wxString utf8(const char* value) {
 }
 }
 extern "C" {
-int wxl_abi_version() { return 3; }
+int wxl_abi_version() { return 4; }
 const char* wxl_last_error() { return error.c_str(); }
 int wxl_start(wxl_callback callback) {
     return status([&] {
@@ -157,21 +167,56 @@ wxl_handle wxl_text(wxl_handle parent, const char* value) {
     });
 }
 int wxl_column(wxl_handle parent) {
-    return status([&] {
-        auto* p = window(parent);
-        require(p->GetSizer() == nullptr, "Window already has a sizer");
-        p->SetSizer(new wxBoxSizer(wxVERTICAL));
-    });
+    return status([&] { make_box(parent, wxVERTICAL); });
 }
-int wxl_add(wxl_handle parent, wxl_handle child, int proportion) {
+int wxl_row(wxl_handle parent) {
+    return status([&] { make_box(parent, wxHORIZONTAL); });
+}
+int wxl_add(wxl_handle parent, wxl_handle child, int proportion,
+            int border, int expand, int alignment) {
     return status([&] {
         auto* p = window(parent); auto* c = window(child);
         require(proportion >= 0, "Proportion must be nonnegative");
+        require(border >= 0, "Border must be nonnegative");
+        require(alignment >= WXL_ALIGN_START && alignment <= WXL_ALIGN_END, "Invalid alignment");
+        require(!expand || alignment == WXL_ALIGN_START, "Alignment requires expand=false");
         require(c->GetParent() == p, "Child must belong to the sizer's window");
-        require(p->GetSizer() != nullptr, "Create a column before adding children");
+        auto* sizer = box(p);
         require(c->GetContainingSizer() == nullptr, "Child already belongs to a sizer");
-        p->GetSizer()->Add(c, proportion, wxEXPAND | wxALL, 8);
+        int flags = wxALL;
+        if (expand) flags |= wxEXPAND;
+        else if (alignment == WXL_ALIGN_CENTER)
+            flags |= sizer->GetOrientation() == wxHORIZONTAL ? wxALIGN_CENTER_VERTICAL : wxALIGN_CENTER_HORIZONTAL;
+        else if (alignment == WXL_ALIGN_END)
+            flags |= sizer->GetOrientation() == wxHORIZONTAL ? wxALIGN_BOTTOM : wxALIGN_RIGHT;
+        sizer->Add(c, proportion, flags, border);
         p->Layout();
+    });
+}
+int wxl_spacer(wxl_handle parent, int size) {
+    return status([&] {
+        auto* p = window(parent);
+        require(size >= 0, "Spacer size must be nonnegative");
+        box(p)->AddSpacer(size);
+        p->Layout();
+    });
+}
+int wxl_stretch(wxl_handle parent, int proportion) {
+    return status([&] {
+        auto* p = window(parent);
+        require(proportion > 0, "Stretch proportion must be positive");
+        box(p)->AddStretchSpacer(proportion);
+        p->Layout();
+    });
+}
+int wxl_layout(wxl_handle id) { return status([&] { window(id)->Layout(); }); }
+int wxl_geometry(wxl_handle id, int* x, int* y, int* width, int* height) {
+    return status([&] {
+        auto* control = window(id);
+        require(x && y && width && height, "Geometry output pointers must not be null");
+        const auto position = control->GetPosition();
+        const auto size = control->GetSize();
+        *x = position.x; *y = position.y; *width = size.x; *height = size.y;
     });
 }
 int wxl_show(wxl_handle id) { return status([&] { window(id)->Show(); }); }

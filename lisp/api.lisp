@@ -102,8 +102,38 @@ while native GUI code runs. The REPL blocks until FUNCTION returns."
 (defun make-text (parent &key (value ""))
   (wrap-window 'text-control (%text (handle parent) value)))
 (defun make-column (parent) (check-status (%column (handle parent))) parent)
-(defun add-child (parent child &key (proportion 0))
-  (check-status (%add (handle parent) (handle child) proportion)) child)
+(defun make-row (parent) (check-status (%row (handle parent))) parent)
+(defun add-child (parent child &key (proportion 0) (border 8) (expand t) (align :start))
+  "Add CHILD to PARENT's row/column. PROPORTION allocates the major axis;
+EXPAND fills the minor axis. With EXPAND NIL, ALIGN is :START, :CENTER, or :END.
+BORDER is nonnegative spacing on all four sides, in wxWidgets coordinates."
+  (check-status (%add (handle parent) (handle child) proportion border (if expand 1 0)
+                      (ecase align (:start 0) (:center 1) (:end 2))))
+  child)
+(defun add-spacer (parent size)
+  "Add fixed nonnegative SIZE along PARENT's layout axis."
+  (check-status (%spacer (handle parent) size)) parent)
+(defun add-stretch (parent &key (proportion 1))
+  "Add flexible space with positive PROPORTION along PARENT's layout axis."
+  (check-status (%stretch (handle parent) proportion)) parent)
+(defun layout-window (window)
+  "Recompute WINDOW's sizer layout after batching changes."
+  (check-status (%layout (handle window))) window)
+(defun window-geometry (window)
+  (cffi:with-foreign-objects ((x :int) (y :int) (width :int) (height :int))
+    (check-status (%geometry (handle window) x y width height))
+    (values (cffi:mem-ref x :int) (cffi:mem-ref y :int)
+            (cffi:mem-ref width :int) (cffi:mem-ref height :int))))
+(defun window-position (window)
+  "Return X and Y as two values, relative to the parent (screen for frames)."
+  (multiple-value-bind (x y width height) (window-geometry window)
+    (declare (ignore width height))
+    (values x y)))
+(defun window-size (window)
+  "Return outer WIDTH and HEIGHT as two values in wxWidgets coordinates."
+  (multiple-value-bind (x y width height) (window-geometry window)
+    (declare (ignore x y))
+    (values width height)))
 (defun show-window (window) (check-status (%show (handle window))) window)
 (defun destroy-window (window) (check-status (%destroy (handle window))))
 (defun set-text (control value &key notify)

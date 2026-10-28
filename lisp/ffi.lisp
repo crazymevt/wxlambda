@@ -16,7 +16,14 @@
 (cffi:defcfun ("wxl_button" %button) :uint64 (parent :uint64) (label (:string :encoding :utf-8)))
 (cffi:defcfun ("wxl_text" %text) :uint64 (parent :uint64) (value (:string :encoding :utf-8)))
 (cffi:defcfun ("wxl_column" %column) :int (parent :uint64))
-(cffi:defcfun ("wxl_add" %add) :int (parent :uint64) (child :uint64) (proportion :int))
+(cffi:defcfun ("wxl_row" %row) :int (parent :uint64))
+(cffi:defcfun ("wxl_add" %add) :int
+  (parent :uint64) (child :uint64) (proportion :int) (border :int) (expand :int) (alignment :int))
+(cffi:defcfun ("wxl_spacer" %spacer) :int (parent :uint64) (size :int))
+(cffi:defcfun ("wxl_stretch" %stretch) :int (parent :uint64) (proportion :int))
+(cffi:defcfun ("wxl_layout" %layout) :int (window :uint64))
+(cffi:defcfun ("wxl_geometry" %geometry) :int
+  (window :uint64) (x :pointer) (y :pointer) (width :pointer) (height :pointer))
 (cffi:defcfun ("wxl_show" %show) :int (window :uint64))
 (cffi:defcfun ("wxl_destroy" %destroy) :int (window :uint64))
 (cffi:defcfun ("wxl_set_text" %set-text) :int
@@ -38,6 +45,6 @@
       (cond (path (cffi:load-foreign-library path))
             ((probe-file local) (cffi:load-foreign-library local))
             (t (cffi:use-foreign-library wxlambda-native)))
-      (unless (= 3 (%abi-version)) (error "Unsupported wxlambda native ABI"))
+      (unless (= 4 (%abi-version)) (error "Unsupported wxlambda native ABI"))
       (setf *native-loaded* t)))
   t)

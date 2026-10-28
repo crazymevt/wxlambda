@@ -5,7 +5,7 @@ versioned C ABI. This is an application lifecycle prototype, not a complete
 wxWidgets binding.
 
 Implemented: application startup/shutdown, frames, panels, buttons, editable text
-controls, vertical sizers, text reading/writing, removable click and text-change
+controls, row/column layouts, spacers, text reading/writing, removable click and text-change
 handlers, copied event payloads, and programmatically queued clicks.
 Lisp objects wrap checked integer handles; native pointers never escape the bridge.
 
@@ -38,7 +38,7 @@ application with `(wxlambda:load-native-library #P"C:/path/to/wxlambda.dll")`.
 Dependent wxWidgets DLLs must also be discoverable by the OS loader.
 
 The bridge normally loads from `build/`, then falls back to the system library
-search path. The Lisp/native ABI version (currently 3) is checked on load; rebuild
+search path. The Lisp/native ABI version (currently 4) is checked on load; rebuild
 the bridge after updating the bindings. Installing the bridge with CMake does not
 install the ASDF system.
 
@@ -76,6 +76,55 @@ The basic API is:
       (lambda () (wxlambda:set-text text "Hello from Lisp!")))
     (wxlambda:show-window frame)
     (wxlambda:run)))
+```
+
+## Layout
+
+Use `make-column` for vertical layout and `make-row` for horizontal layout. A
+window has one sizer. To nest orientations, create a child panel, give it its own
+row or column, then add that panel to its parent's layout. `add-child` requires
+the child's native parent to be the layout's window.
+
+```lisp
+(wxlambda:make-row panel)
+(wxlambda:add-child panel text :proportion 1 :border 0)
+(wxlambda:add-spacer panel 12)
+(wxlambda:add-child panel button :border 0 :expand nil :align :center)
+```
+
+`add-child` accepts these layout options:
+
+| Keyword | Default | Meaning |
+| --- | --- | --- |
+| `:proportion` | `0` | Nonnegative weight along the layout axis; zero keeps the item's preferred extent |
+| `:border` | `8` | Nonnegative spacing on each of the four sides |
+| `:expand` | `t` | Fill the available space across the layout axis |
+| `:align` | `:start` | With `:expand nil`, place at `:start`, `:center`, or `:end` across the axis |
+
+In a row, alignment controls vertical placement; in a column, it controls
+horizontal placement. `:expand t` with `:align :center` or `:end` is rejected.
+Proportions and stretch allocation remain subject to native minimum sizes.
+The defaults preserve the original `add-child` behavior.
+
+`(add-spacer panel size)` inserts fixed space along the layout axis.
+`(add-stretch panel :proportion 1)` inserts flexible space with a positive weight,
+sharing available room with other proportional items. Both return the panel.
+Invalid sizes, proportions, parent relationships, and duplicate insertions signal
+errors before the sizer is modified.
+
+`layout-window` recomputes a window's layout. `add-child`, `add-spacer`, and
+`add-stretch` also lay out their parent immediately. Layouts participate in
+wxWidgets' normal resize handling. `window-position` returns X and Y as two values,
+relative to the parent's client area (screen coordinates for top-level frames).
+`window-size` returns outer width and height as two values. Dimensions and spacing
+use wxWidgets window coordinates, not framebuffer pixel counts; native minimum
+sizes and display scaling remain wxWidgets' responsibility.
+
+Run [examples/layout.lisp](examples/layout.lisp) to try nested rows and columns,
+a text field that takes the available width, and a footer with flexible spacing:
+
+```sh
+sbcl --load ~/quicklisp/setup.lisp --load examples/layout.lisp
 ```
 
 ## Events
@@ -180,8 +229,10 @@ duplicate sizer insertion, cleanup on setup and callback errors, and rejection
 of a second session. Event tests cover source/kind metadata, copied Unicode and
 empty text payloads, nested updates, silent versus notifying setters, self-unbinding,
 and text-handler errors before and during the loop, including caught errors that
-must leave the loop running. Unicode rendering, manual
-mouse input, and keyboard-generated text events have not been visually verified
+must leave the loop running. Layout tests verify actual child geometry for rows,
+columns, proportional allocation, fixed/flexible spacing, borders, and alignment,
+plus invalid options and stale handles. Unicode rendering, manual mouse input,
+and keyboard-generated text events have not been visually verified
 by these tests; text events are triggered using the native notifying setter.
 
 Validated locally on Apple Silicon macOS with wxWidgets 3.2.12, SBCL 2.6.9, and
@@ -194,8 +245,8 @@ The configured jobs are:
 
 | Runner | Native build | Lisp GUI tests |
 | --- | --- | --- |
-| Ubuntu 24.04 | Distribution wxWidgets 3.2, GCC | SBCL, eight scenarios under Xvfb |
-| macOS 15 | Homebrew wxWidgets 3.2, Clang | SBCL, eight scenarios |
+| Ubuntu 24.04 | Distribution wxWidgets 3.2, GCC | SBCL, nine scenarios under Xvfb |
+| macOS 15 | Homebrew wxWidgets 3.2, Clang | SBCL, nine scenarios |
 | Windows Server 2022 x64 | wxWidgets 3.2.12 from source, MSVC | Not configured yet |
 
 These are configured checks, not a claim that the hosted jobs have passed. No

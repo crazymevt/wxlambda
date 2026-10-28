@@ -22,3 +22,7 @@ for mode in ("payloads", "error-before-run", "error-in-loop", "error-handled-in-
     subprocess.run(command + ["--load", str(root / "tests/events.lisp")],
                    cwd=root, env={**os.environ, "WXLAMBDA_EVENT_TEST_MODE": mode},
                    check=True, timeout=30)
+
+print(f"Testing layout geometry: {command[0]}", flush=True)
+subprocess.run(command + ["--load", str(root / "tests/layout.lisp")],
+               cwd=root, check=True, timeout=30)
