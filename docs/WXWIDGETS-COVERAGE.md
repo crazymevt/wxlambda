@@ -83,21 +83,21 @@ works. Context, class-definition and declaration counts must not be interpreted
 as percentages of distinct wxWidgets APIs.
 
 Current implementation is limited to managed application/event-dispatch APIs,
-standalone event-handler ownership/state, four-kind observer/contextual bindings
+standalone event-handler ownership/state, command/close observer/contextual bindings
 and queuing, and eight concrete widget kinds with a subset of inherited/layout/control APIs.
 C1 remains the active priority: event-handler ownership/state now has bounded
 support. Generic bindings, scoped Skip/propagation and copied native type IDs
-cover four command kinds. Veto-capable classes and broader native event families
-remain next, then timer/idle and worker dispatch, with required value and lifetime
+cover command and close kinds. Checked close veto is implemented; notify/session
+and broader native event families remain next, then timer/idle and worker dispatch, with required value and lifetime
 contracts first. C2 remains partial; C3–C7 have no public bindings recorded.
 See the [C1 details](coverage/phase-c1.md), [C2 details](coverage/phase-c2.md) and
 [class index](coverage/classes.md) for the remaining work within bound families.
 
-The current bridge is ABI 14, with 89 public Lisp exports. The latest code passes
-31 GUI scenarios on both local Apple Silicon macOS SBCL/CCL configurations and
+The current bridge is ABI 15, with 93 public Lisp exports. The latest code passes
+32 GUI scenarios on both local Apple Silicon macOS SBCL/CCL configurations and
 five packaging checks. These are local results retained under
-`evidence/event-contexts/` and `evidence/packaging/event-contexts-20261028/`;
-they do not validate Linux/Windows or the graphical Cadre viewer. The scoped-context
+`evidence/close-events/` and `evidence/packaging/close-events-20261028/`;
+they do not validate Linux/Windows or the graphical Cadre viewer. The close-family
 implementation reruns the GUI suites; documentation-only
 updates must distinguish retained results from newly run checks.
 
@@ -149,11 +149,16 @@ widget classes has complete wxWidgets coverage yet.
 - [x] Borrowed `event-context` values from `bind-event :with-context t`, with
   `event-skipped-p` SETF, `event-propagates-p`, stop/resume actions, nested callback
   isolation and stale-context checks. `event-native-type` copies runtime IDs;
-  `command-event-type` looks up four supported tags. See
-  [scoped context limits](EVENT-CONTEXTS.md); no veto-capable classes yet.
+  `event-type` looks up four supported tags. See
+  [scoped context limits](EVENT-CONTEXTS.md); close-veto is now scoped and CanVeto-guarded.
+- [x] `:close` / wxCloseEvent family, immutable `event-family` and close flags,
+  scoped `event-can-veto-p` / `event-vetoed-p` with generic SETF, copied close
+  queues and frame-only `close-window` requests. `event-type` replaces the old
+  command-only lookup. Notify/session events and arbitrary families remain open;
+  see [close-event limits](CLOSE-EVENTS.md).
 - [x] Native errors translated to Lisp `native-error` conditions.
 - [x] Event snapshots: `event`, `event-p`, `event-kind`, `event-source`,
-  `event-text`, `event-checked-p`, `event-selection` for the four bound event kinds.
+  `event-text`, `event-checked-p`, `event-selection` for four command kinds plus :close.
 
 ### C2: Windows, controls and layout
 
@@ -199,7 +204,7 @@ No APIs in C3–C7 currently have public bindings. Using wxWidgets types interna
 for conversions or implementation is not public API coverage.
 
 The widget-facing Lisp API has nine window wrapper classes plus the public event-handler base, direct native
-construction, 51 named generic functions and twelve SETF generic functions; see [CLOS API](CLOS-API.md). This establishes Lisp dispatch
+construction, 54 named generic functions and thirteen SETF generic functions; see [CLOS API](CLOS-API.md). This establishes Lisp dispatch
 and method combination, not native C++ subclass/virtual-callback coverage.
 
 ## Coverage implementation phases

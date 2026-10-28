@@ -34,14 +34,17 @@ must reconcile additional documented public interfaces beyond those headers.
 - Scoped-event milestone: optional current-callback contexts control native Skip
   and propagation, with nested-callback isolation and copied native type IDs.
   Four command kinds only; veto-capable classes and broader families remain open.
-- Current bridge ABI: 14. Public API: 89 exports, nine window wrapper classes
-  (eight concrete widget kinds) plus the event-handler base, 51 named generics and
-  twelve generic SETF writers. No public application wrapper or arbitrary-event
-  binding exists yet; four command kinds have independent observer/contextual bindings.
-- Latest implementation verification: 31 GUI scenarios and native preflight
+- Close-family milestone: :close snapshots/contexts, CanVeto-guarded SETF veto,
+  synthetic close queues and frame close requests; acceptance is not destruction.
+  `event-type` replaces the command-only lookup without an alias.
+- Current bridge ABI: 15. Public API: 93 exports, nine window wrapper classes
+  (eight concrete widget kinds) plus the event-handler base, 54 named generics and
+  thirteen generic SETF writers. No public application wrapper or arbitrary-event
+  binding exists yet; four command kinds plus the close family have observer/contextual bindings.
+- Latest implementation verification: 32 GUI scenarios and native preflight
   pass on local Apple Silicon macOS SBCL 2.6.9 and CCL 1.13. Final reports:
-  `evidence/event-contexts/{sbcl,ccl}-20261028/`. Five package checks
-  pass in `evidence/packaging/event-contexts-20261028/`.
+  `evidence/close-events/{sbcl,ccl}-20261028/`. Five package checks
+  pass in `evidence/packaging/close-events-20261028/`.
   Hosted Linux/Windows GUI behavior and the graphical Cadre viewer remain open.
 
 ### Next dependency and working order
@@ -51,16 +54,17 @@ must reconcile additional documented public interfaces beyond those headers.
 2. Reuse the implemented event-handler ownership/state base: standalone objects
    are session-owned; windows borrow their existing native identity, with weak
    tracking independent of destroy-event delivery. There is no pushed-handler
-   ownership; standalone dispatch supports four command-event observer kinds.
+   ownership; standalone dispatch supports command observers and the non-command close family.
    Preserve native-backed subclass
    initargs, defaults, AFTER hooks and mixed-resource rollback.
-3. Generic binding/unbinding supports four command kinds and ID filters. Optional
+3. Generic binding/unbinding supports command and close kinds with ID filters. Optional
    borrowed contexts now control Skip/propagation in the innermost callback; saved
-   snapshots carry process-local native type IDs. Next extend native event-family
-   representation/registration and bind veto-capable classes with appropriate
-   payload and lifetime checks before dependent families. Preserve immutable
+   snapshots carry process-local native type IDs. Close veto and frame request
+   policy are implemented. Next extend family representation to notify/session
+   events and remaining native registration/ownership, with checked payload and
+   scope lifetimes before dependent families. Preserve immutable
    snapshots and opaque binding/context identities; never expose a native event
-   pointer after callback return. Arbitrary native events/userData, veto and
+   pointer after callback return. Arbitrary native events/userData, notify/session families and
    linked/pushed handlers remain gaps.
 4. Build timer/idle, event propagation/skip/veto and worker-to-GUI dispatch on
    those contracts, adding prerequisite value types before their consumers.
@@ -760,6 +764,55 @@ construction/cloning, origin/ID/type mutation, userData, linked/pushed handlers,
 timer/idle and worker dispatch remain future work. The next dependency is broader
 event-family representation and veto-capable event classes with checked borrowed
 lifetimes, before dependent event families.
+
+## C1 foundation: close-event family and checked veto
+
+- [x] Generalize native binding dispatch to the wxEvent base with checked family
+  payload extraction; add `:close` / `wxEVT_CLOSE_WINDOW` / `wxCloseEvent`.
+- [x] Add immutable `event-family` and close-flag snapshot reads, plus current
+  context `event-can-veto-p` and generic SETF `event-vetoed-p`, guarding actual
+  class and native CanVeto before setting or clearing veto.
+- [x] Add copied synthetic close events with an initial `:can-veto-p` option and
+  a frame-only synchronous `close-window` request preserving native acceptance.
+- [x] Rename the command-only type lookup to `event-type`, without an alias,
+  and migrate examples, tests, references and persistent coverage mappings.
+- [x] Add the veto-policy example and close-family tests, guides and docset.
+
+Native ABI 15 extends snapshots with close flags. Snapshot values are copied
+before each callback and stay immutable; live veto access is limited to the
+current close context. Non-close contexts and non-vetoable close requests reject
+veto writes before wx assertions. Force disallows veto but does not bypass a
+consuming contextual handler. Acceptance is not a destruction guarantee. A veto
+handler should consume the event rather than delegate to default closing.
+Queued close events on frames can invoke native default closing. Observer errors
+do not implicitly veto; their automatic Skip can still allow default closing.
+
+Native preflight and all 32 local Apple Silicon macOS GUI scenarios pass on
+SBCL 2.6.9 and CCL 1.13. Reports are in
+`evidence/close-events/{sbcl,ccl}-20261028/`. Focused checks also pass on both Lisps
+for immutable snapshot SETF rejection and observer-error/default-close behavior.
+Tests distinguish real veto, consumption, force and default deletion; cover
+synthetic CanVeto flags, wrong-family/expired access and handled nested close
+errors while RUN continues. A snapshot-extension compile warning exposed a
+leftover variable in the edited constructor call; it was corrected to explicit
+boolean conversions before passing verification.
+
+Independent runtime/documentation review found no actionable correctness issues.
+The queue docstring and a stale four-keyword sentence were corrected for the
+new family. Python and pinned-upstream inventory regressions pass. The docset
+has 120 entries for all 93 public exports, guides and thirteen example sources,
+with zero checker problems; actual-package/SETF lookup, links, shared-reader
+discovery and isolated-install navigation checks accompany this slice.
+The rebuilt `dist/wxlambda-form-close-events` passes all five package checks,
+with evidence in `evidence/packaging/close-events-20261028/`.
+
+Full wxCloseEvent/C1 support remains open: wxNotifyEvent, query/end-session tags,
+logging-off state, arbitrary event tags/registration, persistent event cloning,
+context capability mutation, userData, pushed handlers, timer/idle and worker
+dispatch remain required work. `wxWindow::Close` is mapped only for wxFrame;
+other receiver types are not complete. Hosted Linux/Windows GUI and graphical
+Cadre validation remain unverified. Continue C1 notify/session/event registration
+and ownership prerequisites before dependent event families or new widgets.
 
 ## Decisions
 

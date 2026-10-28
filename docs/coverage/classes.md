@@ -9,7 +9,7 @@ Forward declarations are represented in the per-header declaration inventories.
 
 ## C1: Foundation, values, application, events, and base utilities
 
-Class/struct definitions: 0 complete; 4 partial; 298 pending. Partial and pending classes remain open.
+Class/struct definitions: 0 complete; 5 partial; 297 pending. Partial and pending classes remain open.
 
 [Declaration counts and remaining work](README.md).
 
@@ -61,11 +61,11 @@ Class/struct definitions: 0 complete; 4 partial; 298 pending. Partial and pendin
 - [ ] `wxDynamicLibraryDetails` — [`wx/dynlib.h`](phase-c1.md), upstream line 20.
 - [ ] `wxDynamicLibrary` — [`wx/dynlib.h`](phase-c1.md), upstream line 108.
 - [ ] `wxEncodingConverter` — [`wx/encconv.h`](phase-c1.md), upstream line 29.
-- [~] `wxEvent` — [`wx/event.h`](phase-c1.md), upstream line 92. — **Partial**: `event`, `event-context`, `event-context-active-p`, `event-native-type`, `event-skipped-p`, `event-propagates-p`, `stop-event-propagation`, `resume-event-propagation`; ABI: `wxl_bind`, `wxl_context_active`, `wxl_context_skipped`, `wxl_context_set_skipped`, `wxl_context_propagates`, `wxl_context_stop_propagation`, `wxl_context_resume_propagation`. Immutable four-command snapshots plus borrowed current-callback contexts for Skip and propagation control. Private monotonic tokens and callback-depth checks reject stale/nested outer access. Native construction/cloning, mutable IDs/type/origin, timestamps/userData, veto and arbitrary event families remain open. See docs/EVENT-CONTEXTS.md.
+- [~] `wxEvent` — [`wx/event.h`](phase-c1.md), upstream line 92. — **Partial**: `event`, `event-context`, `event-context-active-p`, `event-native-type`, `event-skipped-p`, `event-propagates-p`, `stop-event-propagation`, `resume-event-propagation`; ABI: `wxl_bind`, `wxl_context_active`, `wxl_context_skipped`, `wxl_context_set_skipped`, `wxl_context_propagates`, `wxl_context_stop_propagation`, `wxl_context_resume_propagation`. Immutable supported command/close snapshots and current-callback wxEvent base views for Skip/propagation; close veto is checked through wxCloseEvent only. Arbitrary native construction/cloning, mutable IDs/type/origin, timestamps/userData and broader families remain open. See docs/CLOSE-EVENTS.md.
 - [ ] `wxEventBlocker` — [`wx/event.h`](phase-c1.md), upstream line 310.
 - [ ] `wxPropagationDisabler` — [`wx/event.h`](phase-c1.md), upstream line 342.
 - [ ] `wxPropagateOnce` — [`wx/event.h`](phase-c1.md), upstream line 353.
-- [~] `wxEvtHandler` — [`wx/event.h`](phase-c1.md), upstream line 381. — **Partial**: `event-handler`, `make-event-handler`, `destroy-event-handler`, `handler-alive-p`, `handler-enabled-p`, `(setf handler-enabled-p)`, `bind-event`, `unbind-event`, `binding-active-p`, `queue-event`; ABI: `wxl_event_handler`, `wxl_handler_destroy`, `wxl_handler_alive`, `wxl_handler_enabled`, `wxl_set_handler_enabled`, `wxl_bind`, `wxl_unbind`, `wxl_binding_active`, `wxl_queue_event`. Owned/borrowed handler identities and four-kind command observer bindings with exact IDs/ranges, safe unbinding, copied queue payloads and weak invalidation. Callback-time receiver disposal is deferred; generic roots are reaped at Lisp boundaries. Optional contextual callbacks now control Skip/propagation for four kinds. Arbitrary event types/userData, veto-capable classes, pushed chains and worker dispatch remain open. See docs/EVENT-CONTEXTS.md.
+- [~] `wxEvtHandler` — [`wx/event.h`](phase-c1.md), upstream line 381. — **Partial**: `event-handler`, `make-event-handler`, `destroy-event-handler`, `handler-alive-p`, `handler-enabled-p`, `(setf handler-enabled-p)`, `bind-event`, `unbind-event`, `binding-active-p`, `queue-event`; ABI: `wxl_event_handler`, `wxl_handler_destroy`, `wxl_handler_alive`, `wxl_handler_enabled`, `wxl_set_handler_enabled`, `wxl_bind`, `wxl_unbind`, `wxl_binding_active`, `wxl_queue_event`. Owned/borrowed handler identities and command/close-family bindings with exact IDs/ranges, safe unbinding, copied queue payloads and weak invalidation. Callback-time receiver disposal is deferred; generic roots are reaped at Lisp boundaries. Optional contextual callbacks now control Skip/propagation for supported command/close kinds. Arbitrary event types/userData, notify/session families, pushed chains and worker dispatch remain open. See docs/EVENT-CONTEXTS.md.
 - [ ] `wxKeyEvent` — [`wx/event.h`](phase-c1.md), upstream line 1509.
 - [ ] `wxJoystickEvent` — [`wx/event.h`](phase-c1.md), upstream line 1748.
 - [ ] `wxScrollWinEvent` — [`wx/event.h`](phase-c1.md), upstream line 1890.
@@ -105,7 +105,7 @@ Class/struct definitions: 0 complete; 4 partial; 298 pending. Partial and pendin
 - [ ] `wxWindowDestroyEvent` — [`wx/event.h`](phase-c1.md), upstream line 4340.
 - [ ] `wxNavigationKeyEvent` — [`wx/event.h`](phase-c1.md), upstream line 4374.
 - [ ] `wxMouseCaptureChangedEvent` — [`wx/event.h`](phase-c1.md), upstream line 4466.
-- [ ] `wxCloseEvent` — [`wx/event.h`](phase-c1.md), upstream line 4559.
+- [~] `wxCloseEvent` — [`wx/event.h`](phase-c1.md), upstream line 4559. — **Partial**: `event`, `event-context`, `event-family`, `event-can-veto-p`, `event-vetoed-p`, `(setf event-vetoed-p)`, `queue-event`, `close-window`; ABI: `wxl_bind`, `wxl_queue_event`, `wxl_close`, `wxl_context_can_veto`, `wxl_context_vetoed`, `wxl_context_set_vetoed`. :CLOSE wxEVT_CLOSE_WINDOW snapshots/scoped views and copied synthetic construction. Checked veto, force-aware frame requests and immutable flags. No query/end-session tags, logging-off state, arbitrary close types, persistent event ownership or context SetCanVeto. wxNotifyEvent remains unbound. See docs/CLOSE-EVENTS.md.
 - [ ] `wxMenuEvent` — [`wx/event.h`](phase-c1.md), upstream line 4651.
 - [ ] `wxShowEvent` — [`wx/event.h`](phase-c1.md), upstream line 4710.
 - [ ] `wxIconizeEvent` — [`wx/event.h`](phase-c1.md), upstream line 4753.
@@ -364,8 +364,8 @@ Class/struct definitions: 0 complete; 11 partial; 121 pending. Partial and pendi
 - [ ] `wxFileDirPickerEvent` — [`wx/filepicker.h`](phase-c2.md), upstream line 351.
 - [ ] `wxFontPickerCtrl` — [`wx/fontpicker.h`](phase-c2.md), upstream line 58.
 - [ ] `wxFontPickerEvent` — [`wx/fontpicker.h`](phase-c2.md), upstream line 191.
-- [~] `wxFrame` — [`wx/frame.h`](phase-c2.md), upstream line 163. — **Partial**: `frame`, `make-frame`; ABI: `wxl_frame`. Native-backed CLOS construction, including subclass initargs/defaults and managed rollback. Title, width and height; parent is NULL, ID is wxID_ANY, remaining options use defaults. Full class and inherited API coverage remain open.
-- [~] `wxGauge` — [`wx/gauge.h`](phase-c2.md), upstream line 69. — **Partial**: `gauge`, `make-gauge`, `gauge-value`, `gauge-range`, `gauge-vertical-p`, `pulse-gauge`; ABI: `wxl_gauge`, `wxl_gauge_value`, `wxl_gauge_range`, `wxl_set_gauge_value`, `wxl_set_gauge_range`, `wxl_gauge_vertical`, `wxl_gauge_pulse`. Parent-owned progress gauge: positive range, value, horizontal/vertical orientation and pulsing. Constructor options, two-step creation and full inherited API remain open. Gauge support introduced in ABI 10; current bridge ABI 14; see docs/GAUGE.md and tests/gauge.lisp.
+- [~] `wxFrame` — [`wx/frame.h`](phase-c2.md), upstream line 163. — **Partial**: `frame`, `make-frame`, `close-window`; ABI: `wxl_frame`, `wxl_close`. Native-backed CLOS construction, including subclass initargs/defaults and managed rollback. Title, width and height; parent is NULL, ID is wxID_ANY, remaining options use defaults. Full class and inherited API coverage remain open. Frame-only synchronous close requests now preserve veto/force semantics and native acceptance; no destruction guarantee.
+- [~] `wxGauge` — [`wx/gauge.h`](phase-c2.md), upstream line 69. — **Partial**: `gauge`, `make-gauge`, `gauge-value`, `gauge-range`, `gauge-vertical-p`, `pulse-gauge`; ABI: `wxl_gauge`, `wxl_gauge_value`, `wxl_gauge_range`, `wxl_set_gauge_value`, `wxl_set_gauge_range`, `wxl_gauge_vertical`, `wxl_gauge_pulse`. Parent-owned progress gauge: positive range, value, horizontal/vertical orientation and pulsing. Constructor options, two-step creation and full inherited API remain open. Gauge support introduced in ABI 10; current bridge ABI 15; see docs/GAUGE.md and tests/gauge.lisp.
 - [ ] `wxGBPosition` — [`wx/gbsizer.h`](phase-c2.md), upstream line 17.
 - [ ] `wxGridBagSizer` — [`wx/gbsizer.h`](phase-c2.md), upstream line 73.
 - [ ] `wxGBSizerItem` — [`wx/gbsizer.h`](phase-c2.md), upstream line 234.

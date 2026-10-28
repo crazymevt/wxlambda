@@ -373,7 +373,7 @@
     "kind": "type",
     "arguments": "Snapshot type created by callbacks, without a public constructor.",
     "returns": "Lisp-owned event value.",
-    "description": "Read-only event snapshot: kind, receiving source handler/control, native event ID and process-local native type, copied text, checked state and selection. Data survives later callbacks and source destruction.",
+    "description": "Read-only event snapshot: kind, receiving source handler/control, native event ID and process-local native type, copied text, checked state and selection. Data survives later callbacks and source destruction. Close snapshots capture CanVeto and GetVeto before this callback; they never reflect later context mutation.",
     "scope": "Use only the exported predicate/accessors; native event objects do not escape callbacks.",
     "wxwidgets": "wxCommandEvent snapshot.",
     "syntax": "wxlambda:event"
@@ -765,7 +765,7 @@
     "arguments": "Opaque read-only structure returned by BIND-EVENT; no public constructor.",
     "returns": "An independent binding identity.",
     "description": "Keep the returned object to query or remove exactly this registration. A binding records its receiving Lisp object and kind but not the callback function; active callback roots are held by the session registry. Native registration is session-scoped.",
-    "scope": "Active main-thread GUI session required; otherwise NATIVE-ERROR. Stale/deleting receivers reject registration/queuing. Invalid event kinds, IDs and payload options signal Lisp errors; wrong receiver types use CLOS dispatch errors. Four command kinds only. Optional borrowed contexts support scoped Skip/propagation; veto-capable classes, arbitrary native events, userData, pushed handlers and worker-thread dispatch remain unbound.",
+    "scope": "Active main-thread GUI session required; otherwise NATIVE-ERROR. Stale/deleting receivers reject registration/queuing. Invalid event kinds, IDs and payload options signal Lisp errors; wrong receiver types use CLOS dispatch errors. Four command kinds plus :CLOSE. Contexts support scoped Skip/propagation and close-veto access. Arbitrary native events, notify/session families, userData, pushed handlers and worker-thread dispatch remain unbound.",
     "wxwidgets": "Bridge identity for wxEvtHandler::Bind/Unbind (wxWidgets 3.2.12 baseline).",
     "syntax": "wxlambda:event-binding"
   },
@@ -782,11 +782,11 @@
   {
     "name": "bind-event",
     "kind": "generic-function",
-    "arguments": "HANDLER is an EVENT-HANDLER/window; KIND is :CLICK, :TEXT-CHANGE, :TOGGLE or :SELECTION. FUNCTION takes one immutable EVENT. ID defaults NIL (any); LAST-ID defaults NIL (exact ID when ID is given). WITH-CONTEXT defaults NIL; when true FUNCTION takes (EVENT CONTEXT) instead of just EVENT.",
+    "arguments": "HANDLER is an EVENT-HANDLER/window; KIND is :CLICK, :TEXT-CHANGE, :TOGGLE, :SELECTION or :CLOSE. FUNCTION takes one immutable EVENT. ID defaults NIL (any); LAST-ID defaults NIL (exact ID when ID is given). WITH-CONTEXT defaults NIL; when true FUNCTION takes (EVENT CONTEXT) instead of just EVENT.",
     "returns": "A new independent EVENT-BINDING.",
     "description": "Register an observer without replacing any existing generic or control-specific registration. Signed 32-bit IDs are supported except -1 (reserved as native wxID_ANY; use NIL). LAST-ID requires ID and an ordered inclusive range. Observer bindings automatically Skip; contextual bindings start unskipped and control native Skip explicitly; relative callback order follows wxWidgets and is not a Lisp API guarantee. Failed registration releases temporary roots. Contextual access is limited to the innermost callback and expires at return, including on errors.",
-    "scope": "Active main-thread GUI session required; otherwise NATIVE-ERROR. Stale/deleting receivers reject registration/queuing. Invalid event kinds, IDs and payload options signal Lisp errors; wrong receiver types use CLOS dispatch errors. Four command kinds only. Optional borrowed contexts support scoped Skip/propagation; veto-capable classes, arbitrary native events, userData, pushed handlers and worker-thread dispatch remain unbound.",
-    "wxwidgets": "wxEvtHandler::Bind member-method overload, four wxCommandEvent tags, no userData (wxWidgets 3.2.12 baseline)."
+    "scope": "Active main-thread GUI session required; otherwise NATIVE-ERROR. Stale/deleting receivers reject registration/queuing. Invalid event kinds, IDs and payload options signal Lisp errors; wrong receiver types use CLOS dispatch errors. Four command kinds plus :CLOSE. Contexts support scoped Skip/propagation and close-veto access. Arbitrary native events, notify/session families, userData, pushed handlers and worker-thread dispatch remain unbound.",
+    "wxwidgets": "wxEvtHandler::Bind member-method overload with a wxEvent base receiver; supported command and close tags, no userData."
   },
   {
     "name": "unbind-event",
@@ -794,7 +794,7 @@
     "arguments": "BINDING is an EVENT-BINDING.",
     "returns": "T if this active registration was removed; NIL if already unbound or receiver expired.",
     "description": "Remove exactly one registration, including from inside itself or another callback. The current callback may finish; later deliveries cannot invoke the removed function. Releases generic callback roots. A live native binding object is retained until an active callback returns.",
-    "scope": "Active main-thread GUI session required; otherwise NATIVE-ERROR. Stale/deleting receivers reject registration/queuing. Invalid event kinds, IDs and payload options signal Lisp errors; wrong receiver types use CLOS dispatch errors. Four command kinds only. Optional borrowed contexts support scoped Skip/propagation; veto-capable classes, arbitrary native events, userData, pushed handlers and worker-thread dispatch remain unbound.",
+    "scope": "Active main-thread GUI session required; otherwise NATIVE-ERROR. Stale/deleting receivers reject registration/queuing. Invalid event kinds, IDs and payload options signal Lisp errors; wrong receiver types use CLOS dispatch errors. Four command kinds plus :CLOSE. Contexts support scoped Skip/propagation and close-veto access. Arbitrary native events, notify/session families, userData, pushed handlers and worker-thread dispatch remain unbound.",
     "wxwidgets": "wxEvtHandler::Unbind member-method overload, exact receiver/type/ID-range/native binding identity (wxWidgets 3.2.12 baseline)."
   },
   {
@@ -803,17 +803,17 @@
     "arguments": "BINDING is an EVENT-BINDING.",
     "returns": "T if still registered on a live receiver, NIL after unbinding or receiver destruction/requested disposal.",
     "description": "Query active-session registration and reap stale generic callback roots. Root pruning also runs at returned RUN/pump/notifying-setter boundaries and after explicit destruction. During a blocking RUN, native window closure may retain roots until a Lisp boundary or explicit unbinding. This does not change the control-specific callback-root contract.",
-    "scope": "Active main-thread GUI session required; otherwise NATIVE-ERROR. Stale/deleting receivers reject registration/queuing. Invalid event kinds, IDs and payload options signal Lisp errors; wrong receiver types use CLOS dispatch errors. Four command kinds only. Optional borrowed contexts support scoped Skip/propagation; veto-capable classes, arbitrary native events, userData, pushed handlers and worker-thread dispatch remain unbound.",
+    "scope": "Active main-thread GUI session required; otherwise NATIVE-ERROR. Stale/deleting receivers reject registration/queuing. Invalid event kinds, IDs and payload options signal Lisp errors; wrong receiver types use CLOS dispatch errors. Four command kinds plus :CLOSE. Contexts support scoped Skip/propagation and close-veto access. Arbitrary native events, notify/session families, userData, pushed handlers and worker-thread dispatch remain unbound.",
     "wxwidgets": "Bridge registration/weak-lifetime predicate for wxEvtHandler bindings."
   },
   {
     "name": "queue-event",
     "kind": "generic-function",
-    "arguments": "HANDLER is an EVENT-HANDLER/window; KIND is one of the four supported kinds. ID defaults 0. TEXT defaults empty string and applies only to :TEXT-CHANGE; CHECKED-P applies only to :TOGGLE; SELECTION is NIL or a nonnegative signed-32-bit index for :SELECTION.",
+    "arguments": "HANDLER is an EVENT-HANDLER/window; KIND is one of the five supported kinds. ID defaults 0. TEXT defaults empty string and applies only to :TEXT-CHANGE; CHECKED-P applies only to :TOGGLE; SELECTION is NIL or a nonnegative signed-32-bit index for :SELECTION. CAN-VETO-P defaults T and may be supplied only for :CLOSE.",
     "returns": "The supplied handler.",
-    "description": "Queue a copied synthetic wxCommandEvent for later native dispatch. Does not change control properties, check state or choice selection. Explicit UTF-8 byte length preserves empty, Unicode and embedded-NUL text. Non-applicable non-default payload options are rejected. IDs fit signed 32-bit excluding -1. Main-thread only, including standalone handlers; no worker dispatch or native-origin override.",
-    "scope": "Active main-thread GUI session required; otherwise NATIVE-ERROR. Stale/deleting receivers reject registration/queuing. Invalid event kinds, IDs and payload options signal Lisp errors; wrong receiver types use CLOS dispatch errors. Four command kinds only. Optional borrowed contexts support scoped Skip/propagation; veto-capable classes, arbitrary native events, userData, pushed handlers and worker-thread dispatch remain unbound.",
-    "wxwidgets": "wxEvtHandler::QueueEvent and wxCommandEvent setters, four event tags (wxWidgets 3.2.12 baseline)."
+    "description": "Queue a copied synthetic event: wxCommandEvent for four command kinds, wxCloseEvent for :CLOSE. Ordinary control properties are not changed directly. A queued close on a frame may run its native default closing action; use CLOSE-WINDOW for a synchronous acceptance result. Explicit UTF-8 lengths preserve text. Close events take no command payload, may be vetoable or non-vetoable, and do not normally propagate to parents.",
+    "scope": "Active main-thread GUI session required; otherwise NATIVE-ERROR. Stale/deleting receivers reject registration/queuing. Invalid event kinds, IDs and payload options signal Lisp errors; wrong receiver types use CLOS dispatch errors. Four command kinds plus :CLOSE. Contexts support scoped Skip/propagation and close-veto access. Arbitrary native events, notify/session families, userData, pushed handlers and worker-thread dispatch remain unbound.",
+    "wxwidgets": "wxEvtHandler::QueueEvent; wxCommandEvent or wxCloseEvent construction, SetCanVeto at close-event creation only."
   },
   {
     "name": "event-id",
@@ -830,8 +830,8 @@
     "kind": "type",
     "arguments": "Opaque read-only token value passed as the second argument by BIND-EVENT :WITH-CONTEXT T. No public constructor.",
     "returns": "A borrowed callback-scoped native wxEvent view.",
-    "description": "The context token is immutable; operations mutate the live native event only during its exact innermost callback. Nested contextual callbacks suspend outer access; nested observer/control callbacks also deny outer access. The outer context becomes usable again after nesting returns. Unbinding or deferred receiver disposal does not prematurely expire the running callback context.",
-    "scope": "Requires an active main-thread session and the innermost currently executing contextual callback. Expired or outer contexts in nested callbacks signal NATIVE-ERROR for native access. Activity queries return NIL for those contexts during a session; outside a session they signal NATIVE-ERROR. No raw native event pointer escapes. Four command-event kinds only; no veto, native event construction, cloning or arbitrary event families.",
+    "description": "The context token is immutable; operations mutate the live native event only during its exact innermost callback. Nested contextual callbacks suspend outer access; nested observer/control callbacks also deny outer access. The outer context becomes usable again after nesting returns. Unbinding or deferred receiver disposal does not prematurely expire the running callback context. :CLOSE contexts allow checked veto access; command contexts do not have close-veto state.",
+    "scope": "Requires an active main-thread session and the innermost currently executing contextual callback. Expired or outer contexts in nested callbacks signal NATIVE-ERROR for native access. Activity queries return NIL for those contexts during a session; outside a session they signal NATIVE-ERROR. No raw native event pointer escapes. Four command kinds plus :CLOSE. Veto applies only to actual wxCloseEvent contexts; arbitrary event types, general event construction/cloning and session events remain unbound.",
     "wxwidgets": "Borrowed wxEvent base view, four wxCommandEvent tags (wxWidgets 3.2.12 baseline).",
     "syntax": "wxlambda:event-context"
   },
@@ -851,7 +851,7 @@
     "arguments": "CONTEXT is an EVENT-CONTEXT value.",
     "returns": "T only for the current innermost native callback context; NIL for expired/suspended contexts in an active session.",
     "description": "Check scoped usability without dereferencing an expired pointer. Observer/control callbacks do not gain access to an enclosing context. The predicate does not assert receiver liveness and remains T during deferred receiver disposal until callback return.",
-    "scope": "Requires an active main-thread session and the innermost currently executing contextual callback. Expired or outer contexts in nested callbacks signal NATIVE-ERROR for native access. Activity queries return NIL for those contexts during a session; outside a session they signal NATIVE-ERROR. No raw native event pointer escapes. Four command-event kinds only; no veto, native event construction, cloning or arbitrary event families.",
+    "scope": "Requires an active main-thread session and the innermost currently executing contextual callback. Expired or outer contexts in nested callbacks signal NATIVE-ERROR for native access. Activity queries return NIL for those contexts during a session; outside a session they signal NATIVE-ERROR. No raw native event pointer escapes. Four command kinds plus :CLOSE. Veto applies only to actual wxCloseEvent contexts; arbitrary event types, general event construction/cloning and session events remain unbound.",
     "wxwidgets": "Bridge scope/depth validation of borrowed wxEvent access."
   },
   {
@@ -860,7 +860,7 @@
     "arguments": "CONTEXT is the current event context. SETF VALUE is a generalized boolean.",
     "returns": "Native Skip flag as T/NIL; SETF returns the supplied value.",
     "description": "Contextual bindings begin with Skip false. Assign true to continue to later native handlers and normal parent routing; false consumes the command at this handler. This is distinct from propagation level. Mutation is not rolled back on callback errors. Observer bindings without a context retain automatic Skip.",
-    "scope": "Requires an active main-thread session and the innermost currently executing contextual callback. Expired or outer contexts in nested callbacks signal NATIVE-ERROR for native access. Activity queries return NIL for those contexts during a session; outside a session they signal NATIVE-ERROR. No raw native event pointer escapes. Four command-event kinds only; no veto, native event construction, cloning or arbitrary event families.",
+    "scope": "Requires an active main-thread session and the innermost currently executing contextual callback. Expired or outer contexts in nested callbacks signal NATIVE-ERROR for native access. Activity queries return NIL for those contexts during a session; outside a session they signal NATIVE-ERROR. No raw native event pointer escapes. Four command kinds plus :CLOSE. Veto applies only to actual wxCloseEvent contexts; arbitrary event types, general event construction/cloning and session events remain unbound.",
     "wxwidgets": "wxEvent::GetSkipped / Skip (wxWidgets 3.2.12 baseline).",
     "setf": {
       "syntax": "(setf (wxlambda:event-skipped-p context) value)",
@@ -873,7 +873,7 @@
     "arguments": "CONTEXT is the current event context.",
     "returns": "T when the native propagation level is positive, otherwise NIL.",
     "description": "Observe native ShouldPropagate, independently of Skip. A positive level alone does not forward a consumed event.",
-    "scope": "Requires an active main-thread session and the innermost currently executing contextual callback. Expired or outer contexts in nested callbacks signal NATIVE-ERROR for native access. Activity queries return NIL for those contexts during a session; outside a session they signal NATIVE-ERROR. No raw native event pointer escapes. Four command-event kinds only; no veto, native event construction, cloning or arbitrary event families.",
+    "scope": "Requires an active main-thread session and the innermost currently executing contextual callback. Expired or outer contexts in nested callbacks signal NATIVE-ERROR for native access. Activity queries return NIL for those contexts during a session; outside a session they signal NATIVE-ERROR. No raw native event pointer escapes. Four command kinds plus :CLOSE. Veto applies only to actual wxCloseEvent contexts; arbitrary event types, general event construction/cloning and session events remain unbound.",
     "wxwidgets": "wxEvent::ShouldPropagate (wxWidgets 3.2.12 baseline)."
   },
   {
@@ -882,7 +882,7 @@
     "arguments": "CONTEXT is the current event context.",
     "returns": "Previous nonnegative native propagation level.",
     "description": "Set propagation level to zero. It does not set Skip; set Skip true when other local observers should continue without propagating to parents. Save the returned level for RESUME-EVENT-PROPAGATION.",
-    "scope": "Requires an active main-thread session and the innermost currently executing contextual callback. Expired or outer contexts in nested callbacks signal NATIVE-ERROR for native access. Activity queries return NIL for those contexts during a session; outside a session they signal NATIVE-ERROR. No raw native event pointer escapes. Four command-event kinds only; no veto, native event construction, cloning or arbitrary event families.",
+    "scope": "Requires an active main-thread session and the innermost currently executing contextual callback. Expired or outer contexts in nested callbacks signal NATIVE-ERROR for native access. Activity queries return NIL for those contexts during a session; outside a session they signal NATIVE-ERROR. No raw native event pointer escapes. Four command kinds plus :CLOSE. Veto applies only to actual wxCloseEvent contexts; arbitrary event types, general event construction/cloning and session events remain unbound.",
     "wxwidgets": "wxEvent::StopPropagation (wxWidgets 3.2.12 baseline)."
   },
   {
@@ -891,7 +891,7 @@
     "arguments": "CONTEXT is current; LEVEL is an integer from 0 through 2147483647, commonly returned by STOP-EVENT-PROPAGATION.",
     "returns": "The supplied context.",
     "description": "Restore the native propagation level without changing Skip. Zero is allowed and keeps propagation stopped. Invalid LEVEL signals TYPE-ERROR; expired contexts reject native access.",
-    "scope": "Requires an active main-thread session and the innermost currently executing contextual callback. Expired or outer contexts in nested callbacks signal NATIVE-ERROR for native access. Activity queries return NIL for those contexts during a session; outside a session they signal NATIVE-ERROR. No raw native event pointer escapes. Four command-event kinds only; no veto, native event construction, cloning or arbitrary event families.",
+    "scope": "Requires an active main-thread session and the innermost currently executing contextual callback. Expired or outer contexts in nested callbacks signal NATIVE-ERROR for native access. Activity queries return NIL for those contexts during a session; outside a session they signal NATIVE-ERROR. No raw native event pointer escapes. Four command kinds plus :CLOSE. Veto applies only to actual wxCloseEvent contexts; arbitrary event types, general event construction/cloning and session events remain unbound.",
     "wxwidgets": "wxEvent::ResumePropagation (wxWidgets 3.2.12 baseline)."
   },
   {
@@ -899,18 +899,59 @@
     "kind": "function",
     "arguments": "EVENT is an immutable snapshot.",
     "returns": "Copied process-local native wxEventType integer.",
-    "description": "Read native event type after callback/source destruction without a session. Values are runtime metadata, not stable serialized type IDs. Compare to COMMAND-EVENT-TYPE in the same process; EVENT-KIND retains its four portable keyword names.",
+    "description": "Read native event type after callback/source destruction without a session. Values are runtime metadata, not stable serialized type IDs. Compare to COMMAND-EVENT-TYPE in the same process; EVENT-KIND retains its portable supported keyword names.",
     "scope": "No native session required for saved snapshots. Unsupported argument types signal Lisp type errors. No arbitrary native event-type registration is provided.",
     "wxwidgets": "wxEvent::GetEventType copied into a Lisp-owned snapshot (wxWidgets 3.2.12 baseline).",
     "syntax": "(wxlambda:event-native-type event)"
   },
   {
-    "name": "command-event-type",
+    "name": "event-type",
     "kind": "function",
-    "arguments": "KIND is :CLICK, :TEXT-CHANGE, :TOGGLE or :SELECTION.",
+    "arguments": "KIND is :CLICK, :TEXT-CHANGE, :TOGGLE, :SELECTION or :CLOSE.",
     "returns": "The corresponding process-local native wxEventType integer.",
-    "description": "Look up a supported command tag for comparison with EVENT-NATIVE-TYPE. Active main-thread session required; invalid KIND signals a Lisp error. This does not add numeric-kind binding, custom type registration or arbitrary native event families.",
+    "description": "Look up a supported process-local event type. Four command kinds and the non-command close family are supported; numeric type registration and arbitrary event tags remain unbound.",
     "scope": "Active main-thread session required; inactive calls signal NATIVE-ERROR before native-library lookup. Native IDs are process-local and may change between runs.",
-    "wxwidgets": "wxEVT_BUTTON / wxEVT_TEXT / wxEVT_CHECKBOX / wxEVT_CHOICE (wxWidgets 3.2.12 baseline)."
+    "wxwidgets": "wxEVT_BUTTON / wxEVT_TEXT / wxEVT_CHECKBOX / wxEVT_CHOICE / wxEVT_CLOSE_WINDOW (wxWidgets 3.2.12 baseline)."
+  },
+  {
+    "name": "event-family",
+    "kind": "function",
+    "arguments": "EVENT is an immutable snapshot.",
+    "returns": "The portable family keyword :COMMAND or :CLOSE.",
+    "description": "Classify the supported snapshot kind. The first four kinds are command events; :CLOSE uses wxCloseEvent and is not a wxCommandEvent. No arbitrary native RTTI or class-object lookup is exposed.",
+    "scope": "No native session required. Unsupported snapshot argument types signal Lisp errors.",
+    "wxwidgets": "Portable classification of the supported wxCommandEvent/wxCloseEvent tags.",
+    "syntax": "(wxlambda:event-family event)"
+  },
+  {
+    "name": "event-can-veto-p",
+    "kind": "generic-function",
+    "arguments": "EVENT is a snapshot or the current event context.",
+    "returns": "T if the captured/current close event permits veto, otherwise NIL.",
+    "description": "Snapshots return the copied pre-callback flag without a session. Contexts query wxCloseEvent::CanVeto; non-close contexts return NIL. Forced close requests and synthetic :CAN-VETO-P NIL events cannot be vetoed. This predicate does not grant setter access outside the current scope.",
+    "scope": "Active main-thread session required for native context or frame operations. Expired/suspended contexts and invalid/deleting frames signal NATIVE-ERROR. Saved snapshots need no session. Only :CLOSE is a veto-capable family here; notify/session event families and arbitrary event tags remain open.",
+    "wxwidgets": "wxCloseEvent::CanVeto, copied or borrowed (wxWidgets 3.2.12 baseline)."
+  },
+  {
+    "name": "event-vetoed-p",
+    "kind": "generic-function",
+    "arguments": "EVENT is a saved snapshot or current close context. SETF requires a current close context that permits veto.",
+    "returns": "Copied/current veto state as T/NIL; SETF returns the supplied generalized boolean.",
+    "description": "Snapshot state is captured before this callback and remains immutable. The scoped SETF writer calls Veto(bool), checking actual close-event class and CanVeto first for both setting and clearing. Non-close contexts reject veto-state operations. A vetoing handler should consume the close event (leave Skip false) so native default closing is not run. Veto does not cancel a separate explicit DESTROY-WINDOW request.",
+    "scope": "Active main-thread session required for native context or frame operations. Expired/suspended contexts and invalid/deleting frames signal NATIVE-ERROR. Saved snapshots need no session. Only :CLOSE is a veto-capable family here; notify/session event families and arbitrary event tags remain open.",
+    "wxwidgets": "wxCloseEvent::GetVeto / Veto(bool), current :CLOSE contexts only.",
+    "setf": {
+      "syntax": "(setf (wxlambda:event-vetoed-p context) value)",
+      "description": "Requires CanVeto true; both true and NIL assignments otherwise signal NATIVE-ERROR before wx assertions. Snapshots have no SETF method. Skip and veto are independent."
+    }
+  },
+  {
+    "name": "close-window",
+    "kind": "generic-function",
+    "arguments": "FRAME is a live FRAME. Optional FORCE defaults NIL; true disallows native veto.",
+    "returns": "Native close acceptance as T/NIL; not a destruction/liveness guarantee.",
+    "description": "Synchronously generate the frame close request via wxWindow::Close(force). A vetoed request returns NIL. A consuming contextual callback may return acceptance T without deleting anything, even for FORCE. Set Skip true to delegate to native default closing when appropriate. Callback conditions re-signal at this Lisp boundary; a handled nested condition does not stop RUN. Use DESTROY-WINDOW for explicit destruction.",
+    "scope": "Active main-thread session required for native context or frame operations. Expired/suspended contexts and invalid/deleting frames signal NATIVE-ERROR. Saved snapshots need no session. Only :CLOSE is a veto-capable family here; notify/session event families and arbitrary event tags remain open.",
+    "wxwidgets": "wxWindow::Close(bool), wxFrame receivers only (wxWidgets 3.2.12 baseline)."
   }
 ]

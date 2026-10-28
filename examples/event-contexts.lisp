@@ -41,7 +41,7 @@
     (wxlambda:process-pending-events)
     (multiple-value-bind (local parent event context) (funcall state)
       (assert (= 1 local parent))
-      (assert (= (wxlambda:command-event-type :click) (wxlambda:event-native-type event)))
+      (assert (= (wxlambda:event-type :click) (wxlambda:event-native-type event)))
       (assert (not (wxlambda:event-context-active-p context))))
     (setf (wxlambda:checked-p forward) nil)
     (wxlambda:queue-click button)

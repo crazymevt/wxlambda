@@ -888,7 +888,7 @@
       "native": [
         "wxl_bind"
       ],
-      "scope": "Independent observer bindings for four wxCommandEvent kinds, exact IDs/ranges and one immutable Lisp snapshot per matching binding. Observer Skip or optional two-argument scoped contextual callback controlling Skip/propagation. No userData, arbitrary event types or native-origin lookup."
+      "scope": "Independent observer bindings for supported command/close kinds, exact IDs/ranges and one immutable Lisp snapshot per matching binding. Observer Skip or optional two-argument scoped contextual callback controlling Skip/propagation. No userData, arbitrary event types or native-origin lookup."
     },
     {
       "header": "wx/event.h",
@@ -902,7 +902,7 @@
       "native": [
         "wxl_unbind"
       ],
-      "scope": "Exact binding identity for the supported four command kinds. Self/peer unbinding is safe; active native callback object is kept alive until return. No arbitrary functor/handler signatures or userData."
+      "scope": "Exact binding identity for the supported supported command/close kinds. Self/peer unbinding is safe; active native callback object is kept alive until return. No arbitrary functor/handler signatures or userData."
     },
     {
       "header": "wx/event.h",
@@ -916,7 +916,7 @@
       "native": [
         "wxl_queue_event"
       ],
-      "scope": "Copied synthetic four-kind command events on exposed handlers/windows, main-thread only; ID and kind-specific text/boolean/selection payload. Does not mutate controls. Arbitrary events, native-origin override and worker dispatch remain open."
+      "scope": "Copied four-command or :CLOSE wxCloseEvent queues on exposed handlers, main-thread only. Kind-specific payloads and synthetic CanVeto option; queued frame close may run defaults. Arbitrary types, session events, native-origin override and worker dispatch remain open."
     },
     {
       "header": "wx/event.h",
@@ -941,13 +941,13 @@
       "status": "~",
       "lisp": [
         "event-native-type",
-        "command-event-type"
+        "event-type"
       ],
       "native": [
-        "wxl_command_event_type",
+        "wxl_event_type",
         "wxl_bind"
       ],
-      "scope": "Copied process-local type IDs for four exposed command kinds; no general native type registration or arbitrary event classes."
+      "scope": "Copied process-local type IDs for supported command/close kinds; no general native type registration or arbitrary event classes."
     },
     {
       "header": "wx/event.h",
@@ -961,7 +961,7 @@
       "native": [
         "wxl_context_skipped"
       ],
-      "scope": "Scoped borrowed context from BIND-EVENT :WITH-CONTEXT T for four command kinds only; innermost callback validation, no stale/native pointer escape."
+      "scope": "Scoped borrowed context from BIND-EVENT :WITH-CONTEXT T for supported command/close kinds; innermost callback validation, no stale/native pointer escape."
     },
     {
       "header": "wx/event.h",
@@ -1018,6 +1018,90 @@
         "wxl_context_stop_propagation"
       ],
       "scope": "Current callback scope only. Returns previous level for restoration; no mutable access through saved snapshots."
+    },
+    {
+      "header": "wx/event.h",
+      "line": 4565,
+      "declaration": "wxCloseEvent(wxEventType commandEventType = wxEVT_NULL, int id = 0);",
+      "symbol": "wxCloseEvent::wxCloseEvent",
+      "status": "~",
+      "lisp": [
+        "queue-event"
+      ],
+      "native": [
+        "wxl_queue_event"
+      ],
+      "scope": "Synthetic :CLOSE construction only, copied signed ID and optional initial CanVeto flag. No arbitrary close/session tags or persistent native event wrapper."
+    },
+    {
+      "header": "wx/event.h",
+      "line": 4572,
+      "declaration": "bool CanVeto() const;",
+      "symbol": "wxCloseEvent::CanVeto",
+      "status": "~",
+      "lisp": [
+        "event-can-veto-p"
+      ],
+      "native": [
+        "wxl_context_can_veto"
+      ],
+      "scope": "Copied snapshot or current scoped :CLOSE capability. Non-close contexts report NIL; forced close requests disallow veto."
+    },
+    {
+      "header": "wx/event.h",
+      "line": 4584,
+      "declaration": "void SetCanVeto(bool canVeto);",
+      "symbol": "wxCloseEvent::SetCanVeto",
+      "status": "~",
+      "lisp": [
+        "queue-event"
+      ],
+      "native": [
+        "wxl_queue_event"
+      ],
+      "scope": "Only the :CAN-VETO-P init option for queued synthetic :CLOSE events. Existing native context capability cannot be changed through this API."
+    },
+    {
+      "header": "wx/event.h",
+      "line": 4597,
+      "declaration": "void Veto(bool veto = true);",
+      "symbol": "wxCloseEvent::Veto",
+      "status": "~",
+      "lisp": [
+        "(setf event-vetoed-p)"
+      ],
+      "native": [
+        "wxl_context_set_vetoed"
+      ],
+      "scope": "Current close contexts only; generalized boolean, CanVeto guard for both true/false. Forced veto attempts signal NATIVE-ERROR before native assertions."
+    },
+    {
+      "header": "wx/event.h",
+      "line": 4602,
+      "declaration": "bool GetVeto() const;",
+      "symbol": "wxCloseEvent::GetVeto",
+      "status": "~",
+      "lisp": [
+        "event-vetoed-p"
+      ],
+      "native": [
+        "wxl_context_vetoed"
+      ],
+      "scope": "Current close-context state or immutable pre-callback snapshot, no session event tags."
+    },
+    {
+      "header": "wx/window.h",
+      "line": 3505,
+      "declaration": "bool Close(bool force = false);",
+      "symbol": "wxWindow::Close",
+      "status": "~",
+      "lisp": [
+        "close-window"
+      ],
+      "native": [
+        "wxl_close"
+      ],
+      "scope": "wxFrame only. Synchronous close request with force flag; preserves native acceptance boolean, not a destruction guarantee. Callback errors have a Lisp boundary. Other window/top-level receivers remain open."
     }
   ],
   "classes": {
@@ -1025,12 +1109,14 @@
       "status": "~",
       "lisp": [
         "frame",
-        "make-frame"
+        "make-frame",
+        "close-window"
       ],
       "native": [
-        "wxl_frame"
+        "wxl_frame",
+        "wxl_close"
       ],
-      "scope": "Native-backed CLOS construction, including subclass initargs/defaults and managed rollback. Title, width and height; parent is NULL, ID is wxID_ANY, remaining options use defaults. Full class and inherited API coverage remain open."
+      "scope": "Native-backed CLOS construction, including subclass initargs/defaults and managed rollback. Title, width and height; parent is NULL, ID is wxID_ANY, remaining options use defaults. Full class and inherited API coverage remain open. Frame-only synchronous close requests now preserve veto/force semantics and native acceptance; no destruction guarantee."
     },
     "wxPanel": {
       "status": "~",
@@ -1157,7 +1243,7 @@
         "wxl_gauge_vertical",
         "wxl_gauge_pulse"
       ],
-      "scope": "Parent-owned progress gauge: positive range, value, horizontal/vertical orientation and pulsing. Constructor options, two-step creation and full inherited API remain open. Gauge support introduced in ABI 10; current bridge ABI 14; see docs/GAUGE.md and tests/gauge.lisp."
+      "scope": "Parent-owned progress gauge: positive range, value, horizontal/vertical orientation and pulsing. Constructor options, two-step creation and full inherited API remain open. Gauge support introduced in ABI 10; current bridge ABI 15; see docs/GAUGE.md and tests/gauge.lisp."
     },
     "wxAppConsole": {
       "status": "~",
@@ -1218,7 +1304,7 @@
         "wxl_binding_active",
         "wxl_queue_event"
       ],
-      "scope": "Owned/borrowed handler identities and four-kind command observer bindings with exact IDs/ranges, safe unbinding, copied queue payloads and weak invalidation. Callback-time receiver disposal is deferred; generic roots are reaped at Lisp boundaries. Optional contextual callbacks now control Skip/propagation for four kinds. Arbitrary event types/userData, veto-capable classes, pushed chains and worker dispatch remain open. See docs/EVENT-CONTEXTS.md."
+      "scope": "Owned/borrowed handler identities and command/close-family bindings with exact IDs/ranges, safe unbinding, copied queue payloads and weak invalidation. Callback-time receiver disposal is deferred; generic roots are reaped at Lisp boundaries. Optional contextual callbacks now control Skip/propagation for supported command/close kinds. Arbitrary event types/userData, notify/session families, pushed chains and worker dispatch remain open. See docs/EVENT-CONTEXTS.md."
     },
     "wxEvent": {
       "status": "~",
@@ -1241,7 +1327,29 @@
         "wxl_context_stop_propagation",
         "wxl_context_resume_propagation"
       ],
-      "scope": "Immutable four-command snapshots plus borrowed current-callback contexts for Skip and propagation control. Private monotonic tokens and callback-depth checks reject stale/nested outer access. Native construction/cloning, mutable IDs/type/origin, timestamps/userData, veto and arbitrary event families remain open. See docs/EVENT-CONTEXTS.md."
+      "scope": "Immutable supported command/close snapshots and current-callback wxEvent base views for Skip/propagation; close veto is checked through wxCloseEvent only. Arbitrary native construction/cloning, mutable IDs/type/origin, timestamps/userData and broader families remain open. See docs/CLOSE-EVENTS.md."
+    },
+    "wxCloseEvent": {
+      "status": "~",
+      "lisp": [
+        "event",
+        "event-context",
+        "event-family",
+        "event-can-veto-p",
+        "event-vetoed-p",
+        "(setf event-vetoed-p)",
+        "queue-event",
+        "close-window"
+      ],
+      "native": [
+        "wxl_bind",
+        "wxl_queue_event",
+        "wxl_close",
+        "wxl_context_can_veto",
+        "wxl_context_vetoed",
+        "wxl_context_set_vetoed"
+      ],
+      "scope": ":CLOSE wxEVT_CLOSE_WINDOW snapshots/scoped views and copied synthetic construction. Checked veto, force-aware frame requests and immutable flags. No query/end-session tags, logging-off state, arbitrary close types, persistent event ownership or context SetCanVeto. wxNotifyEvent remains unbound. See docs/CLOSE-EVENTS.md."
     }
   }
 }

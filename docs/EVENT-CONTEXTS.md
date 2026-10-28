@@ -2,9 +2,9 @@
 
 This C1 slice adds borrowed `event-context` values for native Skip and propagation
 control. Existing `event` snapshots remain immutable Lisp-owned data. The bridge
-is ABI 14, using the wxWidgets 3.2.12 inventory baseline. Supported events remain
-the four current command kinds; arbitrary event classes and veto-capable types
-are not yet bound.
+is ABI 15, using the wxWidgets 3.2.12 inventory baseline. Supported events now include
+four command kinds plus the [close family](CLOSE-EVENTS.md); arbitrary classes
+and notify/session families remain open.
 
 ## Opt into contextual callbacks
 
@@ -83,25 +83,26 @@ Keep the snapshot to inspect data after return. Do not keep a context expecting
 to mutate the event later. The snapshot's source remains the binding receiver,
 not necessarily the native originating child. Native origin-object access, ID/type
 mutation, timestamps, userData, arbitrary event classes and native virtual
-overrides remain open. Veto is deliberately absent: the current four command
-event tags do not supply a veto-capable native event class.
+overrides remain open. Veto is available only for current close contexts that permit it; the four
+command kinds do not provide close-veto state. See [close semantics](CLOSE-EVENTS.md).
 
 ## Native event type values
 
 `event-native-type` reads a copied native `wxEventType` integer from any current
-command snapshot, including observer/control-specific callbacks:
+supported snapshot, including observer/control-specific callbacks:
 
 ```lisp
 (= (wxlambda:event-native-type snapshot)
-   (wxlambda:command-event-type :click))
+   (wxlambda:event-type :click))
 ```
 
-The lookup accepts `:click`, `:text-change`, `:toggle` and `:selection` and requires
-an active main-thread session. Saved snapshot integers can be read without a
+The lookup accepts `:click`, `:text-change`, `:toggle`, `:selection` and `:close`,
+and requires an active main-thread session. Saved snapshot integers can be read without a
 session. These are process-local runtime IDs; do not serialize them as stable
 type identifiers or compare IDs from different processes. `event-kind` retains
-the four portable keywords. This is bounded native type-value introspection,
-not custom type registration or arbitrary numeric-type binding.
+the supported portable keywords. This is bounded native type-value introspection,
+not custom type registration or arbitrary numeric-type binding. The old
+`command-event-type` name was removed when the non-command close family was added.
 
 ## Example and checks
 

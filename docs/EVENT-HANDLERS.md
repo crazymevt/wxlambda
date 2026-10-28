@@ -3,7 +3,7 @@
 This C1 foundation slice introduces `event-handler`, a native-backed CLOS wrapper
 for `wxEvtHandler` and the superclass of `window`. It establishes ownership and
 state before generic binding/unbinding, timers and broader event routing.
-The coverage baseline is wxWidgets 3.2.12; current native ABI is 14.
+The coverage baseline is wxWidgets 3.2.12; current native ABI is 15.
 Four command-event observer kinds now have [independent bindings](EVENT-BINDINGS.md).
 
 ## Owned standalone handlers
@@ -84,7 +84,7 @@ before window destruction, or they remain rooted until session cleanup.
 Standalone handlers and windows now support four command-event observer kinds,
 ID filters, safe generic unbinding and copied synthetic queues; see
 [command-event bindings](EVENT-BINDINGS.md). Arbitrary event types, pushed/linked
-handler ownership, filters, veto-capable event classes and general propagation, timer/idle handlers,
+handler ownership, filters, notify/session event classes and general propagation, timer/idle handlers,
 worker dispatch and native virtual overrides remain open C1 work.
 [Scoped contexts](EVENT-CONTEXTS.md) now provide Skip/propagation for the four
 current command kinds without making saved snapshots mutable.
@@ -117,8 +117,11 @@ python3 tools/docset.py build
 python3 tools/docset.py check
 ```
 
-Use the project quiet-command wrapper in agent sessions. Rebuild the ABI 14
+Use the project quiet-command wrapper in agent sessions. Rebuild the ABI 15
 bridge alongside the bindings. The GUI runner includes this scenario; broader
 platform and graphical Cadre verification remain separate. The API, this guide
 and example are included in the [Cadre docset](DOCSET.md), installable under
 `$XDG_DATA_HOME/docsets/wxlambda/` (default `~/.local/share/docsets/wxlambda/`).
+
+The non-command [close family](CLOSE-EVENTS.md) now supports checked scoped veto
+and real frame close requests; standalone handlers can receive synthetic close events.

@@ -16,7 +16,7 @@ class or constructor does not imply full upstream coverage.
 
 ## Current coverage and remaining work
 
-23 implemented; 39 partial; 2800 pending; 0 context entries. Partial and pending entries remain open.
+23 implemented; 40 partial; 2799 pending; 0 context entries. Partial and pending entries remain open.
 
 Counts describe inventory entries, not distinct APIs or percent completion.
 See the [coverage summary](README.md) for phase/header comparisons.
@@ -957,7 +957,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [ ] [L148](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/frame.h#L148) `documented event: EVT_MENU_CLOSE(func)`
 - [ ] [L150](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/frame.h#L150) `documented event: EVT_MENU_HIGHLIGHT(id, func)`
 - [ ] [L153](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/frame.h#L153) `documented event: EVT_MENU_HIGHLIGHT_ALL(func)`
-- [~] [L163](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/frame.h#L163) `class wxFrame : public wxTopLevelWindow {` — **Partial**: `frame`, `make-frame`; ABI: `wxl_frame`. Native-backed CLOS construction, including subclass initargs/defaults and managed rollback. Title, width and height; parent is NULL, ID is wxID_ANY, remaining options use defaults. Full class and inherited API coverage remain open.
+- [~] [L163](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/frame.h#L163) `class wxFrame : public wxTopLevelWindow {` — **Partial**: `frame`, `make-frame`, `close-window`; ABI: `wxl_frame`, `wxl_close`. Native-backed CLOS construction, including subclass initargs/defaults and managed rollback. Title, width and height; parent is NULL, ID is wxID_ANY, remaining options use defaults. Full class and inherited API coverage remain open. Frame-only synchronous close requests now preserve veto/force semantics and native acceptance; no destruction guarantee.
 - [ ] [L169](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/frame.h#L169) `wxFrame();`
 - [~] [L201](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/frame.h#L201) `wxFrame(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_FRAME_STYLE, const wxString& name = wxFrameNameStr);` — **Partial**: `frame`, `make-frame`; ABI: `wxl_frame`. Title, width and height; parent is NULL, ID is wxID_ANY, remaining options use defaults.
 - [ ] [L213](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/frame.h#L213) `virtual ~wxFrame();`
@@ -1000,7 +1000,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [ ] [L48](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/gauge.h#L48) `documented style: wxGA_SMOOTH`
 - [ ] [L51](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/gauge.h#L51) `documented style: wxGA_TEXT`
 - [ ] [L56](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/gauge.h#L56) `documented style: wxGA_PROGRESS`
-- [~] [L69](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/gauge.h#L69) `class wxGauge : public wxControl {` — **Partial**: `gauge`, `make-gauge`, `gauge-value`, `gauge-range`, `gauge-vertical-p`, `pulse-gauge`; ABI: `wxl_gauge`, `wxl_gauge_value`, `wxl_gauge_range`, `wxl_set_gauge_value`, `wxl_set_gauge_range`, `wxl_gauge_vertical`, `wxl_gauge_pulse`. Parent-owned progress gauge: positive range, value, horizontal/vertical orientation and pulsing. Constructor options, two-step creation and full inherited API remain open. Gauge support introduced in ABI 10; current bridge ABI 14; see docs/GAUGE.md and tests/gauge.lisp.
+- [~] [L69](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/gauge.h#L69) `class wxGauge : public wxControl {` — **Partial**: `gauge`, `make-gauge`, `gauge-value`, `gauge-range`, `gauge-vertical-p`, `pulse-gauge`; ABI: `wxl_gauge`, `wxl_gauge_value`, `wxl_gauge_range`, `wxl_set_gauge_value`, `wxl_set_gauge_range`, `wxl_gauge_vertical`, `wxl_gauge_pulse`. Parent-owned progress gauge: positive range, value, horizontal/vertical orientation and pulsing. Constructor options, two-step creation and full inherited API remain open. Gauge support introduced in ABI 10; current bridge ABI 15; see docs/GAUGE.md and tests/gauge.lisp.
 - [ ] [L75](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/gauge.h#L75) `wxGauge();`
 - [~] [L101](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/gauge.h#L101) `wxGauge(wxWindow* parent, wxWindowID id, int range, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxGA_HORIZONTAL, const wxValidator& validator = wxDefaultValidator, const wxString& name = wxGaugeNameStr);` — **Partial**: `gauge`, `make-gauge`; ABI: `wxl_gauge`. Native-backed CLOS construction with parent, positive range, initial value and horizontal/vertical orientation. Fixed wxID_ANY and default position, size, validator and name; remaining constructor styles/options open.
 - [ ] [L111](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/gauge.h#L111) `virtual ~wxGauge();`
@@ -2994,7 +2994,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h)
 
-10 implemented; 3 partial; 373 pending; 0 context entries. Partial and pending entries remain open.
+10 implemented; 4 partial; 372 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L12](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L12) `enum wxShowEffect {`
 - [ ] [L19](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L19) `wxSHOW_EFFECT_NONE, wxSHOW_EFFECT_ROLL_TO_LEFT, wxSHOW_EFFECT_ROLL_TO_RIGHT, wxSHOW_EFFECT_ROLL_TO_TOP, wxSHOW_EFFECT_ROLL_TO_BOTTOM, wxSHOW_EFFECT_SLIDE_TO_LEFT, wxSHOW_EFFECT_SLIDE_TO_RIGHT, wxSHOW_EFFECT_SLIDE_TO_TOP, wxSHOW_EFFECT_SLIDE_TO_BOTTOM, wxSHOW_EFFECT_BLEND, wxSHOW_EFFECT_EXPAND, wxSHOW_EFFECT_MAX }`
@@ -3314,7 +3314,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [ ] [L3453](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L3453) `void SetAccessible(wxAccessible* accessible);`
 - [ ] [L3458](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L3458) `virtual wxAccessible* CreateAccessible();`
 - [ ] [L3464](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L3464) `wxAccessible* GetOrCreateAccessible();`
-- [ ] [L3505](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L3505) `bool Close(bool force = false);`
+- [~] [L3505](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L3505) `bool Close(bool force = false);` — **Partial**: `close-window`; ABI: `wxl_close`. wxFrame only. Synchronous close request with force flag; preserves native acceptance boolean, not a destruction guarantee. Callback errors have a Lisp boundary. Other window/top-level receivers remain open.
 - [~] [L3518](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L3518) `virtual bool Destroy();` — **Partial**: `destroy-window`; ABI: `wxl_destroy`. Destruction request exposed; native boolean return is discarded. Handlers require explicit unbinding.
 - [ ] [L3532](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L3532) `bool IsBeingDeleted() const;`
 - [ ] [L3548](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L3548) `virtual wxDropTarget* GetDropTarget() const;`

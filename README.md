@@ -15,10 +15,10 @@ does not release its registered Lisp handlers; unbind them before destruction,
 or they remain rooted until session cleanup. Restart Lisp for a new GUI session.
 
 The [CLOS widget API](docs/CLOS-API.md) provides direct native-backed
-`make-instance` construction, subclass initargs/defaults/hooks and twelve generic
+`make-instance` construction, subclass initargs/defaults/hooks and thirteen generic
 `setf` accessors. The `make-*` conveniences forward to `make-instance` with
-`:class` support. The ground-up API has 51 named generic operations plus
-twelve generic property writers. Native C++ virtual callbacks remain separate work.
+`:class` support. The ground-up API has 54 named generic operations plus
+thirteen generic property writers. Native C++ virtual callbacks remain separate work.
 
 Progress controls support range/value properties, orientation and indeterminate
 pulsing; see [the gauge guide](docs/GAUGE.md) and runnable
@@ -32,8 +32,9 @@ The [event-handler foundation](docs/EVENT-HANDLERS.md) adds session-owned
 standalone handlers, borrowed window identities, liveness checks and a generic
 event-processing flag. Independent multi-event/ID observer bindings now cover the four current command
 kinds; see [binding and queue scope](docs/EVENT-BINDINGS.md). Optional [scoped contexts](docs/EVENT-CONTEXTS.md) now control native Skip and
-propagation while snapshots stay immutable. Veto-capable classes and arbitrary
-native event families remain open C1 work.
+propagation while snapshots stay immutable. The [close family](docs/CLOSE-EVENTS.md) adds scoped veto, immutable close flags
+and frame close requests. `event-type` replaces the command-only lookup name.
+Notify/session and arbitrary event families remain open C1 work.
 
 ## Documentation and examples
 
@@ -80,7 +81,7 @@ application with `(wxlambda:load-native-library #P"C:/path/to/wxlambda.dll")`.
 Dependent wxWidgets DLLs must also be discoverable by the OS loader.
 
 The bridge normally loads from `build/`, then falls back to the system library
-search path. The Lisp/native ABI version (currently 14) is checked on load; rebuild
+search path. The Lisp/native ABI version (currently 15) is checked on load; rebuild
 the bridge after updating the bindings. Installing the bridge with CMake does not
 install the ASDF system.
 

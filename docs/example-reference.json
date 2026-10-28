@@ -46,5 +46,9 @@
   "event-contexts.lisp": {
     "description": "A contextual button binding conditionally forwards commands to a parent observer. A checkbox controls Skip; the reusable exercise checks consumption, forwarding, native-type snapshots and expiration after callback return.",
     "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/event-contexts.lisp --eval '(wxlambda-event-contexts:start)'"
+  },
+  "close-events.lisp": {
+    "description": "A contextual close callback vetoes while a checkbox blocks closing, then releases the convenience callback and delegates to native frame closing. The exercise runs real queued-button requests, checks rejection/liveness and accepted closing cleanup.",
+    "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/close-events.lisp --eval '(wxlambda-close-events:start)'"
   }
 }

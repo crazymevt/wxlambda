@@ -3,9 +3,10 @@
 This C1 slice adds independent observer bindings on standalone `event-handler`
 objects and borrowed window identities. It covers `:click` (`wxEVT_BUTTON`),
 `:text-change` (`wxEVT_TEXT`), `:toggle` (`wxEVT_CHECKBOX`) and `:selection`
-(`wxEVT_CHOICE`), using the wxWidgets 3.2.12 baseline. The bridge is ABI 14.
+(`wxEVT_CHOICE`), using the wxWidgets 3.2.12 baseline. The bridge is ABI 15.
 Optional [scoped contexts](EVENT-CONTEXTS.md) now support Skip/propagation;
-arbitrary native event families and veto remain open work.
+close-veto support is now available through the [close family](CLOSE-EVENTS.md).
+Notify/session and arbitrary native event families remain open.
 
 ## Register and remove independent observers
 
@@ -59,8 +60,8 @@ registrations coexist independently and are removed with `unbind-event`.
 
 The default observer policy is unchanged. Contextual bindings can now consume
 commands and control Skip/propagation levels through borrowed, callback-scoped
-access. Veto, arbitrary event families and native virtual overrides remain
-missing; do not infer full wxEvent coverage from these command APIs.
+access. Close veto is now supported only for current close contexts. Notify/session
+families and native virtual overrides remain missing; do not infer full wxEvent coverage from these command APIs.
 `handler-enabled-p` still controls only the receiving handler's own processing.
 
 `event-source` is the **Lisp receiver on which that callback was registered**.
@@ -91,7 +92,8 @@ Queuing only supplies event data: it does not change a text control's contents,
 checkbox state or choice selection. Use generic SETF properties to change those
 values and optionally notify. Synthetic selections are payload indices, not
 validated against a choice's items. Native origin override, arbitrary custom
-event classes, userData and worker-to-GUI dispatch are not implemented.
+event classes, userData and worker-to-GUI dispatch are not implemented. Synthetic `:close` events use a
+separate native event class and may run default frame closing; see [close events](CLOSE-EVENTS.md).
 
 ## Lifetime, errors and cleanup
 

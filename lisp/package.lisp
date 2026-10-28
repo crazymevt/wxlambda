@@ -1,8 +1,9 @@
 (defpackage #:wxlambda
   (:use #:cl)
-  (:export #:event-context #:event-context-p #:event-context-active-p #:event-skipped-p
+  (:export #:event-family #:event-can-veto-p #:event-vetoed-p #:close-window
+           #:event-context #:event-context-p #:event-context-active-p #:event-skipped-p
            #:event-propagates-p #:stop-event-propagation #:resume-event-propagation
-           #:event-native-type #:command-event-type
+           #:event-native-type #:event-type
            #:event-binding #:event-binding-p #:bind-event #:unbind-event #:binding-active-p #:queue-event #:event-id
            #:event-handler #:make-event-handler #:destroy-event-handler #:handler-enabled-p #:handler-alive-p
            #:window #:frame #:panel #:button #:text-control #:label #:checkbox #:choice

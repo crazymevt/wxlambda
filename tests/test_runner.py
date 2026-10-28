@@ -37,9 +37,9 @@ class EvidenceTests(unittest.TestCase):
             report = Path(temporary) / "report"
             summary = json.loads((report / "summary.json").read_text())
             self.assertEqual(summary["status"], "passed")
-            self.assertEqual(summary["completed_gui_scenarios"], 31)
-            self.assertEqual(summary["expected_gui_scenarios"], 31)
-            self.assertEqual(len(summary["results"]), 32)
+            self.assertEqual(summary["completed_gui_scenarios"], 32)
+            self.assertEqual(summary["expected_gui_scenarios"], 32)
+            self.assertEqual(len(summary["results"]), 33)
             self.assertEqual(summary["results"][0]["kind"], "preflight")
             for row in summary["results"]:
                 self.assertIn(b"fake runtime output", (report / row["log"]).read_bytes())

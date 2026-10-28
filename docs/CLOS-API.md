@@ -81,7 +81,7 @@ keep their separate roles.
 
 ## Generic properties
 
-Use these twelve generic `setf` accessors:
+Use these thirteen generic `setf` accessors:
 
 ```lisp
 (setf (wxlambda:text input) "Text")
@@ -96,6 +96,7 @@ Use these twelve generic `setf` accessors:
 (setf (wxlambda:gauge-range gauge) 100)
 (setf (wxlambda:handler-enabled-p handler) t)
 (setf (wxlambda:event-skipped-p context) t) ; only in its contextual callback
+(setf (wxlambda:event-vetoed-p context) t)  ; only in a vetoable close context
 ```
 
 A writer's method lambda list starts with the new value, followed by the
@@ -148,7 +149,7 @@ construction instructions on class pages and indexed SETF forms on property page
 
 The gauge scenario additionally verifies direct and factory subclass construction,
 subclass AFTER access, rollback, and the two gauge SETF writers. Across the public
-API there are now 51 named generic functions and twelve generic SETF functions.
+API there are now 54 named generic functions and thirteen generic SETF functions.
 
 Independent `event-binding` values are immutable registration identities rather
 than native-backed CLOS resources. The generic `bind-event`, `unbind-event`,
@@ -158,3 +159,7 @@ kinds; see [binding scope and lifecycle](EVENT-BINDINGS.md).
 `event-context` is a borrowed, immutable-token view whose generic operations
 mutate a native event only during its current callback. Its scoped SETF writer
 does not change immutable snapshot semantics. See [context lifetime](EVENT-CONTEXTS.md).
+
+Close capability/veto readers accept immutable snapshots or current contexts;
+the veto SETF writer accepts only a current vetoable close context. Frame close
+requests use the generic `close-window`; see [close-family scope](CLOSE-EVENTS.md).

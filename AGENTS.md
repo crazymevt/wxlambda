@@ -85,6 +85,8 @@ immutable structures. Default command callbacks observe and automatically Skip. 
 `:with-context t` bindings receive a borrowed event-context for explicit Skip and
 propagation control; it is valid only in its current innermost callback. Preserve
 that lifetime isolation and immutable snapshots when extending native event families.
+Close veto is scoped and guarded by native CanVeto; frame close acceptance is not
+a destruction guarantee. The type lookup is `event-type`, with no old-name alias.
 
 The native-backed `event-handler` base supports standalone session-owned handlers;
 windows borrow their existing native widget identity. Public window wrapper

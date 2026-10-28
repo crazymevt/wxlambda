@@ -16,7 +16,7 @@ extern "C" {
 #endif
 typedef uint64_t wxl_handle;
 enum wxl_alignment { WXL_ALIGN_START = 0, WXL_ALIGN_CENTER = 1, WXL_ALIGN_END = 2 };
-enum wxl_event_kind { WXL_EVENT_CLICK = 1, WXL_EVENT_TEXT_CHANGE = 2, WXL_EVENT_TOGGLE = 3, WXL_EVENT_SELECTION = 4 };
+enum wxl_event_kind { WXL_EVENT_CLICK = 1, WXL_EVENT_TEXT_CHANGE = 2, WXL_EVENT_TOGGLE = 3, WXL_EVENT_SELECTION = 4, WXL_EVENT_CLOSE = 5 };
 typedef struct wxl_event {
     int kind;
     const char *text; /* UTF-8 for text changes; NULL otherwise. */
@@ -26,6 +26,8 @@ typedef struct wxl_event {
     size_t text_length; /* Explicit UTF-8 bytes, kind 2 only. */
     uint64_t context; /* Scoped opaque token, zero for observers. */
     int native_type;
+    int can_veto; /* Close snapshots only. */
+    int vetoed;
 } wxl_event;
 /* The record and its text are borrowed only until this callback returns.
    Callbacks must never unwind across this boundary. */
@@ -52,23 +54,27 @@ WXL_API int wxl_handler_enabled(wxl_handle handler);
 WXL_API int wxl_set_handler_enabled(wxl_handle handler, int enabled);
 /* Only standalone handlers may be destroyed here. */
 WXL_API int wxl_handler_destroy(wxl_handle handler);
-/* Independent observer bindings for the four command-event kinds. Bind/queue
+/* Independent bindings for supported command/close event kinds. Bind/queue
    return 0 or -1. Unbind/active return 0/1 or -1. Filters use -1 for wxID_ANY.
    Observer callbacks Skip; contextual callbacks control Skip. Native callback
    order is not guaranteed here. */
 WXL_API int wxl_bind(wxl_handle handler, int kind, uint64_t token, int first_id, int last_id, int with_context);
 /* Contexts refer only to their currently executing innermost native callback; no raw event pointer
    escapes. Queries use 0/1/-1, stop returns the old level or -1, writers 0/-1. */
-WXL_API int wxl_command_event_type(int kind);
+WXL_API int wxl_event_type(int kind);
 WXL_API int wxl_context_active(uint64_t context);
 WXL_API int wxl_context_skipped(uint64_t context);
 WXL_API int wxl_context_set_skipped(uint64_t context, int skip);
 WXL_API int wxl_context_propagates(uint64_t context);
 WXL_API int wxl_context_stop_propagation(uint64_t context);
+WXL_API int wxl_context_can_veto(uint64_t context);
+WXL_API int wxl_context_vetoed(uint64_t context);
+WXL_API int wxl_context_set_vetoed(uint64_t context, int vetoed);
+WXL_API int wxl_close(wxl_handle frame, int force);
 WXL_API int wxl_context_resume_propagation(uint64_t context, int level);
 WXL_API int wxl_unbind(uint64_t token);
 WXL_API int wxl_binding_active(uint64_t token);
-WXL_API int wxl_queue_event(wxl_handle handler, int kind, int id, const char *text, size_t length, int value);
+WXL_API int wxl_queue_event(wxl_handle handler, int kind, int id, const char *text, size_t length, int value, int can_veto);
 WXL_API wxl_handle wxl_frame(const char *title, int width, int height);
 WXL_API wxl_handle wxl_panel(wxl_handle parent);
 WXL_API wxl_handle wxl_button(wxl_handle parent, const char *label);
