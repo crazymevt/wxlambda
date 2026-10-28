@@ -318,7 +318,7 @@ class or constructor does not imply full upstream coverage.
 - [ ] [L150](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/checkbox.h#L150) `bool Is3State() const;`
 - [ ] [L160](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/checkbox.h#L160) `bool Is3rdStateAllowedForUser() const;`
 - [ ] [L167](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/checkbox.h#L167) `bool IsChecked() const;`
-- [x] [L176](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/checkbox.h#L176) `virtual void SetValue(bool state);` — **Implemented**: `set-checked`; ABI: `wxl_set_checked`. Boolean setter; silent by default, Lisp additionally offers synthetic notification.
+- [x] [L176](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/checkbox.h#L176) `virtual void SetValue(bool state);` — **Implemented**: `(setf checked-p)`; ABI: `wxl_set_checked`. Canonical SETF writer. Boolean setter; silent by default, Lisp additionally offers synthetic notification.
 - [ ] [L185](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/checkbox.h#L185) `void Set3StateValue(wxCheckBoxState state);`
 
 ## `wx/checklst.h`
@@ -356,7 +356,7 @@ class or constructor does not imply full upstream coverage.
 - [ ] [L174](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/choice.h#L174) `virtual bool IsSorted() const;`
 - [ ] [L176](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/choice.h#L176) `virtual unsigned int GetCount() const ;`
 - [x] [L177](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/choice.h#L177) `virtual int GetSelection() const ;` — **Implemented**: `selection`; ABI: `wxl_selection`. Selected index; native -1 maps to Lisp NIL.
-- [x] [L178](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/choice.h#L178) `virtual void SetSelection(int n);` — **Implemented**: `set-selection`; ABI: `wxl_set_selection`. Index or no selection (Lisp NIL); silent by default, optional synthetic notification.
+- [x] [L178](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/choice.h#L178) `virtual void SetSelection(int n);` — **Implemented**: `(setf selection)`; ABI: `wxl_set_selection`. Canonical SETF writer. Index or no selection (Lisp NIL); silent by default, optional synthetic notification.
 - [ ] [L180](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/choice.h#L180) `virtual int FindString(const wxString& s, bool bCase = false) const;`
 - [ ] [L181](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/choice.h#L181) `virtual wxString GetString(unsigned int n) const ;`
 - [ ] [L182](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/choice.h#L182) `virtual void SetString(unsigned int pos, const wxString& s);`
@@ -612,12 +612,12 @@ class or constructor does not imply full upstream coverage.
 - [ ] [L66](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/control.h#L66) `wxControl();`
 - [ ] [L68](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/control.h#L68) `bool Create(wxWindow *parent, wxWindowID id, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = 0, const wxValidator& validator = wxDefaultValidator, const wxString& name = wxControlNameStr);`
 - [ ] [L79](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/control.h#L79) `virtual void Command(wxCommandEvent& event);`
-- [~] [L91](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/control.h#L91) `wxString GetLabel() const;` — **Partial**: `get-label`; ABI: `wxl_get_label`. Inherited by wxStaticText; exported get-label accepts static text only. Other control receivers remain open.
+- [~] [L91](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/control.h#L91) `wxString GetLabel() const;` — **Partial**: `label-text`; ABI: `wxl_get_label`. Inherited by wxStaticText; exported label-text accepts static text only. Other control receivers remain open.
 - [ ] [L100](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/control.h#L100) `wxString GetLabelText() const;`
 - [ ] [L136](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/control.h#L136) `wxSize GetSizeFromTextSize(int xlen, int ylen = -1) const;`
 - [ ] [L141](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/control.h#L141) `wxSize GetSizeFromTextSize(const wxSize& tsize) const;`
 - [ ] [L162](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/control.h#L162) `wxSize GetSizeFromText(const wxString& text) const;`
-- [~] [L174](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/control.h#L174) `void SetLabel(const wxString& label);` — **Partial**: `set-label`; ABI: `wxl_set_label`. Inherited interface exposed through wxStaticText override only; other control receivers remain open.
+- [~] [L174](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/control.h#L174) `void SetLabel(const wxString& label);` — **Partial**: `(setf label-text)`; ABI: `wxl_set_label`. Canonical SETF writer. Inherited interface exposed through wxStaticText override only; other control receivers remain open.
 - [ ] [L186](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/control.h#L186) `void SetLabelText(const wxString& text);`
 - [ ] [L352](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/control.h#L352) `bool SetLabelMarkup(const wxString& markup);`
 - [ ] [L360](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/control.h#L360) `static wxString GetLabelText(const wxString& label);`
@@ -637,7 +637,7 @@ class or constructor does not imply full upstream coverage.
 - [ ] [L68](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/ctrlsub.h#L68) `wxArrayString GetStrings() const;`
 - [ ] [L78](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/ctrlsub.h#L78) `virtual void SetString(unsigned int n, const wxString& string) = 0;`
 - [ ] [L91](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/ctrlsub.h#L91) `virtual int FindString(const wxString& string, bool caseSensitive = false) const;`
-- [~] [L111](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/ctrlsub.h#L111) `virtual void SetSelection(int n) = 0;` — **Partial**: `set-selection`; ABI: `wxl_set_selection`. Inherited interface exposed for wxChoice only; other item-container receivers remain open.
+- [~] [L111](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/ctrlsub.h#L111) `virtual void SetSelection(int n) = 0;` — **Partial**: `(setf selection)`; ABI: `wxl_set_selection`. Canonical SETF writer. Inherited interface exposed for wxChoice only; other item-container receivers remain open.
 - [~] [L121](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/ctrlsub.h#L121) `virtual int GetSelection() const = 0;` — **Partial**: `selection`; ABI: `wxl_selection`. Inherited interface exposed for wxChoice only; other item-container receivers remain open.
 - [ ] [L138](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/ctrlsub.h#L138) `bool SetStringSelection(const wxString& string);`
 - [ ] [L146](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/ctrlsub.h#L146) `virtual wxString GetStringSelection() const;`
@@ -2160,7 +2160,7 @@ class or constructor does not imply full upstream coverage.
 - [~] [L81](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/stattext.h#L81) `wxStaticText(wxWindow* parent, wxWindowID id, const wxString& label, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = 0, const wxString& name = wxStaticTextNameStr);` — **Partial**: `make-label`; ABI: `wxl_label`. Parent and label; ID is wxID_ANY, remaining options use defaults.
 - [ ] [L91](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/stattext.h#L91) `bool Create(wxWindow* parent, wxWindowID id, const wxString& label, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = 0, const wxString& name = wxStaticTextNameStr);`
 - [ ] [L100](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/stattext.h#L100) `bool IsEllipsized() const;`
-- [x] [L112](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/stattext.h#L112) `virtual void SetLabel(const wxString& label);` — **Implemented**: `set-label`; ABI: `wxl_set_label`. UTF-8 label setter for wxStaticText.
+- [x] [L112](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/stattext.h#L112) `virtual void SetLabel(const wxString& label);` — **Implemented**: `(setf label-text)`; ABI: `wxl_set_label`. Canonical SETF writer. UTF-8 label setter for wxStaticText.
 - [ ] [L125](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/stattext.h#L125) `void Wrap(int width);`
 
 ## `wx/systhemectrl.h`
@@ -2430,7 +2430,7 @@ class or constructor does not imply full upstream coverage.
 - [ ] [L154](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h#L154) `virtual bool CanPaste() const;`
 - [ ] [L160](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h#L160) `virtual bool CanRedo() const;`
 - [ ] [L166](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h#L166) `virtual bool CanUndo() const;`
-- [~] [L188](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h#L188) `virtual void ChangeValue(const wxString& value);` — **Partial**: `set-text`; ABI: `wxl_set_text`. Silent value replacement for wxTextCtrl only; other wxTextEntry receivers remain open.
+- [~] [L188](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h#L188) `virtual void ChangeValue(const wxString& value);` — **Partial**: `(setf text)`; ABI: `wxl_set_text`. Canonical SETF writer. Silent value replacement for wxTextCtrl only; other wxTextEntry receivers remain open.
 - [ ] [L196](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h#L196) `virtual void Clear();`
 - [ ] [L201](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h#L201) `virtual void Copy();`
 - [ ] [L206](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h#L206) `virtual void Cut();`
@@ -2440,7 +2440,7 @@ class or constructor does not imply full upstream coverage.
 - [ ] [L269](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h#L269) `virtual wxString GetRange(long from, long to) const;`
 - [ ] [L290](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h#L290) `virtual void GetSelection(long* from, long* to) const;`
 - [ ] [L297](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h#L297) `virtual wxString GetStringSelection() const;`
-- [~] [L306](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h#L306) `virtual wxString GetValue() const;` — **Partial**: `get-text`; ABI: `wxl_get_text`. Independent UTF-8 Lisp string for wxTextCtrl only; other wxTextEntry receivers remain open.
+- [~] [L306](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h#L306) `virtual wxString GetValue() const;` — **Partial**: `text`; ABI: `wxl_get_text`. Independent UTF-8 Lisp string for wxTextCtrl only; other wxTextEntry receivers remain open.
 - [ ] [L315](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h#L315) `virtual bool IsEditable() const;`
 - [ ] [L325](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h#L325) `virtual bool IsEmpty() const;`
 - [ ] [L330](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h#L330) `virtual void Paste();`
@@ -2459,7 +2459,7 @@ class or constructor does not imply full upstream coverage.
 - [ ] [L511](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h#L511) `bool SetMargins(const wxPoint& pt);`
 - [ ] [L512](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h#L512) `bool SetMargins(wxCoord left, wxCoord top = -1);`
 - [ ] [L527](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h#L527) `wxPoint GetMargins() const;`
-- [~] [L547](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h#L547) `virtual void SetValue(const wxString& value);` — **Partial**: `set-text`; ABI: `wxl_set_text`. Notifying value replacement for wxTextCtrl only via :notify T; other receivers remain open.
+- [~] [L547](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h#L547) `virtual void SetValue(const wxString& value);` — **Partial**: `(setf text)`; ABI: `wxl_set_text`. Canonical SETF writer. Notifying value replacement for wxTextCtrl only via :notify T; other receivers remain open.
 - [ ] [L555](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h#L555) `virtual void Undo();`
 - [ ] [L573](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h#L573) `virtual void WriteText(const wxString& text);`
 
@@ -2544,14 +2544,68 @@ class or constructor does not imply full upstream coverage.
 - [ ] [L20](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L20) `wxCONTENT_PROTECTION_NONE, wxCONTENT_PROTECTION_ENABLED }`
 - [ ] [L27](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L27) `enum {`
 - [ ] [L29](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L29) `wxFULLSCREEN_NOMENUBAR = 0x0001, wxFULLSCREEN_NOTOOLBAR = 0x0002, wxFULLSCREEN_NOSTATUSBAR = 0x0004, wxFULLSCREEN_NOBORDER = 0x0008, wxFULLSCREEN_NOCAPTION = 0x0010, wxFULLSCREEN_ALL = wxFULLSCREEN_NOMENUBAR | wxFULLSCREEN_NOTOOLBAR | wxFULLSCREEN_NOSTATUSBAR | wxFULLSCREEN_NOBORDER | wxFULLSCREEN_NOCAPTION }`
-- [ ] [L43](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L43) `#define wxDEFAULT_FRAME_STYLE (wxSYSTEM_MENU |          \`
-- [ ] [L44](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L44) `wxRESIZE_BORDER | \ wxMINIMIZE_BOX | \ wxMAXIMIZE_BOX | \ wxCLOSE_BOX | \ wxCAPTION | \ wxCLIP_CHILDREN) class wxTopLevelWindow : public wxNonOwnedWindow { wxTopLevelWindow(); wxTopLevelWindow(wxWindow *parent, wxWindowID id, const wxString& title, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_FRAME_STYLE, const wxString& name = wxFrameNameStr); virtual ~wxTopLevelWindow(); bool Create(wxWindow *parent, wxWindowID id, const wxString& title, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_FRAME_STYLE, const wxString& name = wxFrameNameStr); virtual bool CanSetTransparent(); void CenterOnScreen(int direction = wxBOTH); void CentreOnScreen(int direction = wxBOTH); virtual bool EnableCloseButton(bool enable = true); virtual bool EnableMaximizeButton(bool enable = true); virtual bool EnableMinimizeButton(bool enable = true); wxWindow* GetDefaultItem() const; static wxSize GetDefaultSize(); wxIcon GetIcon() const; const wxIconBundle& GetIcons() const; virtual wxString GetTitle() const; virtual void Iconize(bool iconize = true); virtual bool IsActive(); virtual bool IsAlwaysMaximized() const; virtual bool IsFullScreen() const; virtual bool IsIconized() const; virtual bool IsMaximized() const; bool IsUsingNativeDecorations() const; virtual bool Layout(); virtual void Maximize(bool maximize = true); wxMenu *MSWGetSystemMenu() const; virtual void RequestUserAttention(int flags = wxUSER_ATTENTION_INFO); void Restore(); class GeometrySerializer { virtual bool SaveField(const wxString& name, int value) const = 0; virtual bool RestoreField(const wxString& name, int* value) = 0; }; bool RestoreToGeometry(GeometrySerializer& ser); bool SaveGeometry(const GeometrySerializer& ser) const; wxWindow* SetDefaultItem(wxWindow* win); wxWindow* SetTmpDefaultItem(wxWindow * win); wxWindow* GetTmpDefaultItem() const; void SetIcon(const wxIcon& icon); virtual void SetIcons(const wxIconBundle& icons); virtual void SetMaxSize(const wxSize& size); virtual void SetMinSize(const wxSize& size); virtual void SetSizeHints(int minW, int minH, int maxW = -1, int maxH = -1, int incW = -1, int incH = -1); void SetSizeHints(const wxSize& minSize, const wxSize& maxSize = wxDefaultSize, const wxSize& incSize = wxDefaultSize); virtual void SetTitle(const wxString& title); virtual bool SetTransparent(wxByte alpha); virtual bool ShouldPreventAppExit() const; virtual void OSXSetModified(bool modified); virtual bool OSXIsModified() const; virtual void SetRepresentedFilename(const wxString& filename); virtual void ShowWithoutActivating(); virtual bool EnableFullScreenView(bool enable = true, long style = wxFULLSCREEN_ALL); virtual bool ShowFullScreen(bool show, long style = wxFULLSCREEN_ALL); virtual wxContentProtection GetContentProtection() const; virtual bool SetContentProtection(wxContentProtection contentProtection); void UseNativeDecorations(bool native = true); void UseNativeDecorationsByDefault(bool native = true); };`
+- [ ] [L43](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L43) `#define wxDEFAULT_FRAME_STYLE (wxSYSTEM_MENU |          \ wxRESIZE_BORDER |        \ wxMINIMIZE_BOX |         \ wxMAXIMIZE_BOX |         \ wxCLOSE_BOX |            \ wxCAPTION |              \ wxCLIP_CHILDREN)`
 - [ ] [L63](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L63) `documented event: EVT_MAXIMIZE(func)`
 - [ ] [L65](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L65) `documented event: EVT_MOVE(func)`
 - [ ] [L68](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L68) `documented event: EVT_MOVE_START(func)`
 - [ ] [L72](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L72) `documented event: EVT_MOVE_END(func)`
 - [ ] [L76](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L76) `documented event: EVT_SHOW(func)`
 - [ ] [L78](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L78) `documented event: EVT_FULLSCREEN(func)`
+- [~] [L87](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L87) `class wxTopLevelWindow : public wxNonOwnedWindow {` — **Partial**: `frame-title`, `(setf frame-title)`; ABI: `wxl_title`, `wxl_set_title`. Canonical SETF writer. Title get/set is exposed for wxFrame only; other top-level types and the remaining top-level API stay open.
+- [ ] [L93](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L93) `wxTopLevelWindow();`
+- [ ] [L98](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L98) `wxTopLevelWindow(wxWindow *parent, wxWindowID id, const wxString& title, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_FRAME_STYLE, const wxString& name = wxFrameNameStr);`
+- [ ] [L113](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L113) `virtual ~wxTopLevelWindow();`
+- [ ] [L118](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L118) `bool Create(wxWindow *parent, wxWindowID id, const wxString& title, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_FRAME_STYLE, const wxString& name = wxFrameNameStr);`
+- [ ] [L131](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L131) `virtual bool CanSetTransparent();`
+- [ ] [L136](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L136) `void CenterOnScreen(int direction = wxBOTH);`
+- [ ] [L147](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L147) `void CentreOnScreen(int direction = wxBOTH);`
+- [ ] [L158](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L158) `virtual bool EnableCloseButton(bool enable = true);`
+- [ ] [L173](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L173) `virtual bool EnableMaximizeButton(bool enable = true);`
+- [ ] [L191](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L191) `virtual bool EnableMinimizeButton(bool enable = true);`
+- [ ] [L198](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L198) `wxWindow* GetDefaultItem() const;`
+- [ ] [L211](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L211) `static wxSize GetDefaultSize();`
+- [ ] [L219](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L219) `wxIcon GetIcon() const;`
+- [ ] [L228](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L228) `const wxIconBundle& GetIcons() const;`
+- [~] [L235](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L235) `virtual wxString GetTitle() const;` — **Partial**: `frame-title`; ABI: `wxl_title`. Independent UTF-8 title string for wxFrame only; other top-level window receivers remain open.
+- [ ] [L251](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L251) `virtual void Iconize(bool iconize = true);`
+- [ ] [L257](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L257) `virtual bool IsActive();`
+- [ ] [L264](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L264) `virtual bool IsAlwaysMaximized() const;`
+- [ ] [L271](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L271) `virtual bool IsFullScreen() const;`
+- [ ] [L276](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L276) `virtual bool IsIconized() const;`
+- [ ] [L281](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L281) `virtual bool IsMaximized() const;`
+- [ ] [L292](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L292) `bool IsUsingNativeDecorations() const;`
+- [ ] [L310](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L310) `virtual bool Layout();`
+- [ ] [L323](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L323) `virtual void Maximize(bool maximize = true);`
+- [ ] [L350](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L350) `wxMenu *MSWGetSystemMenu() const;`
+- [ ] [L369](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L369) `virtual void RequestUserAttention(int flags = wxUSER_ATTENTION_INFO);`
+- [ ] [L381](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L381) `void Restore();`
+- [ ] [L396](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L396) `class GeometrySerializer {`
+- [ ] [L413](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L413) `virtual bool SaveField(const wxString& name, int value) const = 0;`
+- [ ] [L430](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L430) `virtual bool RestoreField(const wxString& name, int* value) = 0;`
+- [ ] [L447](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L447) `bool RestoreToGeometry(GeometrySerializer& ser);`
+- [ ] [L469](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L469) `bool SaveGeometry(const GeometrySerializer& ser) const;`
+- [ ] [L476](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L476) `wxWindow* SetDefaultItem(wxWindow* win);`
+- [ ] [L479](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L479) `wxWindow* SetTmpDefaultItem(wxWindow * win);`
+- [ ] [L480](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L480) `wxWindow* GetTmpDefaultItem() const;`
+- [ ] [L497](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L497) `void SetIcon(const wxIcon& icon);`
+- [ ] [L513](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L513) `virtual void SetIcons(const wxIconBundle& icons);`
+- [ ] [L518](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L518) `virtual void SetMaxSize(const wxSize& size);`
+- [ ] [L523](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L523) `virtual void SetMinSize(const wxSize& size);`
+- [ ] [L549](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L549) `virtual void SetSizeHints(int minW, int minH, int maxW = -1, int maxH = -1, int incW = -1, int incH = -1);`
+- [ ] [L571](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L571) `void SetSizeHints(const wxSize& minSize, const wxSize& maxSize = wxDefaultSize, const wxSize& incSize = wxDefaultSize);`
+- [~] [L583](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L583) `virtual void SetTitle(const wxString& title);` — **Partial**: `(setf frame-title)`; ABI: `wxl_set_title`. Canonical SETF writer. Copied UTF-8 title for wxFrame only, returning the supplied Lisp string; other top-level window receivers remain open.
+- [ ] [L601](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L601) `virtual bool SetTransparent(wxByte alpha);`
+- [ ] [L610](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L610) `virtual bool ShouldPreventAppExit() const;`
+- [ ] [L619](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L619) `virtual void OSXSetModified(bool modified);`
+- [ ] [L627](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L627) `virtual bool OSXIsModified() const;`
+- [ ] [L641](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L641) `virtual void SetRepresentedFilename(const wxString& filename);`
+- [ ] [L648](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L648) `virtual void ShowWithoutActivating();`
+- [ ] [L681](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L681) `virtual bool EnableFullScreenView(bool enable = true, long style = wxFULLSCREEN_ALL);`
+- [ ] [L703](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L703) `virtual bool ShowFullScreen(bool show, long style = wxFULLSCREEN_ALL);`
+- [ ] [L712](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L712) `virtual wxContentProtection GetContentProtection() const;`
+- [ ] [L735](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L735) `virtual bool SetContentProtection(wxContentProtection contentProtection);`
+- [ ] [L754](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L754) `void UseNativeDecorations(bool native = true);`
+- [ ] [L773](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L773) `void UseNativeDecorationsByDefault(bool native = true);`
 
 ## `wx/valgen.h`
 
@@ -2839,7 +2893,7 @@ class or constructor does not imply full upstream coverage.
 - [ ] [L332](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L332) `documented event: EVT_SET_CURSOR(func)`
 - [ ] [L334](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L334) `documented event: EVT_SIZE(func)`
 - [ ] [L336](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L336) `documented event: EVT_SYS_COLOUR_CHANGED(func)`
-- [~] [L345](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L345) `class wxWindow : public wxEvtHandler {` — **Partial**: `show-window`, `shown-p`, `enable-window`, `enabled-p`; ABI: `wxl_show_state`, `wxl_shown`, `wxl_enable`, `wxl_enabled`. Visibility and effective enabled state, layout, geometry and destruction are exposed; the remaining wxWindow API stays open.
+- [~] [L345](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L345) `class wxWindow : public wxEvtHandler {` — **Partial**: `show-window`, `shown-p`, `enable-window`, `enabled-p`; ABI: `wxl_show_state`, `wxl_shown`, `wxl_enable`, `wxl_enabled`. Logical names, visibility and effective enabled state, layout, geometry and destruction are exposed; the remaining wxWindow API stays open.
 - [ ] [L351](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L351) `wxWindow();`
 - [ ] [L376](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L376) `wxWindow(wxWindow* parent, wxWindowID id, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = 0, const wxString& name = wxPanelNameStr);`
 - [ ] [L392](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L392) `virtual ~wxWindow();`
@@ -3086,12 +3140,12 @@ class or constructor does not imply full upstream coverage.
 - [ ] [L3345](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L3345) `virtual wxString GetLabel() const;`
 - [ ] [L3351](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L3351) `virtual wxLayoutDirection GetLayoutDirection() const;`
 - [ ] [L3357](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L3357) `virtual wxCoord AdjustForLayoutDirection(wxCoord x, wxCoord width, wxCoord widthTotal) const;`
-- [ ] [L3370](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L3370) `virtual wxString GetName() const;`
+- [x] [L3370](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L3370) `virtual wxString GetName() const;` — **Implemented**: `window-name`; ABI: `wxl_name`. Independent UTF-8 Lisp string for all currently bound windows; explicit byte length preserves empty strings and embedded NULs.
 - [ ] [L3375](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L3375) `wxWindowVariant GetWindowVariant() const;`
 - [ ] [L3387](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L3387) `void SetId(wxWindowID winid);`
 - [ ] [L3397](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L3397) `virtual void SetLabel(const wxString& label);`
 - [ ] [L3405](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L3405) `virtual void SetLayoutDirection(wxLayoutDirection dir);`
-- [ ] [L3415](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L3415) `virtual void SetName(const wxString& name);`
+- [x] [L3415](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L3415) `virtual void SetName(const wxString& name);` — **Implemented**: `(setf window-name)`; ABI: `wxl_set_name`. Canonical SETF writer. Copied name with explicit UTF-8 byte length, including empty and embedded-NUL names; returns the supplied Lisp string.
 - [ ] [L3430](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L3430) `void SetWindowVariant(wxWindowVariant variant);`
 - [ ] [L3435](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L3435) `wxAcceleratorTable* GetAcceleratorTable();`
 - [ ] [L3441](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L3441) `wxAccessible* GetAccessible();`

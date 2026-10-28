@@ -26,7 +26,7 @@
     (wxlambda:add-child footer close-button :border 0 :expand nil :align :center)
     (wxlambda:add-child root footer :border 12)
     (wxlambda:on-click apply-button
-      (lambda () (wxlambda:set-text output (wxlambda:get-text input))))
+      (lambda () (setf (wxlambda:text output) (wxlambda:text input))))
     (wxlambda:on-click close-button (lambda () (wxlambda:destroy-window frame)))
     (wxlambda:show-window frame)
     (wxlambda:run)))

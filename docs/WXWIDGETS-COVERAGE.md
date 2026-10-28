@@ -46,8 +46,9 @@ feature detection and clear unavailable-feature errors.
 - In generated checklists, `[x]` means the declaration's operation is implemented
   with its stated Lisp mapping, `[~]` means partial support with the supported
   arguments/receivers and remaining limits stated inline, and `[ ]` means pending.
-  The class index uses `[~]` for the seven bound widgets, `wxBoxSizer` and
-  `wxWindow`; none has complete class coverage. Constructors with fixed IDs/styles remain partial.
+  The class index uses `[~]` for the seven bound widgets, `wxBoxSizer`,
+  `wxWindow` and `wxTopLevelWindow`; none has complete class coverage.
+  Constructors with fixed IDs/styles remain partial.
 - [status.json](coverage/status.json) is the persistent source of declaration and
   class statuses, Lisp exports, native ABI names and supported scopes. Exact
   header/line/signature matching prevents silently transferring a mark to the
@@ -94,17 +95,21 @@ widget classes has complete wxWidgets coverage yet.
 - [x] `wxStaticText`: `make-label` with parent and label.
 - [x] `wxCheckBox`: `make-checkbox` with parent, label and initial boolean value.
 - [x] `wxChoice`: `make-choice` with copied item strings and initial selection.
-- [x] Static-text label get/set: `get-label`, `set-label` (not all controls).
-- [x] Text value get/set: `get-text`, `set-text`; silent `ChangeValue` versus
+- [x] Static-text label get/set: `label-text`, `(setf label-text)` (not all controls).
+- [x] Text value get/set: `text`, `(setf text)`; silent `ChangeValue` versus
   notifying `SetValue` for `wxTextCtrl`.
-- [x] Checkbox boolean get/set: `checked-p`, `set-checked`, optional notification.
-- [x] Choice index get/set: `selection`, `set-selection`, optional notification;
+- [x] Checkbox boolean get/set: `checked-p`, `(setf checked-p)`, optional notification.
+- [x] Choice index get/set: `selection`, `(setf selection)`, optional notification;
   Lisp NIL means no selection. Item mutation and three-state checkboxes remain open.
 - [x] Parent-owned horizontal/vertical `wxBoxSizer`: `make-row`, `make-column`.
 - [x] Add window children: `add-child` with proportion, uniform border, expand and
   minor-axis alignment; nested standalone sizers and full flags remain open.
 - [x] Fixed/stretch spacing: `add-spacer`, `add-stretch`.
 - [x] Relayout and geometry queries: `layout-window`, `window-position`, `window-size`.
+- [x] Logical name get/set: `window-name`, `(setf window-name)`, with copied Unicode
+  strings and explicit byte lengths preserving empty and embedded-NUL names.
+- [x] Frame title get/set: `frame-title`, `(setf frame-title)`; other top-level
+  receiver types remain unbound and their declarations are marked partial.
 - [x] Show/hide: `show-window` accepts an optional boolean and returns the window
   plus the native changed-state boolean; `shown-p` queries its own shown flag.
 - [x] Enable/disable input: `enable-window` returns the window plus changed-state
@@ -119,6 +124,10 @@ widget classes has complete wxWidgets coverage yet.
 
 No APIs in C3–C7 currently have public bindings. Using wxWidgets types internally
 for conversions or implementation is not public API coverage.
+
+The widget-facing Lisp API has eight public CLOS wrapper classes, direct native
+construction, 34 named generic functions and eight SETF generic functions; see [CLOS API](CLOS-API.md). This establishes Lisp dispatch
+and method combination, not native C++ subclass/virtual-callback coverage.
 
 ## Coverage implementation phases
 
@@ -250,7 +259,8 @@ python3 tools/coverage_inventory.py /path/to/wxWidgets-3.2.12/interface
 ```
 
 The generator is documentation-only and does not require an installed wxWidgets
-build. It preserves source declarations rather than attempting C++ semantic
+build. Multiline preprocessor directives are kept together so their parentheses
+do not swallow following classes or function declarations. It preserves source declarations rather than attempting C++ semantic
 resolution; declaration fragments and helper tokens intentionally remain visible.
 Compare the resulting header hashes with the committed manifest when verifying
 the same source version. Update `docs/coverage/status.json` when implementing

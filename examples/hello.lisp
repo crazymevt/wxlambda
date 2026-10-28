@@ -17,9 +17,8 @@
     (wxlambda:on-click button
       (lambda (event)
         (assert (eq button (wxlambda:event-source event)))
-        (format t "Text before click: ~A~%" (wxlambda:get-text text))
-        (wxlambda:set-text text (format nil "Clicked ~D times" (incf clicks))
-                           :notify t))
+        (format t "Text before click: ~A~%" (wxlambda:text text))
+        (setf (wxlambda:text text :notify t) (format nil "Clicked ~D times" (incf clicks))))
       :with-event t)
     (wxlambda:show-window frame)
     (wxlambda:run)))

@@ -295,8 +295,9 @@ primary value and adds an optional show/hide argument and changed-state second
 value. `shown-p`, `enable-window` and `enabled-p` expose own visibility and
 effective input state. Native ABI 8 distinguishes false from native errors.
 
-The [docset workflow](docs/DOCSET.md) builds three committed files containing the
-53 public exports, project guides and all six example sources with usage notes.
+The initial [docset workflow](docs/DOCSET.md) delivered three committed files
+containing the then-current 53 public exports, project guides and six example
+sources with usage notes. Later slices extend that artifact.
 It requires Python 3, SBCL and the shared `docset` library; no GUI is needed to
 build/read the docs. Its checker, shared-reader discovery/search/lookup and
 indexed guide/example reading pass, including an isolated installation.
@@ -309,6 +310,107 @@ preflight and all 24 GUI scenarios with wxWidgets 3.2.12, SBCL 2.6.9 and CCL 1.1
 reports are retained in `evidence/coverage-first/{sbcl,ccl}-20261028/`.
 Reproduction commands are in [the window-state guide](docs/WINDOW-STATE.md). This does not
 close Phase 3 hosted checks or Phase 7 release-wide acceptance.
+
+## Coverage implementation: window metadata and CLOS API
+
+- [x] Add `window-name`, `(setf window-name)`, `frame-title` and `(setf frame-title)`
+  with native/FFI mappings and length-aware UTF-8 string ownership.
+- [x] Add a runnable callback example, a user guide and public API reference
+  records; track full name support and frame-only title support in the ledger.
+- [x] Fix multiline preprocessor handling in the inventory generator so following
+  classes and methods remain individually visible, with a regression check.
+- [x] Establish 40 widget-facing CLOS generic functions and export all eight
+  existing wrapper classes, preserving valid-call signatures and results.
+- [x] Add portable CLOS tests and an example of wrapper subclassing/method hooks;
+  record the CLOS implementation rule and update the reference generator.
+
+This C2 slice supports logical names on all seven bound widget types, including
+empty/Unicode/embedded-NUL names. Frame titles are exposed only for `wxFrame`;
+other `wxTopLevelWindow` receivers and the broader C1/C2 inventories stay open.
+Getter strings remain valid after later queries and destruction; setters copy
+inputs. Native ABI 9 adds explicit byte lengths without changing earlier bridge
+string-buffer contracts.
+
+The [metadata guide](docs/WINDOW-METADATA.md) documents usage and focused checks.
+At that checkpoint the docset covered 65 public exports, including eight
+wrapper classes and 40 named generic functions, plus guides and seven example sources. The user
+explicitly requested establishing CLOS before further widget-family expansion;
+keyword-only factories, lifecycle functions, immutable event snapshots and the
+FFI retain their existing roles. Native virtual overrides remain future work.
+Both local macOS SBCL/CCL suites pass native preflight and all 26 GUI scenarios,
+including the CLOS and metadata scenarios. Reports are retained in
+`evidence/coverage-clos/{sbcl,ccl}-20261028/`. The earlier 25-scenario metadata
+reports in `evidence/coverage-metadata/` predate the CLOS migration.
+
+The macOS SBCL standalone form was rebuilt as `dist/wxlambda-form-clos` and
+passes all five isolation/relocation/REPL/missing-library checks, with evidence
+in `evidence/packaging/coverage-clos-20261028/`. The docset checker reports zero
+problems; actual-package export coverage passes on both Lisps. Python and
+inventory regressions cover method-signature rendering, stale-docset detection,
+agent-content exclusion and multiline macro parsing. Graphical Cadre and hosted
+platform verification remain release work; shared-reader checks are separate
+from graphical-viewer testing.
+
+## CLOS construction and properties: revision 3
+
+- [x] Make `make-instance` construct every concrete native widget from initargs,
+  with ordinary subclass defaults/slots and native-backed AFTER initialization.
+- [x] Make factories thin MAKE-INSTANCE wrappers with validated `:class` and
+  forwarded subclass initargs, and reject abstract/invalid construction clearly.
+- [x] Roll back native allocations and callback roots on managed initializer
+  failure, preserving the original condition or nonlocal exit.
+- [x] Establish eight canonical generic SETF writers and migrate examples,
+  tests, REPL scripts, packaging and documentation to them.
+
+The user's later ground-up direction explicitly removes backward compatibility
+as a requirement. It supersedes the earlier factory/CHANGE-CLASS construction
+convention and the review's request to retain setter aliases. Six separate
+setter aliases and receiver-compatibility fallback methods were removed;
+unsupported receiver types now use CLOS dispatch errors. The native ABI remains
+9; native handle/type and callback/lifetime checks are retained.
+
+The public API has 59 exported symbols, including eight classes, 34 named widget
+generic functions and eight generic SETF functions using the getter symbols.
+Class docset pages include Construction sections; mutable-property pages include
+SETF syntax and indexed compound writer names. The current docset has 73 entries
+covering the API, guides and seven executable example sources.
+
+Locally verified on Apple Silicon macOS with SBCL 2.6.9 and CCL 1.13: native
+preflight and all 26 GUI scenarios pass, including direct construction of all
+seven native kinds, subclass defaults/slots, factory class validation, initializer
+rollback, property writers, notification recovery and method combination.
+The initial SBCL run caught an obsolete native-error expectation for a wrong
+receiver in the events test; the expectation now checks CLOS dispatch failure,
+and the full rerun passes. Both reports are retained under
+`evidence/clos-construction/` (`sbcl-rerun-20261028`, `ccl-20261028`); the original
+failed `sbcl-20261028` report remains intact.
+
+The rebuilt macOS SBCL form in `dist/wxlambda-form-native-clos` passes all five
+packaging checks, recorded in `evidence/packaging/native-clos-construction-20261028/`.
+Docset validation on both Lisps verifies all 59 exports and the construction and
+SETF sections; Python/inventory regressions pass. Hosted-platform checks and the
+Cadre graphical viewer remain unvalidated.
+
+## Property accessor names: revision 4
+
+- [x] Rename the text readers and generic SETF writers to `text` and
+  `label-text`, with no aliases for the former reader names.
+- [x] Update callers, embedded REPL/package scripts, examples, API reference
+  records, docset indexes and persistent coverage mappings.
+- [x] Record property-style naming in the project rules and add regression
+  assertions that obsolete readers/writers are absent.
+
+The CLOS construction and SETF protocol is unchanged. Public export count remains
+59 and the docset remains 73 entries; the property names and index IDs now use
+natural accessor names. The private CFFI/native getter names remain internal
+implementation details, so no native ABI change is needed.
+
+Both local macOS SBCL/CCL suites pass preflight and all 26 scenarios, with
+reports in `evidence/property-names/{sbcl,ccl}-20261028/`. The rebuilt standalone
+form passes five packaging checks in `evidence/packaging/property-names-20261028/`.
+The Python/inventory checks and both actual-package docset checks pass, including
+indexed SETF forms under the new names. Hosted platforms and the graphical
+Cadre viewer remain unvalidated.
 
 ## Decisions
 
@@ -332,6 +434,19 @@ close Phase 3 hosted checks or Phase 7 release-wide acceptance.
   native libraries because relocation can patch/sign the runtime without
   modifying an appended Lisp core; rejected: a single Mach-O/core executable
   for this first packaging example.
+
+- D8 Use public CLOS wrapper classes and generic widget operations because the
+  user requested Lisp dispatch and specialization before further expansion;
+  rejected: continuing ordinary functions with native-only type dispatch.
+
+- D9 Use native-backed INITIALIZE-INSTANCE construction and canonical SETF
+  properties because the user requested a ground-up CLOS API without backward
+  compatibility; rejected: factory-then-CHANGE-CLASS construction and legacy
+  setter/receiver compatibility scaffolding.
+
+- D10 Name the mutable properties `text` and `label-text` because the same
+  names read naturally for reads and SETF writes; rejected: get-prefixed readers
+  and compatibility aliases during ground-up API development.
 
 Implement these as separate reviewable changes, beginning with baseline
 corrections and REPL regression tests. Platform work can proceed alongside local

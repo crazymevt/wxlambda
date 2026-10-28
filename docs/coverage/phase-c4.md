@@ -2437,8 +2437,8 @@ class or constructor does not imply full upstream coverage.
 - [ ] [L921](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/treelist.h#L921) `wxTreeListItem GetItem() const;`
 - [ ] [L932](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/treelist.h#L932) `wxCheckBoxState GetOldCheckedState() const;`
 - [ ] [L940](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/treelist.h#L940) `unsigned GetColumn() const;`
-- [ ] [L950](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/treelist.h#L950) `#define wxTreeListEventHandler(func) \`
-- [ ] [L951](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/treelist.h#L951) `wxEVENT_HANDLER_CAST(wxTreeListEventFunction, func) wxEventType wxEVT_TREELIST_SELECTION_CHANGED;`
+- [ ] [L950](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/treelist.h#L950) `#define wxTreeListEventHandler(func) \ wxEVENT_HANDLER_CAST(wxTreeListEventFunction, func)`
+- [ ] [L954](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/treelist.h#L954) `wxEventType wxEVT_TREELIST_SELECTION_CHANGED;`
 - [ ] [L955](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/treelist.h#L955) `wxEventType wxEVT_TREELIST_ITEM_EXPANDING;`
 - [ ] [L956](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/treelist.h#L956) `wxEventType wxEVT_TREELIST_ITEM_EXPANDED;`
 - [ ] [L957](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/treelist.h#L957) `wxEventType wxEVT_TREELIST_ITEM_CHECKED;`

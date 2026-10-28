@@ -2,6 +2,10 @@
 (load (merge-pathnames "../wxlambda.asd" *load-truename*))
 (asdf:load-system "wxlambda")
 
+(defun expect-dispatch-error (thunk)
+  (assert (handler-case (progn (funcall thunk) nil)
+            (error (condition) (not (typep condition 'wxlambda:native-error))))))
+
 (defun expect-native-error (thunk)
   (assert (handler-case (progn (funcall thunk) nil)
             (wxlambda:native-error () t))))
@@ -20,7 +24,7 @@
           (wxlambda:make-column panel)
           (wxlambda:add-child panel text)
           (wxlambda:add-child panel button)
-          (expect-native-error (lambda () (wxlambda:set-text button "wrong type")))
+          (expect-dispatch-error (lambda () (setf (wxlambda:text button) "wrong type")))
           (expect-native-error (lambda () (wxlambda:add-child panel text)))
           (when (string= mode "setup-error") (error "Expected setup failure"))
           (wxlambda:on-click button (lambda () (error "Replaced handler was called")))
@@ -28,13 +32,13 @@
             (lambda ()
               (incf calls)
               (when (string= mode "callback-error") (error "Expected callback failure"))
-              (wxlambda:set-text text "Callback worked: λ 日本語")
+              (setf (wxlambda:text text) "Callback worked: λ 日本語")
               (wxlambda:destroy-window frame)))
           (wxlambda:show-window frame)
           (wxlambda:queue-click button)
           (wxlambda:run)
           ;; Parent destruction must invalidate children, too.
-          (expect-native-error (lambda () (wxlambda:set-text text "stale")))
+          (expect-native-error (lambda () (setf (wxlambda:text text) "stale")))
           ;; Native destruction does not notify the Lisp handler registry.
           ;; Without explicit unbinding, this closure remains until cleanup.
           (assert (= 1 (hash-table-count wxlambda::*handlers*)))))
@@ -48,6 +52,6 @@
   (assert (= calls (if (string= mode "setup-error") 0 1)))
   (assert (not wxlambda::*active*))
   (assert (not wxlambda::*handlers*))
-  (expect-native-error (lambda () (wxlambda:set-text saved-child "after cleanup")))
+  (expect-native-error (lambda () (setf (wxlambda:text saved-child) "after cleanup")))
   (expect-native-error (lambda () (wxlambda:call-with-application (lambda () nil))))
   (format t "PASS: ~A lifecycle, cleanup, and handle checks~%" mode))

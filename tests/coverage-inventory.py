@@ -94,6 +94,20 @@ class CoverageInventoryChecks(unittest.TestCase):
                 if '://' not in target and not target.startswith('#'):
                     self.assertTrue((page.parent / target.split('#')[0]).exists(), (page, target))
 
+    def test_multiline_macro_keeps_following_methods_separate(self):
+        source = ("#define wxSTYLE (wxONE | \\" + "\n"
+                  "    wxTWO)\n"
+                  "class wxExample {\n"
+                  "    wxString GetTitle() const;\n"
+                  "    void SetTitle(const wxString& title);\n"
+                  "};\n")
+        entries = inventory.declarations(source)
+        self.assertEqual(entries[0][0], 1)
+        self.assertTrue(entries[0][1].startswith('#define wxSTYLE'))
+        self.assertIn((3, 'class wxExample {'), entries)
+        self.assertIn((4, 'wxString GetTitle() const;'), entries)
+        self.assertIn((5, 'void SetTitle(const wxString& title);'), entries)
+
     def test_reviewed_bindings_have_persistent_status(self):
         required = {
             'wxFrame::wxFrame', 'wxPanel::wxPanel', 'wxButton::wxButton',
@@ -106,12 +120,14 @@ class CoverageInventoryChecks(unittest.TestCase):
             'wxWindow::Show', 'wxWindow::Destroy', 'wxWindow::Layout',
             'wxWindow::GetPosition', 'wxWindow::GetSize',
             'wxWindow::IsShown', 'wxWindow::Enable', 'wxWindow::IsEnabled',
+            'wxWindow::GetName', 'wxWindow::SetName',
+            'wxTopLevelWindow::GetTitle', 'wxTopLevelWindow::SetTitle',
             'wxSizer::Add', 'wxSizer::AddSpacer', 'wxSizer::AddStretchSpacer',
         }
         self.assertTrue(required <= {record['symbol'] for record in self.status['declarations']})
         self.assertEqual(set(self.status['classes']), {
             'wxFrame', 'wxPanel', 'wxButton', 'wxTextCtrl', 'wxStaticText',
-            'wxCheckBox', 'wxChoice', 'wxBoxSizer', 'wxWindow',
+            'wxCheckBox', 'wxChoice', 'wxBoxSizer', 'wxWindow', 'wxTopLevelWindow',
         })
 
     def test_compiler_scaffolding_is_context_but_public_macros_are_tasks(self):

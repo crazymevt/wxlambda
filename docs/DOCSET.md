@@ -25,13 +25,17 @@ Use the project quiet-command wrapper when running these in an agent session.
 the SBCL executable. Builds do not load the native bridge or start a GUI.
 
 The build requires one authored reference record per public export, derives
-function and macro lambda lists from the implementation, converts README, the implementation roadmap and
+function, macro and generic-function lambda lists from the implementation
+(including method defaults while omitting specializers), converts README, the
+implementation roadmap and
 `docs/*.md` guides into docset blocks, and embeds every `examples/*.lisp` source
 with usage notes. Agent instruction files (`AGENTS.md` and `CLAUDE.md`) are
 excluded from the guide list. Bundled guides and examples must not contain
 machine-specific paths. Update `docs/api-reference.json` and
 `docs/example-reference.json` with implementation changes. API entries must state
-arguments, returns, behavior, errors/scope and the related wxWidgets APIs.
+arguments, returns, behavior, errors/scope and the related wxWidgets APIs. Class
+pages include Construction sections; mutable-property pages include SETF sections
+and searchable compound function names such as `(setf frame-title)`.
 
 Both commands run `docset:check-docset` and require zero problems, then exercise
 the same discovery, symbol lookup and indexed entry reader used by Cadre.

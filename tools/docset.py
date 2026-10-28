@@ -64,6 +64,27 @@ def balanced(text, start):
     raise ValueError('Unbalanced API lambda list')
 
 
+def method_signature(lambda_list):
+    """Remove required-argument CLOS specializers, retaining method defaults."""
+    parts, pos, required = [], 1, True
+    while pos < len(lambda_list) - 1:
+        if lambda_list[pos].isspace():
+            pos += 1
+            continue
+        if lambda_list[pos] == '(':
+            part = balanced(lambda_list, pos)
+            pos += len(part)
+            if required:
+                part = re.match(r'\(\s*([^\s()]+)', part)[1]
+        else:
+            part = re.match(r'[^\s()]+', lambda_list[pos:])[0]
+            pos += len(part)
+            if part.startswith('&'):
+                required = False
+        parts.append(part)
+    return '(' + ' '.join(parts) + ')'
+
+
 def exports():
     return re.findall(r'#:([\w-]+)', (ROOT / 'lisp/package.lisp').read_text(encoding='utf-8').split('(:export', 1)[1])
 
@@ -148,6 +169,11 @@ def content():
         for field in ('name', 'kind', 'arguments', 'returns', 'description', 'scope', 'wxwidgets'):
             if not isinstance(record.get(field), str) or not record[field]:
                 raise ValueError(f'Missing API reference field {field}: {record.get("name")}')
+        for section in ('setf', 'construction'):
+            if section in record and (not isinstance(record[section], dict) or
+                                      any(not isinstance(record[section].get(field), str) or not record[section][field]
+                                          for field in ('syntax', 'description'))):
+                raise ValueError(f'Incomplete {section} section: {record["name"]}')
     guides = sources()
     examples = sorted((ROOT / 'examples').glob('*.lisp'))
     notes = json.loads((ROOT / 'docs/example-reference.json').read_text(encoding='utf-8'))
@@ -157,8 +183,9 @@ def content():
              for prefix, paths in [('guide', guides), ('example', examples)] for p in paths}
     api = (ROOT / 'lisp/api.lisp').read_text(encoding='utf-8') + '\n' + (ROOT / 'lisp/ffi.lisp').read_text(encoding='utf-8')
     signatures = {}
-    for match in re.finditer(r'^\(def(?:un|macro)\s+([\w-]+)\s+(?=\()', api, re.M):
-        signatures[match[1]] = balanced(api, match.end())
+    for match in re.finditer(r'^\(def(un|macro|generic|method)\s+([\w-]+)\s+(?=\()', api, re.M):
+        signature = balanced(api, match.end())
+        signatures[match[2]] = method_signature(signature) if match[1] == 'method' else signature
     entries, toc = [], []
     for title, kind in [('API reference', 'api'), ('Guides', 'guide'), ('Examples', 'example')]:
         children = []
@@ -177,9 +204,16 @@ def content():
                     ['Errors and scope', [key('p'), record['scope']]],
                     ['wxWidgets', [key('p'), record['wxwidgets']]],
                 ]
+                for field, heading in [('construction', 'Construction'), ('setf', 'SETF')]:
+                    if field in record:
+                        sections.append([heading, [key('code-block'), 'lisp', record[field]['syntax']],
+                                         [key('p'), record[field]['description']]])
+                entry_names = [name]
+                if 'setf' in record:
+                    entry_names.append('(setf ' + name + ')')
                 entry_id = 'api/' + name
-                entries.append(plist(entry=entry_id, names=[name], kind=key(record['kind']),
-                                     kind_name=record['kind'].title(), package='WXLAMBDA',
+                entries.append(plist(entry=entry_id, names=entry_names, kind=key(record['kind']),
+                                     kind_name=record['kind'].replace('-', ' ').title(), package='WXLAMBDA',
                                      summary=record['description'], sections=sections))
                 children.append(plist(title=name, entry=entry_id))
         else:

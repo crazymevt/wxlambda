@@ -188,9 +188,7 @@ class or constructor does not imply full upstream coverage.
 - [ ] [L1463](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L1463) `int wxEntry(int& argc, wxChar** argv);`
 - [ ] [L1486](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L1486) `int wxEntry(HINSTANCE hInstance, HINSTANCE hPrevInstance = NULL, char* pCmdLine = NULL, int nCmdShow = SW_SHOWNORMAL);`
 - [ ] [L1507](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L1507) `void wxExit();`
-- [ ] [L1539](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L1539) `#define wxDISABLE_DEBUG_SUPPORT() \`
-- [ ] [L1540](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L1540) `wxDISABLE_ASSERTS_IN_RELEASE_BUILD();`
-- [ ] [L1540](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L1540) `\ wxDISABLE_DEBUG_LOGGING_IN_RELEASE_BUILD()`
+- [ ] [L1539](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L1539) `#define wxDISABLE_DEBUG_SUPPORT() \ wxDISABLE_ASSERTS_IN_RELEASE_BUILD(); \ wxDISABLE_DEBUG_LOGGING_IN_RELEASE_BUILD()`
 
 ## `wx/appprogress.h`
 
@@ -1075,8 +1073,7 @@ class or constructor does not imply full upstream coverage.
 - [ ] [L269](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/defs.h#L269) `#define wxPOPUP_WINDOW          0x00020000`
 - [ ] [L273](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/defs.h#L273) `#define wxFULL_REPAINT_ON_RESIZE 0x00010000`
 - [ ] [L279](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/defs.h#L279) `#define wxNO_FULL_REPAINT_ON_RESIZE 0`
-- [ ] [L283](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/defs.h#L283) `#define wxWINDOW_STYLE_MASK     \`
-- [ ] [L284](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/defs.h#L284) `(wxVSCROLL|wxHSCROLL|wxBORDER_MASK|wxALWAYS_SHOW_SB|wxCLIP_CHILDREN| \ wxCLIP_SIBLINGS|wxTRANSPARENT_WINDOW|wxTAB_TRAVERSAL|wxWANTS_CHARS| \ wxRETAINED|wxPOPUP_WINDOW|wxFULL_REPAINT_ON_RESIZE)`
+- [ ] [L283](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/defs.h#L283) `#define wxWINDOW_STYLE_MASK     \ (wxVSCROLL|wxHSCROLL|wxBORDER_MASK|wxALWAYS_SHOW_SB|wxCLIP_CHILDREN| \ wxCLIP_SIBLINGS|wxTRANSPARENT_WINDOW|wxTAB_TRAVERSAL|wxWANTS_CHARS| \ wxRETAINED|wxPOPUP_WINDOW|wxFULL_REPAINT_ON_RESIZE)`
 - [ ] [L298](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/defs.h#L298) `#define wxWS_EX_BLOCK_EVENTS            0x00000002`
 - [ ] [L304](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/defs.h#L304) `#define wxWS_EX_TRANSIENT               0x00000004`
 - [ ] [L309](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/defs.h#L309) `#define wxWS_EX_THEMED_BACKGROUND       0x00000008`
@@ -1159,8 +1156,7 @@ class or constructor does not imply full upstream coverage.
 - [ ] [L478](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/defs.h#L478) `#define wxSETUP                 0x00020000`
 - [ ] [L479](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/defs.h#L479) `#define wxICON_NONE             0x00040000`
 - [ ] [L480](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/defs.h#L480) `#define wxICON_AUTH_NEEDED      0x00080000`
-- [ ] [L482](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/defs.h#L482) `#define wxICON_MASK \`
-- [ ] [L483](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/defs.h#L483) `(wxICON_EXCLAMATION|wxICON_HAND|wxICON_QUESTION|wxICON_INFORMATION|wxICON_NONE)`
+- [ ] [L482](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/defs.h#L482) `#define wxICON_MASK \ (wxICON_EXCLAMATION|wxICON_HAND|wxICON_QUESTION|wxICON_INFORMATION|wxICON_NONE)`
 - [ ] [L488](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/defs.h#L488) `#define wxNOT_FOUND       (-1)`
 - [ ] [L495](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/defs.h#L495) `enum wxBackgroundStyle {`
 - [ ] [L510](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/defs.h#L510) `wxBG_STYLE_ERASE, wxBG_STYLE_SYSTEM, wxBG_STYLE_PAINT, wxBG_STYLE_COLOUR, wxBG_STYLE_TRANSPARENT, }`

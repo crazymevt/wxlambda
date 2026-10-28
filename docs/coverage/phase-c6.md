@@ -1017,8 +1017,15 @@ class or constructor does not imply full upstream coverage.
 - [ ] [L18](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/html/helpfrm.h#L18) `#define wxHF_ICONS_BOOK             0x0200`
 - [ ] [L19](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/html/helpfrm.h#L19) `#define wxHF_ICONS_BOOK_CHAPTER     0x0400`
 - [ ] [L20](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/html/helpfrm.h#L20) `#define wxHF_ICONS_FOLDER           0x0000`
-- [ ] [L21](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/html/helpfrm.h#L21) `#define wxHF_DEFAULT_STYLE          (wxHF_TOOLBAR | wxHF_CONTENTS | \`
-- [ ] [L22](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/html/helpfrm.h#L22) `wxHF_INDEX | wxHF_SEARCH | \ wxHF_BOOKMARKS | wxHF_PRINT) class wxHtmlHelpFrame : public wxFrame { wxHtmlHelpFrame(wxHtmlHelpData* data = NULL); wxHtmlHelpFrame(wxWindow* parent, wxWindowID id, const wxString& title = wxEmptyString, int style = wxHF_DEFAULT_STYLE, wxHtmlHelpData* data = NULL, wxConfigBase* config = NULL, const wxString& rootpath = wxEmptyString); virtual void AddToolbarButtons(wxToolBar* toolBar, int style); bool Create(wxWindow* parent, wxWindowID id, const wxString& title = wxEmptyString, int style = wxHF_DEFAULT_STYLE, wxConfigBase* config = NULL, const wxString& rootpath = wxEmptyString); wxHtmlHelpController* GetController() const; void SetController(wxHtmlHelpController* controller); void SetTitleFormat(const wxString& format); };`
+- [ ] [L21](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/html/helpfrm.h#L21) `#define wxHF_DEFAULT_STYLE          (wxHF_TOOLBAR | wxHF_CONTENTS | \ wxHF_INDEX | wxHF_SEARCH | \ wxHF_BOOKMARKS | wxHF_PRINT)`
+- [ ] [L36](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/html/helpfrm.h#L36) `class wxHtmlHelpFrame : public wxFrame {`
+- [ ] [L39](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/html/helpfrm.h#L39) `wxHtmlHelpFrame(wxHtmlHelpData* data = NULL);`
+- [ ] [L46](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/html/helpfrm.h#L46) `wxHtmlHelpFrame(wxWindow* parent, wxWindowID id, const wxString& title = wxEmptyString, int style = wxHF_DEFAULT_STYLE, wxHtmlHelpData* data = NULL, wxConfigBase* config = NULL, const wxString& rootpath = wxEmptyString);`
+- [ ] [L60](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/html/helpfrm.h#L60) `virtual void AddToolbarButtons(wxToolBar* toolBar, int style);`
+- [ ] [L66](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/html/helpfrm.h#L66) `bool Create(wxWindow* parent, wxWindowID id, const wxString& title = wxEmptyString, int style = wxHF_DEFAULT_STYLE, wxConfigBase* config = NULL, const wxString& rootpath = wxEmptyString);`
+- [ ] [L74](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/html/helpfrm.h#L74) `wxHtmlHelpController* GetController() const;`
+- [ ] [L79](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/html/helpfrm.h#L79) `void SetController(wxHtmlHelpController* controller);`
+- [ ] [L86](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/html/helpfrm.h#L86) `void SetTitleFormat(const wxString& format);`
 
 ## `wx/html/helpwnd.h`
 
@@ -1838,10 +1845,9 @@ class or constructor does not imply full upstream coverage.
 - [ ] [L237](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/propgrid/property.h#L237) `enum wxPGPropertyFlags {`
 - [ ] [L243](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/propgrid/property.h#L243) `wxPG_PROP_MODIFIED = 0x0001, wxPG_PROP_DISABLED = 0x0002, wxPG_PROP_HIDDEN = 0x0004, wxPG_PROP_CUSTOMIMAGE = 0x0008, wxPG_PROP_NOEDITOR = 0x0010, wxPG_PROP_COLLAPSED = 0x0020, wxPG_PROP_INVALID_VALUE = 0x0040, wxPG_PROP_WAS_MODIFIED = 0x0200, wxPG_PROP_AGGREGATE = 0x0400, wxPG_PROP_CHILDREN_ARE_COPIES = 0x0800, wxPG_PROP_PROPERTY = 0x1000, wxPG_PROP_CATEGORY = 0x2000, wxPG_PROP_MISC_PARENT = 0x4000, wxPG_PROP_READONLY = 0x8000, wxPG_PROP_COMPOSED_VALUE = 0x00010000, wxPG_PROP_USES_COMMON_VALUE = 0x00020000, wxPG_PROP_AUTO_UNSPECIFIED = 0x00040000, wxPG_PROP_CLASS_SPECIFIC_1 = 0x00080000, wxPG_PROP_CLASS_SPECIFIC_2 = 0x00100000, wxPG_PROP_BEING_DELETED = 0x00200000 wxPG_PROP_CLASS_SPECIFIC_3 = 0x00400000 }`
 - [ ] [L387](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/propgrid/property.h#L387) `#define wxPG_PROP_MAX               wxPG_PROP_AUTO_UNSPECIFIED`
-- [ ] [L393](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/propgrid/property.h#L393) `#define wxPG_PROP_PARENTAL_FLAGS \`
-- [ ] [L394](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/propgrid/property.h#L394) `((wxPGPropertyFlags)(wxPG_PROP_AGGREGATE | \ wxPG_PROP_CATEGORY | \ wxPG_PROP_MISC_PARENT))`
-- [ ] [L400](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/propgrid/property.h#L400) `#define wxPG_STRING_STORED_FLAGS \`
-- [ ] [L401](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/propgrid/property.h#L401) `(wxPG_PROP_DISABLED|wxPG_PROP_HIDDEN|wxPG_PROP_NOEDITOR|wxPG_PROP_COLLAPSED) class wxPGProperty : public wxObject {`
+- [ ] [L393](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/propgrid/property.h#L393) `#define wxPG_PROP_PARENTAL_FLAGS \ ((wxPGPropertyFlags)(wxPG_PROP_AGGREGATE | \ wxPG_PROP_CATEGORY | \ wxPG_PROP_MISC_PARENT))`
+- [ ] [L400](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/propgrid/property.h#L400) `#define wxPG_STRING_STORED_FLAGS \ (wxPG_PROP_DISABLED|wxPG_PROP_HIDDEN|wxPG_PROP_NOEDITOR|wxPG_PROP_COLLAPSED)`
+- [ ] [L881](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/propgrid/property.h#L881) `class wxPGProperty : public wxObject {`
 - [ ] [L884](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/propgrid/property.h#L884) `typedef wxUint32 FlagType;`
 - [ ] [L889](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/propgrid/property.h#L889) `virtual ~wxPGProperty();`
 - [ ] [L902](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/propgrid/property.h#L902) `virtual void OnSetValue();`
@@ -2749,8 +2755,8 @@ class or constructor does not imply full upstream coverage.
 - [ ] [L775](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/propgrid/props.h#L775) `wxString m_display;`
 - [ ] [L776](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/propgrid/props.h#L776) `wxUniChar m_delimiter;`
 - [ ] [L777](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/propgrid/props.h#L777) `wxString m_customBtnText;`
-- [ ] [L785](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/propgrid/props.h#L785) `#define wxAEDIALOG_STYLE \`
-- [ ] [L786](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/propgrid/props.h#L786) `(wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER | wxOK | wxCANCEL | wxCENTRE) class wxPGArrayEditorDialog : public wxDialog {`
+- [ ] [L785](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/propgrid/props.h#L785) `#define wxAEDIALOG_STYLE \ (wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER | wxOK | wxCANCEL | wxCENTRE)`
+- [ ] [L788](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/propgrid/props.h#L788) `class wxPGArrayEditorDialog : public wxDialog {`
 - [ ] [L791](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/propgrid/props.h#L791) `wxPGArrayEditorDialog();`
 - [ ] [L792](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/propgrid/props.h#L792) `virtual ~wxPGArrayEditorDialog();`
 - [ ] [L794](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/propgrid/props.h#L794) `void Init();`

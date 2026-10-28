@@ -64,13 +64,19 @@ def declarations(text):
     parens = 0
     quote = None
     escaped = False
+    directive, directive_start = [], None
     for lineno, line in enumerate(clean.splitlines(), 1):
-        if line.lstrip().startswith('#'):
-            if buffer and ''.join(buffer).strip():
-                chunks.append((start, ' '.join(''.join(buffer).split())))
-            buffer, start = [], None
-            if line.strip():
-                chunks.append((lineno, line.strip()))
+        if directive_start is not None or line.lstrip().startswith('#'):
+            if directive_start is None:
+                if buffer and ''.join(buffer).strip():
+                    chunks.append((start, ' '.join(''.join(buffer).split())))
+                buffer, start = [], None
+                directive_start = lineno
+            directive.append(line.strip())
+            if not line.rstrip().endswith('\\'):
+                chunks.append((directive_start, ' '.join(directive)))
+                directive, directive_start = [], None
+            # A continuation belongs to the directive, not C++ parenthesis depth.
             continue
         # Access labels qualify the following declarations but aren't APIs.
         line = re.sub(r'^\s*(public|protected|private)\s*:\s*', '', line)
@@ -97,6 +103,8 @@ def declarations(text):
                 if value not in ('', '}', ';', '};', '{'):
                     chunks.append((start, value))
                 buffer, start = [], None
+    if directive:
+        chunks.append((directive_start, ' '.join(directive)))
     value = ' '.join(''.join(buffer).split())
     if value:
         chunks.append((start, value))
@@ -129,7 +137,9 @@ def load_status():
     for record in [*status['declarations'], *status['classes'].values()]:
         if record['status'] not in ('x', '~') or not record['scope']:
             raise ValueError('Status must be x/~ with a supported scope')
-        if not record['lisp'] or not set(record['lisp']) <= exports:
+        names = {match[1] if (match := re.fullmatch(r'\(setf ([\w-]+)\)', name)) else name
+                 for name in record['lisp']}
+        if not record['lisp'] or not names <= exports:
             raise ValueError(f"Unknown Lisp exports: {record['lisp']}")
         if not record['native'] or any(f'"{name}"' not in ffi or not re.search(r'\b' + re.escape(name) + r'\s*\(', bridge) for name in record['native']):
             raise ValueError(f"Unknown native/FFI mappings: {record['native']}")

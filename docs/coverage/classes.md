@@ -424,6 +424,7 @@ Forward declarations are represented in the per-header declaration inventories.
 - [ ] `wxTimePickerCtrl` — [`wx/timectrl.h`](phase-c2.md), upstream line 53.
 - [ ] `wxTipWindow` — [`wx/tipwin.h`](phase-c2.md), upstream line 24.
 - [ ] `wxToolTip` — [`wx/tooltip.h`](phase-c2.md), upstream line 21.
+- [~] `wxTopLevelWindow` — [`wx/toplevel.h`](phase-c2.md), upstream line 87. — **Partial**: `frame-title`, `(setf frame-title)`; ABI: `wxl_title`, `wxl_set_title`. Canonical SETF writer. Title get/set is exposed for wxFrame only; other top-level types and the remaining top-level API stay open.
 - [ ] `wxGenericValidator` — [`wx/valgen.h`](phase-c2.md), upstream line 32.
 - [ ] `wxValidator` — [`wx/validate.h`](phase-c2.md), upstream line 37.
 - [ ] `wxNumValidator` — [`wx/valnum.h`](phase-c2.md), upstream line 78.
@@ -439,7 +440,7 @@ Forward declarations are represented in the per-header declaration inventories.
 - [ ] `wxHScrolledWindow` — [`wx/vscroll.h`](phase-c2.md), upstream line 759.
 - [ ] `wxHVScrolledWindow` — [`wx/vscroll.h`](phase-c2.md), upstream line 836.
 - [ ] `wxVisualAttributes` — [`wx/window.h`](phase-c2.md), upstream line 131.
-- [~] `wxWindow` — [`wx/window.h`](phase-c2.md), upstream line 345. — **Partial**: `show-window`, `shown-p`, `enable-window`, `enabled-p`; ABI: `wxl_show_state`, `wxl_shown`, `wxl_enable`, `wxl_enabled`. Visibility and effective enabled state, layout, geometry and destruction are exposed; the remaining wxWindow API stays open.
+- [~] `wxWindow` — [`wx/window.h`](phase-c2.md), upstream line 345. — **Partial**: `show-window`, `shown-p`, `enable-window`, `enabled-p`; ABI: `wxl_show_state`, `wxl_shown`, `wxl_enable`, `wxl_enabled`. Logical names, visibility and effective enabled state, layout, geometry and destruction are exposed; the remaining wxWindow API stays open.
 - [ ] `wxIdManager` — [`wx/windowid.h`](phase-c2.md), upstream line 26.
 - [ ] `wxWindowPtr` — [`wx/windowptr.h`](phase-c2.md), upstream line 27.
 - [ ] `wxWithImages` — [`wx/withimages.h`](phase-c2.md), upstream line 42.
@@ -775,6 +776,12 @@ Forward declarations are represented in the per-header declaration inventories.
 - [ ] `wxPen` — [`wx/pen.h`](phase-c5.md), upstream line 258.
 - [ ] `wxPenList` — [`wx/pen.h`](phase-c5.md), upstream line 660.
 - [ ] `wxPreviewControlBar` — [`wx/print.h`](phase-c5.md), upstream line 53.
+- [ ] `wxPreviewCanvas` — [`wx/print.h`](phase-c5.md), upstream line 127.
+- [ ] `wxPreviewFrame` — [`wx/print.h`](phase-c5.md), upstream line 190.
+- [ ] `wxPrintPreview` — [`wx/print.h`](phase-c5.md), upstream line 304.
+- [ ] `wxPrinter` — [`wx/print.h`](phase-c5.md), upstream line 463.
+- [ ] `wxPrintout` — [`wx/print.h`](phase-c5.md), upstream line 582.
+- [ ] `wxPrintAbortDialog` — [`wx/print.h`](phase-c5.md), upstream line 926.
 - [ ] `wxPrintDialog` — [`wx/printdlg.h`](phase-c5.md), upstream line 20.
 - [ ] `wxPageSetupDialog` — [`wx/printdlg.h`](phase-c5.md), upstream line 98.
 - [ ] `wxQuantize` — [`wx/quantize.h`](phase-c5.md), upstream line 19.
@@ -824,6 +831,7 @@ Forward declarations are represented in the per-header declaration inventories.
 - [ ] `wxHtmlHelpDataItem` — [`wx/html/helpdata.h`](phase-c6.md), upstream line 50.
 - [ ] `wxHtmlHelpData` — [`wx/html/helpdata.h`](phase-c6.md), upstream line 83.
 - [ ] `wxHtmlHelpDialog` — [`wx/html/helpdlg.h`](phase-c6.md), upstream line 18.
+- [ ] `wxHtmlHelpFrame` — [`wx/html/helpfrm.h`](phase-c6.md), upstream line 36.
 - [ ] `wxHtmlHelpWindow` — [`wx/html/helpwnd.h`](phase-c6.md), upstream line 69.
 - [ ] `wxHtmlSelection` — [`wx/html/htmlcell.h`](phase-c6.md), upstream line 19.
 - [ ] `wxHtmlRenderingState` — [`wx/html/htmlcell.h`](phase-c6.md), upstream line 67.
@@ -877,6 +885,7 @@ Forward declarations are represented in the per-header declaration inventories.
 - [ ] `wxPropertyGridPage` — [`wx/propgrid/manager.h`](phase-c6.md), upstream line 39.
 - [ ] `wxPropertyGridManager` — [`wx/propgrid/manager.h`](phase-c6.md), upstream line 213.
 - [ ] `wxPGPaintData` — [`wx/propgrid/property.h`](phase-c6.md), upstream line 15.
+- [ ] `wxPGProperty` — [`wx/propgrid/property.h`](phase-c6.md), upstream line 881.
 - [ ] `wxPGCellRenderer` — [`wx/propgrid/property.h`](phase-c6.md), upstream line 2220.
 - [ ] `wxPGDefaultRenderer` — [`wx/propgrid/property.h`](phase-c6.md), upstream line 2401.
 - [ ] `wxPGCellData` — [`wx/propgrid/property.h`](phase-c6.md), upstream line 2450.
@@ -915,6 +924,7 @@ Forward declarations are represented in the per-header declaration inventories.
 - [ ] `wxLongStringProperty` — [`wx/propgrid/props.h`](phase-c6.md), upstream line 661.
 - [ ] `wxDirProperty` — [`wx/propgrid/props.h`](phase-c6.md), upstream line 688.
 - [ ] `wxArrayStringProperty` — [`wx/propgrid/props.h`](phase-c6.md), upstream line 721.
+- [ ] `wxPGArrayEditorDialog` — [`wx/propgrid/props.h`](phase-c6.md), upstream line 788.
 - [ ] `wxPGArrayStringEditorDialog` — [`wx/propgrid/props.h`](phase-c6.md), upstream line 862.
 - [ ] `wxRibbonArtProvider` — [`wx/ribbon/art.h`](phase-c6.md), upstream line 220.
 - [ ] `wxRibbonMSWArtProvider` — [`wx/ribbon/art.h`](phase-c6.md), upstream line 1074.

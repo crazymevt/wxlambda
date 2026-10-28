@@ -17,6 +17,7 @@ public:
 thread_local std::string error;
 thread_local std::string text_result;
 thread_local std::string label_result;
+thread_local std::string metadata_result;
 std::unordered_map<wxl_handle, wxWindow*> windows;
 std::unordered_map<wxl_handle, uint64_t> handlers;
 wxl_handle next_handle = 1;
@@ -87,6 +88,19 @@ template<class F> int boolean_result(F fn) noexcept {
     const int result = status([&] { value = fn(); });
     return result == 0 ? (value ? 1 : 0) : -1;
 }
+// Keep the wxString alive while copying its possibly borrowed UTF-8 storage.
+// Explicit byte counts preserve embedded NULs in window metadata.
+template<class F> const char* metadata_string(F fn, size_t* length) noexcept {
+    const int result = status([&] {
+        require(length != nullptr, "Metadata length output must not be null");
+        *length = 0;
+        const auto text = fn();
+        const auto bytes = text.ToUTF8();
+        metadata_result.assign(bytes.data() ? bytes.data() : "", bytes.length());
+        *length = metadata_result.size();
+    });
+    return result == 0 ? metadata_result.c_str() : nullptr;
+}
 template<class F> wxl_handle create(F fn) noexcept {
     wxl_handle result = 0;
     status([&] { ready(); result = fn(); });
@@ -98,7 +112,7 @@ wxString utf8(const char* value) {
 }
 }
 extern "C" {
-int wxl_abi_version() { return 8; }
+int wxl_abi_version() { return 9; }
 const char* wxl_last_error() { return error.c_str(); }
 int wxl_start(wxl_callback callback) {
     return status([&] {
@@ -329,6 +343,26 @@ int wxl_geometry(wxl_handle id, int* x, int* y, int* width, int* height) {
         const auto position = control->GetPosition();
         const auto size = control->GetSize();
         *x = position.x; *y = position.y; *width = size.x; *height = size.y;
+    });
+}
+const char* wxl_name(wxl_handle id, size_t* length) {
+    return metadata_string([&] { return window(id)->GetName(); }, length);
+}
+int wxl_set_name(wxl_handle id, const char* value, size_t length) {
+    return status([&] {
+        auto* control = window(id);
+        require(value != nullptr, "Null UTF-8 name");
+        control->SetName(wxString::FromUTF8(value, length));
+    });
+}
+const char* wxl_title(wxl_handle id, size_t* length) {
+    return metadata_string([&] { return as<wxFrame>(id)->GetTitle(); }, length);
+}
+int wxl_set_title(wxl_handle id, const char* value, size_t length) {
+    return status([&] {
+        auto* frame = as<wxFrame>(id);
+        require(value != nullptr, "Null UTF-8 title");
+        frame->SetTitle(wxString::FromUTF8(value, length));
     });
 }
 int wxl_show(wxl_handle id) { return status([&] { window(id)->Show(); }); }

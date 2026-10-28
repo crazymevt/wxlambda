@@ -1,13 +1,15 @@
 (defpackage #:wxlambda
   (:use #:cl)
-  (:export #:load-native-library #:call-with-application #:with-application #:with-repl-application #:process-events
+  (:export #:window #:frame #:panel #:button #:text-control #:label #:checkbox #:choice
+           #:load-native-library #:call-with-application #:with-application #:with-repl-application #:process-events
            #:return-to-application-repl
            #:run #:stop #:make-frame #:make-panel #:make-button #:make-text
            #:make-column #:make-row #:add-child #:add-spacer #:add-stretch
+           #:window-name #:frame-title
            #:layout-window #:window-position #:window-size #:show-window #:shown-p #:enable-window #:enabled-p #:destroy-window
-           #:set-text #:get-text #:on-click #:off-click #:queue-click #:native-error
+           #:text #:on-click #:off-click #:queue-click #:native-error
            #:on-text-change #:off-text-change
-           #:make-label #:get-label #:set-label
-           #:make-checkbox #:checked-p #:set-checked #:on-toggle #:off-toggle
-           #:make-choice #:selection #:set-selection #:on-selection #:off-selection
+           #:make-label #:label-text
+           #:make-checkbox #:checked-p #:on-toggle #:off-toggle
+           #:make-choice #:selection #:on-selection #:off-selection
            #:event-selection #:event #:event-p #:event-kind #:event-source #:event-text #:event-checked-p))

@@ -1,0 +1,137 @@
+# CLOS widget API
+
+Widgets are native-backed CLOS instances. The public classes are `window`,
+`frame`, `panel`, `button`, `text-control`, `label`, `checkbox` and `choice`.
+`window` is abstract. Every concrete wrapper inherits from it and represents
+one native widget kind. Native handles remain private and validated.
+
+## Construction
+
+Use `make-instance` directly, including for your own subclasses:
+
+```lisp
+(defclass document-frame (wxlambda:frame)
+  ((project :initarg :project :reader project)
+   (title-changes :initform 0 :accessor title-changes))
+  (:default-initargs :title "Document"))
+
+(defmethod initialize-instance :after ((frame document-frame) &key)
+  ;; Inherited initialization has already created the native widget.
+  (setf (wxlambda:window-name frame) (project frame)))
+
+(defmethod (setf wxlambda:frame-title) :after (value (frame document-frame))
+  (declare (ignore value))
+  (incf (title-changes frame)))
+
+(wxlambda:with-application ()
+  (let ((frame (make-instance 'document-frame :project "example")))
+    (setf (wxlambda:frame-title frame) "Document — λ")
+    (assert (= 1 (title-changes frame)))
+    (assert (string= "example" (wxlambda:window-name frame)))
+    (wxlambda:destroy-window frame)))
+```
+
+Concrete native initargs are:
+
+- `frame`: `:title` (default "wxlambda"), `:width` (480), `:height` (240).
+- `panel`: required `:parent` window.
+- `button`: required `:parent`, `:label` ("Button").
+- `text-control`: required `:parent`, `:value` (empty string).
+- `label`: required `:parent`, `:label` (empty string).
+- `checkbox`: required `:parent`, `:label` (empty string), `:checked` (NIL).
+- `choice`: required `:parent`, `:items` (NIL), `:selection` (NIL).
+
+Construction requires an active main-thread application session. Inherited
+`initialize-instance` methods allocate exactly one native widget. Subclass
+`:default-initargs`, slot initargs and ordinary `:after` hooks work normally;
+these hooks can read/write native properties. An overriding primary initializer
+must call its inherited method. Unsupported abstract classes, missing parents,
+unknown initargs, repeated initialization and multiple native widget bases are
+rejected with clear errors. Supplying a raw `:handle` is unsupported.
+
+Failures during inherited initialization and subclass `:before`/`:after` hooks
+roll back native widgets created through this protocol in that initialization,
+including nested
+construction, and remove their callback roots. Cleanup preserves the original
+condition or nonlocal exit. Custom outer `:around` methods remain responsible
+for failures they introduce after the inherited initialization has completed.
+
+## Factory conveniences
+
+The `make-*` functions are thin wrappers around `make-instance`. Each accepts
+`:class` as a class name or class object and forwards additional initargs:
+
+```lisp
+(wxlambda:make-frame :class 'document-frame :project "example")
+(wxlambda:make-button parent :class 'wxlambda:button :label "Run")
+```
+
+A factory validates that `:class` is a subclass of its corresponding concrete
+widget class. Child factories dispatch on their parent; methods extending a
+factory should accept `&rest`/`&allow-other-keys` to forward subclass initargs.
+`make-frame` remains an ordinary function because it has no required dispatch
+argument. Application lifecycle functions/macros and immutable event snapshots
+keep their separate roles.
+
+## Generic properties
+
+Use these eight generic `setf` accessors:
+
+```lisp
+(setf (wxlambda:text input) "Text")
+(setf (wxlambda:label-text caption) "Ready")
+(setf (wxlambda:checked-p checkbox) t)
+(setf (wxlambda:selection choice) 0)
+(setf (wxlambda:window-name window) "logical-name")
+(setf (wxlambda:frame-title frame) "Title")
+(setf (wxlambda:shown-p window) nil)
+(setf (wxlambda:enabled-p window) t)
+```
+
+A writer's method lambda list starts with the new value, followed by the
+receiver. Specialize `(setf accessor)` with primary, `:around`, `:before` or
+`:after` methods; `call-next-method` retains inherited behavior. Assignment
+returns the supplied value. Boolean reads normalize generalized booleans to
+T/NIL. The shown/enabled writers also return a native changed-state flag as a
+second value; `show-window`/`enable-window` are action conveniences returning
+the window and that flag.
+
+Text, checkbox and selection writes are silent by default. Use `:notify t`
+on the place for synchronous command events:
+
+```lisp
+(setf (wxlambda:text input :notify t) "Changed")
+(setf (wxlambda:checked-p checkbox :notify t) t)
+(incf (wxlambda:selection choice :notify t))
+```
+
+The corresponding readers accept and ignore `:notify`, so modifying macros
+can read the same place. Callback conditions are re-signaled at the writer's
+Lisp boundary. Reads of `shown-p` use the own shown flag; reads of `enabled-p`
+include disabled ancestors, while its writer requests the own enabled state.
+
+This project is establishing its API from the ground up: the six separate
+`set-*` property aliases and compatibility-only wrong-receiver methods have
+been removed. Unsupported receiver types signal standard Lisp dispatch errors;
+native handle/state failures still signal `native-error`.
+
+## Scope and verification
+
+The [metadata example](../examples/window-metadata.lisp) uses direct subclass
+construction and a generic writer hook. Lisp subclassing extends the wrapper;
+it does not change the native C++ class or provide native virtual callbacks.
+Native ownership, main-thread restrictions and explicit handler unbinding before
+destruction still apply. Start a fresh Lisp when changing these class definitions.
+
+```sh
+sbcl --noinform --no-sysinit --no-userinit --non-interactive \
+  --load ci/setup.lisp --load tests/clos.lisp
+ccl --no-init --batch --load ci/setup.lisp --load tests/clos.lisp
+```
+
+The test covers direct native construction for all seven concrete types, subclass
+slots/defaults/hooks, all factory `:class` paths, invalid construction, initializer
+rollback of nested native objects and callback roots, eight generic writers,
+method combination and native handle protection. The public widget API has
+34 named generic functions plus eight generic SETF functions. The docset includes
+construction instructions on class pages and indexed SETF forms on property pages.

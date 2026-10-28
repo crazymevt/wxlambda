@@ -40,6 +40,10 @@
 (cffi:defcfun ("wxl_layout" %layout) :int (window :uint64))
 (cffi:defcfun ("wxl_geometry" %geometry) :int
   (window :uint64) (x :pointer) (y :pointer) (width :pointer) (height :pointer))
+(cffi:defcfun ("wxl_name" %name) :pointer (window :uint64) (length :pointer))
+(cffi:defcfun ("wxl_set_name" %set-name) :int (window :uint64) (value :pointer) (length :size))
+(cffi:defcfun ("wxl_title" %title) :pointer (frame :uint64) (length :pointer))
+(cffi:defcfun ("wxl_set_title" %set-title) :int (frame :uint64) (value :pointer) (length :size))
 (cffi:defcfun ("wxl_show" %show) :int (window :uint64))
 (cffi:defcfun ("wxl_show_state" %show-state) :int (window :uint64) (show :int))
 (cffi:defcfun ("wxl_shown" %shown) :int (window :uint64))
@@ -69,7 +73,7 @@
           (if (probe-file local)
               (cffi:load-foreign-library local)
               (cffi:use-foreign-library wxlambda-native))))
-    (unless (= 8 (%abi-version)) (error "Unsupported wxlambda native ABI"))
+    (unless (= 9 (%abi-version)) (error "Unsupported wxlambda native ABI"))
     (setf *native-loaded* t))
   t)
 

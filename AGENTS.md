@@ -43,6 +43,31 @@ implemented: use `python3 tools/docset.py build`, `check`, and `install` as
 documented in `docs/DOCSET.md`. Continue building and checking docset updates
 for subsequent implementation work, including Phase 3 fixes and C1–C7 bindings.
 
+## CLOS API
+
+Use native-backed CLOS construction: concrete classes create their native widget
+through inherited `initialize-instance` methods using initargs such as `:parent`,
+`:label` and `:title`. Users must be able to directly instantiate subclasses with
+slot initargs and `:default-initargs`; native properties are available in subclass
+`:after` hooks. Keep `make-*` factories thin, with validated `:class` support and
+forwarded initargs. Reject abstract/invalid construction clearly and clean up
+native widgets and callback roots when managed initialization fails.
+
+Use generic `setf` accessors as the canonical property-writing protocol.
+Name mutable properties without a `get-` prefix (`text`, `label-text`,
+`frame-title`, `window-name`) so reading and SETF writing use one natural name.
+Window/control operations use generic functions specialized on public wrapper
+classes. The project is being built from the ground up; backward compatibility
+is not required. Do not add setter aliases or receiver fallbacks solely for
+compatibility. Keep native handle/type checks and callback/lifetime protections.
+Application lifecycle functions, keyword-only factories, macros and the FFI can
+remain ordinary functions/macros. Event snapshots remain immutable structures.
+
+Public wrapper classes are `window` (abstract), `frame`, `panel`, `button`,
+`text-control`, `label`, `checkbox` and `choice`. Lisp subclassing does not imply
+native C++ subclassing or virtual-method callbacks; those need separate bridge
+support. See `docs/CLOS-API.md`.
+
 ## Shell output
 
 Always run noisy non-interactive shell commands (including installs, builds,

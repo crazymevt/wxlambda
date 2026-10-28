@@ -4,7 +4,10 @@
   ((message :initarg :message :reader native-error-message))
   (:report (lambda (condition stream) (write-string (native-error-message condition) stream))))
 
-(defclass window () ((handle :initarg :handle :reader handle)))
+(defclass window () ((handle :initform nil :reader handle)))
+(defmethod handle :around ((object window))
+  (let ((id (and (slot-boundp object 'handle) (call-next-method))))
+    (or id (error 'native-error :message "Window has no native widget; construction did not complete"))))
 (defclass frame (window) ())
 (defclass panel (window) ())
 (defclass button (window)
@@ -35,13 +38,11 @@
 (defvar *callback-error* nil)
 (defvar *in-notifying-setter* nil)
 (defvar *next-token* 0)
+(defvar *construction-context* nil)
 
 (defun check-status (status)
   (unless (zerop status) (error 'native-error :message (%last-error)))
   t)
-(defun wrap-window (class id)
-  (when (zerop id) (error 'native-error :message (%last-error)))
-  (make-instance class :handle id))
 
 (cffi:defcallback dispatch-event :void ((token :uint64) (payload :pointer))
   ;; Copy borrowed payloads before user code, including reentrant native calls.
@@ -197,49 +198,176 @@ RETURN-TO-APPLICATION-REPL restart. Setup errors propagate to the caller."
     (lambda ()
       ,@body
       (application-repl ,input ,output ,on-error))))
-(defun make-frame (&key (title "wxlambda") (width 480) (height 240))
-  (wrap-window 'frame (%frame title width height)))
-(defun make-panel (parent) (wrap-window 'panel (%panel (handle parent))))
-(defun make-button (parent &key (label "Button"))
-  (wrap-window 'button (%button (handle parent) label)))
-(defun make-text (parent &key (value ""))
-  (wrap-window 'text-control (%text (handle parent) value)))
-(defun make-label (parent &key (label ""))
-  "Create non-editable static text using wxWidgets label/mnemonic syntax."
-  (wrap-window 'label (%label (handle parent) label)))
-(defun set-label (label value)
-  "Set static LABEL's text. Call LAYOUT-WINDOW on its parent to reflow if needed."
-  (check-status (%set-label (handle label) value)) value)
-(defun get-label (label)
+
+;;; Native-backed CLOS initialization. A concrete class owns exactly one native kind.
+(defun adopt-native (object id)
+  (when (zerop id) (error 'native-error :message (%last-error)))
+  (setf (slot-value object 'handle) id)
+  object)
+
+(defun rollback-construction (objects)
+  ;; Remove Lisp callback roots before requesting native destruction. Children
+  ;; created by nested initializers appear before their parents in this list.
+  (when *handlers*
+    (let ((tokens nil))
+      (maphash (lambda (token handler)
+                 (when (member (handler-source handler) objects :test #'eq)
+                   (push token tokens)))
+               *handlers*)
+      (dolist (token tokens) (remhash token *handlers*))))
+  (dolist (object objects)
+    (when (and (slot-exists-p object 'handler-token)
+               (slot-boundp object 'handler-token))
+      (setf (handler-token object) nil))
+    (when (and (slot-boundp object 'handle) (slot-value object 'handle))
+      ;; Keep the original initialization condition/nonlocal exit intact.
+      (ignore-errors (%destroy (slot-value object 'handle)))
+      (setf (slot-value object 'handle) nil))))
+
+(defmethod initialize-instance :around ((object window) &rest initargs)
+  (declare (ignore initargs))
+  (unless (= 1 (count-if (lambda (kind) (typep object kind))
+                         '(frame panel button text-control label checkbox choice)))
+    (error "~A must inherit exactly one concrete wxlambda widget class; WINDOW is abstract"
+           (class-name (class-of object))))
+  (unless *active*
+    (error 'native-error :message "Widget construction requires an active application session"))
+  (when (and (slot-boundp object 'handle) (slot-value object 'handle))
+    (error "This window already has a native widget"))
+  (let* ((parent-context *construction-context*)
+         (*construction-context* (list (list object)))
+         (complete nil))
+    (unwind-protect
+         (multiple-value-prog1 (call-next-method)
+           (unless (and (slot-boundp object 'handle) (slot-value object 'handle))
+             (error "No native widget was created; INITIALIZE-INSTANCE must call its inherited method"))
+           (when parent-context
+             (setf (car parent-context) (nconc (car *construction-context*) (car parent-context))))
+           (setf complete t))
+      (unless complete (rollback-construction (car *construction-context*))))))
+
+(defmethod initialize-instance :after ((object window) &rest initargs)
+  (declare (ignore initargs))
+  ;; This least-specific AFTER method runs before any native allocation.
+  (unless (slot-boundp object 'handle)
+    (error "INITIALIZE-INSTANCE must call inherited initialization before native construction")))
+
+(defmethod initialize-instance :after ((object frame) &key (title "wxlambda") (width 480) (height 240))
+  (adopt-native object (%frame title width height)))
+(defmethod initialize-instance :after ((object panel) &key parent)
+  (check-type parent window)
+  (adopt-native object (%panel (handle parent))))
+(defmethod initialize-instance :after ((object button) &key parent (label "Button"))
+  (check-type parent window)
+  (adopt-native object (%button (handle parent) label)))
+(defmethod initialize-instance :after ((object text-control) &key parent (value ""))
+  (check-type parent window)
+  (adopt-native object (%text (handle parent) value)))
+(defmethod initialize-instance :after ((object label) &key parent (label ""))
+  (check-type parent window)
+  (adopt-native object (%label (handle parent) label)))
+(defmethod initialize-instance :after ((object checkbox) &key parent (label "") checked)
+  (check-type parent window)
+  (adopt-native object (%checkbox (handle parent) label (if checked 1 0))))
+(defmethod initialize-instance :after ((object choice) &key parent (items nil) selection)
+  (check-type parent window)
+  (check-type items list)
+  (check-type selection (or null (integer 0 2147483647)))
+  (dolist (item items) (check-type item string))
+  (let ((strings nil))
+    (unwind-protect
+         (progn
+           (dolist (item items)
+             (push (cffi:foreign-string-alloc item :encoding :utf-8) strings))
+           (setf strings (nreverse strings))
+           (cffi:with-foreign-object (array :pointer (max 1 (length strings)))
+             (loop for pointer in strings for i from 0 do
+               (setf (cffi:mem-aref array :pointer i) pointer))
+             (adopt-native object (%choice (handle parent) array (length strings) (or selection -1)))))
+      (dolist (pointer strings) (cffi:foreign-string-free pointer)))))
+
+(defun make-widget (class expected &rest initargs)
+  (let ((resolved (if (typep class 'class) class (find-class class))))
+    (unless (subtypep resolved (find-class expected))
+      (error "~A is not a subclass of ~A" class expected))
+    (apply #'make-instance resolved
+           (loop for (key value) on initargs by #'cddr
+                 unless (eq key :class) append (list key value)))))
+
+(defun make-frame (&rest initargs &key (class 'wxlambda:frame) &allow-other-keys)
+  (apply #'make-widget class 'frame initargs))
+(defgeneric make-panel (parent &rest initargs &key class  &allow-other-keys)
+  (:documentation "Construct a panel or subclass using MAKE-INSTANCE and forwarded initargs."))
+(defmethod make-panel ((parent window) &rest initargs &key (class 'wxlambda:panel) &allow-other-keys)
+  (apply #'make-widget class 'panel :parent parent initargs))
+(defgeneric make-button (parent &rest initargs &key class label &allow-other-keys)
+  (:documentation "Construct a button or subclass using MAKE-INSTANCE and forwarded initargs."))
+(defmethod make-button ((parent window) &rest initargs &key (class 'wxlambda:button) &allow-other-keys)
+  (apply #'make-widget class 'button :parent parent initargs))
+(defgeneric make-text (parent &rest initargs &key class value &allow-other-keys)
+  (:documentation "Construct a text-control or subclass using MAKE-INSTANCE and forwarded initargs."))
+(defmethod make-text ((parent window) &rest initargs &key (class 'wxlambda:text-control) &allow-other-keys)
+  (apply #'make-widget class 'text-control :parent parent initargs))
+(defgeneric make-label (parent &rest initargs &key class label &allow-other-keys)
+  (:documentation "Construct a label or subclass using MAKE-INSTANCE and forwarded initargs."))
+(defmethod make-label ((parent window) &rest initargs &key (class 'wxlambda:label) &allow-other-keys)
+  (apply #'make-widget class 'label :parent parent initargs))
+(defgeneric make-checkbox (parent &rest initargs &key class label checked &allow-other-keys)
+  (:documentation "Construct a checkbox or subclass using MAKE-INSTANCE and forwarded initargs."))
+(defmethod make-checkbox ((parent window) &rest initargs &key (class 'wxlambda:checkbox) &allow-other-keys)
+  (apply #'make-widget class 'checkbox :parent parent initargs))
+(defgeneric make-choice (parent &rest initargs &key class items selection &allow-other-keys)
+  (:documentation "Construct a choice or subclass using MAKE-INSTANCE and forwarded initargs."))
+(defmethod make-choice ((parent window) &rest initargs &key (class 'wxlambda:choice) &allow-other-keys)
+  (apply #'make-widget class 'choice :parent parent initargs))
+
+(defgeneric label-text (label)
+  (:documentation "Read raw label text including mnemonic syntax. Other control types are not accepted."))
+
+(defmethod label-text ((label label))
   "Return an independent string containing static LABEL's raw text."
   (let ((pointer (%get-label (handle label))))
     (when (cffi:null-pointer-p pointer)
       (error 'native-error :message (%last-error)))
     (cffi:foreign-string-to-lisp pointer :encoding :utf-8)))
-(defun make-checkbox (parent &key (label "") checked)
-  "Create a two-state checkbox. CHECKED is a generalized boolean."
-  (wrap-window 'checkbox (%checkbox (handle parent) label (if checked 1 0))))
-(defun checked-p (checkbox)
+
+(defgeneric checked-p (checkbox &key notify)
+  (:documentation "Read the boolean checkbox state."))
+
+(defmethod checked-p ((checkbox checkbox) &key notify)
   "Return T or NIL for CHECKBOX's current state."
+  (declare (ignore notify))
   (let ((result (%checked (handle checkbox))))
     (when (minusp result) (error 'native-error :message (%last-error)))
     (not (zerop result))))
-(defun make-column (parent) (check-status (%column (handle parent))) parent)
-(defun make-row (parent) (check-status (%row (handle parent))) parent)
-(defun add-child (parent child &key (proportion 0) (border 8) (expand t) (align :start))
+(defgeneric make-column (parent)
+  (:documentation "Attach a parent-owned vertical box sizer. Standalone nested sizer objects are not exposed."))
+(defmethod make-column ((parent window)) (check-status (%column (handle parent))) parent)
+(defgeneric make-row (parent)
+  (:documentation "Attach a parent-owned horizontal box sizer. Standalone nested sizer objects are not exposed."))
+(defmethod make-row ((parent window)) (check-status (%row (handle parent))) parent)
+(defgeneric add-child (parent child &key proportion border expand align)
+  (:documentation "Add a child window to the layout. Non-start minor-axis alignment requires EXPAND NIL. Borders apply uniformly on four sides."))
+(defmethod add-child ((parent window) (child window) &key (proportion 0) (border 8) (expand t) (align :start))
   "Add CHILD to PARENT's row/column. PROPORTION allocates the major axis;
 EXPAND fills the minor axis. With EXPAND NIL, ALIGN is :START, :CENTER, or :END.
 BORDER is nonnegative spacing on all four sides, in wxWidgets coordinates."
   (check-status (%add (handle parent) (handle child) proportion border (if expand 1 0)
                       (ecase align (:start 0) (:center 1) (:end 2))))
   child)
-(defun add-spacer (parent size)
+(defgeneric add-spacer (parent size)
+  (:documentation "Add fixed layout-axis spacing and relayout the parent."))
+(defmethod add-spacer ((parent window) size)
   "Add fixed nonnegative SIZE along PARENT's layout axis."
   (check-status (%spacer (handle parent) size)) parent)
-(defun add-stretch (parent &key (proportion 1))
+(defgeneric add-stretch (parent &key proportion)
+  (:documentation "Add flexible layout-axis spacing and relayout the parent."))
+(defmethod add-stretch ((parent window) &key (proportion 1))
   "Add flexible space with positive PROPORTION along PARENT's layout axis."
   (check-status (%stretch (handle parent) proportion)) parent)
-(defun layout-window (window)
+(defgeneric layout-window (window)
+  (:documentation "Recompute the window sizer layout, including after batching label changes. Native success boolean is not exposed."))
+(defmethod layout-window ((window window))
   "Recompute WINDOW's sizer layout after batching changes."
   (check-status (%layout (handle window))) window)
 (defun window-geometry (window)
@@ -247,56 +375,89 @@ BORDER is nonnegative spacing on all four sides, in wxWidgets coordinates."
     (check-status (%geometry (handle window) x y width height))
     (values (cffi:mem-ref x :int) (cffi:mem-ref y :int)
             (cffi:mem-ref width :int) (cffi:mem-ref height :int))))
-(defun window-position (window)
+(defgeneric window-position (window)
+  (:documentation "Query position relative to parent; frame coordinates are screen-relative."))
+(defmethod window-position ((window window))
   "Return X and Y as two values, relative to the parent (screen for frames)."
   (multiple-value-bind (x y width height) (window-geometry window)
     (declare (ignore width height))
     (values x y)))
-(defun window-size (window)
+(defgeneric window-size (window)
+  (:documentation "Query outer window dimensions in wxWidgets coordinates."))
+(defmethod window-size ((window window))
   "Return outer WIDTH and HEIGHT as two values in wxWidgets coordinates."
   (multiple-value-bind (x y width height) (window-geometry window)
     (declare (ignore x y))
     (values width height)))
+(defun get-window-string (window native-getter)
+  (cffi:with-foreign-object (length :size)
+    (let ((pointer (funcall native-getter (handle window) length)))
+      (when (cffi:null-pointer-p pointer)
+        (error 'native-error :message (%last-error)))
+      (values (cffi:foreign-string-to-lisp pointer :encoding :utf-8
+                                        :count (cffi:mem-ref length :size))))))
+(defun set-window-string (window value native-setter)
+  (cffi:with-foreign-string ((pointer byte-size) value :encoding :utf-8)
+    ;; CFFI's UTF-8 allocation includes one terminating byte.
+    (check-status (funcall native-setter (handle window) pointer (1- byte-size))))
+  value)
+(defgeneric window-name (window)
+  (:documentation "Read the logical window name, independent of displayed labels, text, title and native ID. Names need not be unique; Unicode, empty strings and embedded NULs are preserved."))
+(defmethod window-name ((window window))
+  "Return an independent string containing WINDOW's logical name, not its label.
+Names need not be unique. Embedded NULs are preserved."
+  (get-window-string window #'%name))
+
+(defgeneric frame-title (frame)
+  (:documentation "Read the frame title, including the title initially supplied to MAKE-FRAME. Returned strings survive later metadata queries and destruction."))
+
+(defmethod frame-title ((frame frame))
+  "Return an independent string containing FRAME's title. Accepts frames only."
+  (get-window-string frame #'%title))
+
 (defun boolean-result (result)
   (when (minusp result) (error 'native-error :message (%last-error)))
   (not (zerop result)))
-(defun show-window (window &optional (show t))
-  "Show WINDOW when SHOW is true, hide it when NIL. Return WINDOW and a second
-value indicating whether its native shown state changed. SHOWN-P queries its own
-shown flag, independently of whether an ancestor is hidden."
-  (values window (boolean-result (%show-state (handle window) (if show 1 0)))))
-(defun shown-p (window)
+(defgeneric show-window (window &optional show)
+  (:documentation "Show with true SHOW, hide with NIL. Existing one-argument calls still show the window and return it as their primary value."))
+(defmethod show-window ((window window) &optional (show t))
+  "Apply the state and return WINDOW and the native changed-state flag."
+  (multiple-value-bind (value changed) (funcall #'(setf shown-p) show window)
+    (declare (ignore value))
+    (values window changed)))
+(defgeneric shown-p (window)
+  (:documentation "Read the window's own shown flag. A hidden ancestor does not change this flag; it does not report effective screen visibility."))
+(defmethod shown-p ((window window))
   "Return WINDOW's own shown flag, not its effective visibility on screen."
   (boolean-result (%shown (handle window))))
-(defun enable-window (window &optional (enable t))
-  "Enable WINDOW for input when ENABLE is true, disable it when NIL.
-Return WINDOW and whether the native enabled state changed."
-  (values window (boolean-result (%enable (handle window) (if enable 1 0)))))
-(defun enabled-p (window)
+(defgeneric enable-window (window &optional enable)
+  (:documentation "Enable or disable user input. Repeated requests are harmless; a disabled parent also disables its children effectively."))
+(defmethod enable-window ((window window) &optional (enable t))
+  "Apply the state and return WINDOW and the native changed-state flag."
+  (multiple-value-bind (value changed) (funcall #'(setf enabled-p) enable window)
+    (declare (ignore value))
+    (values window changed)))
+(defgeneric enabled-p (window)
+  (:documentation "Read effective enabled state, including disabled ancestors. A child's own disabled state survives parent disable/re-enable."))
+(defmethod enabled-p ((window window))
   "Return whether WINDOW accepts input, including its ancestors' enabled state."
   (boolean-result (%enabled (handle window))))
-(defun destroy-window (window) (check-status (%destroy (handle window))))
+(defgeneric destroy-window (window)
+  (:documentation "Request destruction; first explicitly unbind handlers to release Lisp closures. Child handles become invalid when native destruction occurs."))
+(defmethod destroy-window ((window window)) (check-status (%destroy (handle window))))
 (defun call-setter (function notify)
   (let ((*in-notifying-setter* (or notify *in-notifying-setter*)))
     (check-status (funcall function)))
   ;; Restore the enclosing boundary before re-signaling. An unhandled error
   ;; will reach the outer callback, which then requests the loop stop.
   (check-callback-error))
-(defun set-checked (checkbox checked &key notify)
-  "Set a generalized boolean state silently, or emit a synchronous :TOGGLE event
-with :NOTIFY T. Return the requested state as T or NIL, even if a handler changes
-it again. Handler errors can be caught by this caller."
-  (call-setter (lambda () (%set-checked (handle checkbox) (if checked 1 0) (if notify 1 0)))
-               notify)
-  (not (null checked)))
-(defun set-text (control value &key notify)
-  "Set CONTROL's text silently, or emit a text-change event when NOTIFY is true.
-Handlers may run synchronously. Their errors are re-signaled after the native
-setter returns, including when RUN has not yet been called."
-  (call-setter (lambda () (%set-text (handle control) value (if notify 1 0))) notify)
-  value)
-(defun get-text (control)
+
+(defgeneric text (control &key notify)
+  (:documentation "Read the current UTF-8 text; returned storage survives later native calls."))
+
+(defmethod text ((control text-control) &key notify)
   "Return an independent Lisp string containing CONTROL's current text."
+  (declare (ignore notify))
   (let ((pointer (%get-text (handle control))))
     (when (cffi:null-pointer-p pointer)
       (error 'native-error :message (%last-error)))
@@ -326,7 +487,10 @@ setter returns, including when RUN has not yet been called."
   (setf (handler-token source) nil)
   source)
 
-(defun on-click (button function &key with-event)
+(defgeneric on-click (button function &key with-event)
+  (:documentation "Replace and release any prior handler. Receive :CLICK snapshots with no payload. Callback conditions never unwind through C++; they are re-signaled at a Lisp boundary."))
+
+(defmethod on-click ((button button) function &key with-event)
   "Register FUNCTION, releasing any previous handler's closure.
 By default FUNCTION takes no arguments; WITH-EVENT passes one EVENT instead."
   (check-type function function)
@@ -335,65 +499,108 @@ By default FUNCTION takes no arguments; WITH-EVENT passes one EVENT instead."
                         (lambda (event) (declare (ignore event)) (funcall function)))
                     #'%on-click))
 
-(defun off-click (button)
+(defgeneric off-click (button)
+  (:documentation "Remove the handler and release its closure. Repeated removal is harmless for a live control, including inside its callback."))
+
+(defmethod off-click ((button button))
   "Remove BUTTON's handler and release its closure. Repeated removal is harmless.
 Queued clicks use the handler registered at dispatch time."
   (unregister-handler button #'%off-click))
 
-(defun on-text-change (control function)
+(defgeneric on-text-change (control function)
+  (:documentation "Replace and release any prior handler. Receive :TEXT-CHANGE snapshots with copied text. Callback conditions never unwind through C++; they are re-signaled at a Lisp boundary."))
+
+(defmethod on-text-change ((control text-control) function)
   "Register FUNCTION taking one EVENT with kind :TEXT-CHANGE and copied text.
-Replaces and releases the previous text handler. User edits and SET-TEXT with
-:NOTIFY T generate events; ordinary SET-TEXT calls remain silent."
+Replaces and releases the previous text handler. User edits and SETF on TEXT with
+:NOTIFY T generate events; ordinary SETF on TEXT calls remain silent."
   (register-handler control function #'%on-text-change))
 
-(defun off-text-change (control)
+(defgeneric off-text-change (control)
+  (:documentation "Remove the handler and release its closure. Repeated removal is harmless for a live control, including inside its callback."))
+
+(defmethod off-text-change ((control text-control))
   "Remove CONTROL's text-change handler and release its closure. Idempotent
 for a live text control; safe to call from inside the handler."
   (unregister-handler control #'%off-text-change))
 
-(defun on-toggle (checkbox function)
+(defgeneric on-toggle (checkbox function)
+  (:documentation "Replace and release any prior handler. Receive :TOGGLE snapshots with boolean state. Callback conditions never unwind through C++; they are re-signaled at a Lisp boundary."))
+
+(defmethod on-toggle ((checkbox checkbox) function)
   "Register FUNCTION taking one :TOGGLE event with an EVENT-CHECKED-P snapshot."
   (register-handler checkbox function #'%on-toggle))
-(defun off-toggle (checkbox)
+(defgeneric off-toggle (checkbox)
+  (:documentation "Remove the handler and release its closure. Repeated removal is harmless for a live control, including inside its callback."))
+
+(defmethod off-toggle ((checkbox checkbox))
   "Remove CHECKBOX's toggle handler and release its closure. Idempotent for a
 live checkbox, including when called from inside its handler."
   (unregister-handler checkbox #'%off-toggle))
 
-(defun queue-click (button) (check-status (%click (handle button))))
+(defgeneric queue-click (button)
+  (:documentation "Post a button click for later dispatch. It uses the handler registered at dispatch time, including any replacement."))
 
-(defun make-choice (parent &key (items nil) selection)
-  "Create a dropdown from a list of strings. SELECTION is a zero-based index or NIL."
-  (check-type items list)
-  (check-type selection (or null (integer 0 2147483647)))
-  (dolist (item items) (check-type item string))
-  (let ((strings nil))
-    (unwind-protect
-         (progn
-           (dolist (item items)
-             (push (cffi:foreign-string-alloc item :encoding :utf-8) strings))
-           (setf strings (nreverse strings))
-           (cffi:with-foreign-object (array :pointer (max 1 (length strings)))
-             (loop for pointer in strings for i from 0 do
-               (setf (cffi:mem-aref array :pointer i) pointer))
-             (wrap-window 'choice (%choice (handle parent) array (length strings) (or selection -1)))))
-      (dolist (pointer strings) (cffi:foreign-string-free pointer)))))
+(defmethod queue-click ((button button)) (check-status (%click (handle button))))
 
-(defun selection (choice)
+(defgeneric selection (choice &key notify)
+  (:documentation "Read selected index; NIL represents native no selection."))
+
+(defmethod selection ((choice choice) &key notify)
   "Return the zero-based selected index, or NIL when nothing is selected."
+  (declare (ignore notify))
   (let ((index (%selection (handle choice))))
     (when (= index -2) (error 'native-error :message (%last-error)))
     (unless (= index -1) index)))
 
-(defun set-selection (choice index &key notify)
-  "Select INDEX (zero-based) or NIL. NOTIFY emits synchronously, even if unchanged.
-Return the requested index. Handler errors are re-signaled to the caller."
+(defgeneric on-selection (choice function)
+  (:documentation "Replace and release any prior handler. Receive :SELECTION snapshots with selected index or NIL. Callback conditions never unwind through C++; they are re-signaled at a Lisp boundary."))
+
+(defmethod on-selection ((choice choice) function)
+  "Register a handler taking one :SELECTION event with an EVENT-SELECTION snapshot."
+  (register-handler choice function #'%on-selection))
+(defgeneric off-selection (choice)
+  (:documentation "Remove the handler and release its closure. Repeated removal is harmless for a live control, including inside its callback."))
+
+(defmethod off-selection ((choice choice))
+  "Remove the selection handler and release its closure. Idempotent for a live choice."
+  (unregister-handler choice #'%off-selection))
+
+;;; SETF is the canonical property-writing protocol.
+(defgeneric (setf text) (value control &key notify)
+  (:documentation "Assign text and return the supplied value."))
+(defmethod (setf text) (value (control text-control) &key notify)
+  (call-setter (lambda () (%set-text (handle control) value (if notify 1 0))) notify)
+  value)
+(defgeneric (setf label-text) (value label)
+  (:documentation "Assign label-text and return the supplied value."))
+(defmethod (setf label-text) (value (label label))
+  (check-status (%set-label (handle label) value)) value)
+(defgeneric (setf checked-p) (value checkbox &key notify)
+  (:documentation "Assign checked-p and return the supplied value."))
+(defmethod (setf checked-p) (checked (checkbox checkbox) &key notify)
+  (call-setter (lambda () (%set-checked (handle checkbox) (if checked 1 0) (if notify 1 0)))
+               notify)
+  checked)
+(defgeneric (setf selection) (value choice &key notify)
+  (:documentation "Assign selection and return the supplied value."))
+(defmethod (setf selection) (index (choice choice) &key notify)
   (check-type index (or null (integer 0 2147483647)))
   (call-setter (lambda () (%set-selection (handle choice) (or index -1) (if notify 1 0))) notify)
   index)
-
-(defun on-selection (choice function)
-  "Register a handler taking one :SELECTION event with an EVENT-SELECTION snapshot."
-  (register-handler choice function #'%on-selection))
-(defun off-selection (choice)
-  "Remove the selection handler and release its closure. Idempotent for a live choice."
-  (unregister-handler choice #'%off-selection))
+(defgeneric (setf window-name) (value window)
+  (:documentation "Assign window-name and return the supplied value."))
+(defmethod (setf window-name) (value (window window))
+  (set-window-string window value #'%set-name))
+(defgeneric (setf frame-title) (value frame)
+  (:documentation "Assign frame-title and return the supplied value."))
+(defmethod (setf frame-title) (value (frame frame))
+  (set-window-string frame value #'%set-title))
+(defgeneric (setf shown-p) (value window)
+  (:documentation "Assign shown-p; return the supplied value and the native changed-state flag."))
+(defmethod (setf shown-p) (value (window window))
+  (values value (boolean-result (%show-state (handle window) (if value 1 0)))))
+(defgeneric (setf enabled-p) (value window)
+  (:documentation "Assign enabled-p; return the supplied value and the native changed-state flag."))
+(defmethod (setf enabled-p) (value (window window))
+  (values value (boolean-result (%enable (handle window) (if value 1 0)))))

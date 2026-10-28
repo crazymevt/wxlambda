@@ -19,6 +19,8 @@ def scenarios():
         yield f"events-{mode}", "events.lisp", {"WXLAMBDA_EVENT_TEST_MODE": mode}
     yield "layout", "layout.lisp", {}
     yield "window-state", "window-state.lisp", {}
+    yield "window-metadata", "window-metadata.lisp", {}
+    yield "clos", "clos.lisp", {}
     for mode in ("normal", "error-before-run", "error-in-loop", "error-handled-in-loop"):
         yield f"controls-{mode}", "controls.lisp", {"WXLAMBDA_CONTROL_TEST_MODE": mode}
     for name in ("repl", "repl-eof", "repl-delayed", "repl-debugger", "live"):

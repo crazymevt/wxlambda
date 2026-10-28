@@ -37,6 +37,31 @@ class DocsetChecks(unittest.TestCase):
         self.assertIn('guide/docs/DOCSET.md', tool.sexp(blocks))
         self.assertNotIn(':link', tool.sexp(blocks))
 
+    def test_clos_signatures_keep_defaults_without_specializers(self):
+        self.assertEqual(tool.method_signature('((window window) &optional (show t))'),
+                         '(window &optional (show t))')
+        self.assertEqual(tool.method_signature('((parent window) (child window) &key (border 8) expand)'),
+                         '(parent child &key (border 8) expand)')
+        manifest, entries = tool.content()
+        name = tool.sexp(entries)
+        self.assertIn('(wxlambda:show-window window &optional (show t))', name)
+        self.assertIn(':kind :generic-function', name)
+        self.assertIn(':kind :class', name)
+
+    def test_construction_and_setf_are_documented_and_indexed(self):
+        manifest, entries = tool.content()
+        text = tool.sexp(entries)
+        self.assertIn('"Construction"', text)
+        self.assertIn('"SETF"', text)
+        self.assertIn('"(setf frame-title)"', text)
+        self.assertIn('"(setf text)"', text)
+        self.assertIn('"(setf label-text)"', text)
+        self.assertNotIn('"api/get-text"', text)
+        self.assertNotIn('"api/get-label"', text)
+        self.assertIn("(make-instance 'wxlambda:button", text)
+        self.assertNotIn('"api/set-frame-title"', text)
+        self.assertNotIn('"api/set-text"', text)
+
     def test_lisp_string_and_lambda_list_handling(self):
         source = '(window &optional (title "λ (test) \\\"quoted\\\"")) trailing'
         self.assertEqual(tool.balanced(source, 0), source[:-9])

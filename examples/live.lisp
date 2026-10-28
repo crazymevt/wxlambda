@@ -14,7 +14,7 @@
 (defvar *clicks* 0)
 
 (defun clicked ()
-  (wxlambda:set-text *text* (format nil "Clicked ~D times" (incf *clicks*))))
+  (setf (wxlambda:text *text*) (format nil "Clicked ~D times" (incf *clicks*))))
 
 (defun close-window ()
   "Release registered closures before destroying the controls they reference."

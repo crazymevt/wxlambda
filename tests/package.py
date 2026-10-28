@@ -88,7 +88,7 @@ def main():
             check("relocated-repl", True, arguments=("--repl",), input_data=(
                 '(assert (null sb-ext:*invoke-debugger-hook*))\n'
                 '(wxlambda:queue-click wxlambda-form:*reopen*)\n'
-                '(assert (string= "Ada" (wxlambda:get-text wxlambda-form:*name*)))\n'
+                '(assert (string= "Ada" (wxlambda:text wxlambda-form:*name*)))\n'
                 '(wxlambda-form:close-window)\n'
                 '(format t "PASS: packaged REPL recreation and exit~%")\n'
                 '(wxlambda:stop)\n').encode())

@@ -1,6 +1,7 @@
 #ifndef WXLAMBDA_H
 #define WXLAMBDA_H
 #include <stdint.h>
+#include <stddef.h>
 #ifdef _WIN32
 # ifdef WXLAMBDA_BUILD
 #  define WXL_API __declspec(dllexport)
@@ -68,6 +69,15 @@ WXL_API int wxl_stretch(wxl_handle parent, int proportion);
 WXL_API int wxl_layout(wxl_handle window);
 /* All four output pointers must be non-NULL. Values use wxWidgets coordinates. */
 WXL_API int wxl_geometry(wxl_handle window, int *x, int *y, int *width, int *height);
+/* Metadata getters return UTF-8 borrowed until the next wxl_name/wxl_title
+   query on this thread, with its byte count excluding any terminator in length.
+   length must be non-NULL. NULL return indicates failure; empty strings succeed.
+   Setter byte counts also exclude the terminator and may include embedded NULs.
+   Title operations accept frames only. */
+WXL_API const char *wxl_name(wxl_handle window, size_t *length);
+WXL_API int wxl_set_name(wxl_handle window, const char *value, size_t length);
+WXL_API const char *wxl_title(wxl_handle frame, size_t *length);
+WXL_API int wxl_set_title(wxl_handle frame, const char *value, size_t length);
 WXL_API int wxl_show(wxl_handle window);
 /* Boolean operations return 0/1, or -1 on error. Setters return whether the
    native state changed. wxl_show is retained with its original status contract. */

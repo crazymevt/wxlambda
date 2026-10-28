@@ -25,19 +25,18 @@
 (defun remember-input ()
   ;; Cleanup can also run after only part of the form was constructed.
   (when (and *name* *greeting* *style*)
-    (setf *name-value* (wxlambda:get-text *name*)
+    (setf *name-value* (wxlambda:text *name*)
           *greeting-value* (wxlambda:checked-p *greeting*)
           *style-value* (wxlambda:selection *style*))))
 
 (defun edited ()
   (remember-input)
-  (wxlambda:set-label *status* "Edited; submit to preview")
+  (setf (wxlambda:label-text *status*) "Edited; submit to preview")
   (wxlambda:layout-window *root*))
 
 (defun submit-form ()
   (remember-input)
-  (wxlambda:set-label *status*
-    (format nil (cond ((not *greeting-value*) "Name: ~A")
+  (setf (wxlambda:label-text *status*) (format nil (cond ((not *greeting-value*) "Name: ~A")
                       ((eql *style-value* 1) "Good day, ~A.")
                       (t "Hello, ~A!"))
             *name-value*))

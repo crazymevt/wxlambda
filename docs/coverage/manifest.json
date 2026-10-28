@@ -102,8 +102,8 @@
       "header": "wx/app.h",
       "sha256": "3bb18bf1f515f9d2a30522c1096385e1c1a0931fad0815842bc13d402f105b7c",
       "phase": 1,
-      "entries": 106,
-      "tasks": 106,
+      "entries": 104,
+      "tasks": 104,
       "context_entries": 0
     },
     {
@@ -702,8 +702,8 @@
       "header": "wx/defs.h",
       "sha256": "f9394cf9631f91533621686fc8eafa4d71f4e61afe0e455341c357847155f576",
       "phase": 1,
-      "entries": 237,
-      "tasks": 234,
+      "entries": 235,
+      "tasks": 232,
       "context_entries": 3
     },
     {
@@ -1206,8 +1206,8 @@
       "header": "wx/html/helpfrm.h",
       "sha256": "0036c711af810b1f82b99bddda0c050ebb28d39b2d51de393c816def8a513cba",
       "phase": 6,
-      "entries": 14,
-      "tasks": 14,
+      "entries": 21,
+      "tasks": 21,
       "context_entries": 0
     },
     {
@@ -1958,8 +1958,8 @@
       "header": "wx/print.h",
       "sha256": "0ed1ba4fe7869e621619fb76795ef17af51308d056058921edea519e95fa56ab",
       "phase": 5,
-      "entries": 22,
-      "tasks": 22,
+      "entries": 107,
+      "tasks": 107,
       "context_entries": 0
     },
     {
@@ -2022,8 +2022,8 @@
       "header": "wx/propgrid/property.h",
       "sha256": "e00ab53ae51ca43b8500a2fe8be5b51839710981746fa059c6791d827d060054",
       "phase": 6,
-      "entries": 322,
-      "tasks": 322,
+      "entries": 321,
+      "tasks": 321,
       "context_entries": 0
     },
     {
@@ -2814,8 +2814,8 @@
       "header": "wx/toplevel.h",
       "sha256": "7f0b559589ac7d14d2d6b3fbda7fa0b60d34aab6e45fad455742dd86be891c19",
       "phase": 2,
-      "entries": 14,
-      "tasks": 14,
+      "entries": 68,
+      "tasks": 68,
       "context_entries": 0
     },
     {
@@ -3187,5 +3187,5 @@
       "context_entries": 0
     }
   ],
-  "class_definitions": 1006
+  "class_definitions": 1016
 }

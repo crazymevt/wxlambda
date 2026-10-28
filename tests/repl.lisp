@@ -22,8 +22,8 @@
       (:input (make-string-input-stream
                "(error \"Recoverable REPL error\")
 (wxlambda:run)
-(wxlambda:set-text *live-text* \"Changed live\")
-(assert (string= (wxlambda:get-text *live-text*) \"Changed live\"))
+(setf (wxlambda:text *live-text*) \"Changed live\")
+(assert (string= (wxlambda:text *live-text*) \"Changed live\"))
 (values :first :second)
 (wxlambda:stop)
 (setf *after-stop* t)")
@@ -45,7 +45,7 @@
     #+(or sbcl ccl) (assert (search "Backtrace" printed :test #'char-equal))
     (assert (not *after-stop*)))
   (assert (not wxlambda::*active*))
-  (assert (handler-case (progn (wxlambda:get-text *live-text*) nil)
+  (assert (handler-case (progn (wxlambda:text *live-text*) nil)
             (wxlambda:native-error () t))))
 (format t "PASS: REPL evaluation, event dispatch, error recovery, stop, cleanup~%")
 

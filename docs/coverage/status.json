@@ -136,12 +136,12 @@
       "status": "x",
       "symbol": "wxCheckBox::SetValue",
       "lisp": [
-        "set-checked"
+        "(setf checked-p)"
       ],
       "native": [
         "wxl_set_checked"
       ],
-      "scope": "Boolean setter; silent by default, Lisp additionally offers synthetic notification."
+      "scope": "Canonical SETF writer. Boolean setter; silent by default, Lisp additionally offers synthetic notification."
     },
     {
       "header": "wx/choice.h",
@@ -164,12 +164,12 @@
       "status": "x",
       "symbol": "wxChoice::SetSelection",
       "lisp": [
-        "set-selection"
+        "(setf selection)"
       ],
       "native": [
         "wxl_set_selection"
       ],
-      "scope": "Index or no selection (Lisp NIL); silent by default, optional synthetic notification."
+      "scope": "Canonical SETF writer. Index or no selection (Lisp NIL); silent by default, optional synthetic notification."
     },
     {
       "header": "wx/textentry.h",
@@ -178,12 +178,12 @@
       "status": "~",
       "symbol": "wxTextEntry::ChangeValue",
       "lisp": [
-        "set-text"
+        "(setf text)"
       ],
       "native": [
         "wxl_set_text"
       ],
-      "scope": "Silent value replacement for wxTextCtrl only; other wxTextEntry receivers remain open."
+      "scope": "Canonical SETF writer. Silent value replacement for wxTextCtrl only; other wxTextEntry receivers remain open."
     },
     {
       "header": "wx/textentry.h",
@@ -192,7 +192,7 @@
       "status": "~",
       "symbol": "wxTextEntry::GetValue",
       "lisp": [
-        "get-text"
+        "text"
       ],
       "native": [
         "wxl_get_text"
@@ -206,12 +206,12 @@
       "status": "~",
       "symbol": "wxTextEntry::SetValue",
       "lisp": [
-        "set-text"
+        "(setf text)"
       ],
       "native": [
         "wxl_set_text"
       ],
-      "scope": "Notifying value replacement for wxTextCtrl only via :notify T; other receivers remain open."
+      "scope": "Canonical SETF writer. Notifying value replacement for wxTextCtrl only via :notify T; other receivers remain open."
     },
     {
       "header": "wx/stattext.h",
@@ -220,12 +220,12 @@
       "status": "x",
       "symbol": "wxStaticText::SetLabel",
       "lisp": [
-        "set-label"
+        "(setf label-text)"
       ],
       "native": [
         "wxl_set_label"
       ],
-      "scope": "UTF-8 label setter for wxStaticText."
+      "scope": "Canonical SETF writer. UTF-8 label setter for wxStaticText."
     },
     {
       "header": "wx/control.h",
@@ -234,12 +234,12 @@
       "status": "~",
       "symbol": "wxControl::GetLabel",
       "lisp": [
-        "get-label"
+        "label-text"
       ],
       "native": [
         "wxl_get_label"
       ],
-      "scope": "Inherited by wxStaticText; exported get-label accepts static text only. Other control receivers remain open."
+      "scope": "Inherited by wxStaticText; exported label-text accepts static text only. Other control receivers remain open."
     },
     {
       "header": "wx/control.h",
@@ -248,12 +248,12 @@
       "status": "~",
       "symbol": "wxControl::SetLabel",
       "lisp": [
-        "set-label"
+        "(setf label-text)"
       ],
       "native": [
         "wxl_set_label"
       ],
-      "scope": "Inherited interface exposed through wxStaticText override only; other control receivers remain open."
+      "scope": "Canonical SETF writer. Inherited interface exposed through wxStaticText override only; other control receivers remain open."
     },
     {
       "header": "wx/window.h",
@@ -388,12 +388,12 @@
       "status": "~",
       "symbol": "wxItemContainerImmutable::SetSelection",
       "lisp": [
-        "set-selection"
+        "(setf selection)"
       ],
       "native": [
         "wxl_set_selection"
       ],
-      "scope": "Inherited interface exposed for wxChoice only; other item-container receivers remain open."
+      "scope": "Canonical SETF writer. Inherited interface exposed for wxChoice only; other item-container receivers remain open."
     },
     {
       "header": "wx/ctrlsub.h",
@@ -586,6 +586,62 @@
         "wxl_enable"
       ],
       "scope": "Equivalent Lisp mapping: (enable-window window nil), using Enable(false); second value preserves the native changed-state boolean."
+    },
+    {
+      "header": "wx/window.h",
+      "line": 3370,
+      "declaration": "virtual wxString GetName() const;",
+      "status": "x",
+      "symbol": "wxWindow::GetName",
+      "lisp": [
+        "window-name"
+      ],
+      "native": [
+        "wxl_name"
+      ],
+      "scope": "Independent UTF-8 Lisp string for all currently bound windows; explicit byte length preserves empty strings and embedded NULs."
+    },
+    {
+      "header": "wx/window.h",
+      "line": 3415,
+      "declaration": "virtual void SetName(const wxString& name);",
+      "status": "x",
+      "symbol": "wxWindow::SetName",
+      "lisp": [
+        "(setf window-name)"
+      ],
+      "native": [
+        "wxl_set_name"
+      ],
+      "scope": "Canonical SETF writer. Copied name with explicit UTF-8 byte length, including empty and embedded-NUL names; returns the supplied Lisp string."
+    },
+    {
+      "header": "wx/toplevel.h",
+      "line": 235,
+      "declaration": "virtual wxString GetTitle() const;",
+      "status": "~",
+      "symbol": "wxTopLevelWindow::GetTitle",
+      "lisp": [
+        "frame-title"
+      ],
+      "native": [
+        "wxl_title"
+      ],
+      "scope": "Independent UTF-8 title string for wxFrame only; other top-level window receivers remain open."
+    },
+    {
+      "header": "wx/toplevel.h",
+      "line": 583,
+      "declaration": "virtual void SetTitle(const wxString& title);",
+      "status": "~",
+      "symbol": "wxTopLevelWindow::SetTitle",
+      "lisp": [
+        "(setf frame-title)"
+      ],
+      "native": [
+        "wxl_set_title"
+      ],
+      "scope": "Canonical SETF writer. Copied UTF-8 title for wxFrame only, returning the supplied Lisp string; other top-level window receivers remain open."
     }
   ],
   "classes": {
@@ -685,7 +741,19 @@
         "wxl_enable",
         "wxl_enabled"
       ],
-      "scope": "Visibility and effective enabled state, layout, geometry and destruction are exposed; the remaining wxWindow API stays open."
+      "scope": "Logical names, visibility and effective enabled state, layout, geometry and destruction are exposed; the remaining wxWindow API stays open."
+    },
+    "wxTopLevelWindow": {
+      "status": "~",
+      "lisp": [
+        "frame-title",
+        "(setf frame-title)"
+      ],
+      "native": [
+        "wxl_title",
+        "wxl_set_title"
+      ],
+      "scope": "Canonical SETF writer. Title get/set is exposed for wxFrame only; other top-level types and the remaining top-level API stay open."
     }
   }
 }

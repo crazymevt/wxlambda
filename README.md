@@ -14,6 +14,12 @@ First-release lifecycle limits: **one GUI session per process**. Closing a windo
 does not release its registered Lisp handlers; unbind them before destruction,
 or they remain rooted until session cleanup. Restart Lisp for a new GUI session.
 
+The [CLOS widget API](docs/CLOS-API.md) provides direct native-backed
+`make-instance` construction, subclass initargs/defaults/hooks and eight generic
+`setf` accessors. The `make-*` conveniences forward to `make-instance` with
+`:class` support. The ground-up API has 34 named generic widget operations plus
+eight generic property writers. Native C++ virtual callbacks remain separate work.
+
 ## Documentation and examples
 
 The [Cadre docset](docs/DOCSET.md) includes the public API reference, project
@@ -25,6 +31,10 @@ checkout is a build-tool dependency, separate from the GUI runtime. Read
 `shown-p`, `enable-window` and `enabled-p` query/control visibility and input.
 The runnable [window-state example](examples/window-state.lisp) demonstrates
 these operations through button callbacks.
+The next slice adds [window names and frame titles](docs/WINDOW-METADATA.md):
+`window-name` and `frame-title` with their generic `setf` writers, with a
+[metadata callback example](examples/window-metadata.lisp) and copied Unicode
+string results.
 
 ## Build
 
@@ -55,7 +65,7 @@ application with `(wxlambda:load-native-library #P"C:/path/to/wxlambda.dll")`.
 Dependent wxWidgets DLLs must also be discoverable by the OS loader.
 
 The bridge normally loads from `build/`, then falls back to the system library
-search path. The Lisp/native ABI version (currently 8) is checked on load; rebuild
+search path. The Lisp/native ABI version (currently 9) is checked on load; rebuild
 the bridge after updating the bindings. Installing the bridge with CMake does not
 install the ASDF system.
 
@@ -90,22 +100,22 @@ The basic API is:
     (wxlambda:add-child panel text)
     (wxlambda:add-child panel button)
     (wxlambda:on-click button
-      (lambda () (wxlambda:set-text text "Hello from Lisp!")))
+      (lambda () (setf (wxlambda:text text) "Hello from Lisp!")))
     (wxlambda:show-window frame)
     (wxlambda:run)))
 ```
 
 ## Labels and checkboxes
 
-`make-label` creates non-editable static text. `get-label` returns an independent
-Lisp string and `set-label` updates it. These accessors take a label created by
+`make-label` creates non-editable static text. `label-text` returns an independent
+Lisp string and `(setf label-text)` updates it. These accessors take a label created by
 `make-label`; raw strings use wxWidgets' label/mnemonic syntax. After changing a
 label's preferred size, call `layout-window` on its parent to reflow the layout.
 
 `make-checkbox` creates a two-state checkbox, unchecked by default. `checked-p`
-returns `t` or `nil`. The `:checked` constructor keyword and `set-checked` accept
+returns `t` or `nil`. The `:checked` constructor keyword and `(setf checked-p)` accept
 generalized booleans: `nil` means unchecked, any other value means checked.
-`set-checked` returns the requested state normalized to `t` or `nil`; a handler
+`(setf checked-p)` returns the supplied value; the predicate reads it normalized to `t` or `nil`; a handler
 may change the live state again before the setter returns.
 
 ```lisp
@@ -115,17 +125,16 @@ may change the live state again before the setter returns.
   (wxlambda:add-child panel box :expand nil)
   (wxlambda:on-toggle box
     (lambda (event)
-      (wxlambda:set-label caption
-        (if (wxlambda:event-checked-p event) "Greeting enabled" "Greeting disabled"))
+      (setf (wxlambda:label-text caption) (if (wxlambda:event-checked-p event) "Greeting enabled" "Greeting disabled"))
       (wxlambda:layout-window panel)))
-  (wxlambda:set-checked box nil)            ; silent
-  (wxlambda:set-checked box t :notify t)    ; synchronous toggle event
+  (setf (wxlambda:checked-p box) nil)            ; silent
+  (setf (wxlambda:checked-p box :notify t) t)    ; synchronous toggle event
   (wxlambda:off-toggle box))
 ```
 
 `on-toggle` takes a function accepting one event, with kind `:toggle`, the original
 checkbox as its source, and a boolean `event-checked-p` snapshot. Native user
-interaction emits events. `set-checked` is silent by default; `:notify t` emits one
+interaction emits events. `(setf checked-p)` is silent by default; `:notify t` emits one
 synchronous event, including when the value is unchanged. The snapshot survives
 nested changes to the control and later window destruction. Replacing a handler
 releases its registered closure; `off-toggle` releases it and is idempotent for a
@@ -147,11 +156,11 @@ load that file and evaluate `(wxlambda-form:start-live)` from a terminal REPL:
 (load "examples/form-app.lisp")
 (wxlambda-form:start-live)
 ;; Evaluate these inside the application REPL:
-(wxlambda:set-text wxlambda-form:*name* "Ada λ" :notify t)
-(wxlambda:set-selection wxlambda-form:*style* 1 :notify t)
+(setf (wxlambda:text wxlambda-form:*name* :notify t) "Ada λ")
+(setf (wxlambda:selection wxlambda-form:*style* :notify t) 1)
 (wxlambda:queue-click wxlambda-form:*submit*)
 (wxlambda-form:set-submit-action
-  (lambda () (wxlambda:set-label wxlambda-form:*status* "Custom submit")))
+  (lambda () (setf (wxlambda:label-text wxlambda-form:*status*) "Custom submit")))
 (wxlambda:queue-click wxlambda-form:*submit*)
 (wxlambda-form:set-submit-action) ; restore the named SUBMIT-FORM action
 (wxlambda-form:close-window)      ; unbind every handler before destruction
@@ -232,8 +241,8 @@ Opt into an event argument with `:with-event t`:
   (lambda (event)
     (format t "New text: ~A~%" (wxlambda:event-text event))))
 
-(wxlambda:set-text text "Silent update")
-(wxlambda:set-text text "Notify the handler" :notify t)
+(setf (wxlambda:text text) "Silent update")
+(setf (wxlambda:text text :notify t) "Notify the handler")
 (wxlambda:off-text-change text)
 ```
 
@@ -247,7 +256,7 @@ Opt into an event argument with `:with-event t`:
 | `event-checked-p` | `nil` | `nil` | Copied `t` or `nil` state |
 
 Text-change handlers always take one event argument. Typing into the native text
-field emits events. `set-text` stays silent by default to avoid update loops;
+field emits events. `(setf text)` stays silent by default to avoid update loops;
 `:notify t` uses wxWidgets' notifying setter and may call the handler immediately,
 before the setter returns. Handlers can therefore run before `run` starts.
 
@@ -269,8 +278,8 @@ live control of the correct type and may be called inside the handler itself.
   (wxlambda:on-selection choice
     (lambda (event)
       (format t "Selected index: ~S~%" (wxlambda:event-selection event))))
-  (wxlambda:set-selection choice 2)           ; silent
-  (wxlambda:set-selection choice 0 :notify t) ; synchronous notification
+  (setf (wxlambda:selection choice) 2)           ; silent
+  (setf (wxlambda:selection choice :notify t) 0) ; synchronous notification
   (wxlambda:selection choice))               ; => 0
 ```
 
@@ -280,10 +289,10 @@ selection and is the default, including for a nonempty list. Empty lists are
 supported. An out-of-range index signals an error without changing the selection.
 The dropdown participates in layouts and parent ownership like other controls.
 
-User selection and `set-selection` with `:notify t` deliver one `:selection`
+User selection and `(setf selection)` with `:notify t` deliver one `:selection`
 event. `event-selection` is an immutable index snapshot (or `nil`), independent
 of later selection changes. Other event kinds have a `nil` selection slot.
-`set-selection` returns the requested index even if a handler changes it again;
+`(setf selection)` returns the requested index even if a handler changes it again;
 explicit notification also fires for an unchanged index. Handler errors are
 re-signaled at the setter boundary. `on-selection` replaces the previous handler;
 `off-selection` releases it and is idempotent for a live choice, including inside
@@ -318,8 +327,8 @@ its callback. As with other strings, embedded NUL characters are unsupported.
   body trigger cleanup. Do not use `throw`, `return-from`, or other nonlocal exits
   across a callback's foreign boundary. Handle expected conditions inside the
   handler or around the notifying setter.
-- `get-text` returns an independent Lisp string containing the current text;
-  `set-text` updates it. Both use UTF-8. The native `wxl_get_text` buffer is borrowed
+- `text` returns an independent Lisp string containing the current text;
+  `(setf text)` updates it. Both use UTF-8. The native `wxl_get_text` buffer is borrowed
   until the next getter call on that thread and is copied immediately by Lisp.
   A null pointer reports failure; an empty string is a successful empty value.
   Strings containing embedded NUL characters are not supported by this interface.
@@ -340,7 +349,7 @@ cooperative REPL (do not call `run` in the setup body):
   (wxlambda:show-window *frame*))
 ```
 
-Then evaluate `(wxlambda:set-text *text* "Updated live")`, redefine functions
+Then evaluate `(setf (wxlambda:text *text*) "Updated live")`, redefine functions
 used by callbacks, or replace handlers without closing the application. Evaluate
 `(wxlambda:stop)` or send EOF to leave and clean up. Closing the last window
 keeps this REPL available so you can create another frame in the same session.
@@ -379,9 +388,9 @@ For a complete live-development example, load `examples/live.lisp` and call
 `(wxlambda-live:start)` from a terminal REPL. While it runs, try:
 
 ```lisp
-(wxlambda:set-text wxlambda-live:*text* "Changed live")
+(setf (wxlambda:text wxlambda-live:*text*) "Changed live")
 (defun wxlambda-live:clicked ()
-  (wxlambda:set-text wxlambda-live:*text* "New callback implementation"))
+  (setf (wxlambda:text wxlambda-live:*text*) "New callback implementation"))
 (wxlambda:queue-click wxlambda-live:*button*)
 (wxlambda-live:close-window) ; explicitly unbinds before destroying the frame
 (wxlambda-live:open-window)  ; another frame, within the same session
@@ -498,9 +507,13 @@ platform checks. Release preparation remains open.
 
 These tests briefly open real windows, queue a button event, then exit. They need
 an interactive graphical session (or a suitable display server on Linux).
-The 24 scenarios each run in a fresh process with a 30-second timeout:
+The 26 scenarios each run in a fresh process with a 30-second timeout:
 The window-state scenario exercises the documented example, native changed-state
-results, ancestor semantics and stale/inactive handles.
+results, ancestor semantics and stale/inactive handles. The window-metadata
+scenario exercises its callback example, Unicode/empty/NUL names, copied-string
+lifetime, title receiver checks and invalid/stale/inactive use. The CLOS scenario
+checks public classes, generic dispatch, method combination and callback identity
+across Lisp subclass changes.
 
 ```sh
 python3 tests/run.py
@@ -519,7 +532,7 @@ WXLAMBDA_TEST_REPORT=test-results python3 tests/run.py sbcl --noinform \
 The runner records per-process logs and `summary.json` with the source commit,
 working-tree status, command, platform, scenario results, durations, and exit
 codes. It preserves partial timeout output, stops at the first failure, and
-returns a failing exit code. Preflight is separate from the 24 GUI scenarios;
+returns a failing exit code. Preflight is separate from the 26 GUI scenarios;
 a load failure cannot count as GUI coverage. An existing report directory is
 rejected to avoid mixing old and new evidence. Reporter checks can be run with
 `python3 -m unittest discover -s tests -p test_runner.py`.
@@ -574,7 +587,7 @@ Locally tested and intended combinations are distinct:
 
 | Platform | Lisp | Validation |
 | --- | --- | --- |
-| Apple Silicon macOS, wxWidgets 3.2.12 | SBCL 2.6.9, CCL 1.13 | Local preflight and 24-scenario GUI suites; dependency cache switching verified separately |
+| Apple Silicon macOS, wxWidgets 3.2.12 | SBCL 2.6.9, CCL 1.13 | Local preflight and 26-scenario GUI suites; dependency cache switching verified separately |
 | Linux | SBCL | Intended; hosted job configured, no hosted results recorded |
 | macOS hosted runner | SBCL | Intended; hosted job configured, no hosted results recorded |
 | Windows x64 | SBCL 2.6.9 intended, not validated | Native build, preflight, and GUI suite configured; no runtime results |
@@ -586,9 +599,9 @@ The configured jobs are:
 
 | Runner | Native build | Lisp GUI tests |
 | --- | --- | --- |
-| Ubuntu 24.04 | Distribution wxWidgets 3.2, GCC | SBCL, 24 scenarios under Xvfb |
-| macOS 15 | Homebrew wxWidgets 3.2, Clang | SBCL, 24 scenarios |
-| Windows Server 2022 x64 | wxWidgets 3.2.12 from source, MSVC | Pinned SBCL 2.6.9, preflight and 24 scenarios; unexecuted |
+| Ubuntu 24.04 | Distribution wxWidgets 3.2, GCC | SBCL, 26 scenarios under Xvfb |
+| macOS 15 | Homebrew wxWidgets 3.2, Clang | SBCL, 26 scenarios |
+| Windows Server 2022 x64 | wxWidgets 3.2.12 from source, MSVC | Pinned SBCL 2.6.9, preflight and 26 scenarios; unexecuted |
 
 These are configured checks, not a claim that hosted jobs have passed. No hosted
 results have been recorded. This checkout currently has no Git remote, so a
@@ -649,7 +662,7 @@ then Quicklisp, then pinned dependencies again in fresh processes. It checks
 CFFI source locations and the compiled output destination as well as actual
 native callback dispatch. Quicklisp must already be installed; set
 `QUICKLISP_SETUP` if its setup file is not `~/quicklisp/setup.lisp`.
-These three-process regressions are separate from the 24-scenario GUI suite
+These three-process regressions are separate from the 26-scenario GUI suite
 and are local checks, not configured hosted jobs.
 
 The fetcher verifies existing checkouts and refuses modified or mismatched ones.

@@ -2213,8 +2213,7 @@ class or constructor does not imply full upstream coverage.
 - [ ] [L19](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L19) `#define wxPREVIEW_FIRST       16`
 - [ ] [L20](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L20) `#define wxPREVIEW_LAST        32`
 - [ ] [L21](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L21) `#define wxPREVIEW_GOTO        64`
-- [ ] [L23](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L23) `#define wxPREVIEW_DEFAULT  (wxPREVIEW_PREVIOUS|wxPREVIEW_NEXT|wxPREVIEW_ZOOM\`
-- [ ] [L24](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L24) `|wxPREVIEW_FIRST|wxPREVIEW_GOTO|wxPREVIEW_LAST)`
+- [ ] [L23](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L23) `#define wxPREVIEW_DEFAULT  (wxPREVIEW_PREVIOUS|wxPREVIEW_NEXT|wxPREVIEW_ZOOM\ |wxPREVIEW_FIRST|wxPREVIEW_GOTO|wxPREVIEW_LAST)`
 - [ ] [L27](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L27) `#define wxID_PREVIEW_CLOSE      1`
 - [ ] [L28](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L28) `#define wxID_PREVIEW_NEXT       2`
 - [ ] [L29](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L29) `#define wxID_PREVIEW_PREVIOUS   3`
@@ -2225,7 +2224,93 @@ class or constructor does not imply full upstream coverage.
 - [ ] [L34](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L34) `#define wxID_PREVIEW_GOTO       8`
 - [ ] [L35](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L35) `#define wxID_PREVIEW_ZOOM_IN    9`
 - [ ] [L36](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L36) `#define wxID_PREVIEW_ZOOM_OUT   10`
-- [ ] [L53](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L53) `class wxPreviewControlBar : public wxPanel { wxPreviewControlBar(wxPrintPreview* preview, long buttons, wxWindow* parent, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = 0, const wxString& name = "panel"); virtual ~wxPreviewControlBar(); virtual void CreateButtons(); virtual wxPrintPreviewBase* GetPrintPreview() const; virtual int GetZoomControl(); virtual void SetZoomControl(int percent); }; class wxPreviewCanvas : public wxScrolledWindow { wxPreviewCanvas(wxPrintPreview* preview, wxWindow* parent, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = 0, const wxString& name = "canvas"); virtual ~wxPreviewCanvas(); void OnPaint(wxPaintEvent& event); }; enum wxPreviewFrameModalityKind { wxPreviewFrame_AppModal, wxPreviewFrame_WindowModal, wxPreviewFrame_NonModal }; class wxPreviewFrame : public wxFrame { wxPreviewFrame(wxPrintPreviewBase* preview, wxWindow* parent, const wxString& title = "Print Preview", const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_FRAME_STYLE, const wxString& name = wxFrameNameStr); virtual ~wxPreviewFrame(); virtual void CreateCanvas(); virtual void CreateControlBar(); virtual void Initialize(); void InitializeWithModality(wxPreviewFrameModalityKind kind); void OnCloseWindow(wxCloseEvent& event); }; class wxPrintPreview : public wxObject { wxPrintPreview(wxPrintout* printout, wxPrintout* printoutForPrinting = NULL, wxPrintDialogData* data = NULL); wxPrintPreview(wxPrintout* printout, wxPrintout* printoutForPrinting, wxPrintData* data); ~wxPrintPreview(); virtual wxPreviewCanvas* GetCanvas() const; virtual int GetCurrentPage() const; virtual wxFrame* GetFrame() const; virtual int GetMaxPage() const; virtual int GetMinPage() const; virtual wxPrintout* GetPrintout() const; virtual wxPrintout* GetPrintoutForPrinting() const; virtual int GetZoom() const; virtual bool IsOk() const; virtual bool PaintPage(wxPreviewCanvas* canvas, wxDC& dc); virtual bool Print(bool prompt); virtual bool RenderPage(int pageNum); virtual void SetCanvas(wxPreviewCanvas* window); virtual bool SetCurrentPage(int pageNum); virtual void SetFrame(wxFrame* frame); virtual void SetPrintout(wxPrintout* printout); virtual void SetZoom(int percent); }; class wxPrinter : public wxObject { wxPrinter(wxPrintDialogData* data = NULL); virtual wxPrintAbortDialog* CreateAbortWindow(wxWindow* parent, wxPrintout* printout); bool GetAbort() const; static wxPrinterError GetLastError(); virtual wxPrintDialogData& GetPrintDialogData() const; virtual bool Print(wxWindow* parent, wxPrintout* printout, bool prompt = true); virtual wxDC* PrintDialog(wxWindow* parent); virtual void ReportError(wxWindow* parent, wxPrintout* printout, const wxString& message); virtual bool Setup(wxWindow* parent); }; class wxPrintout : public wxObject { wxPrintout(const wxString& title = "Printout"); virtual ~wxPrintout(); void FitThisSizeToPage(const wxSize& imageSize); void FitThisSizeToPageMargins(const wxSize& imageSize, const wxPageSetupDialogData& pageSetupData); void FitThisSizeToPaper(const wxSize& imageSize); wxDC* GetDC() const; wxRect GetLogicalPageMarginsRect(const wxPageSetupDialogData& pageSetupData) const; wxRect GetLogicalPageRect() const; wxRect GetLogicalPaperRect() const; void GetPPIPrinter(int* w, int* h) const; void GetPPIScreen(int* w, int* h) const; virtual void GetPageInfo(int* minPage, int* maxPage, int* pageFrom, int* pageTo); void GetPageSizeMM(int* w, int* h) const; void GetPageSizePixels(int* w, int* h) const; wxRect GetPaperRectPixels() const; virtual wxString GetTitle() const; virtual bool HasPage(int pageNum); virtual bool IsPreview() const; wxPrintPreview *GetPreview() const; void MapScreenSizeToDevice(); void MapScreenSizeToPage(); void MapScreenSizeToPageMargins(const wxPageSetupDialogData& pageSetupData); void MapScreenSizeToPaper(); void OffsetLogicalOrigin(wxCoord xoff, wxCoord yoff); virtual bool OnBeginDocument(int startPage, int endPage); virtual void OnBeginPrinting(); virtual void OnEndDocument(); virtual void OnEndPrinting(); virtual void OnPreparePrinting(); virtual bool OnPrintPage(int pageNum) = 0; void SetLogicalOrigin(wxCoord x, wxCoord y); }; class wxPrintAbortDialog: public wxDialog { wxPrintAbortDialog(wxWindow *parent, const wxString& documentTitle, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE, const wxString& name = "dialog"); void SetProgress(int currentPage, int totalPages, int currentCopy, int totalCopies); };`
+- [ ] [L53](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L53) `class wxPreviewControlBar : public wxPanel {`
+- [ ] [L77](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L77) `wxPreviewControlBar(wxPrintPreview* preview, long buttons, wxWindow* parent, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = 0, const wxString& name = "panel");`
+- [ ] [L88](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L88) `virtual ~wxPreviewControlBar();`
+- [ ] [L95](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L95) `virtual void CreateButtons();`
+- [ ] [L100](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L100) `virtual wxPrintPreviewBase* GetPrintPreview() const;`
+- [ ] [L105](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L105) `virtual int GetZoomControl();`
+- [ ] [L110](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L110) `virtual void SetZoomControl(int percent);`
+- [ ] [L127](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L127) `class wxPreviewCanvas : public wxScrolledWindow {`
+- [ ] [L133](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L133) `wxPreviewCanvas(wxPrintPreview* preview, wxWindow* parent, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = 0, const wxString& name = "canvas");`
+- [ ] [L142](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L142) `virtual ~wxPreviewCanvas();`
+- [ ] [L147](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L147) `void OnPaint(wxPaintEvent& event);`
+- [ ] [L158](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L158) `enum wxPreviewFrameModalityKind {`
+- [ ] [L165](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L165) `wxPreviewFrame_AppModal, wxPreviewFrame_WindowModal, wxPreviewFrame_NonModal }`
+- [ ] [L190](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L190) `class wxPreviewFrame : public wxFrame {`
+- [ ] [L202](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L202) `wxPreviewFrame(wxPrintPreviewBase* preview, wxWindow* parent, const wxString& title = "Print Preview", const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_FRAME_STYLE, const wxString& name = wxFrameNameStr);`
+- [ ] [L212](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L212) `virtual ~wxPreviewFrame();`
+- [ ] [L220](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L220) `virtual void CreateCanvas();`
+- [ ] [L228](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L228) `virtual void CreateControlBar();`
+- [ ] [L241](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L241) `virtual void Initialize();`
+- [ ] [L268](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L268) `void InitializeWithModality(wxPreviewFrameModalityKind kind);`
+- [ ] [L275](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L275) `void OnCloseWindow(wxCloseEvent& event);`
+- [ ] [L304](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L304) `class wxPrintPreview : public wxObject {`
+- [ ] [L324](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L324) `wxPrintPreview(wxPrintout* printout, wxPrintout* printoutForPrinting = NULL, wxPrintDialogData* data = NULL);`
+- [ ] [L327](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L327) `wxPrintPreview(wxPrintout* printout, wxPrintout* printoutForPrinting, wxPrintData* data);`
+- [ ] [L337](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L337) `~wxPrintPreview();`
+- [ ] [L342](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L342) `virtual wxPreviewCanvas* GetCanvas() const;`
+- [ ] [L347](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L347) `virtual int GetCurrentPage() const;`
+- [ ] [L353](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L353) `virtual wxFrame* GetFrame() const;`
+- [ ] [L358](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L358) `virtual int GetMaxPage() const;`
+- [ ] [L363](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L363) `virtual int GetMinPage() const;`
+- [ ] [L368](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L368) `virtual wxPrintout* GetPrintout() const;`
+- [ ] [L375](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L375) `virtual wxPrintout* GetPrintoutForPrinting() const;`
+- [ ] [L382](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L382) `virtual int GetZoom() const;`
+- [ ] [L390](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L390) `virtual bool IsOk() const;`
+- [ ] [L399](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L399) `virtual bool PaintPage(wxPreviewCanvas* canvas, wxDC& dc);`
+- [ ] [L410](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L410) `virtual bool Print(bool prompt);`
+- [ ] [L415](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L415) `virtual bool RenderPage(int pageNum);`
+- [ ] [L420](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L420) `virtual void SetCanvas(wxPreviewCanvas* window);`
+- [ ] [L425](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L425) `virtual bool SetCurrentPage(int pageNum);`
+- [ ] [L431](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L431) `virtual void SetFrame(wxFrame* frame);`
+- [ ] [L436](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L436) `virtual void SetPrintout(wxPrintout* printout);`
+- [ ] [L443](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L443) `virtual void SetZoom(int percent);`
+- [ ] [L463](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L463) `class wxPrinter : public wxObject {`
+- [ ] [L474](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L474) `wxPrinter(wxPrintDialogData* data = NULL);`
+- [ ] [L479](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L479) `virtual wxPrintAbortDialog* CreateAbortWindow(wxWindow* parent, wxPrintout* printout);`
+- [ ] [L484](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L484) `bool GetAbort() const;`
+- [ ] [L500](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L500) `static wxPrinterError GetLastError();`
+- [ ] [L506](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L506) `virtual wxPrintDialogData& GetPrintDialogData() const;`
+- [ ] [L517](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L517) `virtual bool Print(wxWindow* parent, wxPrintout* printout, bool prompt = true);`
+- [ ] [L530](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L530) `virtual wxDC* PrintDialog(wxWindow* parent);`
+- [ ] [L535](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L535) `virtual void ReportError(wxWindow* parent, wxPrintout* printout, const wxString& message);`
+- [ ] [L545](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L545) `virtual bool Setup(wxWindow* parent);`
+- [ ] [L582](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L582) `class wxPrintout : public wxObject {`
+- [ ] [L591](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L591) `wxPrintout(const wxString& title = "Printout");`
+- [ ] [L596](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L596) `virtual ~wxPrintout();`
+- [ ] [L609](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L609) `void FitThisSizeToPage(const wxSize& imageSize);`
+- [ ] [L624](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L624) `void FitThisSizeToPageMargins(const wxSize& imageSize, const wxPageSetupDialogData& pageSetupData);`
+- [ ] [L639](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L639) `void FitThisSizeToPaper(const wxSize& imageSize);`
+- [ ] [L650](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L650) `wxDC* GetDC() const;`
+- [ ] [L660](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L660) `wxRect GetLogicalPageMarginsRect(const wxPageSetupDialogData& pageSetupData) const;`
+- [ ] [L670](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L670) `wxRect GetLogicalPageRect() const;`
+- [ ] [L676](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L676) `wxRect GetLogicalPaperRect() const;`
+- [ ] [L694](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L694) `void GetPPIPrinter(int* w, int* h) const;`
+- [ ] [L710](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L710) `void GetPPIScreen(int* w, int* h) const;`
+- [ ] [L723](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L723) `virtual void GetPageInfo(int* minPage, int* maxPage, int* pageFrom, int* pageTo);`
+- [ ] [L734](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L734) `void GetPageSizeMM(int* w, int* h) const;`
+- [ ] [L746](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L746) `void GetPageSizePixels(int* w, int* h) const;`
+- [ ] [L767](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L767) `wxRect GetPaperRectPixels() const;`
+- [ ] [L774](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L774) `virtual wxString GetTitle() const;`
+- [ ] [L783](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L783) `virtual bool HasPage(int pageNum);`
+- [ ] [L790](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L790) `virtual bool IsPreview() const;`
+- [ ] [L805](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L805) `wxPrintPreview *GetPreview() const;`
+- [ ] [L823](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L823) `void MapScreenSizeToDevice();`
+- [ ] [L830](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L830) `void MapScreenSizeToPage();`
+- [ ] [L837](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L837) `void MapScreenSizeToPageMargins(const wxPageSetupDialogData& pageSetupData);`
+- [ ] [L851](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L851) `void MapScreenSizeToPaper();`
+- [ ] [L856](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L856) `void OffsetLogicalOrigin(wxCoord xoff, wxCoord yoff);`
+- [ ] [L868](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L868) `virtual bool OnBeginDocument(int startPage, int endPage);`
+- [ ] [L876](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L876) `virtual void OnBeginPrinting();`
+- [ ] [L887](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L887) `virtual void OnEndDocument();`
+- [ ] [L895](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L895) `virtual void OnEndPrinting();`
+- [ ] [L904](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L904) `virtual void OnPreparePrinting();`
+- [ ] [L910](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L910) `virtual bool OnPrintPage(int pageNum) = 0;`
+- [ ] [L916](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L916) `void SetLogicalOrigin(wxCoord x, wxCoord y);`
+- [ ] [L926](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L926) `class wxPrintAbortDialog: public wxDialog {`
+- [ ] [L929](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L929) `wxPrintAbortDialog(wxWindow *parent, const wxString& documentTitle, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE, const wxString& name = "dialog");`
+- [ ] [L936](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L936) `void SetProgress(int currentPage, int totalPages, int currentCopy, int totalCopies);`
 
 ## `wx/printdlg.h`
 
