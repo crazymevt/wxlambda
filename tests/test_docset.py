@@ -15,6 +15,18 @@ spec.loader.exec_module(tool)
 
 
 class DocsetChecks(unittest.TestCase):
+    def test_guide_and_example_names_do_not_shadow_public_symbols(self):
+        _, entries = tool.content()
+        public = {name.casefold() for name in tool.exports()}
+        for entry in entries:
+            record = dict(zip(entry[::2], entry[1::2]))
+            if record.get(':package') == 'WXLAMBDA':
+                continue
+            self.assertTrue(public.isdisjoint(name.casefold() for name in record[':names']))
+        text = tool.sexp(entries)
+        self.assertIn('"guide/docs/GAUGE.md"', text)
+        self.assertIn('"example/examples/gauge.lisp"', text)
+
     def test_reader_content_excludes_agent_instructions_and_local_paths(self):
         self.assertTrue({'AGENTS.md', 'CLAUDE.md'}.isdisjoint(p.name for p in tool.sources()))
         manifest, entries = tool.content()

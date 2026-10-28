@@ -357,7 +357,7 @@ Forward declarations are represented in the per-header declaration inventories.
 - [ ] `wxFontPickerCtrl` — [`wx/fontpicker.h`](phase-c2.md), upstream line 58.
 - [ ] `wxFontPickerEvent` — [`wx/fontpicker.h`](phase-c2.md), upstream line 191.
 - [~] `wxFrame` — [`wx/frame.h`](phase-c2.md), upstream line 163. — **Partial**: `make-frame`; ABI: `wxl_frame`. Title, width and height; parent is NULL, ID is wxID_ANY, remaining options use defaults. Full class and inherited API coverage remain open.
-- [ ] `wxGauge` — [`wx/gauge.h`](phase-c2.md), upstream line 69.
+- [~] `wxGauge` — [`wx/gauge.h`](phase-c2.md), upstream line 69. — **Partial**: `gauge`, `make-gauge`, `gauge-value`, `gauge-range`, `gauge-vertical-p`, `pulse-gauge`; ABI: `wxl_gauge`, `wxl_gauge_value`, `wxl_gauge_range`, `wxl_set_gauge_value`, `wxl_set_gauge_range`, `wxl_gauge_vertical`, `wxl_gauge_pulse`. Parent-owned progress gauge: positive range, value, horizontal/vertical orientation and pulsing. Constructor options, two-step creation and full inherited API remain open. Native ABI 10; see docs/GAUGE.md and tests/gauge.lisp.
 - [ ] `wxGBPosition` — [`wx/gbsizer.h`](phase-c2.md), upstream line 17.
 - [ ] `wxGridBagSizer` — [`wx/gbsizer.h`](phase-c2.md), upstream line 73.
 - [ ] `wxGBSizerItem` — [`wx/gbsizer.h`](phase-c2.md), upstream line 234.

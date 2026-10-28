@@ -46,7 +46,7 @@ feature detection and clear unavailable-feature errors.
 - In generated checklists, `[x]` means the declaration's operation is implemented
   with its stated Lisp mapping, `[~]` means partial support with the supported
   arguments/receivers and remaining limits stated inline, and `[ ]` means pending.
-  The class index uses `[~]` for the seven bound widgets, `wxBoxSizer`,
+  The class index uses `[~]` for the eight bound widgets, `wxBoxSizer`,
   `wxWindow` and `wxTopLevelWindow`; none has complete class coverage.
   Constructors with fixed IDs/styles remain partial.
 - [status.json](coverage/status.json) is the persistent source of declaration and
@@ -71,7 +71,7 @@ feature detection and clear unavailable-feature errors.
 
 ## Already implemented: bounded baseline
 
-All entries here are checked only for the behavior stated. None of the seven
+All entries here are checked only for the behavior stated. None of the eight
 widget classes has complete wxWidgets coverage yet.
 
 ### C1: Application and bridge
@@ -99,6 +99,9 @@ widget classes has complete wxWidgets coverage yet.
 - [x] Text value get/set: `text`, `(setf text)`; silent `ChangeValue` versus
   notifying `SetValue` for `wxTextCtrl`.
 - [x] Checkbox boolean get/set: `checked-p`, `(setf checked-p)`, optional notification.
+- [x] Progress gauges: native-backed `gauge` construction, `make-gauge`,
+  `gauge-value`, `gauge-range`, `gauge-vertical-p` and `pulse-gauge`.
+  Both numeric properties have generic SETF writers; range reductions clamp progress.
 - [x] Choice index get/set: `selection`, `(setf selection)`, optional notification;
   Lisp NIL means no selection. Item mutation and three-state checkboxes remain open.
 - [x] Parent-owned horizontal/vertical `wxBoxSizer`: `make-row`, `make-column`.
@@ -125,8 +128,8 @@ widget classes has complete wxWidgets coverage yet.
 No APIs in C3–C7 currently have public bindings. Using wxWidgets types internally
 for conversions or implementation is not public API coverage.
 
-The widget-facing Lisp API has eight public CLOS wrapper classes, direct native
-construction, 34 named generic functions and eight SETF generic functions; see [CLOS API](CLOS-API.md). This establishes Lisp dispatch
+The widget-facing Lisp API has nine public CLOS wrapper classes, direct native
+construction, 39 named generic functions and ten SETF generic functions; see [CLOS API](CLOS-API.md). This establishes Lisp dispatch
 and method combination, not native C++ subclass/virtual-callback coverage.
 
 ## Coverage implementation phases
@@ -158,12 +161,15 @@ entire dependent phase complete.
 
 [Full C2 declaration checklist](coverage/phase-c2.md)
 
-- [ ] Finish existing seven widget classes, all constructor options and inherited APIs.
+- [ ] Finish existing eight widget classes, all constructor options and inherited APIs.
 - [ ] Complete window/top-level/control bases: parenting, IDs, focus, capture,
   enable/show/hide, sizing/positioning, scrolling, styles, colours/fonts, DPI,
   tooltips, accessibility hooks and lifecycle notifications.
+- [x] Add bounded wxGauge construction, range/value properties, orientation query
+  and indeterminate pulsing; see [the gauge guide](GAUGE.md). Advanced gauge
+  constructor options and inherited interfaces remain open.
 - [ ] Bind every remaining C2 widget in the class index: bitmap/command-link/toggle
-  buttons, radio controls, combos, list/checklist boxes, sliders, gauges, spin
+  buttons, radio controls, combos, list/checklist boxes, sliders, spin
   controls, pickers, date/time/calendar, search, static controls and other controls.
 - [ ] Complete all sizer families/items/flags, nested layouts, splitters,
   scrolled/virtual windows, validators, keyboard/mouse and control-specific events.

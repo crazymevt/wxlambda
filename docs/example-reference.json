@@ -26,5 +26,9 @@
   "window-metadata.lisp": {
     "description": "Direct MAKE-INSTANCE construction of a FRAME subclass. A generic SETF AFTER method counts title changes while a button callback updates the logical name and Unicode title; the exercise verifies state, method dispatch and cleanup.",
     "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/window-metadata.lisp --eval '(wxlambda-window-metadata:start)'"
+  },
+  "gauge.lisp": {
+    "description": "A GAUGE subclass with default initargs and a custom step slot; buttons advance determinate progress or request indeterminate pulsing. The exercise runs both callbacks and cleans up.",
+    "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/gauge.lisp --eval '(wxlambda-gauge:start)'"
   }
 }

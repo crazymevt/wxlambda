@@ -5,7 +5,7 @@ versioned C ABI. This is an application lifecycle prototype, not a complete
 wxWidgets binding.
 
 Implemented: application startup/shutdown, frames, panels, buttons, editable text,
-static labels, two-state checkboxes, dropdown choices, row/column layouts, spacers, text/state access,
+static labels, two-state checkboxes, dropdown choices, progress gauges, row/column layouts, spacers, text/state access,
 removable click/text/toggle/selection handlers, copied event payloads, queued clicks,
 and window visibility/input state.
 Lisp objects wrap checked integer handles; native pointers never escape the bridge.
@@ -15,10 +15,14 @@ does not release its registered Lisp handlers; unbind them before destruction,
 or they remain rooted until session cleanup. Restart Lisp for a new GUI session.
 
 The [CLOS widget API](docs/CLOS-API.md) provides direct native-backed
-`make-instance` construction, subclass initargs/defaults/hooks and eight generic
+`make-instance` construction, subclass initargs/defaults/hooks and ten generic
 `setf` accessors. The `make-*` conveniences forward to `make-instance` with
-`:class` support. The ground-up API has 34 named generic widget operations plus
-eight generic property writers. Native C++ virtual callbacks remain separate work.
+`:class` support. The ground-up API has 39 named generic widget operations plus
+ten generic property writers. Native C++ virtual callbacks remain separate work.
+
+Progress controls support range/value properties, orientation and indeterminate
+pulsing; see [the gauge guide](docs/GAUGE.md) and runnable
+[example](examples/gauge.lisp).
 
 ## Documentation and examples
 
@@ -65,7 +69,7 @@ application with `(wxlambda:load-native-library #P"C:/path/to/wxlambda.dll")`.
 Dependent wxWidgets DLLs must also be discoverable by the OS loader.
 
 The bridge normally loads from `build/`, then falls back to the system library
-search path. The Lisp/native ABI version (currently 9) is checked on load; rebuild
+search path. The Lisp/native ABI version (currently 10) is checked on load; rebuild
 the bridge after updating the bindings. Installing the bridge with CMake does not
 install the ASDF system.
 

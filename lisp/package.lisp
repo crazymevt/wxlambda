@@ -10,6 +10,7 @@
            #:text #:on-click #:off-click #:queue-click #:native-error
            #:on-text-change #:off-text-change
            #:make-label #:label-text
+           #:gauge #:make-gauge #:gauge-value #:gauge-range #:gauge-vertical-p #:pulse-gauge
            #:make-checkbox #:checked-p #:on-toggle #:off-toggle
            #:make-choice #:selection #:on-selection #:off-selection
            #:event-selection #:event #:event-p #:event-kind #:event-source #:event-text #:event-checked-p))

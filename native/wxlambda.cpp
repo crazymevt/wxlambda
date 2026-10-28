@@ -2,6 +2,8 @@
 #include <wx/wx.h>
 #include <wx/thread.h>
 #include <wx/choice.h>
+#include <wx/gauge.h>
+#include <algorithm>
 #include <stdexcept>
 #include <string>
 #include <unordered_map>
@@ -112,7 +114,7 @@ wxString utf8(const char* value) {
 }
 }
 extern "C" {
-int wxl_abi_version() { return 9; }
+int wxl_abi_version() { return 10; }
 const char* wxl_last_error() { return error.c_str(); }
 int wxl_start(wxl_callback callback) {
     return status([&] {
@@ -216,6 +218,50 @@ const char* wxl_get_label(wxl_handle id) {
         label_result.assign(bytes.data() ? bytes.data() : "", bytes.length());
     });
     return result == 0 ? label_result.c_str() : nullptr;
+}
+wxl_handle wxl_gauge(wxl_handle parent, int range, int value, int vertical) {
+    return create([&] {
+        require(range > 0, "Gauge range must be positive");
+        require(value >= 0 && value <= range, "Gauge value out of range");
+        require(vertical == 0 || vertical == 1, "Invalid gauge orientation");
+        auto* control = new wxGauge(window(parent), wxID_ANY, range,
+                                   wxDefaultPosition, wxDefaultSize,
+                                   vertical ? wxGA_VERTICAL : wxGA_HORIZONTAL);
+        control->SetValue(value);
+        return track(control);
+    });
+}
+int wxl_gauge_value(wxl_handle id) {
+    int value = 0;
+    const int result = status([&] { value = as<wxGauge>(id)->GetValue(); });
+    return result == 0 ? value : -1;
+}
+int wxl_gauge_range(wxl_handle id) {
+    int range = 0;
+    const int result = status([&] { range = as<wxGauge>(id)->GetRange(); });
+    return result == 0 ? range : -1;
+}
+int wxl_set_gauge_value(wxl_handle id, int value) {
+    return status([&] {
+        auto* control = as<wxGauge>(id);
+        require(value >= 0 && value <= control->GetRange(), "Gauge value out of range");
+        control->SetValue(value);
+    });
+}
+int wxl_set_gauge_range(wxl_handle id, int range) {
+    return status([&] {
+        auto* control = as<wxGauge>(id);
+        require(range > 0, "Gauge range must be positive");
+        const int value = std::min(control->GetValue(), range);
+        control->SetRange(range);
+        control->SetValue(value);
+    });
+}
+int wxl_gauge_vertical(wxl_handle id) {
+    return boolean_result([&] { return as<wxGauge>(id)->IsVertical(); });
+}
+int wxl_gauge_pulse(wxl_handle id) {
+    return status([&] { as<wxGauge>(id)->Pulse(); });
 }
 wxl_handle wxl_checkbox(wxl_handle parent, const char* label, int checked) {
     return create([&] {

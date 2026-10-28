@@ -412,6 +412,52 @@ The Python/inventory checks and both actual-package docset checks pass, includin
 indexed SETF forms under the new names. Hosted platforms and the graphical
 Cadre viewer remain unvalidated.
 
+## Coverage implementation: progress gauges
+
+- [x] Add native-backed `gauge` construction and the thin `make-gauge` factory,
+  including subclass defaults, slot initargs and native access in AFTER hooks.
+- [x] Add generic `gauge-value`/`gauge-range` readers and SETF writers,
+  `gauge-vertical-p` and `pulse-gauge`, with checked native handles and arguments.
+- [x] Add a runnable subclass/callback example, focused GUI scenario, guide,
+  reference entries and persistent declaration/class/style coverage mappings.
+- [x] Prevent guide/example stem aliases from shadowing public symbols in Cadre
+  lookup, with a regression test and stricter build/check lookup assertions.
+
+This bounded C2 slice exposes `wxGauge` progress, positive ranges, horizontal or
+vertical construction and indeterminate pulsing. Range assignment clamps the
+current native value and restores determinate mode. Pulse animation/value
+readings remain platform-dependent. Custom constructor IDs, geometry, validators,
+names and additional styles, two-step creation and the remaining inherited API
+stay open. Native ABI 10 requires rebuilding the bridge with these bindings.
+The API now has 65 exports, nine wrapper classes, 39 named generic functions and
+ten generic SETF writers. The docset contains 81 entries across API, guides and
+eight example sources; installation instructions remain in [DOCSET.md](docs/DOCSET.md).
+
+Local Apple Silicon macOS verification passes native preflight and all 27 GUI
+scenarios on SBCL 2.6.9 and CCL 1.13. Evidence is retained in
+`evidence/gauge/sbcl-20261028.log` and `evidence/gauge/ccl-20261028/`; a focused
+rerun on both Lisps also passes after the final helper refactor. The sandboxed
+initial SBCL gauge process stalled on macOS window-service access and was
+terminated; GUI verification passed with window-service access outside the
+agent sandbox. Reporter/inventory tests initially caught obsolete scenario and
+class counts, which were updated and pass on rerun. Actual-package docset
+validation caught colliding guide/example aliases for GAUGE; the alias fix and
+regression now pass, with zero `docset:check-docset` problems, complete export
+and SETF lookup coverage, links, discovery and indexed guide/example access on
+both Lisps. An isolated install under a temporary docset root passes discovery
+and indexed reading. Python and pinned-upstream inventory regressions pass.
+
+The rebuilt `dist/wxlambda-form-gauge` passes all five packaging isolation,
+relocation, REPL and missing-library checks, with reports in
+`evidence/packaging/gauge-20261028/`. Hosted Linux/Windows GUI execution and the
+graphical Cadre viewer remain unvalidated. This slice does not complete C1 or C2.
+Independent static review found that the example resumed determinate progress
+from platform-dependent pulse readings. The example now stores completed work
+in Lisp and tests pulse-to-advance directly; the revised focused scenario passes
+on both Lisps. The reviewer verified the fix and reported no remaining actionable
+findings. The user has directed that unfinished C1 foundations take priority before further
+C2 widget expansion; finish and review this gauge slice, then return to C1.
+
 ## Decisions
 
 - D1 Target a bounded first release while tracking full wxWidgets coverage in

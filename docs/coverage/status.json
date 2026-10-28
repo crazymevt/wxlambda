@@ -642,6 +642,133 @@
         "wxl_set_title"
       ],
       "scope": "Canonical SETF writer. Copied UTF-8 title for wxFrame only, returning the supplied Lisp string; other top-level window receivers remain open."
+    },
+    {
+      "header": "wx/gauge.h",
+      "line": 101,
+      "declaration": "wxGauge(wxWindow* parent, wxWindowID id, int range, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxGA_HORIZONTAL, const wxValidator& validator = wxDefaultValidator, const wxString& name = wxGaugeNameStr);",
+      "status": "~",
+      "symbol": "wxGauge::wxGauge",
+      "lisp": [
+        "gauge",
+        "make-gauge"
+      ],
+      "native": [
+        "wxl_gauge"
+      ],
+      "scope": "Native-backed CLOS construction with parent, positive range, initial value and horizontal/vertical orientation. Fixed wxID_ANY and default position, size, validator and name; remaining constructor styles/options open."
+    },
+    {
+      "header": "wx/gauge.h",
+      "line": 128,
+      "declaration": "int GetRange() const;",
+      "status": "x",
+      "symbol": "wxGauge::GetRange",
+      "lisp": [
+        "gauge-range"
+      ],
+      "native": [
+        "wxl_gauge_range"
+      ],
+      "scope": "Positive signed 32-bit maximum."
+    },
+    {
+      "header": "wx/gauge.h",
+      "line": 135,
+      "declaration": "int GetValue() const;",
+      "status": "x",
+      "symbol": "wxGauge::GetValue",
+      "lisp": [
+        "gauge-value"
+      ],
+      "native": [
+        "wxl_gauge_value"
+      ],
+      "scope": "Determinate progress; value after Pulse is platform-dependent."
+    },
+    {
+      "header": "wx/gauge.h",
+      "line": 141,
+      "declaration": "bool IsVertical() const;",
+      "status": "x",
+      "symbol": "wxGauge::IsVertical",
+      "lisp": [
+        "gauge-vertical-p"
+      ],
+      "native": [
+        "wxl_gauge_vertical"
+      ],
+      "scope": "Read-only horizontal/vertical orientation."
+    },
+    {
+      "header": "wx/gauge.h",
+      "line": 151,
+      "declaration": "virtual void Pulse();",
+      "status": "x",
+      "symbol": "wxGauge::Pulse",
+      "lisp": [
+        "pulse-gauge"
+      ],
+      "native": [
+        "wxl_gauge_pulse"
+      ],
+      "scope": "Platform-native indeterminate pulsing; no timer or dispatch. SETF GAUGE-VALUE restores determinate mode."
+    },
+    {
+      "header": "wx/gauge.h",
+      "line": 163,
+      "declaration": "void SetRange(int range);",
+      "status": "x",
+      "symbol": "wxGauge::SetRange",
+      "lisp": [
+        "(setf gauge-range)"
+      ],
+      "native": [
+        "wxl_set_gauge_range"
+      ],
+      "scope": "Positive signed 32-bit range. Clamps current native value and restores determinate mode via SetValue; zero ranges intentionally unsupported."
+    },
+    {
+      "header": "wx/gauge.h",
+      "line": 177,
+      "declaration": "void SetValue(int pos);",
+      "status": "x",
+      "symbol": "wxGauge::SetValue",
+      "lisp": [
+        "(setf gauge-value)"
+      ],
+      "native": [
+        "wxl_set_gauge_value"
+      ],
+      "scope": "Integer from zero through current range; rejects invalid values before calling wxWidgets; restores determinate mode without events."
+    },
+    {
+      "header": "wx/gauge.h",
+      "line": 44,
+      "declaration": "documented style: wxGA_HORIZONTAL",
+      "status": "x",
+      "symbol": "wxGA_HORIZONTAL",
+      "lisp": [
+        "make-gauge"
+      ],
+      "native": [
+        "wxl_gauge"
+      ],
+      "scope": "Mapped to constructor :orientation :horizontal."
+    },
+    {
+      "header": "wx/gauge.h",
+      "line": 46,
+      "declaration": "documented style: wxGA_VERTICAL",
+      "status": "x",
+      "symbol": "wxGA_VERTICAL",
+      "lisp": [
+        "make-gauge"
+      ],
+      "native": [
+        "wxl_gauge"
+      ],
+      "scope": "Mapped to constructor :orientation :vertical."
     }
   ],
   "classes": {
@@ -754,6 +881,27 @@
         "wxl_set_title"
       ],
       "scope": "Canonical SETF writer. Title get/set is exposed for wxFrame only; other top-level types and the remaining top-level API stay open."
+    },
+    "wxGauge": {
+      "status": "~",
+      "lisp": [
+        "gauge",
+        "make-gauge",
+        "gauge-value",
+        "gauge-range",
+        "gauge-vertical-p",
+        "pulse-gauge"
+      ],
+      "native": [
+        "wxl_gauge",
+        "wxl_gauge_value",
+        "wxl_gauge_range",
+        "wxl_set_gauge_value",
+        "wxl_set_gauge_range",
+        "wxl_gauge_vertical",
+        "wxl_gauge_pulse"
+      ],
+      "scope": "Parent-owned progress gauge: positive range, value, horizontal/vertical orientation and pulsing. Constructor options, two-step creation and full inherited API remain open. Native ABI 10; see docs/GAUGE.md and tests/gauge.lisp."
     }
   }
 }

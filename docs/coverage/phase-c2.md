@@ -926,22 +926,22 @@ class or constructor does not imply full upstream coverage.
 - [ ] [L18](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/gauge.h#L18) `#define wxGA_PROGRESS        0x0010`
 - [ ] [L20](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/gauge.h#L20) `#define wxGA_SMOOTH          0x0020`
 - [ ] [L22](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/gauge.h#L22) `#define wxGA_TEXT            0x0040`
-- [ ] [L44](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/gauge.h#L44) `documented style: wxGA_HORIZONTAL`
-- [ ] [L46](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/gauge.h#L46) `documented style: wxGA_VERTICAL`
+- [x] [L44](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/gauge.h#L44) `documented style: wxGA_HORIZONTAL` — **Implemented**: `make-gauge`; ABI: `wxl_gauge`. Mapped to constructor :orientation :horizontal.
+- [x] [L46](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/gauge.h#L46) `documented style: wxGA_VERTICAL` — **Implemented**: `make-gauge`; ABI: `wxl_gauge`. Mapped to constructor :orientation :vertical.
 - [ ] [L48](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/gauge.h#L48) `documented style: wxGA_SMOOTH`
 - [ ] [L51](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/gauge.h#L51) `documented style: wxGA_TEXT`
 - [ ] [L56](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/gauge.h#L56) `documented style: wxGA_PROGRESS`
-- [ ] [L69](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/gauge.h#L69) `class wxGauge : public wxControl {`
+- [~] [L69](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/gauge.h#L69) `class wxGauge : public wxControl {` — **Partial**: `gauge`, `make-gauge`, `gauge-value`, `gauge-range`, `gauge-vertical-p`, `pulse-gauge`; ABI: `wxl_gauge`, `wxl_gauge_value`, `wxl_gauge_range`, `wxl_set_gauge_value`, `wxl_set_gauge_range`, `wxl_gauge_vertical`, `wxl_gauge_pulse`. Parent-owned progress gauge: positive range, value, horizontal/vertical orientation and pulsing. Constructor options, two-step creation and full inherited API remain open. Native ABI 10; see docs/GAUGE.md and tests/gauge.lisp.
 - [ ] [L75](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/gauge.h#L75) `wxGauge();`
-- [ ] [L101](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/gauge.h#L101) `wxGauge(wxWindow* parent, wxWindowID id, int range, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxGA_HORIZONTAL, const wxValidator& validator = wxDefaultValidator, const wxString& name = wxGaugeNameStr);`
+- [~] [L101](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/gauge.h#L101) `wxGauge(wxWindow* parent, wxWindowID id, int range, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxGA_HORIZONTAL, const wxValidator& validator = wxDefaultValidator, const wxString& name = wxGaugeNameStr);` — **Partial**: `gauge`, `make-gauge`; ABI: `wxl_gauge`. Native-backed CLOS construction with parent, positive range, initial value and horizontal/vertical orientation. Fixed wxID_ANY and default position, size, validator and name; remaining constructor styles/options open.
 - [ ] [L111](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/gauge.h#L111) `virtual ~wxGauge();`
 - [ ] [L117](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/gauge.h#L117) `bool Create(wxWindow* parent, wxWindowID id, int range, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxGA_HORIZONTAL, const wxValidator& validator = wxDefaultValidator, const wxString& name = wxGaugeNameStr);`
-- [ ] [L128](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/gauge.h#L128) `int GetRange() const;`
-- [ ] [L135](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/gauge.h#L135) `int GetValue() const;`
-- [ ] [L141](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/gauge.h#L141) `bool IsVertical() const;`
-- [ ] [L151](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/gauge.h#L151) `virtual void Pulse();`
-- [ ] [L163](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/gauge.h#L163) `void SetRange(int range);`
-- [ ] [L177](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/gauge.h#L177) `void SetValue(int pos);`
+- [x] [L128](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/gauge.h#L128) `int GetRange() const;` — **Implemented**: `gauge-range`; ABI: `wxl_gauge_range`. Positive signed 32-bit maximum.
+- [x] [L135](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/gauge.h#L135) `int GetValue() const;` — **Implemented**: `gauge-value`; ABI: `wxl_gauge_value`. Determinate progress; value after Pulse is platform-dependent.
+- [x] [L141](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/gauge.h#L141) `bool IsVertical() const;` — **Implemented**: `gauge-vertical-p`; ABI: `wxl_gauge_vertical`. Read-only horizontal/vertical orientation.
+- [x] [L151](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/gauge.h#L151) `virtual void Pulse();` — **Implemented**: `pulse-gauge`; ABI: `wxl_gauge_pulse`. Platform-native indeterminate pulsing; no timer or dispatch. SETF GAUGE-VALUE restores determinate mode.
+- [x] [L163](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/gauge.h#L163) `void SetRange(int range);` — **Implemented**: `(setf gauge-range)`; ABI: `wxl_set_gauge_range`. Positive signed 32-bit range. Clamps current native value and restores determinate mode via SetValue; zero ranges intentionally unsupported.
+- [x] [L177](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/gauge.h#L177) `void SetValue(int pos);` — **Implemented**: `(setf gauge-value)`; ABI: `wxl_set_gauge_value`. Integer from zero through current range; rejects invalid values before calling wxWidgets; restores determinate mode without events.
 
 ## `wx/gbsizer.h`
 

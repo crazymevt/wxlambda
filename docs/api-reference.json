@@ -610,5 +610,72 @@
       "syntax": "(make-instance 'wxlambda:choice :parent parent :items nil :selection nil)",
       "description": "PARENT is required; ITEMS defaults to NIL, SELECTION to NIL. Class :DEFAULT-INITARGS and custom slot initargs are honored; native creation precedes subclass AFTER hooks."
     }
+  },
+  {
+    "name": "gauge",
+    "kind": "class",
+    "arguments": "Native-backed WINDOW subclass. Required :PARENT; :RANGE defaults to 100, :VALUE to 0, :ORIENTATION to :HORIZONTAL.",
+    "returns": "A gauge wrapper or Lisp subclass instance.",
+    "description": "Parent-owned progress indicator; supports inherited window operations. Positive range, value from zero through range, horizontal or vertical orientation. IDs, position, size, validator and native name use wxWidgets defaults; custom styles, taskbar progress and two-step creation remain unbound.",
+    "scope": "Requires a live gauge in an active main-thread GUI session. Stale/destroyed handles, native type errors and values above the range signal NATIVE-ERROR; wrong Lisp receivers use CLOS dispatch errors. Numeric arguments must fit signed 32-bit integers; invalid Lisp types/ranges signal TYPE-ERROR. No command events or native virtual overrides.",
+    "wxwidgets": "wxGauge constructor (wxWidgets 3.2.12 baseline).",
+    "syntax": "wxlambda:gauge",
+    "construction": {
+      "syntax": "(make-instance 'wxlambda:gauge :parent parent :range 100 :value 0 :orientation :horizontal)",
+      "description": "Subclass slot initargs and :DEFAULT-INITARGS are supported. Native properties are ready in subclass AFTER hooks. Failed managed initialization rolls back native allocation. Orientation is :HORIZONTAL or :VERTICAL and cannot be changed after construction."
+    }
+  },
+  {
+    "name": "make-gauge",
+    "kind": "generic-function",
+    "arguments": "PARENT is a WINDOW; :CLASS defaults to GAUGE. :RANGE, :VALUE, :ORIENTATION and subclass initargs are forwarded.",
+    "returns": "A new GAUGE instance of CLASS.",
+    "description": "Thin MAKE-INSTANCE factory with validated GAUGE subclass support. Same construction defaults and restrictions as GAUGE.",
+    "scope": "Requires a live gauge in an active main-thread GUI session. Stale/destroyed handles, native type errors and values above the range signal NATIVE-ERROR; wrong Lisp receivers use CLOS dispatch errors. Numeric arguments must fit signed 32-bit integers; invalid Lisp types/ranges signal TYPE-ERROR. No command events or native virtual overrides.",
+    "wxwidgets": "wxGauge constructor (wxWidgets 3.2.12 baseline)."
+  },
+  {
+    "name": "gauge-value",
+    "kind": "generic-function",
+    "arguments": "GAUGE is a live gauge; SETF VALUE is an integer from 0 through GAUGE-RANGE.",
+    "returns": "Integer progress; SETF returns the supplied integer.",
+    "description": "Read determinate progress. After PULSE-GAUGE the reading is platform-dependent; do not interpret it as completed work. Assigning a value restores determinate mode without events.",
+    "scope": "Requires a live gauge in an active main-thread GUI session. Stale/destroyed handles, native type errors and values above the range signal NATIVE-ERROR; wrong Lisp receivers use CLOS dispatch errors. Numeric arguments must fit signed 32-bit integers; invalid Lisp types/ranges signal TYPE-ERROR. No command events or native virtual overrides.",
+    "wxwidgets": "wxGauge::GetValue / SetValue (wxWidgets 3.2.12 baseline).",
+    "setf": {
+      "syntax": "(setf (wxlambda:gauge-value gauge) value)",
+      "description": "VALUE must be an integer in [0, range]. Invalid updates preserve existing progress. No notification option."
+    }
+  },
+  {
+    "name": "gauge-range",
+    "kind": "generic-function",
+    "arguments": "GAUGE is a live gauge; SETF VALUE is an integer in [1, 2147483647].",
+    "returns": "Positive integer maximum; SETF returns the supplied integer.",
+    "description": "Read or assign the maximum progress. Assignment clamps the current native value to the new range and restores determinate mode by calling SetRange followed by SetValue. After a pulse the preserved value is platform-dependent; explicitly set GAUGE-VALUE when resuming measured work.",
+    "scope": "Requires a live gauge in an active main-thread GUI session. Stale/destroyed handles, native type errors and values above the range signal NATIVE-ERROR; wrong Lisp receivers use CLOS dispatch errors. Numeric arguments must fit signed 32-bit integers; invalid Lisp types/ranges signal TYPE-ERROR. No command events or native virtual overrides.",
+    "wxwidgets": "wxGauge::GetRange / SetRange / SetValue (wxWidgets 3.2.12 baseline).",
+    "setf": {
+      "syntax": "(setf (wxlambda:gauge-range gauge) value)",
+      "description": "A positive signed 32-bit integer. Progress becomes MIN(old native value, new range); no events. Zero ranges are intentionally unsupported."
+    }
+  },
+  {
+    "name": "gauge-vertical-p",
+    "kind": "generic-function",
+    "arguments": "GAUGE is a live gauge.",
+    "returns": "T for vertical, NIL for horizontal.",
+    "description": "Query construction orientation; this property has no writer.",
+    "scope": "Requires a live gauge in an active main-thread GUI session. Stale/destroyed handles, native type errors and values above the range signal NATIVE-ERROR; wrong Lisp receivers use CLOS dispatch errors. Numeric arguments must fit signed 32-bit integers; invalid Lisp types/ranges signal TYPE-ERROR. No command events or native virtual overrides.",
+    "wxwidgets": "wxGauge::IsVertical (wxWidgets 3.2.12 baseline)."
+  },
+  {
+    "name": "pulse-gauge",
+    "kind": "generic-function",
+    "arguments": "GAUGE is a live gauge.",
+    "returns": "The supplied gauge.",
+    "description": "Request platform-native indeterminate progress. Call periodically while keeping the GUI event loop responsive. Visual animation and value readings vary by platform; no timer, worker dispatch or completion event is provided. SETF GAUGE-VALUE restores determinate mode.",
+    "scope": "Requires a live gauge in an active main-thread GUI session. Stale/destroyed handles, native type errors and values above the range signal NATIVE-ERROR; wrong Lisp receivers use CLOS dispatch errors. Numeric arguments must fit signed 32-bit integers; invalid Lisp types/ranges signal TYPE-ERROR. No command events or native virtual overrides.",
+    "wxwidgets": "wxGauge::Pulse (wxWidgets 3.2.12 baseline)."
   }
 ]

@@ -36,6 +36,9 @@ machine-specific paths. Update `docs/api-reference.json` and
 arguments, returns, behavior, errors/scope and the related wxWidgets APIs. Class
 pages include Construction sections; mutable-property pages include SETF sections
 and searchable compound function names such as `(setf frame-title)`.
+Guide/example filename stems that coincide with public symbols are omitted as
+aliases, so symbol lookup stays unambiguous. Their source paths remain indexed.
+Build/check requires exactly one matching API record for each symbol and SETF name.
 
 Both commands run `docset:check-docset` and require zero problems, then exercise
 the same discovery, symbol lookup and indexed entry reader used by Cadre.

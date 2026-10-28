@@ -113,6 +113,8 @@ class CoverageInventoryChecks(unittest.TestCase):
             'wxFrame::wxFrame', 'wxPanel::wxPanel', 'wxButton::wxButton',
             'wxTextCtrl::wxTextCtrl', 'wxStaticText::wxStaticText',
             'wxCheckBox::wxCheckBox', 'wxChoice::wxChoice',
+            'wxGauge::wxGauge', 'wxGauge::GetValue', 'wxGauge::SetValue',
+            'wxGauge::GetRange', 'wxGauge::SetRange', 'wxGauge::IsVertical', 'wxGauge::Pulse',
             'wxTextEntry::SetValue', 'wxTextEntry::ChangeValue', 'wxTextEntry::GetValue',
             'wxCheckBox::GetValue', 'wxCheckBox::SetValue',
             'wxChoice::GetSelection', 'wxChoice::SetSelection',
@@ -127,7 +129,7 @@ class CoverageInventoryChecks(unittest.TestCase):
         self.assertTrue(required <= {record['symbol'] for record in self.status['declarations']})
         self.assertEqual(set(self.status['classes']), {
             'wxFrame', 'wxPanel', 'wxButton', 'wxTextCtrl', 'wxStaticText',
-            'wxCheckBox', 'wxChoice', 'wxBoxSizer', 'wxWindow', 'wxTopLevelWindow',
+            'wxCheckBox', 'wxChoice', 'wxGauge', 'wxBoxSizer', 'wxWindow', 'wxTopLevelWindow',
         })
 
     def test_compiler_scaffolding_is_context_but_public_macros_are_tasks(self):

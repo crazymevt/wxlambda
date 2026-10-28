@@ -41,7 +41,10 @@
         (assert (docset:search-names set (first (getf (cddr entry) :names))))
         (assert (equal entry actual))
         (when (getf (cddr entry) :package)
-          (assert (docset:lookup-symbol (list set) (first (getf (cddr entry) :names)) "WXLAMBDA")))))
+          (dolist (name (getf (cddr entry) :names))
+            (let ((hits (docset:lookup-symbol (list set) name "WXLAMBDA")))
+              (assert (= 1 (length hits)))
+              (assert (equal id (docset:record-id (cdar hits)))))))))
     (assert (= 3 (length (docset:docset-toc set))))
     (format t "PASS: ~D entries; zero checker problems; discovery, symbol lookup and guide/example reading~%"
             (length entries))))

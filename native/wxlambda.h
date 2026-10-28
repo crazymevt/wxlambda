@@ -43,6 +43,14 @@ WXL_API wxl_handle wxl_label(wxl_handle parent, const char *label);
 WXL_API int wxl_set_label(wxl_handle label, const char *value);
 /* Borrowed until the next wxl_get_label on this thread; NULL indicates failure. */
 WXL_API const char *wxl_get_label(wxl_handle label);
+/* Gauge getters return -1 on failure; values/ranges are nonnegative. */
+WXL_API wxl_handle wxl_gauge(wxl_handle parent, int range, int value, int vertical);
+WXL_API int wxl_gauge_value(wxl_handle gauge);
+WXL_API int wxl_gauge_range(wxl_handle gauge);
+WXL_API int wxl_set_gauge_value(wxl_handle gauge, int value);
+WXL_API int wxl_set_gauge_range(wxl_handle gauge, int range);
+WXL_API int wxl_gauge_vertical(wxl_handle gauge);
+WXL_API int wxl_gauge_pulse(wxl_handle gauge);
 WXL_API wxl_handle wxl_checkbox(wxl_handle parent, const char *label, int checked);
 /* Returns 0/1 for unchecked/checked, or -1 on failure. */
 WXL_API int wxl_checked(wxl_handle checkbox);

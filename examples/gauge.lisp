@@ -1,0 +1,56 @@
+;;; Load and call (wxlambda-gauge:start).
+(require :asdf)
+(load (merge-pathnames "../wxlambda.asd" *load-truename*))
+(asdf:load-system "wxlambda")
+(defpackage #:wxlambda-gauge
+  (:use #:cl)
+  (:export #:start #:exercise))
+(in-package #:wxlambda-gauge)
+
+(defclass progress (wxlambda:gauge)
+  ((step :initarg :step :reader step-size)
+   (completed :initform 0 :accessor completed))
+  (:default-initargs :range 100 :step 25))
+
+(defun open-window ()
+  (let* ((frame (wxlambda:make-frame :title "Progress gauge"))
+         (panel (wxlambda:make-panel frame))
+         (gauge (make-instance 'progress :parent panel))
+         (advance (wxlambda:make-button panel :label "Advance / restart"))
+         (pulse (wxlambda:make-button panel :label "Indeterminate pulse")))
+    (wxlambda:make-column panel)
+    (dolist (child (list gauge advance pulse)) (wxlambda:add-child panel child))
+    (wxlambda:on-click advance
+      (lambda ()
+        ;; Pulse readings are animation state on some ports, not completed work.
+        (setf (completed gauge)
+              (if (>= (completed gauge) (wxlambda:gauge-range gauge))
+                  0
+                  (min (wxlambda:gauge-range gauge)
+                       (+ (completed gauge) (step-size gauge)))))
+        (setf (wxlambda:gauge-value gauge) (completed gauge))))
+    (wxlambda:on-click pulse (lambda () (wxlambda:pulse-gauge gauge)))
+    (wxlambda:show-window frame)
+    (values frame gauge advance pulse)))
+
+(defun exercise ()
+  "Run both interactive callbacks, restore determinate progress, and clean up."
+  (multiple-value-bind (frame gauge advance pulse) (open-window)
+    (wxlambda:queue-click advance)
+    (wxlambda:process-events)
+    (assert (= 25 (wxlambda:gauge-value gauge)))
+    (wxlambda:queue-click pulse)
+    (wxlambda:process-events)
+    (wxlambda:queue-click advance)
+    (wxlambda:process-events)
+    (assert (= 50 (wxlambda:gauge-value gauge)))
+    (dotimes (i 3)
+      (wxlambda:queue-click advance)
+      (wxlambda:process-events))
+    (assert (zerop (wxlambda:gauge-value gauge)))
+    (wxlambda:off-click advance)
+    (wxlambda:off-click pulse)
+    (wxlambda:destroy-window frame)))
+
+(defun start ()
+  (wxlambda:with-application () (open-window) (wxlambda:run)))

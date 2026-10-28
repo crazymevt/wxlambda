@@ -1,7 +1,7 @@
 # CLOS widget API
 
 Widgets are native-backed CLOS instances. The public classes are `window`,
-`frame`, `panel`, `button`, `text-control`, `label`, `checkbox` and `choice`.
+`frame`, `panel`, `button`, `text-control`, `label`, `checkbox`, `choice` and `gauge`.
 `window` is abstract. Every concrete wrapper inherits from it and represents
 one native widget kind. Native handles remain private and validated.
 
@@ -39,6 +39,8 @@ Concrete native initargs are:
 - `text-control`: required `:parent`, `:value` (empty string).
 - `label`: required `:parent`, `:label` (empty string).
 - `checkbox`: required `:parent`, `:label` (empty string), `:checked` (NIL).
+- `gauge`: required `:parent`, `:range` (100), `:value` (0), `:orientation`
+  (`:horizontal` or `:vertical`). See [gauge behavior](GAUGE.md).
 - `choice`: required `:parent`, `:items` (NIL), `:selection` (NIL).
 
 Construction requires an active main-thread application session. Inherited
@@ -75,7 +77,7 @@ keep their separate roles.
 
 ## Generic properties
 
-Use these eight generic `setf` accessors:
+Use these ten generic `setf` accessors:
 
 ```lisp
 (setf (wxlambda:text input) "Text")
@@ -86,6 +88,8 @@ Use these eight generic `setf` accessors:
 (setf (wxlambda:frame-title frame) "Title")
 (setf (wxlambda:shown-p window) nil)
 (setf (wxlambda:enabled-p window) t)
+(setf (wxlambda:gauge-value gauge) 25)
+(setf (wxlambda:gauge-range gauge) 100)
 ```
 
 A writer's method lambda list starts with the new value, followed by the
@@ -129,9 +133,13 @@ sbcl --noinform --no-sysinit --no-userinit --non-interactive \
 ccl --no-init --batch --load ci/setup.lisp --load tests/clos.lisp
 ```
 
-The test covers direct native construction for all seven concrete types, subclass
+The CLOS test covers direct native construction for the original seven concrete types, subclass
 slots/defaults/hooks, all factory `:class` paths, invalid construction, initializer
 rollback of nested native objects and callback roots, eight generic writers,
-method combination and native handle protection. The public widget API has
-34 named generic functions plus eight generic SETF functions. The docset includes
+method combination and native handle protection. Those checks exercise the original 34 named generic functions and eight generic
+SETF functions. The docset includes
 construction instructions on class pages and indexed SETF forms on property pages.
+
+The gauge scenario additionally verifies direct and factory subclass construction,
+subclass AFTER access, rollback, and the two gauge SETF writers. Across the public
+API there are now 39 named generic functions and ten generic SETF functions.

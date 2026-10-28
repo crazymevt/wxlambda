@@ -230,7 +230,12 @@ def content():
                                  [key('code-block'), 'sh', example_notes['command']]],
                                 ['Source', [key('code-block'), 'lisp', path.read_text(encoding='utf-8')]]]
                     summary = example_notes['description']
-                entries.append(plist(entry=entry_id, names=[relative, path.stem], kind=key(kind),
+                # Keep unqualified symbol lookup exclusive to API entries.
+                # Guides/examples remain searchable by their full source paths.
+                entry_names = [relative]
+                if path.stem.casefold() not in {name.casefold() for name in names}:
+                    entry_names.append(path.stem)
+                entries.append(plist(entry=entry_id, names=entry_names, kind=key(kind),
                                      kind_name=kind.title(), summary=summary, sections=sections))
                 children.append(plist(title=relative, entry=entry_id))
         toc.append(plist(title=title, children=children))

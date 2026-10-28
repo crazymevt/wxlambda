@@ -73,7 +73,7 @@
           (if (probe-file local)
               (cffi:load-foreign-library local)
               (cffi:use-foreign-library wxlambda-native))))
-    (unless (= 9 (%abi-version)) (error "Unsupported wxlambda native ABI"))
+    (unless (= 10 (%abi-version)) (error "Unsupported wxlambda native ABI"))
     (setf *native-loaded* t))
   t)
 
@@ -82,3 +82,11 @@
 (cffi:defcfun ("wxl_set_selection" %set-selection) :int (choice :uint64) (selection :int) (notify :int))
 (cffi:defcfun ("wxl_on_selection" %on-selection) :int (choice :uint64) (token :uint64))
 (cffi:defcfun ("wxl_off_selection" %off-selection) :int (choice :uint64))
+
+(cffi:defcfun ("wxl_gauge" %gauge) :uint64 (parent :uint64) (range :int) (value :int) (vertical :int))
+(cffi:defcfun ("wxl_gauge_value" %gauge-value) :int (gauge :uint64))
+(cffi:defcfun ("wxl_gauge_range" %gauge-range) :int (gauge :uint64))
+(cffi:defcfun ("wxl_set_gauge_value" %set-gauge-value) :int (gauge :uint64) (value :int))
+(cffi:defcfun ("wxl_set_gauge_range" %set-gauge-range) :int (gauge :uint64) (range :int))
+(cffi:defcfun ("wxl_gauge_vertical" %gauge-vertical) :int (gauge :uint64))
+(cffi:defcfun ("wxl_gauge_pulse" %gauge-pulse) :int (gauge :uint64))
