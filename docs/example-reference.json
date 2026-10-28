@@ -134,5 +134,9 @@
   "clipboard.lisp": {
     "description": "Interactive START copies/replaces a whole single-line field through the standard text clipboard with best-effort flush; automatic EXERCISE only queries availability and never reads/replaces system clipboard content.",
     "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/clipboard.lisp --eval '(wxlambda:with-application () (wxlambda-clipboard:exercise))'"
+  },
+  "text-editor.lisp": {
+    "description": "Multiline text controls with native selection/replacement/end offsets, append-at-end and user-editability toggle. Bounded EXERCISE replaces Unicode multiline text and checks notifications/read-only state; no document IO or selection clipboard APIs.",
+    "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/text-editor.lisp --eval '(wxlambda:with-application () (wxlambda-text-editor:exercise))'"
   }
 }

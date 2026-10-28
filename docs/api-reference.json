@@ -102,9 +102,9 @@
   {
     "name": "make-text",
     "kind": "generic-function",
-    "arguments": "PARENT; optional initial VALUE string. :CLASS selects the corresponding concrete wrapper class or a subclass (symbol or class object). Additional initargs are forwarded to MAKE-INSTANCE.",
+    "arguments": "PARENT; VALUE defaults to empty string, MULTILINE to NIL, EDITABLE-P to T. :CLASS selects TEXT-CONTROL or a subclass; remaining initargs are forwarded.",
     "returns": "A new Lisp object wrapping the native window handle.",
-    "description": "Thin factory over MAKE-INSTANCE; validates :CLASS against the factory's widget kind and forwards initargs. Create a single-line editable text control.",
+    "description": "Thin native-backed CLOS factory. Construct single-line or multiline text with user editability policy. Text uses explicit UTF-8 lengths and rejects NUL.",
     "scope": "Requires an active GUI session on the process main thread. Invalid/destroyed handles or unsupported native arguments signal NATIVE-ERROR; Lisp argument/type errors remain Lisp conditions. One GUI session per process. Widget behavior uses CLOS generic dispatch. Wrong receiver types signal Lisp dispatch conditions; native handle/state failures signal NATIVE-ERROR.",
     "wxwidgets": "wxTextCtrl constructor (wxWidgets 3.2)."
   },
@@ -230,12 +230,12 @@
     "kind": "generic-function",
     "arguments": "CONTROL is a live text control. Optional NOTIFY affects writes and is ignored by reads.",
     "returns": "An independent Lisp string.",
-    "description": "Read the current UTF-8 text; returned storage survives later native calls.",
+    "description": "Read the current UTF-8 text; returned storage survives later native calls. ABI36 carries explicit UTF-8 lengths and rejects embedded NUL on writes; multiline native values use LF-separated lines. Read-only controls still allow programmatic edits. Native positions are not Lisp string indices.",
     "scope": "Requires an active GUI session on the process main thread. Invalid/destroyed handles or unsupported native arguments signal NATIVE-ERROR; Lisp argument/type errors remain Lisp conditions. One GUI session per process. Widget behavior uses CLOS generic dispatch. Wrong receiver types signal Lisp dispatch conditions; native handle/state failures signal NATIVE-ERROR.",
     "wxwidgets": "wxTextEntry::GetValue (wxTextCtrl only)",
     "setf": {
       "syntax": "(setf (wxlambda:text control :notify notify) new-value)",
-      "description": "Text replacement is silent by default. :NOTIFY T emits text-change events synchronously; callback conditions return to the writer caller. Writers are generic functions with VALUE first, followed by the receiver."
+      "description": "Text replacement is silent by default. :NOTIFY T emits text-change events synchronously; callback conditions return to the writer caller. Writers are generic functions with VALUE first, followed by the receiver. Values must be strings without NUL; ABI36 validates instead of truncating. Read-only is user typing policy, not a programmatic mutation restriction."
     }
   },
   {
@@ -577,8 +577,8 @@
     "scope": "Construction requires an active main-thread application session. Concrete classes create their native widgets in inherited INITIALIZE-INSTANCE methods; subclass AFTER hooks can use them. Native handles cannot be supplied as initargs. Lisp subclassing does not imply native C++ virtual callbacks.",
     "wxwidgets": "wxTextCtrl (wxWidgets 3.2); this is a Lisp wrapper, not a native subclass.",
     "construction": {
-      "syntax": "(make-instance 'wxlambda:text-control :parent parent :value \"\")",
-      "description": "PARENT is required; VALUE defaults to an empty string. Class :DEFAULT-INITARGS and custom slot initargs are honored; native creation precedes subclass AFTER hooks."
+      "syntax": "(make-instance 'wxlambda:text-control :parent parent :value \"\" :multiline nil :editable-p t)",
+      "description": "PARENT required; VALUE defaults empty, MULTILINE defaults NIL, EDITABLE-P defaults T. Multiline style is immutable; user editability has generic SETF. Read-only still permits explicit Lisp edits. Subclass slots/defaults/AFTER hooks and managed rollback apply. NUL text rejects."
     }
   },
   {
@@ -1837,5 +1837,71 @@
     "description": "Best-effort persistence after exit, on the standard clipboard. Does not set clipboard contents. A false native Flush result is normal; open/session failures signal NATIVE-ERROR.",
     "scope": "Active main-thread session; brief scoped open/close and restored PRIMARY preference. Port-specific support; live exit persistence remains unverified.",
     "wxwidgets": "wxClipboard::Flush (wxWidgets 3.2.12; pinned documentation identifies MSW/GTK support)."
+  },
+  {
+    "name": "text-multiline-p",
+    "kind": "generic-function",
+    "arguments": "CONTROL is a live TEXT-CONTROL.",
+    "returns": "T for multiline, NIL for single-line.",
+    "description": "Read the multiline style chosen at construction; no SETF.",
+    "scope": "Active main-thread application; TEXT-CONTROL receivers only, including Lisp subclasses. Wrong receiver dispatch, stale/wrong native handles and invalid ranges/types signal. Native offsets are not portable Lisp string indices; no -1 sentinels, GetRange, undo/redo, rich text or native file IO.",
+    "wxwidgets": "wxTextCtrl::IsMultiLine (wxWidgets 3.2.12)."
+  },
+  {
+    "name": "text-editable-p",
+    "kind": "generic-function",
+    "arguments": "CONTROL is a live TEXT-CONTROL.",
+    "returns": "T/NIL.",
+    "description": "Read whether native user editing is enabled. Programmatic text writes remain allowed.",
+    "scope": "Active main-thread application; TEXT-CONTROL receivers only, including Lisp subclasses. Wrong receiver dispatch, stale/wrong native handles and invalid ranges/types signal. Native offsets are not portable Lisp string indices; no -1 sentinels, GetRange, undo/redo, rich text or native file IO.",
+    "wxwidgets": "wxTextEntry::IsEditable/SetEditable (wxWidgets 3.2.12).",
+    "setf": {
+      "syntax": "(setf (wxlambda:text-editable-p control) value)",
+      "description": "A generalized boolean changes user editability; returns VALUE. Does not prohibit explicit Lisp text writes."
+    }
+  },
+  {
+    "name": "text-selection",
+    "kind": "generic-function",
+    "arguments": "CONTROL is a live TEXT-CONTROL.",
+    "returns": "Two integer values FROM and TO.",
+    "description": "Read two native selection offsets for current content.",
+    "scope": "Active main-thread application; TEXT-CONTROL receivers only, including Lisp subclasses. Wrong receiver dispatch, stale/wrong native handles and invalid ranges/types signal. Native offsets are not portable Lisp string indices; no -1 sentinels, GetRange, undo/redo, rich text or native file IO.",
+    "wxwidgets": "wxTextEntry::GetSelection/SetSelection (wxWidgets 3.2.12).",
+    "setf": {
+      "syntax": "(setf (wxlambda:text-selection control) value)",
+      "description": "VALUE must be a proper two-integer list (FROM TO), ordered and within [0,native end]. Returns the same list. Rejects overflow/negative/sentinel positions; no clamping."
+    }
+  },
+  {
+    "name": "text-insertion-point",
+    "kind": "generic-function",
+    "arguments": "CONTROL is a live TEXT-CONTROL.",
+    "returns": "A native integer offset.",
+    "description": "Read the native insertion offset.",
+    "scope": "Active main-thread application; TEXT-CONTROL receivers only, including Lisp subclasses. Wrong receiver dispatch, stale/wrong native handles and invalid ranges/types signal. Native offsets are not portable Lisp string indices; no -1 sentinels, GetRange, undo/redo, rich text or native file IO.",
+    "wxwidgets": "wxTextEntry::GetInsertionPoint/SetInsertionPoint (wxWidgets 3.2.12).",
+    "setf": {
+      "syntax": "(setf (wxlambda:text-insertion-point control) value)",
+      "description": "VALUE is a nonnegative signed-64-bit integer within native end. Returns VALUE; selection/caret side effects follow wxWidgets."
+    }
+  },
+  {
+    "name": "text-last-position",
+    "kind": "generic-function",
+    "arguments": "CONTROL is a live TEXT-CONTROL.",
+    "returns": "A native nonnegative integer offset, not Lisp string length.",
+    "description": "Read the native end offset for use with native selection/editing operations.",
+    "scope": "Active main-thread application; TEXT-CONTROL receivers only, including Lisp subclasses. Wrong receiver dispatch, stale/wrong native handles and invalid ranges/types signal. Native offsets are not portable Lisp string indices; no -1 sentinels, GetRange, undo/redo, rich text or native file IO.",
+    "wxwidgets": "wxTextEntry::GetLastPosition (wxWidgets 3.2.12)."
+  },
+  {
+    "name": "replace-text",
+    "kind": "generic-function",
+    "arguments": "CONTROL, FROM, TO, VALUE string without NUL. Positions are ordered nonnegative signed-64-bit integers bounded by native end.",
+    "returns": "The supplied replacement VALUE string.",
+    "description": "Replace half-open native [FROM,TO) with VALUE using native Replace and text-change notification. Equal endpoints insert, empty VALUE removes. Mutation may precede a callback condition rethrow; handled conditions permit recovery. Exact no-op event counts, caret/selection and undo effects are port-specific.",
+    "scope": "Active main-thread application; TEXT-CONTROL receivers only, including Lisp subclasses. Wrong receiver dispatch, stale/wrong native handles and invalid ranges/types signal. Native offsets are not portable Lisp string indices; no -1 sentinels, GetRange, undo/redo, rich text or native file IO.",
+    "wxwidgets": "wxTextEntry::Replace (wxWidgets 3.2.12)."
   }
 ]

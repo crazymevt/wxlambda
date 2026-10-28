@@ -769,3 +769,7 @@ files. Run its interactive START or bounded EXERCISE as documented there.
 [Text clipboard](docs/CLIPBOARD.md) supports Unicode reads, generic SETF writes
 and best-effort persistence. The persistent form demonstrates Edit Copy/Paste name;
 automatic examples leave existing clipboard content untouched.
+
+[Multiline text editing](docs/TEXT-EDITING.md) adds multiline construction, user
+editability and native selection/caret/range replacement. The text-editor example
+shows Unicode multiline edits; the persistent form stays a single-line form.

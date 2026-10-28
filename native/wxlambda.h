@@ -195,7 +195,7 @@ WXL_API int wxl_remove_handler(wxl_handle window, wxl_handle handler);
 WXL_API wxl_handle wxl_frame(const char *title, int width, int height);
 WXL_API wxl_handle wxl_panel(wxl_handle parent);
 WXL_API wxl_handle wxl_button(wxl_handle parent, const char *label);
-WXL_API wxl_handle wxl_text(wxl_handle parent, const char *value);
+WXL_API wxl_handle wxl_text(wxl_handle parent, const char *value, size_t length, int multiline, int editable);
 WXL_API wxl_handle wxl_label(wxl_handle parent, const char *label);
 WXL_API int wxl_set_label(wxl_handle label, const char *value);
 /* Borrowed until the next wxl_get_label on this thread; NULL indicates failure. */
@@ -251,11 +251,21 @@ WXL_API int wxl_shown(wxl_handle window);
 WXL_API int wxl_enable(wxl_handle window, int enable);
 WXL_API int wxl_enabled(wxl_handle window);
 WXL_API int wxl_destroy(wxl_handle window);
-/* notify=0 is silent; nonzero may synchronously invoke text-change callbacks. */
-WXL_API int wxl_set_text(wxl_handle control, const char *value, int notify);
-/* UTF-8 text borrowed until the next wxl_get_text call on this thread.
+/* notify=0 is silent; notify=1 may synchronously invoke text-change callbacks. */
+WXL_API int wxl_set_text(wxl_handle control, const char *value, size_t length, int notify);
+/* UTF-8 text borrowed until the next metadata/string-result call on this thread.
    NULL indicates failure; an empty string indicates a successful empty value. */
-WXL_API const char *wxl_get_text(wxl_handle control);
+WXL_API const char *wxl_get_text(wxl_handle control, size_t *length);
+/* Text positions are wxWidgets native offsets, not portable Lisp string indices. */
+WXL_API int wxl_text_multiline(wxl_handle control);
+WXL_API int wxl_text_editable(wxl_handle control);
+WXL_API int wxl_set_text_editable(wxl_handle control, int editable);
+WXL_API int wxl_text_selection(wxl_handle control, int64_t *from, int64_t *to);
+WXL_API int wxl_set_text_selection(wxl_handle control, int64_t from, int64_t to);
+/* field=0 insertion point, field=1 native end. No -1 position sentinels. */
+WXL_API int wxl_text_position(wxl_handle control, int field, int64_t *position);
+WXL_API int wxl_set_text_insertion(wxl_handle control, int64_t position);
+WXL_API int wxl_replace_text(wxl_handle control, int64_t from, int64_t to, const char *value, size_t length);
 WXL_API int wxl_on_text_change(wxl_handle control, uint64_t token);
 WXL_API int wxl_off_text_change(wxl_handle control);
 WXL_API int wxl_off_click(wxl_handle button);

@@ -17,7 +17,7 @@ class or constructor does not imply full upstream coverage.
 
 ## Current coverage and remaining work
 
-23 implemented; 55 partial; 2784 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
+23 implemented; 66 partial; 2773 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
 
 Counts describe inventory entries, not distinct APIs or percent completion.
 See the [coverage summary](README.md) for phase/header comparisons.
@@ -2317,11 +2317,11 @@ See the [coverage summary](README.md) for phase/header comparisons.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textctrl.h)
 
-0 implemented; 3 partial; 225 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
+0 implemented; 6 partial; 222 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
 
 - [ ] [L11](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textctrl.h#L11) `#define wxTE_NO_VSCROLL     0x0002`
-- [ ] [L13](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textctrl.h#L13) `#define wxTE_READONLY       0x0010`
-- [ ] [L14](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textctrl.h#L14) `#define wxTE_MULTILINE      0x0020`
+- [~] [L13](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textctrl.h#L13) `#define wxTE_READONLY       0x0010` — **Partial**: `text-control`; ABI: `wxl_text`. TEXT-CONTROL only. Boolean construction styles/user editability; native offset selection/insertion/end and notifying Replace. Ordered nonnegative in-bounds positions, no -1 sentinels or Lisp-index interpretation. Other text-entry receivers, styles and full native API remain unbound.
+- [~] [L14](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textctrl.h#L14) `#define wxTE_MULTILINE      0x0020` — **Partial**: `text-control`; ABI: `wxl_text`. TEXT-CONTROL only. Boolean construction styles/user editability; native offset selection/insertion/end and notifying Replace. Ordered nonnegative in-bounds positions, no -1 sentinels or Lisp-index interpretation. Other text-entry receivers, styles and full native API remain unbound.
 - [ ] [L15](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textctrl.h#L15) `#define wxTE_PROCESS_TAB    0x0040`
 - [ ] [L18](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textctrl.h#L18) `#define wxTE_LEFT           0x0000`
 - [ ] [L19](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textctrl.h#L19) `#define wxTE_CENTER         wxALIGN_CENTER_HORIZONTAL`
@@ -2491,9 +2491,9 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [ ] [L1417](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textctrl.h#L1417) `documented event: EVT_TEXT_ENTER(id, func)`
 - [ ] [L1421](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textctrl.h#L1421) `documented event: EVT_TEXT_URL(id, func)`
 - [ ] [L1423](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textctrl.h#L1423) `documented event: EVT_TEXT_MAXLEN(id, func)`
-- [~] [L1434](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textctrl.h#L1434) `class wxTextCtrl : public wxControl, public wxTextEntry {` — **Partial**: `text-control`, `make-text`; ABI: `wxl_text`. Native-backed CLOS construction, including subclass initargs/defaults and managed rollback. Parent and initial value; ID is wxID_ANY, remaining options use defaults. Full class and inherited API coverage remain open.
+- [~] [L1434](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textctrl.h#L1434) `class wxTextCtrl : public wxControl, public wxTextEntry {` — **Partial**: `text-control`, `make-text`, `text-multiline-p`, `text-editable-p`, `text-selection`, `text-insertion-point`, `text-last-position`, `replace-text`; ABI: `wxl_text`, `wxl_text_multiline`, `wxl_text_editable`, `wxl_text_selection`, `wxl_text_position`, `wxl_replace_text`. Native-backed CLOS parent/value construction with boolean multiline and initial user-editability styles. Explicit UTF-8 lengths/NUL rejection; mutable generic user editability, bounded native selection/insertion/end and notifying Replace. Fixed ID/default geometry; other styles, GetRange, undo/redo, rich text and full class parity remain unbound.
 - [ ] [L1441](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textctrl.h#L1441) `wxTextCtrl();`
-- [~] [L1473](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textctrl.h#L1473) `wxTextCtrl(wxWindow* parent, wxWindowID id, const wxString& value = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = 0, const wxValidator& validator = wxDefaultValidator, const wxString& name = wxTextCtrlNameStr);` — **Partial**: `text-control`, `make-text`; ABI: `wxl_text`. Parent and initial value; ID is wxID_ANY, remaining options use defaults.
+- [~] [L1473](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textctrl.h#L1473) `wxTextCtrl(wxWindow* parent, wxWindowID id, const wxString& value = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = 0, const wxValidator& validator = wxDefaultValidator, const wxString& name = wxTextCtrlNameStr);` — **Partial**: `text-control`, `make-text`, `text-multiline-p`, `text-editable-p`; ABI: `wxl_text`. Native-backed CLOS parent/value construction, boolean multiline and initial user-editability styles. Explicit UTF-8 lengths/NUL rejection; fixed ID/default geometry and other styles remain unbound.
 - [ ] [L1484](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textctrl.h#L1484) `virtual ~wxTextCtrl();`
 - [ ] [L1493](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textctrl.h#L1493) `bool Create(wxWindow* parent, wxWindowID id, const wxString& value = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = 0, const wxValidator& validator = wxDefaultValidator, const wxString& name = wxTextCtrlNameStr);`
 - [ ] [L1504](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textctrl.h#L1504) `virtual void DiscardEdits();`
@@ -2508,7 +2508,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [ ] [L1645](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textctrl.h#L1645) `wxTextCtrlHitTestResult HitTest(const wxPoint& pt, long *pos) const;`
 - [ ] [L1674](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textctrl.h#L1674) `wxTextCtrlHitTestResult HitTest(const wxPoint& pt, wxTextCoord *col, wxTextCoord *row) const;`
 - [ ] [L1685](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textctrl.h#L1685) `virtual bool IsModified() const;`
-- [ ] [L1692](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textctrl.h#L1692) `bool IsMultiLine() const;`
+- [~] [L1692](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textctrl.h#L1692) `bool IsMultiLine() const;` — **Partial**: `text-multiline-p`; ABI: `wxl_text_multiline`. TEXT-CONTROL only. Boolean construction styles/user editability; native offset selection/insertion/end and notifying Replace. Ordered nonnegative in-bounds positions, no -1 sentinels or Lisp-index interpretation. Other text-entry receivers, styles and full native API remain unbound.
 - [ ] [L1699](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textctrl.h#L1699) `bool IsSingleLine() const;`
 - [ ] [L1711](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textctrl.h#L1711) `virtual wxTextProofOptions GetProofCheckOptions();`
 - [ ] [L1724](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textctrl.h#L1724) `bool LoadFile(const wxString& filename, int fileType = wxTEXT_TYPE_ANY);`
@@ -2552,7 +2552,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h)
 
-0 implemented; 3 partial; 41 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
+0 implemented; 11 partial; 33 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
 
 - [ ] [L14](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h#L14) `typedef long wxTextPos;`
 - [ ] [L33](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h#L33) `class wxTextEntry {`
@@ -2566,28 +2566,28 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [ ] [L154](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h#L154) `virtual bool CanPaste() const;`
 - [ ] [L160](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h#L160) `virtual bool CanRedo() const;`
 - [ ] [L166](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h#L166) `virtual bool CanUndo() const;`
-- [~] [L188](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h#L188) `virtual void ChangeValue(const wxString& value);` — **Partial**: `(setf text)`; ABI: `wxl_set_text`. Canonical SETF writer. Silent value replacement for wxTextCtrl only; other wxTextEntry receivers remain open.
+- [~] [L188](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h#L188) `virtual void ChangeValue(const wxString& value);` — **Partial**: `(setf text)`; ABI: `wxl_set_text`. Canonical SETF writer. Silent value replacement for wxTextCtrl only; other wxTextEntry receivers remain open. ABI36 explicit UTF-8 byte lengths/NUL write rejection; multiline LF-separated values. Programmatic writes allowed on user-read-only controls.
 - [ ] [L196](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h#L196) `virtual void Clear();`
 - [ ] [L201](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h#L201) `virtual void Copy();`
 - [ ] [L206](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h#L206) `virtual void Cut();`
 - [ ] [L217](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h#L217) `void ForceUpper();`
-- [ ] [L249](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h#L249) `virtual long GetInsertionPoint() const;`
-- [ ] [L255](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h#L255) `virtual wxTextPos GetLastPosition() const;`
+- [~] [L249](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h#L249) `virtual long GetInsertionPoint() const;` — **Partial**: `text-insertion-point`; ABI: `wxl_text_position`. TEXT-CONTROL only. Boolean construction styles/user editability; native offset selection/insertion/end and notifying Replace. Ordered nonnegative in-bounds positions, no -1 sentinels or Lisp-index interpretation. Other text-entry receivers, styles and full native API remain unbound.
+- [~] [L255](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h#L255) `virtual wxTextPos GetLastPosition() const;` — **Partial**: `text-last-position`; ABI: `wxl_text_position`. TEXT-CONTROL only. Boolean construction styles/user editability; native offset selection/insertion/end and notifying Replace. Ordered nonnegative in-bounds positions, no -1 sentinels or Lisp-index interpretation. Other text-entry receivers, styles and full native API remain unbound.
 - [ ] [L269](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h#L269) `virtual wxString GetRange(long from, long to) const;`
-- [ ] [L290](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h#L290) `virtual void GetSelection(long* from, long* to) const;`
+- [~] [L290](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h#L290) `virtual void GetSelection(long* from, long* to) const;` — **Partial**: `text-selection`; ABI: `wxl_text_selection`. TEXT-CONTROL only. Boolean construction styles/user editability; native offset selection/insertion/end and notifying Replace. Ordered nonnegative in-bounds positions, no -1 sentinels or Lisp-index interpretation. Other text-entry receivers, styles and full native API remain unbound.
 - [ ] [L297](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h#L297) `virtual wxString GetStringSelection() const;`
-- [~] [L306](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h#L306) `virtual wxString GetValue() const;` — **Partial**: `text`; ABI: `wxl_get_text`. Independent UTF-8 Lisp string for wxTextCtrl only; other wxTextEntry receivers remain open.
-- [ ] [L315](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h#L315) `virtual bool IsEditable() const;`
+- [~] [L306](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h#L306) `virtual wxString GetValue() const;` — **Partial**: `text`; ABI: `wxl_get_text`. Independent UTF-8 Lisp string for wxTextCtrl only; other wxTextEntry receivers remain open. ABI36 explicit UTF-8 byte lengths/NUL write rejection; multiline LF-separated values. Programmatic writes allowed on user-read-only controls.
+- [~] [L315](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h#L315) `virtual bool IsEditable() const;` — **Partial**: `text-editable-p`; ABI: `wxl_text_editable`. TEXT-CONTROL only. Boolean construction styles/user editability; native offset selection/insertion/end and notifying Replace. Ordered nonnegative in-bounds positions, no -1 sentinels or Lisp-index interpretation. Other text-entry receivers, styles and full native API remain unbound.
 - [ ] [L325](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h#L325) `virtual bool IsEmpty() const;`
 - [ ] [L330](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h#L330) `virtual void Paste();`
 - [ ] [L338](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h#L338) `virtual void Redo();`
 - [ ] [L352](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h#L352) `virtual void Remove(long from, long to);`
-- [ ] [L368](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h#L368) `virtual void Replace(long from, long to, const wxString& value);`
-- [ ] [L380](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h#L380) `virtual void SetEditable(bool editable);`
-- [ ] [L388](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h#L388) `virtual void SetInsertionPoint(long pos);`
+- [~] [L368](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h#L368) `virtual void Replace(long from, long to, const wxString& value);` — **Partial**: `replace-text`; ABI: `wxl_replace_text`. TEXT-CONTROL only. Boolean construction styles/user editability; native offset selection/insertion/end and notifying Replace. Ordered nonnegative in-bounds positions, no -1 sentinels or Lisp-index interpretation. Other text-entry receivers, styles and full native API remain unbound.
+- [~] [L380](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h#L380) `virtual void SetEditable(bool editable);` — **Partial**: `(setf text-editable-p)`; ABI: `wxl_set_text_editable`. TEXT-CONTROL only. Boolean construction styles/user editability; native offset selection/insertion/end and notifying Replace. Ordered nonnegative in-bounds positions, no -1 sentinels or Lisp-index interpretation. Other text-entry receivers, styles and full native API remain unbound.
+- [~] [L388](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h#L388) `virtual void SetInsertionPoint(long pos);` — **Partial**: `(setf text-insertion-point)`; ABI: `wxl_set_text_insertion`. TEXT-CONTROL only. Boolean construction styles/user editability; native offset selection/insertion/end and notifying Replace. Ordered nonnegative in-bounds positions, no -1 sentinels or Lisp-index interpretation. Other text-entry receivers, styles and full native API remain unbound.
 - [ ] [L396](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h#L396) `virtual void SetInsertionPointEnd();`
 - [ ] [L415](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h#L415) `virtual void SetMaxLength(unsigned long len);`
-- [ ] [L433](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h#L433) `virtual void SetSelection(long from, long to);`
+- [~] [L433](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h#L433) `virtual void SetSelection(long from, long to);` — **Partial**: `(setf text-selection)`; ABI: `wxl_set_text_selection`. TEXT-CONTROL only. Boolean construction styles/user editability; native offset selection/insertion/end and notifying Replace. Ordered nonnegative in-bounds positions, no -1 sentinels or Lisp-index interpretation. Other text-entry receivers, styles and full native API remain unbound.
 - [ ] [L440](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h#L440) `virtual void SelectAll();`
 - [ ] [L447](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h#L447) `virtual void SelectNone();`
 - [ ] [L489](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h#L489) `virtual bool SetHint(const wxString& hint);`
@@ -2595,7 +2595,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [ ] [L511](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h#L511) `bool SetMargins(const wxPoint& pt);`
 - [ ] [L512](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h#L512) `bool SetMargins(wxCoord left, wxCoord top = -1);`
 - [ ] [L527](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h#L527) `wxPoint GetMargins() const;`
-- [~] [L547](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h#L547) `virtual void SetValue(const wxString& value);` — **Partial**: `(setf text)`; ABI: `wxl_set_text`. Canonical SETF writer. Notifying value replacement for wxTextCtrl only via :notify T; other receivers remain open.
+- [~] [L547](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h#L547) `virtual void SetValue(const wxString& value);` — **Partial**: `(setf text)`; ABI: `wxl_set_text`. Canonical SETF writer. Notifying value replacement for wxTextCtrl only via :notify T; other receivers remain open. ABI36 explicit UTF-8 byte lengths/NUL write rejection; multiline LF-separated values. Programmatic writes allowed on user-read-only controls.
 - [ ] [L555](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h#L555) `virtual void Undo();`
 - [ ] [L573](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textentry.h#L573) `virtual void WriteText(const wxString& text);`
 

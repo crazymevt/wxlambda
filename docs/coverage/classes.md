@@ -424,7 +424,7 @@ Class/struct definitions: 0 complete; 11 partial; 121 pending. Partial and pendi
 - [ ] `wxTextCompleterSimple` — [`wx/textcompleter.h`](phase-c2.md), upstream line 115.
 - [ ] `wxTextAttr` — [`wx/textctrl.h`](phase-c2.md), upstream line 282.
 - [ ] `wxTextProofOptions` — [`wx/textctrl.h`](phase-c2.md), upstream line 1129.
-- [~] `wxTextCtrl` — [`wx/textctrl.h`](phase-c2.md), upstream line 1434. — **Partial**: `text-control`, `make-text`; ABI: `wxl_text`. Native-backed CLOS construction, including subclass initargs/defaults and managed rollback. Parent and initial value; ID is wxID_ANY, remaining options use defaults. Full class and inherited API coverage remain open.
+- [~] `wxTextCtrl` — [`wx/textctrl.h`](phase-c2.md), upstream line 1434. — **Partial**: `text-control`, `make-text`, `text-multiline-p`, `text-editable-p`, `text-selection`, `text-insertion-point`, `text-last-position`, `replace-text`; ABI: `wxl_text`, `wxl_text_multiline`, `wxl_text_editable`, `wxl_text_selection`, `wxl_text_position`, `wxl_replace_text`. Native-backed CLOS parent/value construction with boolean multiline and initial user-editability styles. Explicit UTF-8 lengths/NUL rejection; mutable generic user editability, bounded native selection/insertion/end and notifying Replace. Fixed ID/default geometry; other styles, GetRange, undo/redo, rich text and full class parity remain unbound.
 - [ ] `wxTextUrlEvent` — [`wx/textctrl.h`](phase-c2.md), upstream line 1972.
 - [ ] `wxStreamToTextRedirector` — [`wx/textctrl.h`](phase-c2.md), upstream line 2027.
 - [ ] `wxTextEntry` — [`wx/textentry.h`](phase-c2.md), upstream line 33.

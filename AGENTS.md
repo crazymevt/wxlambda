@@ -156,5 +156,7 @@ conversion. See `docs/DOCUMENT-FORM.md`. ABI35 adds bounded text
 clipboard support and form Edit Copy/Paste. Preserve isolated automatic transfer
 tests: do not overwrite/read system clipboard content in CI; live availability is
 the only automatic system query. See `docs/CLIPBOARD.md`. The next selected slice
-is bounded multiline text-control construction/editing semantics for the editor;
-do not drain wxDocument/native stream APIs.
+is bounded notebook navigation. ABI36 multiline text/basic editing uses native
+offsets, never Lisp string indices; preserve explicit UTF-8 lengths, NUL validation,
+CLOS rollback and notifying Replace with callback/context protections. See
+`docs/TEXT-EDITING.md`. Do not drain wxDocument/native stream APIs.

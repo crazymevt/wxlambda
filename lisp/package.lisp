@@ -1,6 +1,7 @@
 (defpackage #:wxlambda
   (:use #:cl)
-  (:export #:clipboard-text #:clipboard-text-available-p #:flush-clipboard
+  (:export #:text-multiline-p #:text-editable-p #:text-selection #:text-insertion-point #:text-last-position #:replace-text
+           #:clipboard-text #:clipboard-text-available-p #:flush-clipboard
            #:message-dialog #:file-dialog #:make-message-dialog #:make-file-dialog
            #:dialog-message #:message-dialog-buttons #:file-dialog-mode #:file-dialog-path #:file-dialog-filter-index
            #:dialog #:text-entry-dialog #:single-choice-dialog

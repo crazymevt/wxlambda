@@ -74,7 +74,6 @@ public:
     bool OnInit() override { return true; }
 };
 thread_local std::string error;
-thread_local std::string text_result;
 thread_local std::string label_result;
 thread_local std::string metadata_result;
 std::unordered_map<wxl_handle, wxWeakRef<wxWindow>> windows;
@@ -768,6 +767,16 @@ int bridge_dialog_result(int code) {
     throw std::runtime_error("Unsupported modal result");
 }
 int native_dialog_result(int code) { return code == 0 ? wxID_OK : code == 1 ? wxID_CANCEL : code == 2 ? wxID_YES : wxID_NO; }
+wxString text_value(const char* value, size_t length) {
+    require(value || length == 0, "Null text value");
+    require(!length || !std::memchr(value, 0, length), "Text cannot contain NUL");
+    const auto text = wxString::FromUTF8(value ? value : "", length);
+    require(!length || !text.empty(), "Invalid UTF-8 text");
+    return text;
+}
+void text_range(wxTextCtrl* control, int64_t from, int64_t to) {
+    require(from >= 0 && to >= from && to <= control->GetLastPosition(), "Text range is out of bounds");
+}
 wxString menu_string(const char* text, size_t length, bool allow_empty) {
     require(text || length == 0, "Null menu text");
     require(allow_empty || length != 0, "Menu label must be nonempty");
@@ -840,7 +849,7 @@ public:
 
 }
 extern "C" {
-int wxl_abi_version() { return 35; }
+int wxl_abi_version() { return 36; }
 const char* wxl_last_error() { return error.c_str(); }
 int wxl_clipboard_text_available() {
     return boolean_result([&] {
@@ -1842,9 +1851,13 @@ wxl_handle wxl_button(wxl_handle parent, const char* label) {
         return id;
     });
 }
-wxl_handle wxl_text(wxl_handle parent, const char* value) {
+wxl_handle wxl_text(wxl_handle parent, const char* value, size_t length, int multiline, int editable) {
     return create([&] {
-        auto* control = new ManagedWindow<wxTextCtrl>(window(parent), wxID_ANY, utf8(value));
+        require((multiline == 0 || multiline == 1) && (editable == 0 || editable == 1), "Invalid text control flags");
+        const auto text = text_value(value, length);
+        auto* control = new ManagedWindow<wxTextCtrl>(window(parent), wxID_ANY, text, wxDefaultPosition,
+                                                    wxDefaultSize, (multiline ? wxTE_MULTILINE : 0) |
+                                                    (editable ? 0 : wxTE_READONLY));
         const auto id = track(control);
         control->Bind(wxEVT_TEXT, [id](wxCommandEvent& event) {
             const auto it = handlers.find(id);
@@ -2102,22 +2115,65 @@ int wxl_destroy(wxl_handle id) {
         } else object->Destroy();
     });
 }
-int wxl_set_text(wxl_handle id, const char* value, int notify) {
+int wxl_set_text(wxl_handle id, const char* value, size_t length, int notify) {
     return status([&] {
         auto* control = as<wxTextCtrl>(id);
-        const auto text = utf8(value);
+        require(notify == 0 || notify == 1, "Invalid text notification flag");
+        const auto text = text_value(value, length);
         if (notify) control->SetValue(text);
         else control->ChangeValue(text);
     });
 }
-const char* wxl_get_text(wxl_handle id) {
-    const int result = status([&] {
-        // ToUTF8 may borrow storage from its wxString; keep the source alive.
-        const auto text = as<wxTextCtrl>(id)->GetValue();
-        const auto value = text.ToUTF8();
-        text_result.assign(value.data() ? value.data() : "", value.length());
+const char* wxl_get_text(wxl_handle id, size_t* length) {
+    return metadata_string([&] { return as<wxTextCtrl>(id)->GetValue(); }, length);
+}
+int wxl_text_multiline(wxl_handle id) {
+    return boolean_result([&] { return as<wxTextCtrl>(id)->IsMultiLine(); });
+}
+int wxl_text_editable(wxl_handle id) {
+    return boolean_result([&] { return as<wxTextCtrl>(id)->IsEditable(); });
+}
+int wxl_set_text_editable(wxl_handle id, int editable) {
+    return status([&] {
+        require(editable == 0 || editable == 1, "Invalid text editable flag");
+        as<wxTextCtrl>(id)->SetEditable(editable != 0);
     });
-    return result == 0 ? text_result.c_str() : nullptr;
+}
+int wxl_text_selection(wxl_handle id, int64_t* from, int64_t* to) {
+    return status([&] {
+        require(from && to, "Null text selection output");
+        long first, last;
+        as<wxTextCtrl>(id)->GetSelection(&first, &last);
+        *from = first; *to = last;
+    });
+}
+int wxl_set_text_selection(wxl_handle id, int64_t from, int64_t to) {
+    return status([&] {
+        auto* control = as<wxTextCtrl>(id);
+        text_range(control, from, to);
+        control->SetSelection(static_cast<long>(from), static_cast<long>(to));
+    });
+}
+int wxl_text_position(wxl_handle id, int field, int64_t* position) {
+    return status([&] {
+        require(position && (field == 0 || field == 1), "Invalid text position query");
+        auto* control = as<wxTextCtrl>(id);
+        *position = field == 0 ? control->GetInsertionPoint() : control->GetLastPosition();
+    });
+}
+int wxl_set_text_insertion(wxl_handle id, int64_t position) {
+    return status([&] {
+        auto* control = as<wxTextCtrl>(id);
+        text_range(control, position, position);
+        control->SetInsertionPoint(static_cast<long>(position));
+    });
+}
+int wxl_replace_text(wxl_handle id, int64_t from, int64_t to, const char* value, size_t length) {
+    return status([&] {
+        auto* control = as<wxTextCtrl>(id);
+        text_range(control, from, to);
+        control->Replace(static_cast<long>(from), static_cast<long>(to), text_value(value, length));
+    });
 }
 int wxl_on_text_change(wxl_handle id, uint64_t token) {
     return status([&] { as<wxTextCtrl>(id); handlers[id] = token; });

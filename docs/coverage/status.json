@@ -54,12 +54,14 @@
       "symbol": "wxTextCtrl::wxTextCtrl",
       "lisp": [
         "text-control",
-        "make-text"
+        "make-text",
+        "text-multiline-p",
+        "text-editable-p"
       ],
       "native": [
         "wxl_text"
       ],
-      "scope": "Parent and initial value; ID is wxID_ANY, remaining options use defaults."
+      "scope": "Native-backed CLOS parent/value construction, boolean multiline and initial user-editability styles. Explicit UTF-8 lengths/NUL rejection; fixed ID/default geometry and other styles remain unbound."
     },
     {
       "header": "wx/stattext.h",
@@ -190,7 +192,7 @@
       "native": [
         "wxl_set_text"
       ],
-      "scope": "Canonical SETF writer. Silent value replacement for wxTextCtrl only; other wxTextEntry receivers remain open."
+      "scope": "Canonical SETF writer. Silent value replacement for wxTextCtrl only; other wxTextEntry receivers remain open. ABI36 explicit UTF-8 byte lengths/NUL write rejection; multiline LF-separated values. Programmatic writes allowed on user-read-only controls."
     },
     {
       "header": "wx/textentry.h",
@@ -204,7 +206,7 @@
       "native": [
         "wxl_get_text"
       ],
-      "scope": "Independent UTF-8 Lisp string for wxTextCtrl only; other wxTextEntry receivers remain open."
+      "scope": "Independent UTF-8 Lisp string for wxTextCtrl only; other wxTextEntry receivers remain open. ABI36 explicit UTF-8 byte lengths/NUL write rejection; multiline LF-separated values. Programmatic writes allowed on user-read-only controls."
     },
     {
       "header": "wx/textentry.h",
@@ -218,7 +220,7 @@
       "native": [
         "wxl_set_text"
       ],
-      "scope": "Canonical SETF writer. Notifying value replacement for wxTextCtrl only via :notify T; other receivers remain open."
+      "scope": "Canonical SETF writer. Notifying value replacement for wxTextCtrl only via :notify T; other receivers remain open. ABI36 explicit UTF-8 byte lengths/NUL write rejection; multiline LF-separated values. Programmatic writes allowed on user-read-only controls."
     },
     {
       "header": "wx/stattext.h",
@@ -3462,6 +3464,160 @@
         "wxl_clipboard_text"
       ],
       "scope": "Standard singleton clipboard text only; scoped internal Open/Close and PRIMARY restoration, no public clipboard/data-object wrapper or raw ownership. Unicode/legacy text, empty-vs-absent, NUL rejection and error containment. Native write replaces all formats; persistence is separate best effort. Other payloads, PRIMARY access and async clipboard services remain unbound."
+    },
+    {
+      "header": "wx/textentry.h",
+      "line": 249,
+      "declaration": "virtual long GetInsertionPoint() const;",
+      "status": "~",
+      "symbol": "wxTextEntry::GetInsertionPoint",
+      "lisp": [
+        "text-insertion-point"
+      ],
+      "native": [
+        "wxl_text_position"
+      ],
+      "scope": "TEXT-CONTROL only. Boolean construction styles/user editability; native offset selection/insertion/end and notifying Replace. Ordered nonnegative in-bounds positions, no -1 sentinels or Lisp-index interpretation. Other text-entry receivers, styles and full native API remain unbound."
+    },
+    {
+      "header": "wx/textentry.h",
+      "line": 255,
+      "declaration": "virtual wxTextPos GetLastPosition() const;",
+      "status": "~",
+      "symbol": "wxTextEntry::GetLastPosition",
+      "lisp": [
+        "text-last-position"
+      ],
+      "native": [
+        "wxl_text_position"
+      ],
+      "scope": "TEXT-CONTROL only. Boolean construction styles/user editability; native offset selection/insertion/end and notifying Replace. Ordered nonnegative in-bounds positions, no -1 sentinels or Lisp-index interpretation. Other text-entry receivers, styles and full native API remain unbound."
+    },
+    {
+      "header": "wx/textentry.h",
+      "line": 290,
+      "declaration": "virtual void GetSelection(long* from, long* to) const;",
+      "status": "~",
+      "symbol": "wxTextEntry::GetSelection",
+      "lisp": [
+        "text-selection"
+      ],
+      "native": [
+        "wxl_text_selection"
+      ],
+      "scope": "TEXT-CONTROL only. Boolean construction styles/user editability; native offset selection/insertion/end and notifying Replace. Ordered nonnegative in-bounds positions, no -1 sentinels or Lisp-index interpretation. Other text-entry receivers, styles and full native API remain unbound."
+    },
+    {
+      "header": "wx/textentry.h",
+      "line": 315,
+      "declaration": "virtual bool IsEditable() const;",
+      "status": "~",
+      "symbol": "wxTextEntry::IsEditable",
+      "lisp": [
+        "text-editable-p"
+      ],
+      "native": [
+        "wxl_text_editable"
+      ],
+      "scope": "TEXT-CONTROL only. Boolean construction styles/user editability; native offset selection/insertion/end and notifying Replace. Ordered nonnegative in-bounds positions, no -1 sentinels or Lisp-index interpretation. Other text-entry receivers, styles and full native API remain unbound."
+    },
+    {
+      "header": "wx/textentry.h",
+      "line": 368,
+      "declaration": "virtual void Replace(long from, long to, const wxString& value);",
+      "status": "~",
+      "symbol": "wxTextEntry::Replace",
+      "lisp": [
+        "replace-text"
+      ],
+      "native": [
+        "wxl_replace_text"
+      ],
+      "scope": "TEXT-CONTROL only. Boolean construction styles/user editability; native offset selection/insertion/end and notifying Replace. Ordered nonnegative in-bounds positions, no -1 sentinels or Lisp-index interpretation. Other text-entry receivers, styles and full native API remain unbound."
+    },
+    {
+      "header": "wx/textentry.h",
+      "line": 380,
+      "declaration": "virtual void SetEditable(bool editable);",
+      "status": "~",
+      "symbol": "wxTextEntry::SetEditable",
+      "lisp": [
+        "(setf text-editable-p)"
+      ],
+      "native": [
+        "wxl_set_text_editable"
+      ],
+      "scope": "TEXT-CONTROL only. Boolean construction styles/user editability; native offset selection/insertion/end and notifying Replace. Ordered nonnegative in-bounds positions, no -1 sentinels or Lisp-index interpretation. Other text-entry receivers, styles and full native API remain unbound."
+    },
+    {
+      "header": "wx/textentry.h",
+      "line": 388,
+      "declaration": "virtual void SetInsertionPoint(long pos);",
+      "status": "~",
+      "symbol": "wxTextEntry::SetInsertionPoint",
+      "lisp": [
+        "(setf text-insertion-point)"
+      ],
+      "native": [
+        "wxl_set_text_insertion"
+      ],
+      "scope": "TEXT-CONTROL only. Boolean construction styles/user editability; native offset selection/insertion/end and notifying Replace. Ordered nonnegative in-bounds positions, no -1 sentinels or Lisp-index interpretation. Other text-entry receivers, styles and full native API remain unbound."
+    },
+    {
+      "header": "wx/textentry.h",
+      "line": 433,
+      "declaration": "virtual void SetSelection(long from, long to);",
+      "status": "~",
+      "symbol": "wxTextEntry::SetSelection",
+      "lisp": [
+        "(setf text-selection)"
+      ],
+      "native": [
+        "wxl_set_text_selection"
+      ],
+      "scope": "TEXT-CONTROL only. Boolean construction styles/user editability; native offset selection/insertion/end and notifying Replace. Ordered nonnegative in-bounds positions, no -1 sentinels or Lisp-index interpretation. Other text-entry receivers, styles and full native API remain unbound."
+    },
+    {
+      "header": "wx/textctrl.h",
+      "line": 13,
+      "declaration": "#define wxTE_READONLY       0x0010",
+      "status": "~",
+      "symbol": "wxTE_READONLY",
+      "lisp": [
+        "text-control"
+      ],
+      "native": [
+        "wxl_text"
+      ],
+      "scope": "TEXT-CONTROL only. Boolean construction styles/user editability; native offset selection/insertion/end and notifying Replace. Ordered nonnegative in-bounds positions, no -1 sentinels or Lisp-index interpretation. Other text-entry receivers, styles and full native API remain unbound."
+    },
+    {
+      "header": "wx/textctrl.h",
+      "line": 14,
+      "declaration": "#define wxTE_MULTILINE      0x0020",
+      "status": "~",
+      "symbol": "wxTE_MULTILINE",
+      "lisp": [
+        "text-control"
+      ],
+      "native": [
+        "wxl_text"
+      ],
+      "scope": "TEXT-CONTROL only. Boolean construction styles/user editability; native offset selection/insertion/end and notifying Replace. Ordered nonnegative in-bounds positions, no -1 sentinels or Lisp-index interpretation. Other text-entry receivers, styles and full native API remain unbound."
+    },
+    {
+      "header": "wx/textctrl.h",
+      "line": 1692,
+      "declaration": "bool IsMultiLine() const;",
+      "status": "~",
+      "symbol": "wxTextCtrl::IsMultiLine",
+      "lisp": [
+        "text-multiline-p"
+      ],
+      "native": [
+        "wxl_text_multiline"
+      ],
+      "scope": "TEXT-CONTROL only. Boolean construction styles/user editability; native offset selection/insertion/end and notifying Replace. Ordered nonnegative in-bounds positions, no -1 sentinels or Lisp-index interpretation. Other text-entry receivers, styles and full native API remain unbound."
     }
   ],
   "classes": {
@@ -3504,12 +3660,23 @@
       "status": "~",
       "lisp": [
         "text-control",
-        "make-text"
+        "make-text",
+        "text-multiline-p",
+        "text-editable-p",
+        "text-selection",
+        "text-insertion-point",
+        "text-last-position",
+        "replace-text"
       ],
       "native": [
-        "wxl_text"
+        "wxl_text",
+        "wxl_text_multiline",
+        "wxl_text_editable",
+        "wxl_text_selection",
+        "wxl_text_position",
+        "wxl_replace_text"
       ],
-      "scope": "Native-backed CLOS construction, including subclass initargs/defaults and managed rollback. Parent and initial value; ID is wxID_ANY, remaining options use defaults. Full class and inherited API coverage remain open."
+      "scope": "Native-backed CLOS parent/value construction with boolean multiline and initial user-editability styles. Explicit UTF-8 lengths/NUL rejection; mutable generic user editability, bounded native selection/insertion/end and notifying Replace. Fixed ID/default geometry; other styles, GetRange, undo/redo, rich text and full class parity remain unbound."
     },
     "wxStaticText": {
       "status": "~",

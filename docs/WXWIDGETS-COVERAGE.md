@@ -103,16 +103,16 @@ The scheduled-deletion ancestor gap is repaired: the bridge uses public wxApp
 scheduled-deletion state plus its pending markers. Native regressions, independent
 review and the full GUI/package checks below validate the corrected behavior.
 
-The current bridge is ABI 35, with 170 public Lisp exports. Clipboard/form workflows
-pass all 53 GUI scenarios on local Apple Silicon macOS SBCL and CCL, five package
-checks and independent reviews. Native isolated clipboard regressions pass with
+The current bridge is ABI 36, with 176 public Lisp exports. Multiline/text workflows
+pass all 54 GUI scenarios on local Apple Silicon macOS SBCL and CCL, five package
+checks and independent reviews. Native raw text/clipboard regressions pass with
 zero wx assertions; automatic tests preserve system clipboard content.
-Reports: `evidence/clipboard/{sbcl,ccl}-20261028-final/` and
-`evidence/packaging/clipboard-20261028/`. Docset checks pass with 239 entries and
+Reports: `evidence/text-editing/{sbcl,ccl}-20261028-final/` and
+`evidence/packaging/text-editing-20261028/`. Docset checks pass with 247 entries and
 zero problems, including actual public-export/class/SETF coverage and isolated
-discovery/lookup. These checks do not validate live clipboard writes, external-app
-interoperability or exit persistence, hosted Windows/Linux, physical interactive
-input, real OS session delivery or the graphical Cadre viewer.
+discovery/lookup. These checks do not validate physical typing/selection, IME/
+grapheme behavior, live clipboard writes/interoperability/exit persistence, hosted
+Windows/Linux, real OS session delivery or the graphical Cadre viewer.
 
 A milestone is accepted against its selected GUI scope and representative
 workflows, not declaration totals or completion of every pending native entry.
@@ -134,8 +134,8 @@ feature scope is accepted. Native missing APIs are not automatic release blocker
 
 **Current vertical slice:** the persistent form composes menus/actions and generic
 modal dialogs with Lisp-native open/save IO. Text clipboard Copy/Paste now extends
-the form/editor; next add bounded multiline text-control construction/editing
-semantics, adding only prerequisites actually needed by that slice. Do not drain native ownership/utilities first.
+the form/editor; multiline text primitives now support editor UI construction.
+Next add bounded notebook navigation, with only the prerequisites needed by that slice. Do not drain native ownership/utilities first.
 
 ### Representative application acceptance
 
@@ -420,7 +420,7 @@ This adds no bindings: wxDocument/wxDocManager/native streams stay unbound. Its
 52-scenario suite and 234-entry docset verification pass; see
 IMPLEMENTATION.md for evidence. The example is a form, not a multiline editor, and
 does not provide locking, crash durability or external-change detection. Next add
-bounded text clipboard support for the form/editor.
+text clipboard support (delivered below) for the form/editor.
 
 
 ABI35 adds [text clipboard](CLIPBOARD.md): standard-clipboard generic text SETF,
@@ -432,5 +432,16 @@ stay partial in the regenerated C3 inventory, including private adapters/prerequ
 no class-completeness claim follows from these three public names. Automatic tests
 use isolated transfer doubles and a live availability-only query; actual system
 writes/interoperability/exit persistence remain unverified. The 53-scenario,
-239-entry docset and package checks pass; evidence is recorded in IMPLEMENTATION.md. Next add
-bounded multiline text-control construction/editing semantics for the editor.
+239-entry docset and package checks pass; evidence is recorded in IMPLEMENTATION.md. Multiline
+text-control construction/editing now extends the editor primitives (below).
+
+
+ABI36 adds [multiline text/basic editing](TEXT-EDITING.md): native-backed construction
+styles, user editability, native selection/caret/end offsets and notifying Replace.
+Existing text values now cross an explicit-length UTF-8 ABI with NUL write rejection.
+The regenerated C2 inventory keeps wxTextCtrl partial and other wxTextEntry receivers
+unbound. Offsets are native units, not Lisp string indices; GetRange, selection
+clipboard, undo/redo, rich text, arbitrary styles and native text file IO stay gaps.
+The example demonstrates primitives rather than claiming a full multiline document
+application. The 54-scenario/247-entry docset/package checks pass; evidence is recorded in
+IMPLEMENTATION.md. Next broaden everyday GUI coverage with bounded notebook navigation.

@@ -158,7 +158,8 @@ class CoverageInventoryChecks(unittest.TestCase):
         required = {
             'wxFrame::wxFrame', 'wxPanel::wxPanel', 'wxButton::wxButton',
             'wxMessageDialog::wxMessageDialog', 'wxMessageDialog::GetMessage',
-            'wxClipboard::GetData', 'wxClipboard::SetData', 'wxClipboard::Flush',
+            'wxTextEntry::Replace', 'wxTextEntry::GetSelection', 'wxTextEntry::SetSelection',
+            'wxTextCtrl::IsMultiLine', 'wxTextEntry::IsEditable', 'wxClipboard::GetData', 'wxClipboard::SetData', 'wxClipboard::Flush',
             'wxTextDataObject::GetText', 'wxFileDialog::wxFileDialog', 'wxFileDialog::GetPath', 'wxFileDialog::SetPath',
             'wxFileDialog::GetFilterIndex', 'wxModalDialogHook::Enter',
             'wxApp::IsScheduledForDestruction', 'wxDialog::ShowModal', 'wxDialog::EndModal', 'wxDialog::IsModal',

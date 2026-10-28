@@ -447,7 +447,7 @@ void exercise_client_data(unsigned& foreign_destroyed) {
     const auto frame = wxl_frame("Native client-data regression", 200, 120);
     const auto panel = wxl_panel(frame);
     const char* items[] = {"item"};
-    const wxl_handle controls[] = {frame, panel, wxl_button(panel, "button"), wxl_text(panel, "text"),
+    const wxl_handle controls[] = {frame, panel, wxl_button(panel, "button"), wxl_text(panel, "text", 4, 0, 1),
                                   wxl_label(panel, "label"), wxl_checkbox(panel, "checkbox", 0),
                                   wxl_choice(panel, items, 1, -1), wxl_gauge(panel, 100, 0, 0)};
     uint64_t token = 100;
@@ -569,6 +569,39 @@ void exercise_clipboard() {
 }
 #endif
 
+
+void exercise_text_editing() {
+    const auto frame = wxl_frame("Text ranges", 300, 200);
+    const auto text = wxl_text(frame, "one\nλ 日本語 😀", std::strlen("one\nλ 日本語 😀"), 1, 0);
+    expect(text && wxl_text_multiline(text) == 1 && wxl_text_editable(text) == 0, "Text construction flags lost");
+    expect(wxl_text(frame, "a\0b", 3, 1, 1) == 0 && wxl_text(frame, "\xff", 1, 1, 1) == 0 &&
+           wxl_text(frame, nullptr, 1, 1, 1) == 0 && wxl_text(frame, "", 0, 2, 1) == 0,
+           "Invalid text constructor inputs must reject");
+    int64_t end = 0, first = -1, last = -1;
+    expect(wxl_text_position(text, 1, &end) == 0 && end > 4, "Missing native end position");
+    expect(wxl_set_text_selection(text, 0, end) == 0 && wxl_text_selection(text, &first, &last) == 0 && first == 0 && last == end,
+           "Native selection round trip failed");
+    expect(wxl_replace_text(text, 0, end, "new\nλ", std::strlen("new\nλ")) == 0, "Read-only programmatic replacement failed");
+    size_t length = 0;
+    const auto value = wxl_get_text(text, &length);
+    expect(value && std::string(value, length) == "new\nλ", "Explicit-length text read failed");
+    expect(wxl_text_position(text, 1, &end) == 0 && wxl_set_text_insertion(text, end) == 0 &&
+           wxl_text_position(text, 0, &last) == 0 && last == end, "Native insertion point failed");
+    expect(wxl_set_text_selection(text, -1, end) == -1 && wxl_set_text_selection(text, end, 0) == -1 &&
+           wxl_set_text_insertion(text, end + 1) == -1 && wxl_set_text_selection(text, 0, INT64_MAX) == -1 &&
+           wxl_replace_text(text, 0, end + 1, "bad", 3) == -1, "Invalid native positions must reject without clamping");
+    expect(wxl_set_text(text, "a\0b", 3, 0) == -1 && wxl_set_text(text, "", 0, 2) == -1 &&
+           wxl_replace_text(text, 0, 0, "\xff", 1) == -1, "Invalid native text writes must reject");
+    expect(!wxl_get_text(text, nullptr) && wxl_text_selection(text, nullptr, &last) == -1 &&
+           wxl_text_position(text, 2, &last) == -1 && wxl_text_position(text, 0, nullptr) == -1,
+           "Invalid text outputs/fields must reject");
+    expect(wxl_text_multiline(frame) == -1 && wxl_text_editable(frame) == -1 &&
+           wxl_set_text_editable(text, 2) == -1 && wxl_set_text_editable(text, 1) == 0,
+           "Text type/editable checks failed");
+    delete window(frame);
+    expect(wxl_text_multiline(text) == -1 && wxl_replace_text(text, 0, 0, "", 0) == -1, "Stale text handle must reject");
+}
+
 int main() {
     std::thread([] { std::this_thread::sleep_for(std::chrono::seconds(10)); std::_Exit(124); }).detach();
     auto old_assert_handler = wxSetAssertHandler(capture_assert);
@@ -584,6 +617,7 @@ int main() {
         exercise_menus();
         exercise_dialogs();
         exercise_generic_dialogs();
+        exercise_text_editing();
 #if wxUSE_CLIPBOARD
         exercise_clipboard();
 #endif

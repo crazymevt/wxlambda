@@ -79,16 +79,16 @@ as if later features or platform checks already passed.
 - Idle batch: :IDLE family/resources, bounded RequestMore, session-restored
   automatic mode, own-window opt-in and native wake scheduling. Independent review
   and final verification pass.
-- Current bridge ABI: 35. Public API: 170 exports, fourteen window wrapper classes
-  (twelve concrete kinds plus WINDOW/DIALOG abstract bases) plus the event-handler base and frame-owned menu resources, 116 named generics and
-  thirty-seven generic SETF writers. The application-handler is a borrowed view; no
+- Current bridge ABI: 36. Public API: 176 exports, fourteen window wrapper classes
+  (twelve concrete kinds plus WINDOW/DIALOG abstract bases) plus the event-handler base and frame-owned menu resources, 122 named generics and
+  forty generic SETF writers. The application-handler is a borrowed view; no
   native application construction or arbitrary-event class binding exists yet; built-ins plus registered command/notify names have
   observer/contextual bindings.
-- Latest implementation verification: all 53 GUI scenarios and native preflight
+- Latest implementation verification: all 54 GUI scenarios and native preflight
   pass on local Apple Silicon macOS SBCL 2.6.9 and CCL 1.13. Final reports:
-  `evidence/clipboard/{sbcl,ccl}-20261028-final/`. Native clipboard doubles pass
-  with zero wx assertions; live availability-only checks preserve system contents.
-  Five package checks pass in `evidence/packaging/clipboard-20261028/`.
+  `evidence/text-editing/{sbcl,ccl}-20261028-final/`. Native text/clipboard
+  regressions pass with zero wx assertions; system clipboard contents stay intact.
+  Five package checks pass in `evidence/packaging/text-editing-20261028/`.
   Hosted Linux/Windows GUI behavior and the graphical Cadre viewer remain open.
 
 ### Feature priorities and working order
@@ -98,8 +98,8 @@ as if later features or platform checks already passed.
 2. Menus/actions and bounded text/single-choice dialogs extend the form/editor
    slice. A persistent form now composes open/save workflows through generic
    message/file dialogs and Lisp-native document IO. Text clipboard support now extends
-   the form/editor. Next add bounded multiline text-control construction/editing
-   semantics; retain native OS dialog backends as unbound.
+   the form/editor. Multiline text construction/editing now provides editor
+   primitives. Next add bounded notebook navigation; retain native OS dialog backends as unbound.
    Add only necessary
    timer/value/lifetime prerequisites; do not drain native ownership/utilities.
 3. Expand controls/layout, navigation/notebooks, list/tree, clipboard and drawing
@@ -1811,3 +1811,51 @@ physical interactive START/menu input, hosted Windows/Linux GUI, graphical Cadre
 and allocation/IO-race injection remain unverified. The isolated tests do not imply
 those passed. Next selected slice: bounded multiline text-control construction and
 basic editing semantics for the editor, not native document/stream parity.
+
+## Multiline text and basic editing (2026-10-28, verified)
+
+ABI36 extends TEXT-CONTROL construction with :MULTILINE (NIL default) and
+:EDITABLE-P (T default), preserving native-backed CLOS defaults/subclass AFTER
+hooks/rollback and thin :CLASS factories. Six new generic names expose immutable
+TEXT-MULTILINE-P, mutable TEXT-EDITABLE-P, TEXT-SELECTION and TEXT-INSERTION-POINT,
+TEXT-LAST-POSITION and notifying REPLACE-TEXT. Counts: 176 exports, 122 named
+generics, 40 SETF generics, 54 GUI scenarios, 35 examples, 247 docset entries.
+
+The existing text constructor/getter/setter ABI now carries explicit UTF-8 lengths;
+constructor/SETF/replacement reject NUL rather than truncating. Whole-value SETF
+stays silent by default; :NOTIFY T and native Replace deliver text-change events.
+Read-only disables native user typing, not explicit Lisp mutations. Text offsets
+are native positions (Unicode units/CRLF bookkeeping), never Lisp string indices.
+Selection SETF accepts exactly two ordered nonnegative in-bounds integers; caret
+SETF requires an in-bounds integer. Signed-64-bit Lisp bounds prevent CFFI wrapping;
+native last-position checks protect narrowing to long. No -1 sentinels, GetRange,
+selection clipboard/Cut, undo/redo, rich text or arbitrary styles are exposed.
+
+examples/text-editor.lisp demonstrates multiline text, append-at-native-end,
+replace-selection, user-editability toggle and bounded EXERCISE. The existing form
+stays single-line; its document file format is not a multiline editor format.
+Native raw-argument/UTF8/flags/pointer/range/type/stale-handle tests pass with zero
+wx assertions; focused SBCL+CCL CLOS/editor tests also pass (quiet-run.zLjI2XS3).
+Additional both-Lisp checks pass empty replacement/deletion/no-op, multiline
+notifying SETF, nested borrowed-context suspension/resumption and callback-time
+control disposal (quiet-run.fuWLIe4U). Callback errors preserve completed mutations
+and allow later recovery. Failed initializer cleanup was tested via saved native
+ID: querying an incomplete wrapper's removed handle correctly signals instead.
+
+Independent runtime/source/docs review found no runtime issues; one stale native
+class-scope description was corrected. Pinned inventory+13 checks and zero-problem
+247-entry docset pass (quiet-run.3zboBIhT). Final regenerated inventory+13 checks,
+247-entry zero-problem check, isolated install/discovery/lookup, actual 176-export/
+class/SETF coverage on both Lisps and 16 Python unit tests pass (quiet-run.Xq6VYoW3).
+All 54 GUI scenarios plus native preflight pass both Lisps:
+evidence/text-editing/{sbcl,ccl}-20261028-final/. Five package checks pass:
+evidence/packaging/text-editing-20261028/ (quiet-run.Y76XoIUJ); package:
+dist/wxlambda-form-text-editing. The package is the existing form executable;
+the new multiline example/docs remain repository/docset deliverables. Final
+header comments document the stricter 0/1 notification flag and native query fields.
+Docset rebuilt after final session-note edits.
+
+Physical typing/selection, IME/grapheme behavior, hosted Windows/Linux GUI, graphical
+Cadre, a full multiline document application and live clipboard interop remain
+unverified. Next selected slice: bounded notebook navigation for broader everyday
+GUI coverage; deeper text/selection/undo APIs remain demand-driven.

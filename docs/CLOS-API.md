@@ -228,3 +228,8 @@ implementations remain unbound. See [message/file workflows](MESSAGE-FILE-DIALOG
 The singleton `clipboard-text` property uses a zero-argument generic reader and
 a generic SETF writer specialized on STRING, without a public clipboard class.
 See [text clipboard](CLIPBOARD.md) for transfer, errors and persistence scope.
+
+Text controls accept `:multiline` (default NIL) and `:editable-p` (default T).
+Native properties are available in subclass AFTER hooks; editable/selection/caret
+properties have generic SETF. See [text editing](TEXT-EDITING.md) for native offset
+semantics, notifying replacements, read-only policy and limits.
