@@ -2,7 +2,7 @@
 
 This C1 slice adds borrowed `event-context` values for native Skip and propagation
 control. Existing `event` snapshots remain immutable Lisp-owned data. The bridge
-is ABI 18, using the wxWidgets 3.2.12 inventory baseline. Supported events now include
+is ABI 19, using the wxWidgets 3.2.12 inventory baseline. Supported events now include
 four command kinds plus the [close family](CLOSE-EVENTS.md); arbitrary classes
 and native notify subclasses/session routing remain open. Registered
 [notify types](NOTIFY-EVENTS.md) now support scoped Veto/Allow.
@@ -83,7 +83,7 @@ worker-thread context access is not supported.
 Keep the snapshot to inspect data after return. Do not keep a context expecting
 to mutate the event later. The snapshot's source remains the binding receiver,
 not necessarily the native originating child. Native origin-object access, ID/type
-mutation, timestamps, userData, arbitrary event classes and native virtual
+mutation, userData, arbitrary event classes and native virtual
 overrides remain open. Veto is available for current vetoable close contexts and registered notify
 contexts; plain command kinds do not provide veto state. See [close semantics](CLOSE-EVENTS.md).
 
@@ -131,3 +131,5 @@ installable under `$XDG_DATA_HOME/docsets/wxlambda/` (default
 verification remain separate checks.
 
 [Session events](SESSION-EVENTS.md) extend the close family with query/end-session kinds, scoped logging-off metadata and isolated synthetic dispatch. Native OS session delivery remains unverified.
+
+[Event metadata](EVENT-METADATA.md) adds copied/current timestamps and command classification, bounded timestamp SETF and close-family CanVeto SETF.

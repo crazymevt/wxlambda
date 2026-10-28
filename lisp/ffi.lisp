@@ -18,7 +18,9 @@
   (vetoed :int)
   (family :int)
   (integer :int)
-  (logging-off :int))
+  (logging-off :int)
+  (timestamp :int64)
+  (command :int))
 
 (cffi:defcfun ("wxl_abi_version" %abi-version) :int)
 (cffi:defcfun ("wxl_last_error" %last-error) :string)
@@ -85,7 +87,7 @@
           (if (probe-file local)
               (cffi:load-foreign-library local)
               (cffi:use-foreign-library wxlambda-native))))
-    (unless (= 18 (%abi-version)) (error "Unsupported wxlambda native ABI"))
+    (unless (= 19 (%abi-version)) (error "Unsupported wxlambda native ABI"))
     (setf *native-loaded* t))
   t)
 
@@ -134,3 +136,8 @@
 
 (cffi:defcfun ("wxl_context_logging_off" %context-logging-off) :int (context :uint64))
 (cffi:defcfun ("wxl_context_set_logging_off" %context-set-logging-off) :int (context :uint64) (value :int))
+
+(cffi:defcfun ("wxl_context_set_can_veto" %context-set-can-veto) :int (context :uint64) (value :int))
+(cffi:defcfun ("wxl_context_timestamp" %context-timestamp) :int (context :uint64) (value :pointer))
+(cffi:defcfun ("wxl_context_set_timestamp" %context-set-timestamp) :int (context :uint64) (value :int64))
+(cffi:defcfun ("wxl_context_command" %context-command) :int (context :uint64))

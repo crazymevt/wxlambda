@@ -373,7 +373,7 @@
     "kind": "type",
     "arguments": "Snapshot type created by callbacks, without a public constructor.",
     "returns": "Lisp-owned event value.",
-    "description": "Read-only event snapshot: kind, receiving source handler/control, native event ID and process-local native type, copied text, checked state and selection. Data survives later callbacks and source destruction. Close snapshots capture CanVeto and GetVeto before this callback; they never reflect later context mutation. Registered names and family/integer data remain available in saved snapshots after session cleanup. Notify snapshots capture pre-callback veto capability/state independently of later Veto/Allow.",
+    "description": "Read-only event snapshot: kind, receiving source handler/control, native event ID and process-local native type, copied text, checked state and selection. Data survives later callbacks and source destruction. Close snapshots capture CanVeto and GetVeto before this callback; they never reflect later context mutation. Registered names and family/integer data remain available in saved snapshots after session cleanup. Notify snapshots capture pre-callback veto capability/state independently of later Veto/Allow. Timestamp and native IsCommandEvent are copied before each callback; saved reads need no active session.",
     "scope": "Use only the exported predicate/accessors; native event objects do not escape callbacks.",
     "wxwidgets": "wxCommandEvent snapshot.",
     "syntax": "wxlambda:event"
@@ -926,18 +926,22 @@
   {
     "name": "event-can-veto-p",
     "kind": "generic-function",
-    "arguments": "EVENT is a snapshot or the current event context.",
+    "arguments": "EVENT is a saved snapshot or current event context. SETF requires a current close-family context; VALUE is a generalized boolean.",
     "returns": "T for veto-capable captured/current close or notify events; NIL otherwise.",
-    "description": "Snapshots read copied capability without a session. Current close contexts use CanVeto; current notify contexts always support Veto/Allow. Plain command contexts return NIL. Scope validation remains required for native access.",
+    "description": "Snapshots read copied capability without a session. Current close contexts use CanVeto; current notify contexts always support Veto/Allow. Plain command contexts return NIL. Scope validation remains required for native access. Context SETF maps native SetCanVeto directly, including false to true. GetVeto hides a stored veto when CanVeto is false and reveals it again if re-enabled. Forced close starts false but explicit metadata mutation can affect native closing results; OS veto acceptance is not guaranteed.",
     "scope": "Active main-thread session required for native context or frame operations. Expired/suspended contexts and invalid/deleting frames signal NATIVE-ERROR. Saved snapshots need no session. Close and registered notify families permit checked veto. Native control-specific notify subclasses, validated OS session delivery and arbitrary event classes remain open.",
-    "wxwidgets": "wxCloseEvent::CanVeto, copied or borrowed; intrinsic wxNotifyEvent Veto/Allow capability (wxWidgets 3.2.12 baseline)."
+    "wxwidgets": "wxCloseEvent::CanVeto / SetCanVeto; intrinsic wxNotifyEvent capability is read-only (wxWidgets 3.2.12 baseline).",
+    "setf": {
+      "syntax": "(setf (wxlambda:event-can-veto-p context) value)",
+      "description": "Assign current wxCloseEvent capability, returning VALUE. Snapshot, command and notify writers reject; stale/suspended contexts reject native access. Does not clear the native stored veto bit or guarantee OS policy."
+    }
   },
   {
     "name": "event-vetoed-p",
     "kind": "generic-function",
     "arguments": "EVENT is a saved snapshot or current close/notify context. SETF requires a current veto-capable context.",
     "returns": "Copied/current veto state as T/NIL; SETF returns the supplied generalized boolean.",
-    "description": "Snapshots retain pre-callback state. Close contexts use GetVeto / checked Veto(bool); notify contexts use NOT IsAllowed, Veto() for true, and Allow() for NIL. Forced-close writes remain rejected. Plain command contexts reject live veto-state access. Snapshots stay immutable.",
+    "description": "Snapshots retain pre-callback state. Close contexts use GetVeto / checked Veto(bool); notify contexts use NOT IsAllowed, Veto() for true, and Allow() for NIL. A close initialized non-vetoable rejects writes unless its current CanVeto flag was explicitly enabled through SETF EVENT-CAN-VETO-P. Plain command contexts reject live veto-state access. Snapshots stay immutable. Native GetVeto is CanVeto AND the stored veto bit; disabling capability hides the bit without clearing it.",
     "scope": "Active main-thread session required for native context or frame operations. Expired/suspended contexts and invalid/deleting frames signal NATIVE-ERROR. Saved snapshots need no session. Close and registered notify families permit checked veto. Native control-specific notify subclasses, validated OS session delivery and arbitrary event classes remain open.",
     "wxwidgets": "wxCloseEvent::GetVeto / Veto(bool); wxNotifyEvent::IsAllowed / Veto / Allow. (wxWidgets 3.2.12 baseline).",
     "setf": {
@@ -948,9 +952,9 @@
   {
     "name": "close-window",
     "kind": "generic-function",
-    "arguments": "FRAME is a live FRAME. Optional FORCE defaults NIL; true disallows native veto.",
+    "arguments": "FRAME is a live FRAME. Optional FORCE defaults NIL; true initializes native CanVeto false.",
     "returns": "Native close acceptance as T/NIL; not a destruction/liveness guarantee.",
-    "description": "Synchronously generate the frame close request via wxWindow::Close(force). A vetoed request returns NIL. A consuming contextual callback may return acceptance T without deleting anything, even for FORCE. Set Skip true to delegate to native default closing when appropriate. Callback conditions re-signal at this Lisp boundary; a handled nested condition does not stop RUN. Use DESTROY-WINDOW for explicit destruction.",
+    "description": "Synchronously generate the frame close request via wxWindow::Close(force). A vetoed request returns NIL. A consuming contextual callback may return acceptance T without deleting anything, even for FORCE. Set Skip true to delegate to native default closing when appropriate. Callback conditions re-signal at this Lisp boundary; a handled nested condition does not stop RUN. Use DESTROY-WINDOW for explicit destruction. A callback can explicitly mutate CanVeto through SETF EVENT-CAN-VETO-P; FORCE is not an immutable capability limit.",
     "scope": "Active main-thread session required for native context or frame operations. Expired/suspended contexts and invalid/deleting frames signal NATIVE-ERROR. Saved snapshots need no session. Close and registered notify families permit checked veto. Native control-specific notify subclasses, validated OS session delivery and arbitrary event classes remain open.",
     "wxwidgets": "wxWindow::Close(bool), wxFrame receivers only (wxWidgets 3.2.12 baseline)."
   },
@@ -1018,5 +1022,27 @@
       "syntax": "(setf (wxlambda:event-logging-off-p context) value)",
       "description": "Assign the current native session flag, returning the generalized boolean. No snapshot writer; no OS logout/shutdown action is performed."
     }
+  },
+  {
+    "name": "event-timestamp",
+    "kind": "generic-function",
+    "arguments": "EVENT is an immutable snapshot or current event context. SETF VALUE must fit signed native C long.",
+    "returns": "Native millisecond timestamp as a Lisp integer; SETF returns VALUE.",
+    "description": "Read copied/current native timestamp, not necessarily Unix time. Negative values including -1 are valid. Synthetic events start at zero. Context SETF changes metadata only, not scheduling. Snapshots stay immutable and preserve pre-callback values.",
+    "scope": "Saved snapshot reads need no native session. Context access requires an active main-thread session and the innermost callback; expired/suspended contexts signal NATIVE-ERROR. Malformed/out-of-range SETF values signal TYPE-ERROR. Native LONG width is platform-specific; mouse/key events are not yet bound.",
+    "wxwidgets": "wxEvent::GetTimestamp / SetTimestamp, native signed long widened to int64_t at the ABI (wxWidgets 3.2.12 baseline).",
+    "setf": {
+      "syntax": "(setf (wxlambda:event-timestamp context) value)",
+      "description": "Assign a signed native LONG timestamp to the current event. No snapshot writer or synthetic-constructor timestamp keyword. No Unix-epoch or scheduling meaning is implied."
+    }
+  },
+  {
+    "name": "event-command-p",
+    "kind": "generic-function",
+    "arguments": "EVENT is an immutable snapshot or current event context.",
+    "returns": "T for native command/notify-derived events; NIL for close-family events.",
+    "description": "Read captured/current native IsCommandEvent classification. No mutable classification or event replacement. Saved values remain independent of source lifetime.",
+    "scope": "Saved snapshots need no session. Current-context access requires an active main-thread session and the innermost callback; stale/suspended contexts signal NATIVE-ERROR. No SETF writer.",
+    "wxwidgets": "wxEvent::IsCommandEvent copied or borrowed (wxWidgets 3.2.12 baseline)."
   }
 ]

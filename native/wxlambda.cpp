@@ -225,7 +225,8 @@ struct Binding {
                                      event.GetId(), carries_text ? bytes.length() : 0,
                                      0, event.GetEventType(), event_can_veto(event) ? 1 : 0, event_vetoed(event) ? 1 : 0,
                                      family, command ? command->GetInt() : 0,
-                                     session_type(event.GetEventType()) ? (static_cast<wxCloseEvent&>(event).GetLoggingOff() ? 1 : 0) : 0};
+                                     session_type(event.GetEventType()) ? (static_cast<wxCloseEvent&>(event).GetLoggingOff() ? 1 : 0) : 0,
+                                     event.GetTimestamp(), event.IsCommandEvent() ? 1 : 0};
             if (with_context) {
                 event.Skip(false);
                 EventScope scope(event);
@@ -299,7 +300,7 @@ wxString utf8(const char* value) {
 }
 }
 extern "C" {
-int wxl_abi_version() { return 18; }
+int wxl_abi_version() { return 19; }
 const char* wxl_last_error() { return error.c_str(); }
 int wxl_start(wxl_callback callback) {
     return status([&] {
@@ -451,6 +452,30 @@ int wxl_context_can_veto(uint64_t token) {
         return event_can_veto(current_event(token));
     });
 }
+int wxl_context_set_can_veto(uint64_t token, int value) {
+    return status([&] {
+        auto* close = dynamic_cast<wxCloseEvent*>(&current_event(token));
+        require(close != nullptr, "CanVeto mutation requires a close-family event");
+        close->SetCanVeto(value != 0);
+    });
+}
+int wxl_context_timestamp(uint64_t token, int64_t* value) {
+    return status([&] {
+        require(value != nullptr, "Missing timestamp output");
+        *value = current_event(token).GetTimestamp();
+    });
+}
+int wxl_context_set_timestamp(uint64_t token, int64_t value) {
+    return status([&] {
+        auto& event = current_event(token);
+        require(value >= std::numeric_limits<long>::min() && value <= std::numeric_limits<long>::max(),
+                "Timestamp is outside the native long range");
+        event.SetTimestamp(static_cast<long>(value));
+    });
+}
+int wxl_context_command(uint64_t token) {
+    return boolean_result([&] { return current_event(token).IsCommandEvent(); });
+}
 int wxl_context_vetoed(uint64_t token) {
     return boolean_result([&] {
         auto& event = current_event(token);
@@ -579,7 +604,7 @@ wxl_handle wxl_button(wxl_handle parent, const char* label) {
         auto* control = new wxButton(window(parent), wxID_ANY, utf8(label));
         auto id = track(control);
         control->Bind(wxEVT_BUTTON, [id](wxCommandEvent& event) {
-            emit_event(id, {WXL_EVENT_CLICK, nullptr, 0, -1, event.GetId(), 0, 0, event.GetEventType(), 0, 0, WXL_FAMILY_COMMAND, event.GetInt(), 0});
+            emit_event(id, {WXL_EVENT_CLICK, nullptr, 0, -1, event.GetId(), 0, 0, event.GetEventType(), 0, 0, WXL_FAMILY_COMMAND, event.GetInt(), 0, event.GetTimestamp(), event.IsCommandEvent() ? 1 : 0});
             event.Skip();
         });
         return id;
@@ -596,7 +621,7 @@ wxl_handle wxl_text(wxl_handle parent, const char* value) {
                 // Both objects must survive reentrant callbacks and conversion.
                 const auto text = event.GetString();
                 const auto bytes = text.ToUTF8();
-                const wxl_event payload{WXL_EVENT_TEXT_CHANGE, bytes.data() ? bytes.data() : "", 0, -1, event.GetId(), bytes.length(), 0, event.GetEventType(), 0, 0, WXL_FAMILY_COMMAND, event.GetInt(), 0};
+                const wxl_event payload{WXL_EVENT_TEXT_CHANGE, bytes.data() ? bytes.data() : "", 0, -1, event.GetId(), bytes.length(), 0, event.GetEventType(), 0, 0, WXL_FAMILY_COMMAND, event.GetInt(), 0, event.GetTimestamp(), event.IsCommandEvent() ? 1 : 0};
                 invoke_callback(token, payload);
             }
             event.Skip();
@@ -668,7 +693,7 @@ wxl_handle wxl_checkbox(wxl_handle parent, const char* label, int checked) {
         control->SetValue(checked != 0);
         const auto id = track(control);
         control->Bind(wxEVT_CHECKBOX, [id](wxCommandEvent& event) {
-            emit_event(id, {WXL_EVENT_TOGGLE, nullptr, event.IsChecked() ? 1 : 0, -1, event.GetId(), 0, 0, event.GetEventType(), 0, 0, WXL_FAMILY_COMMAND, event.GetInt(), 0});
+            emit_event(id, {WXL_EVENT_TOGGLE, nullptr, event.IsChecked() ? 1 : 0, -1, event.GetId(), 0, 0, event.GetEventType(), 0, 0, WXL_FAMILY_COMMAND, event.GetInt(), 0, event.GetTimestamp(), event.IsCommandEvent() ? 1 : 0});
             event.Skip();
         });
         return id;
@@ -708,7 +733,7 @@ wxl_handle wxl_choice(wxl_handle parent, const char** items, int count, int sele
         control->SetSelection(selection);
         const auto id = track(control);
         control->Bind(wxEVT_CHOICE, [id](wxCommandEvent& event) {
-            emit_event(id, {WXL_EVENT_SELECTION, nullptr, 0, event.GetSelection(), event.GetId(), 0, 0, event.GetEventType(), 0, 0, WXL_FAMILY_COMMAND, event.GetInt(), 0});
+            emit_event(id, {WXL_EVENT_SELECTION, nullptr, 0, event.GetSelection(), event.GetId(), 0, 0, event.GetEventType(), 0, 0, WXL_FAMILY_COMMAND, event.GetInt(), 0, event.GetTimestamp(), event.IsCommandEvent() ? 1 : 0});
             event.Skip();
         });
         return id;

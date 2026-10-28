@@ -5,7 +5,7 @@ This C1 slice extends bindings beyond command events with `:close`, backed by
 `event-family` classifies these snapshots as `:command` or `:close`;
 registered [notify events](NOTIFY-EVENTS.md) additionally use `:notify`; this is a portable
 supported-kind classification, not arbitrary native RTTI or event registration.
-The baseline is wxWidgets 3.2.12 and the native bridge is ABI 18.
+The baseline is wxWidgets 3.2.12 and the native bridge is ABI 19.
 
 The native type lookup is now **`event-type`**, replacing `command-event-type`
 without an alias. It accepts the seven built-in kinds and registered command/notify names. Native type IDs remain
@@ -36,7 +36,9 @@ calling `Veto(bool)`. Setting or clearing a non-vetoable close, accessing live v
 state on a command context, or using an expired/suspended context signals
 `native-error` before any wx assertion or invalid pointer access. The writer
 returns the supplied generalized boolean. Vetoable contexts permit both veto
-and clearing a veto; context `CanVeto` itself is read-only in this API.
+and clearing a veto. Context SETF `event-can-veto-p` now maps SetCanVeto
+directly, including false to true. It changes metadata and can hide/restore
+a stored veto; see [metadata semantics](EVENT-METADATA.md).
 
 ## Acceptance, consumption, veto and destruction
 
@@ -53,7 +55,8 @@ is not a substitute for controlling which later native handlers execute. Veto
 also cannot undo an independent `destroy-window` request.
 
 `:force t` sets native `CanVeto` false. Both true and NIL veto assignments then
-signal `native-error`. Force disallows veto; it does not bypass a contextual
+signal `native-error` while CanVeto stays false. A handler can explicitly
+change CanVeto through SETF, affecting native closing results. Force does not bypass a contextual
 handler's consumption or guarantee deletion. A handler should check capability
 and choose the appropriate native default/explicit closing action.
 

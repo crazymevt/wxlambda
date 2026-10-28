@@ -45,15 +45,17 @@ must reconcile additional documented public interfaces beyond those headers.
 - Session-event milestone: query/end-session tags and scoped logging-off metadata,
   native application bindings and isolated owned-handler synthetic probes.
   Real OS session delivery remains unverified.
-- Current bridge ABI: 18. Public API: 99 exports, nine window wrapper classes
-  (eight concrete widget kinds) plus the event-handler base, 56 named generics and
-  fourteen generic SETF writers. The application-handler is a borrowed view; no
+- Metadata milestone: copied/current native timestamps and command classification,
+  timestamp SETF with native LONG bounds and close-family CanVeto SETF.
+- Current bridge ABI: 19. Public API: 101 exports, nine window wrapper classes
+  (eight concrete widget kinds) plus the event-handler base, 58 named generics and
+  sixteen generic SETF writers. The application-handler is a borrowed view; no
   native application construction or arbitrary-event class binding exists yet; built-ins plus registered command/notify names have
   observer/contextual bindings.
-- Latest implementation verification: 35 GUI scenarios and native preflight
+- Latest implementation verification: 36 GUI scenarios and native preflight
   pass on local Apple Silicon macOS SBCL 2.6.9 and CCL 1.13. Final reports:
-  `evidence/session-events/{sbcl,ccl}-20261028/`. Five package checks
-  pass in `evidence/packaging/session-events-20261028/`.
+  `evidence/event-metadata/{sbcl,ccl}-20261028/`. Five package checks
+  pass in `evidence/packaging/event-metadata-20261028/`.
   Hosted Linux/Windows GUI behavior and the graphical Cadre viewer remain open.
 
 ### Next dependency and working order
@@ -71,8 +73,9 @@ must reconcile additional documented public interfaces beyond those headers.
    snapshots carry process-local native type IDs. Close veto and frame request
    policy are implemented. Registered command/notify types and synchronous dispatch are implemented.
    The borrowed application handler view and query/end-session metadata/bindings
-   are implemented. Next add scoped CanVeto mutation and remaining event metadata
-   before broader event ownership/families. Native OS session delivery is unverified. Native session events are
+   are implemented, as are scoped CanVeto mutation, timestamp and command metadata.
+   Next define scoped native ID mutation and routing semantics, before native
+   type/origin access and broader event ownership/families. Native OS session delivery is unverified. Native session events are
    wxApp-only, and default END_SESSION handling can exit the process: never
    synthesize live application end-session events as an ordinary test. Use owned
    handlers for synthetic family tests and distinguish OS validation from them.
@@ -911,6 +914,34 @@ not change OS intent. Real OS session delivery/policy, hosted Windows/Linux GUI
 and graphical Cadre validation remain unverified. All native session-event
 coverage remains partial. Next complete scoped CanVeto mutation and remaining
 native snapshot metadata, then event ownership/family prerequisites in C1.
+
+## Scoped CanVeto and native event metadata (2026-10-28)
+
+ABI 19 adds EVENT-TIMESTAMP and EVENT-COMMAND-P for saved snapshots and current
+contexts. Timestamp SETF accepts the signed native C LONG range, with Lisp and
+native checks before narrowing the fixed int64 transport. Native status/output
+separation preserves negative timestamps, including -1. Synthetic timestamps
+start at zero; no timestamp-construction option or scheduling behavior is added.
+Command classification copies native IsCommandEvent, including notify=true.
+
+SETF EVENT-CAN-VETO-P maps current wxCloseEvent::SetCanVeto directly. False can
+be re-enabled; native GetVeto hides a stored veto while CanVeto is false and
+reveals it if re-enabled. Every veto write checks the current flag. Notify
+capability remains intrinsic/read-only, and snapshots have no property writers.
+Explicit CanVeto mutation can affect forced native close results, but cannot
+guarantee OS veto acceptance. Updated guides remove the prior permanent-false
+forced-close assumption. Native context lifetime/isolation remains enforced.
+
+Independent runtime review found no actionable issue. The runnable example and
+focused regression pass both Lisps; all 36 local GUI scenarios and preflight
+pass on SBCL and CCL. Python and pinned inventory regressions pass. Five rebuilt
+relocated-package checks pass, with evidence paths in the handoff. The docset
+has 136 entries for all 101 exports, guides and seventeen examples; checker,
+actual export/SETF coverage, isolated-install discovery and API/guide/example
+access checks pass on both Lisps. No implementation test failures were observed.
+Hosted Windows/Linux GUI, actual OS session routing and graphical Cadre remain
+unverified; do not claim full native event class coverage. Continue C1 with scoped
+ID mutation/routing semantics, then native type/origin and ownership prerequisites.
 
 ## Decisions
 

@@ -80,10 +80,12 @@ window binding rejection, synthetic receiver guards, snapshot independence,
 nested context suspension/expiration and guarded veto. No real OS logout or
 shutdown is used in automated checks.
 
-Persistent event objects/cloning, mutable native IDs/types/origin, context
-SetCanVeto, derived notify classes, pushed handlers, timer/idle and worker
-dispatch remain required C1 work. Next implement bounded scoped CanVeto access
-and remaining event snapshot metadata before broader event ownership/families.
+[Event metadata](EVENT-METADATA.md) now adds timestamps, command classification
+and current close-family SetCanVeto, including explicit false-to-true changes.
+These do not grant OS shutdown cancellation. Persistent event objects/cloning,
+mutable native IDs/types/origin, derived notify classes, pushed handlers,
+timer/idle and worker dispatch remain required C1 work. Next define scoped ID
+mutation and routing semantics before broader event ownership/families.
 
 Build/check using `python3 tools/docset.py build` and `check`. Install using
 `python3 tools/docset.py install` under `$XDG_DATA_HOME/docsets/wxlambda/`

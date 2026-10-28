@@ -931,7 +931,7 @@
         "wxl_bind",
         "wxl_queue_event"
       ],
-      "scope": "Copied ID in immutable snapshots for the four exposed command-event kinds and control-specific callbacks. No general wxEvent wrapper or arbitrary event classes."
+      "scope": "Copied ID in immutable snapshots for supported built-in and registered command/notify events and control-specific callbacks. Current-context ID access/mutation and arbitrary native classes remain open."
     },
     {
       "header": "wx/event.h",
@@ -1032,7 +1032,7 @@
       "native": [
         "wxl_queue_event"
       ],
-      "scope": "Supported close/session snapshots and scoped contexts, including checked veto and logging-off metadata. Native app bindings exist; real OS session delivery is unverified. Synthetic session queue/process requires isolated owned handlers and blocks wxApp fallback. No persistent event ownership, arbitrary close types or context SetCanVeto."
+      "scope": "Supported close/session snapshots and scoped contexts, including checked veto and logging-off metadata. Native app bindings exist; real OS session delivery is unverified. Synthetic session queue/process requires isolated owned handlers and blocks wxApp fallback. No persistent event ownership or arbitrary close types."
     },
     {
       "header": "wx/event.h",
@@ -1047,7 +1047,7 @@
       "native": [
         "wxl_context_can_veto"
       ],
-      "scope": "Supported close/session snapshots and scoped contexts, including checked veto and logging-off metadata. Native app bindings exist; real OS session delivery is unverified. Synthetic session queue/process requires isolated owned handlers and blocks wxApp fallback. No persistent event ownership, arbitrary close types or context SetCanVeto."
+      "scope": "Supported close/session snapshots and scoped contexts, including checked veto and logging-off metadata. Native app bindings exist; real OS session delivery is unverified. Synthetic session queue/process requires isolated owned handlers and blocks wxApp fallback. No persistent event ownership or arbitrary close types."
     },
     {
       "header": "wx/event.h",
@@ -1057,12 +1057,15 @@
       "status": "~",
       "lisp": [
         "queue-event",
-        "event-logging-off-p"
+        "process-event",
+        "(setf event-can-veto-p)"
       ],
       "native": [
-        "wxl_queue_event"
+        "wxl_queue_event",
+        "wxl_process_event",
+        "wxl_context_set_can_veto"
       ],
-      "scope": "Supported close/session snapshots and scoped contexts, including checked veto and logging-off metadata. Native app bindings exist; real OS session delivery is unverified. Synthetic session queue/process requires isolated owned handlers and blocks wxApp fallback. No persistent event ownership, arbitrary close types or context SetCanVeto."
+      "scope": "Synthetic construction and current close/session context SETF map native SetCanVeto directly, including re-enabling false. GetVeto hides stored veto while disabled. No persistent event wrapper; notify capability is intrinsic/read-only; OS veto acceptance unverified."
     },
     {
       "header": "wx/event.h",
@@ -1077,7 +1080,7 @@
       "native": [
         "wxl_context_set_vetoed"
       ],
-      "scope": "Supported close/session snapshots and scoped contexts, including checked veto and logging-off metadata. Native app bindings exist; real OS session delivery is unverified. Synthetic session queue/process requires isolated owned handlers and blocks wxApp fallback. No persistent event ownership, arbitrary close types or context SetCanVeto."
+      "scope": "Supported close/session snapshots and scoped contexts, including checked veto and logging-off metadata. Native app bindings exist; real OS session delivery is unverified. Synthetic session queue/process requires isolated owned handlers and blocks wxApp fallback. No persistent event ownership or arbitrary close types."
     },
     {
       "header": "wx/event.h",
@@ -1092,7 +1095,7 @@
       "native": [
         "wxl_context_vetoed"
       ],
-      "scope": "Supported close/session snapshots and scoped contexts, including checked veto and logging-off metadata. Native app bindings exist; real OS session delivery is unverified. Synthetic session queue/process requires isolated owned handlers and blocks wxApp fallback. No persistent event ownership, arbitrary close types or context SetCanVeto."
+      "scope": "Supported close/session snapshots and scoped contexts, including checked veto and logging-off metadata. Native app bindings exist; real OS session delivery is unverified. Synthetic session queue/process requires isolated owned handlers and blocks wxApp fallback. No persistent event ownership or arbitrary close types."
     },
     {
       "header": "wx/window.h",
@@ -1309,7 +1312,7 @@
         "wxl_context_logging_off",
         "wxl_context_set_logging_off"
       ],
-      "scope": "Supported close/session snapshots and scoped contexts, including checked veto and logging-off metadata. Native app bindings exist; real OS session delivery is unverified. Synthetic session queue/process requires isolated owned handlers and blocks wxApp fallback. No persistent event ownership, arbitrary close types or context SetCanVeto."
+      "scope": "Supported close/session snapshots and scoped contexts, including checked veto and logging-off metadata. Native app bindings exist; real OS session delivery is unverified. Synthetic session queue/process requires isolated owned handlers and blocks wxApp fallback. No persistent event ownership or arbitrary close types."
     },
     {
       "header": "wx/event.h",
@@ -1332,7 +1335,7 @@
         "wxl_context_logging_off",
         "wxl_context_set_logging_off"
       ],
-      "scope": "Supported close/session snapshots and scoped contexts, including checked veto and logging-off metadata. Native app bindings exist; real OS session delivery is unverified. Synthetic session queue/process requires isolated owned handlers and blocks wxApp fallback. No persistent event ownership, arbitrary close types or context SetCanVeto."
+      "scope": "Supported close/session snapshots and scoped contexts, including checked veto and logging-off metadata. Native app bindings exist; real OS session delivery is unverified. Synthetic session queue/process requires isolated owned handlers and blocks wxApp fallback. No persistent event ownership or arbitrary close types."
     },
     {
       "header": "wx/event.h",
@@ -1355,7 +1358,7 @@
         "wxl_context_logging_off",
         "wxl_context_set_logging_off"
       ],
-      "scope": "Supported close/session snapshots and scoped contexts, including checked veto and logging-off metadata. Native app bindings exist; real OS session delivery is unverified. Synthetic session queue/process requires isolated owned handlers and blocks wxApp fallback. No persistent event ownership, arbitrary close types or context SetCanVeto."
+      "scope": "Supported close/session snapshots and scoped contexts, including checked veto and logging-off metadata. Native app bindings exist; real OS session delivery is unverified. Synthetic session queue/process requires isolated owned handlers and blocks wxApp fallback. No persistent event ownership or arbitrary close types."
     },
     {
       "header": "wx/event.h",
@@ -1378,7 +1381,7 @@
         "wxl_context_logging_off",
         "wxl_context_set_logging_off"
       ],
-      "scope": "Supported close/session snapshots and scoped contexts, including checked veto and logging-off metadata. Native app bindings exist; real OS session delivery is unverified. Synthetic session queue/process requires isolated owned handlers and blocks wxApp fallback. No persistent event ownership, arbitrary close types or context SetCanVeto."
+      "scope": "Supported close/session snapshots and scoped contexts, including checked veto and logging-off metadata. Native app bindings exist; real OS session delivery is unverified. Synthetic session queue/process requires isolated owned handlers and blocks wxApp fallback. No persistent event ownership or arbitrary close types."
     },
     {
       "header": "wx/event.h",
@@ -1401,7 +1404,7 @@
         "wxl_context_logging_off",
         "wxl_context_set_logging_off"
       ],
-      "scope": "Supported close/session snapshots and scoped contexts, including checked veto and logging-off metadata. Native app bindings exist; real OS session delivery is unverified. Synthetic session queue/process requires isolated owned handlers and blocks wxApp fallback. No persistent event ownership, arbitrary close types or context SetCanVeto."
+      "scope": "Supported close/session snapshots and scoped contexts, including checked veto and logging-off metadata. Native app bindings exist; real OS session delivery is unverified. Synthetic session queue/process requires isolated owned handlers and blocks wxApp fallback. No persistent event ownership or arbitrary close types."
     },
     {
       "header": "wx/event.h",
@@ -1424,7 +1427,7 @@
         "wxl_context_logging_off",
         "wxl_context_set_logging_off"
       ],
-      "scope": "Supported close/session snapshots and scoped contexts, including checked veto and logging-off metadata. Native app bindings exist; real OS session delivery is unverified. Synthetic session queue/process requires isolated owned handlers and blocks wxApp fallback. No persistent event ownership, arbitrary close types or context SetCanVeto."
+      "scope": "Supported close/session snapshots and scoped contexts, including checked veto and logging-off metadata. Native app bindings exist; real OS session delivery is unverified. Synthetic session queue/process requires isolated owned handlers and blocks wxApp fallback. No persistent event ownership or arbitrary close types."
     },
     {
       "header": "wx/app.h",
@@ -1447,7 +1450,7 @@
         "wxl_context_logging_off",
         "wxl_context_set_logging_off"
       ],
-      "scope": "Supported close/session snapshots and scoped contexts, including checked veto and logging-off metadata. Native app bindings exist; real OS session delivery is unverified. Synthetic session queue/process requires isolated owned handlers and blocks wxApp fallback. No persistent event ownership, arbitrary close types or context SetCanVeto."
+      "scope": "Supported close/session snapshots and scoped contexts, including checked veto and logging-off metadata. Native app bindings exist; real OS session delivery is unverified. Synthetic session queue/process requires isolated owned handlers and blocks wxApp fallback. No persistent event ownership or arbitrary close types."
     },
     {
       "header": "wx/app.h",
@@ -1470,7 +1473,51 @@
         "wxl_context_logging_off",
         "wxl_context_set_logging_off"
       ],
-      "scope": "Supported close/session snapshots and scoped contexts, including checked veto and logging-off metadata. Native app bindings exist; real OS session delivery is unverified. Synthetic session queue/process requires isolated owned handlers and blocks wxApp fallback. No persistent event ownership, arbitrary close types or context SetCanVeto."
+      "scope": "Supported close/session snapshots and scoped contexts, including checked veto and logging-off metadata. Native app bindings exist; real OS session delivery is unverified. Synthetic session queue/process requires isolated owned handlers and blocks wxApp fallback. No persistent event ownership or arbitrary close types."
+    },
+    {
+      "header": "wx/event.h",
+      "line": 190,
+      "declaration": "long GetTimestamp() const;",
+      "status": "~",
+      "symbol": "wxEvent::GetTimestamp",
+      "lisp": [
+        "event-timestamp"
+      ],
+      "native": [
+        "wxl_bind",
+        "wxl_context_timestamp"
+      ],
+      "scope": "Supported immutable snapshots and current event contexts. Native signed LONG millisecond metadata; context-only timestamp SETF with platform bounds. IsCommandEvent includes notify-derived events. No persistent native event wrapper or timestamp construction keyword."
+    },
+    {
+      "header": "wx/event.h",
+      "line": 197,
+      "declaration": "bool IsCommandEvent() const;",
+      "status": "~",
+      "symbol": "wxEvent::IsCommandEvent",
+      "lisp": [
+        "event-command-p"
+      ],
+      "native": [
+        "wxl_bind",
+        "wxl_context_command"
+      ],
+      "scope": "Supported immutable snapshots and current event contexts. Native signed LONG millisecond metadata; context-only timestamp SETF with platform bounds. IsCommandEvent includes notify-derived events. No persistent native event wrapper or timestamp construction keyword."
+    },
+    {
+      "header": "wx/event.h",
+      "line": 223,
+      "declaration": "void SetTimestamp(long timeStamp = 0);",
+      "status": "~",
+      "symbol": "wxEvent::SetTimestamp",
+      "lisp": [
+        "(setf event-timestamp)"
+      ],
+      "native": [
+        "wxl_context_set_timestamp"
+      ],
+      "scope": "Supported immutable snapshots and current event contexts. Native signed LONG millisecond metadata; context-only timestamp SETF with platform bounds. IsCommandEvent includes notify-derived events. No persistent native event wrapper or timestamp construction keyword."
     }
   ],
   "classes": {
@@ -1612,7 +1659,7 @@
         "wxl_gauge_vertical",
         "wxl_gauge_pulse"
       ],
-      "scope": "Parent-owned progress gauge: positive range, value, horizontal/vertical orientation and pulsing. Constructor options, two-step creation and full inherited API remain open. Gauge support introduced in ABI 10; current bridge ABI 18; see docs/GAUGE.md and tests/gauge.lisp."
+      "scope": "Parent-owned progress gauge: positive range, value, horizontal/vertical orientation and pulsing. Constructor options, two-step creation and full inherited API remain open. Gauge support introduced in ABI 10; current bridge ABI 19; see docs/GAUGE.md and tests/gauge.lisp."
     },
     "wxAppConsole": {
       "status": "~",
@@ -1691,7 +1738,11 @@
         "event-skipped-p",
         "event-propagates-p",
         "stop-event-propagation",
-        "resume-event-propagation"
+        "resume-event-propagation",
+        "event-timestamp",
+        "event-command-p",
+        "(setf event-timestamp)",
+        "(setf event-can-veto-p)"
       ],
       "native": [
         "wxl_bind",
@@ -1700,9 +1751,13 @@
         "wxl_context_set_skipped",
         "wxl_context_propagates",
         "wxl_context_stop_propagation",
-        "wxl_context_resume_propagation"
+        "wxl_context_resume_propagation",
+        "wxl_context_timestamp",
+        "wxl_context_command",
+        "wxl_context_set_timestamp",
+        "wxl_context_set_can_veto"
       ],
-      "scope": "Immutable supported command/close snapshots and current-callback wxEvent base views for Skip/propagation; close veto is checked through wxCloseEvent only. Arbitrary native construction/cloning, mutable IDs/type/origin, timestamps/userData and broader families remain open. See docs/CLOSE-EVENTS.md."
+      "scope": "Immutable supported command/close snapshots and current-callback wxEvent base views for Skip/propagation; close veto is checked through wxCloseEvent only. Arbitrary native construction/cloning, mutable IDs/type/origin, userData and broader families remain open. See docs/CLOSE-EVENTS.md. Timestamp/command classification snapshots and current reads, bounded native LONG timestamp SETF and close-only CanVeto SETF are implemented; snapshots stay immutable."
     },
     "wxCloseEvent": {
       "status": "~",
@@ -1716,7 +1771,11 @@
         "queue-event",
         "close-window",
         "event-logging-off-p",
-        "process-event"
+        "process-event",
+        "event-timestamp",
+        "event-command-p",
+        "(setf event-timestamp)",
+        "(setf event-can-veto-p)"
       ],
       "native": [
         "wxl_bind",
@@ -1727,9 +1786,13 @@
         "wxl_context_set_vetoed",
         "wxl_process_event",
         "wxl_context_logging_off",
-        "wxl_context_set_logging_off"
+        "wxl_context_set_logging_off",
+        "wxl_context_timestamp",
+        "wxl_context_command",
+        "wxl_context_set_timestamp",
+        "wxl_context_set_can_veto"
       ],
-      "scope": "Supported close/session snapshots and scoped contexts, including checked veto and logging-off metadata. Native app bindings exist; real OS session delivery is unverified. Synthetic session queue/process requires isolated owned handlers and blocks wxApp fallback. No persistent event ownership, arbitrary close types or context SetCanVeto."
+      "scope": "Supported close/session snapshots and scoped contexts, including checked veto and logging-off metadata. Native app bindings exist; real OS session delivery is unverified. Synthetic session queue/process requires isolated owned handlers and blocks wxApp fallback. No persistent event ownership or arbitrary close types. Timestamp/command classification snapshots and current reads, bounded native LONG timestamp SETF and close-only CanVeto SETF are implemented; snapshots stay immutable."
     },
     "wxNotifyEvent": {
       "status": "~",

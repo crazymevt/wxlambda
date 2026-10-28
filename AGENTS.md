@@ -85,7 +85,9 @@ immutable structures. Default command callbacks observe and automatically Skip. 
 `:with-context t` bindings receive a borrowed event-context for explicit Skip and
 propagation control; it is valid only in its current innermost callback. Preserve
 that lifetime isolation and immutable snapshots when extending native event families.
-Close veto is scoped and guarded by native CanVeto; frame close acceptance is not
+Close veto is scoped and guarded by current native CanVeto. Context SETF CanVeto
+maps native metadata directly (including re-enabling); snapshots remain immutable
+and metadata changes do not guarantee OS veto policy. Frame close acceptance is not
 a destruction guarantee. The type lookup is `event-type`, with no old-name alias.
 
 The native-backed `event-handler` base supports standalone session-owned handlers;

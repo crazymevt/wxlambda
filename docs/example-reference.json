@@ -62,5 +62,9 @@
   "session-events.lisp": {
     "description": "Isolated standalone query-end-session policy with logging-off metadata and checked veto. Never dispatches synthetic session events to wxApp or triggers real OS logout/shutdown.",
     "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/session-events.lisp --eval '(wxlambda-session-events:start)'"
+  },
+  "event-metadata.lisp": {
+    "description": "A synthetic close callback changes native CanVeto and timestamp metadata, applies checked veto and verifies the earlier snapshot remains unchanged. No real OS event is generated.",
+    "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/event-metadata.lisp --eval '(wxlambda-event-metadata:start)'"
   }
 }

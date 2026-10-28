@@ -32,6 +32,8 @@ typedef struct wxl_event {
     int family;
     int integer;
     int logging_off;
+    int64_t timestamp; /* Native signed long, widened without interpreting its epoch. */
+    int command;
 } wxl_event;
 /* The record and its text are borrowed only until this callback returns.
    Callbacks must never unwind across this boundary. */
@@ -72,6 +74,10 @@ WXL_API int wxl_context_skipped(uint64_t context);
 WXL_API int wxl_context_set_skipped(uint64_t context, int skip);
 WXL_API int wxl_context_propagates(uint64_t context);
 WXL_API int wxl_context_stop_propagation(uint64_t context);
+WXL_API int wxl_context_set_can_veto(uint64_t context, int value);
+WXL_API int wxl_context_timestamp(uint64_t context, int64_t *value);
+WXL_API int wxl_context_set_timestamp(uint64_t context, int64_t value);
+WXL_API int wxl_context_command(uint64_t context);
 WXL_API int wxl_context_can_veto(uint64_t context);
 WXL_API int wxl_context_logging_off(uint64_t context);
 WXL_API int wxl_context_set_logging_off(uint64_t context, int value);
