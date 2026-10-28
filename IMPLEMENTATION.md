@@ -49,15 +49,17 @@ must reconcile additional documented public interfaces beyond those headers.
   timestamp SETF with native LONG bounds and close-family CanVeto SETF.
 - Routing milestone: current event-ID reads/SETF, signed32 including native -1,
   and parent exact/range/wildcard matching after mutation.
-- Current bridge ABI: 20. Public API: 101 exports, nine window wrapper classes
-  (eight concrete widget kinds) plus the event-handler base, 59 named generics and
+- Origin/type milestone: current native type reads and captured/current opaque
+  origin IDs for registered bridge objects; no unchecked pointer/class access.
+- Current bridge ABI: 21. Public API: 102 exports, nine window wrapper classes
+  (eight concrete widget kinds) plus the event-handler base, 61 named generics and
   seventeen generic SETF writers. The application-handler is a borrowed view; no
   native application construction or arbitrary-event class binding exists yet; built-ins plus registered command/notify names have
   observer/contextual bindings.
-- Latest implementation verification: 37 GUI scenarios and native preflight
+- Latest implementation verification: 38 GUI scenarios and native preflight
   pass on local Apple Silicon macOS SBCL 2.6.9 and CCL 1.13. Final reports:
-  `evidence/event-routing/{sbcl,ccl}-20261028/`. Five package checks
-  pass in `evidence/packaging/event-routing-20261028/`.
+  `evidence/event-origins/{sbcl,ccl}-20261028/`. Five package checks
+  pass in `evidence/packaging/event-origins-20261028/`.
   Hosted Linux/Windows GUI behavior and the graphical Cadre viewer remain open.
 
 ### Next dependency and working order
@@ -77,7 +79,9 @@ must reconcile additional documented public interfaces beyond those headers.
    The borrowed application handler view and query/end-session metadata/bindings
    are implemented, as are scoped CanVeto mutation, timestamp and command metadata.
    Scoped native ID mutation and routing semantics are implemented. Next define
-   safe native type/origin access and broader event ownership/families. Native OS session delivery is unverified. Native session events are
+   event-category metadata, then typed mutation/ownership contracts. Current type
+   reads and bounded origin identities are implemented; native type/origin
+   writers and general wxObject wrappers remain open. Native OS session delivery is unverified. Native session events are
    wxApp-only, and default END_SESSION handling can exit the process: never
    synthesize live application end-session events as an ordinary test. Use owned
    handlers for synthetic family tests and distinguish OS validation from them.
@@ -969,6 +973,31 @@ and guide/example navigation checks on both Lisps. Evidence paths are in the
 handoff. Hosted Windows/Linux GUI, real OS session delivery and graphical Cadre
 remain unverified. Next define native type/origin contracts without permitting
 tag mutation to authorize unsafe native casts; broader ownership remains C1 work.
+
+## Read-only native event type and origin identity (2026-10-28)
+
+ABI 21 adds generic EVENT-ORIGIN-ID and current-context EVENT-NATIVE-TYPE reads.
+Origin is an opaque registered bridge identity, not a native pointer or public
+receiver. Null/untracked origins map to NIL. Native lookup compares identities
+without dereferencing the origin, captures at each callback and grants no
+ownership, liveness or historical pointer-lifetime guarantee. Saved snapshots
+remain readable after cleanup; context readers preserve nested/expired isolation.
+Null/untracked native-origin branches are not exercised by the public synthetic
+API, which always supplies a known receiver; that validation gap remains open.
+Type/origin writers remain open because unchecked tags can authorize invalid
+native casts, and arbitrary origin pointers need retention/lifetime contracts.
+
+The runnable example distinguishes native child origin from parent binding
+receiver. Tests cover all supported kinds, standalone/application identity,
+nested contexts, cleanup and absence of public writers. Independent review
+found no remaining actionable issues. Focused example/tests and all 38 GUI
+scenarios plus preflight pass locally on SBCL/CCL. Python and pinned inventory
+regressions and five rebuilt relocated-package checks pass. The 141-entry docset
+covers all 102 exports, guides and nineteen examples, with zero checker problems,
+actual export/SETF lookup, isolated-install discovery and guide/example checks
+on both Lisps. Evidence paths are in the handoff. Hosted Windows/Linux GUI,
+real OS session delivery and graphical Cadre remain unverified. Next implement
+event-category metadata before typed mutation and native ownership prerequisites.
 
 ## Decisions
 

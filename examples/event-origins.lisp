@@ -1,0 +1,27 @@
+;;; Load and call (wxlambda-event-origins:start).
+(require :asdf)
+(load (merge-pathnames "../wxlambda.asd" *load-truename*))
+(asdf:load-system "wxlambda")
+(defpackage #:wxlambda-event-origins (:use #:cl) (:export #:start #:exercise))
+(in-package #:wxlambda-event-origins)
+(defun exercise ()
+  (wxlambda:register-event-type :origin-message :family :command)
+  (let* ((frame (wxlambda:make-frame)) (panel (wxlambda:make-panel frame))
+         (child (wxlambda:make-button panel)) (child-origin nil) (parent-origin nil)
+         (child-binding (wxlambda:bind-event child :origin-message
+                          (lambda (e c)
+                            (setf child-origin (wxlambda:event-origin-id e))
+                            (assert (= (wxlambda:event-native-type e) (wxlambda:event-native-type c)))
+                            (setf (wxlambda:event-skipped-p c) t)) :with-context t))
+         (parent-binding (wxlambda:bind-event panel :origin-message
+                           (lambda (e)
+                             (assert (eq panel (wxlambda:event-source e)))
+                             (setf parent-origin (wxlambda:event-origin-id e))))))
+    (unwind-protect
+         (progn (wxlambda:process-event child :origin-message)
+                (assert (and child-origin (= child-origin parent-origin)))
+                parent-origin)
+      (wxlambda:unbind-event parent-binding)
+      (wxlambda:unbind-event child-binding)
+      (wxlambda:destroy-window frame))))
+(defun start () (wxlambda:with-application () (exercise)))

@@ -1,0 +1,67 @@
+# Native event type and origin identity
+
+ABI 21 extends EVENT-NATIVE-TYPE to a generic reader for immutable snapshots and
+current innermost contexts. EVENT-ORIGIN-ID is a new generic reader with the same
+saved/current lifetime distinction. Baseline: wxWidgets 3.2.12.
+
+EVENT-NATIVE-TYPE returns the actual process-local native type integer from
+GetEventType. Compare it with EVENT-TYPE during the active session; registry
+names expire at cleanup, while saved integer metadata remains readable. Type
+numbers are not stable serialized IDs or authority to cast native objects.
+No SETF writer exists for native type or origin. Changing a type tag does not
+change the native C++ event class, so unvalidated type mutation could make native
+handlers cast incompatible storage. This slice introduces no such mutation.
+
+EVENT-ORIGIN-ID returns a positive opaque bridge identity if GetEventObject
+matches a currently registered application, owned handler or tracked window.
+It returns NIL for null or untracked origins; it does not distinguish those two
+cases. The bridge compares pointer identities without dereferencing the origin.
+This is not a general wxObject wrapper, native pointer, native window ID or
+EVENT-ID value. It cannot be passed as a public receiver or used to reconstruct
+a wrapper. It transfers no ownership and makes no liveness guarantee. A pending
+destruction object can still have a captured origin identity. Lookup reflects
+the registry at capture/read time, not a historical reconstruction of arbitrary
+native pointer lifetimes.
+
+EVENT-SOURCE remains the Lisp receiver on which the callback was registered.
+A child command observed on its parent has the parent as EVENT-SOURCE, but its
+native origin identity can still identify the child. The origin ID alone does
+not tell you the originating object's class. Synthetic events use their initial
+receiving handler as native origin; parent forwarding does not change it.
+Each generic and control-specific callback copies origin metadata independently.
+Already captured snapshots remain unchanged after later dispatch or source
+cleanup. Saved integer type/origin metadata requires no GUI session.
+
+Context reads require an active main-thread session and the innermost callback.
+Expired or suspended outer contexts signal NATIVE-ERROR. No native event pointer
+escapes. There is no origin-object setter or retention/pinning protocol yet;
+using a borrowed object as native origin would require explicit lifetime rules.
+Unsupported/untracked objects remain a coverage gap, rather than being silently
+wrapped or adopted.
+
+Run the example, which compares child and parent observations, checks current
+native type and cleans up its bindings/windows:
+
+```sh
+sbcl --load ~/quicklisp/setup.lisp --load examples/event-origins.lisp --eval '(wxlambda-event-origins:start)'
+```
+
+Regression checks cover all supported kinds, registered command/notify types,
+standalone/application origin identity, child/parent receiver distinctions,
+context expiration/suspension and saved reads after cleanup. Null/untracked
+native-origin lookup is bounded to NIL by implementation; the public synthetic
+API always supplies a known receiver and cannot manufacture arbitrary native
+origin pointers. Real OS session events are not emitted.
+
+GetEventObject coverage is partial: generic wxObject wrappers, origin retention,
+SetEventObject, SetEventType, event categories/userData, persistent event
+ownership/cloning and broader native families remain C1 work. Next add event
+category metadata, then design typed mutation/ownership contracts that preserve
+native storage compatibility and session isolation. Existing read-only type
+lookups must not become an unchecked route to native tag mutation.
+
+Build/check with `python3 tools/docset.py build` and `check`; install with
+`python3 tools/docset.py install` under `$XDG_DATA_HOME/docsets/wxlambda/`
+(default `~/.local/share/docsets/wxlambda/`) for Cadre lookup and examples.
+See [contexts](EVENT-CONTEXTS.md), [ID routing](EVENT-ROUTING.md) and
+[docset installation](DOCSET.md).

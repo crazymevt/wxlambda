@@ -93,11 +93,11 @@ contracts first. C2 remains partial; C3–C7 have no public bindings recorded.
 See the [C1 details](coverage/phase-c1.md), [C2 details](coverage/phase-c2.md) and
 [class index](coverage/classes.md) for the remaining work within bound families.
 
-The current bridge is ABI 20, with 101 public Lisp exports. The latest code passes
-37 GUI scenarios on both local Apple Silicon macOS SBCL/CCL configurations and
+The current bridge is ABI 21, with 102 public Lisp exports. The latest code passes
+38 GUI scenarios on both local Apple Silicon macOS SBCL/CCL configurations and
 five packaging checks. These are local results retained under
-`evidence/event-routing/` and `evidence/packaging/event-routing-20261028/`;
-they do not validate Linux/Windows or the graphical Cadre viewer. The event-routing
+`evidence/event-origins/` and `evidence/packaging/event-origins-20261028/`;
+they do not validate Linux/Windows or the graphical Cadre viewer. The event-origins
 implementation reruns the GUI suites; documentation-only
 updates must distinguish retained results from newly run checks.
 
@@ -164,6 +164,7 @@ widget classes has complete wxWidgets coverage yet.
 - [x] Query/end-session tags, current/saved `event-logging-off-p`, scoped SETF, application bindings and isolated owned-handler synthetic queues/dispatch. Real OS delivery and native shutdown policy validation remain open.
 - [x] Copied/current event timestamp and native command classification, bounded native LONG timestamp SETF and close-family CanVeto SETF. Snapshot immutability and scoped lifetime remain enforced.
 - [x] Current event-ID reads and SETF with signed bounds, unchanged snapshots and verified later parent exact/range/wildcard matching.
+- [x] Current native type reads and captured/current opaque origin IDs for registered bridge objects. Native origin/type writers, general wxObject wrappers and ownership remain open.
 - [x] Native errors translated to Lisp `native-error` conditions.
 - [x] Event snapshots: `event`, `event-p`, `event-kind`, `event-source`,
   `event-text`, `event-checked-p`, `event-selection` for four command kinds plus :close.

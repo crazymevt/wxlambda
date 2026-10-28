@@ -944,10 +944,11 @@
         "event-type"
       ],
       "native": [
+        "wxl_bind",
         "wxl_event_type",
-        "wxl_bind"
+        "wxl_context_native_type"
       ],
-      "scope": "Copied process-local type IDs for supported command/close kinds; no general native type registration or arbitrary event classes."
+      "scope": "Immutable snapshot and current context process-local native type reads. No SETF type writer, native class replacement or stable serialized tag identity."
     },
     {
       "header": "wx/event.h",
@@ -1532,6 +1533,21 @@
         "wxl_context_set_id"
       ],
       "scope": "Current-context SETF for supported native families, signed32 including -1. Later native matching uses changed IDs; earlier snapshots, window IDs and filters do not change. No persistent native event wrapper."
+    },
+    {
+      "header": "wx/event.h",
+      "line": 143,
+      "declaration": "wxObject* GetEventObject() const;",
+      "status": "~",
+      "symbol": "wxEvent::GetEventObject",
+      "lisp": [
+        "event-origin-id"
+      ],
+      "native": [
+        "wxl_bind",
+        "wxl_context_origin_id"
+      ],
+      "scope": "Captured/current opaque bridge origin identity for registered app/owned handlers/tracked windows; null/untracked map to NIL. No native pointer dereference, generic wxObject wrapper, ownership transfer, historical lifetime guarantee or origin setter."
     }
   ],
   "classes": {
@@ -1673,7 +1689,7 @@
         "wxl_gauge_vertical",
         "wxl_gauge_pulse"
       ],
-      "scope": "Parent-owned progress gauge: positive range, value, horizontal/vertical orientation and pulsing. Constructor options, two-step creation and full inherited API remain open. Gauge support introduced in ABI 10; current bridge ABI 20; see docs/GAUGE.md and tests/gauge.lisp."
+      "scope": "Parent-owned progress gauge: positive range, value, horizontal/vertical orientation and pulsing. Constructor options, two-step creation and full inherited API remain open. Gauge support introduced in ABI 10; current bridge ABI 21; see docs/GAUGE.md and tests/gauge.lisp."
     },
     "wxAppConsole": {
       "status": "~",
@@ -1758,7 +1774,8 @@
         "(setf event-timestamp)",
         "(setf event-can-veto-p)",
         "event-id",
-        "(setf event-id)"
+        "(setf event-id)",
+        "event-origin-id"
       ],
       "native": [
         "wxl_bind",
@@ -1773,9 +1790,11 @@
         "wxl_context_set_timestamp",
         "wxl_context_set_can_veto",
         "wxl_context_id",
-        "wxl_context_set_id"
+        "wxl_context_set_id",
+        "wxl_context_origin_id",
+        "wxl_context_native_type"
       ],
-      "scope": "Immutable supported command/close snapshots and current-callback wxEvent base views for Skip/propagation; close veto is checked through wxCloseEvent only. Arbitrary native construction/cloning, mutable type/origin, userData and broader families remain open. See docs/CLOSE-EVENTS.md. Timestamp/command classification snapshots and current reads, bounded native LONG timestamp SETF and close-only CanVeto SETF are implemented; snapshots stay immutable. Scoped ID reads/SETF are implemented; native routing after mutation is verified separately from snapshot immutability."
+      "scope": "Immutable supported command/close snapshots and current-callback wxEvent base views for Skip/propagation; close veto is checked through wxCloseEvent only. Arbitrary native construction/cloning, mutable type/origin, userData and broader families remain open. See docs/CLOSE-EVENTS.md. Timestamp/command classification snapshots and current reads, bounded native LONG timestamp SETF and close-only CanVeto SETF are implemented; snapshots stay immutable. Scoped ID reads/SETF are implemented; native routing after mutation is verified separately from snapshot immutability. Current native type and bounded registered-origin identity reads are implemented; native type/origin mutation and general wxObject wrappers remain open."
     },
     "wxCloseEvent": {
       "status": "~",

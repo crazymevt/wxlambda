@@ -1,6 +1,6 @@
 # Scoped event IDs and routing
 
-ABI 20 extends EVENT-ID to a generic reader for saved immutable snapshots and
+ABI 21 extends EVENT-ID to a generic reader for saved immutable snapshots and
 current innermost contexts. Context-only SETF maps wxEvent::SetId. Supported
 scope is the existing seven built-in kinds and registered command/notify types,
 using the wxWidgets 3.2.12 baseline. No native event ownership is transferred.
@@ -62,3 +62,5 @@ Build/check using `python3 tools/docset.py build` and `check`; install using
 (default `~/.local/share/docsets/wxlambda/`) for Cadre lookup and examples.
 See [contexts](EVENT-CONTEXTS.md), [metadata](EVENT-METADATA.md) and
 [docset installation](DOCSET.md).
+
+[Native origin/type readers](EVENT-ORIGINS.md) now distinguish captured origin identity from binding receiver and provide current native type access; writers and arbitrary wxObject wrappers remain open.

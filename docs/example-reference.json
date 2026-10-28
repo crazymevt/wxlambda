@@ -70,5 +70,9 @@
   "event-routing.lisp": {
     "description": "Rewrite a child command ID before parent delivery, verifying original and forwarded snapshot IDs and cleaning up bindings/windows.",
     "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/event-routing.lisp --eval '(wxlambda-event-routing:start)'"
+  },
+  "event-origins.lisp": {
+    "description": "Compare child and parent native origin identities while binding receivers differ; check current/saved native type and release resources.",
+    "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/event-origins.lisp --eval '(wxlambda-event-origins:start)'"
   }
 }

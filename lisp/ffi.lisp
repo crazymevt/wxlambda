@@ -20,7 +20,8 @@
   (integer :int)
   (logging-off :int)
   (timestamp :int64)
-  (command :int))
+  (command :int)
+  (origin-id :uint64))
 
 (cffi:defcfun ("wxl_abi_version" %abi-version) :int)
 (cffi:defcfun ("wxl_last_error" %last-error) :string)
@@ -87,7 +88,7 @@
           (if (probe-file local)
               (cffi:load-foreign-library local)
               (cffi:use-foreign-library wxlambda-native))))
-    (unless (= 20 (%abi-version)) (error "Unsupported wxlambda native ABI"))
+    (unless (= 21 (%abi-version)) (error "Unsupported wxlambda native ABI"))
     (setf *native-loaded* t))
   t)
 
@@ -144,3 +145,6 @@
 
 (cffi:defcfun ("wxl_context_id" %context-id) :int (context :uint64) (value :pointer))
 (cffi:defcfun ("wxl_context_set_id" %context-set-id) :int (context :uint64) (value :int))
+
+(cffi:defcfun ("wxl_context_native_type" %context-native-type) :int (context :uint64) (value :pointer))
+(cffi:defcfun ("wxl_context_origin_id" %context-origin-id) :int (context :uint64) (value :pointer))

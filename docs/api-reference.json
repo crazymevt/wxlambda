@@ -403,7 +403,7 @@
     "kind": "function",
     "arguments": "EVENT is an event snapshot.",
     "returns": "The Lisp handler/control on which this callback was registered.",
-    "description": "Read the binding receiver. For parent-propagated command events this can differ from the native originating child. Native origin-object lookup is not exposed; use EVENT-ID to distinguish IDs. Saved receiver wrappers may outlive their native object.",
+    "description": "Read the binding receiver. For parent-propagated command events this can differ from the native originating child. EVENT-ORIGIN-ID separately reports a known native origin bridge identity without wrapping arbitrary wxObjects; EVENT-ID remains event routing metadata. Saved receiver wrappers may outlive their native object.",
     "scope": "No active GUI session required for saved snapshots. Wrong argument types signal Lisp type errors.",
     "wxwidgets": "Lisp-owned wxCommandEvent snapshot.",
     "syntax": "(wxlambda:event-source event)"
@@ -900,11 +900,11 @@
   },
   {
     "name": "event-native-type",
-    "kind": "function",
-    "arguments": "EVENT is an immutable snapshot.",
-    "returns": "Copied process-local native wxEventType integer.",
-    "description": "Read native event type after callback/source destruction without a session. Values are runtime metadata, not stable serialized type IDs. Compare to EVENT-TYPE in the same process; EVENT-KIND retains its portable supported keyword names.",
-    "scope": "No native session required for saved snapshots. Unsupported argument types signal Lisp type errors. Registration of command/notify types is session-scoped through REGISTER-EVENT-TYPE; arbitrary native event-class binding remains unbound.",
+    "kind": "generic-function",
+    "arguments": "EVENT is an immutable snapshot or current innermost event context.",
+    "returns": "Captured/current process-local native wxEventType integer.",
+    "description": "Read copied/current GetEventType. Saved values remain data after callback/source/session cleanup. Compare to EVENT-TYPE in the same active session; numeric tags are not stable serialized IDs or native cast authority.",
+    "scope": "Saved snapshots need no native session. Context reads require active main-thread session and innermost callback; stale/suspended contexts signal NATIVE-ERROR. No SETF native type writer or native class replacement. Arbitrary tags and general native class binding remain open.",
     "wxwidgets": "wxEvent::GetEventType copied into a Lisp-owned snapshot (wxWidgets 3.2.12 baseline).",
     "syntax": "(wxlambda:event-native-type event)"
   },
@@ -1048,5 +1048,14 @@
     "description": "Read captured/current native IsCommandEvent classification. No mutable classification or event replacement. Saved values remain independent of source lifetime.",
     "scope": "Saved snapshots need no session. Current-context access requires an active main-thread session and the innermost callback; stale/suspended contexts signal NATIVE-ERROR. No SETF writer.",
     "wxwidgets": "wxEvent::IsCommandEvent copied or borrowed (wxWidgets 3.2.12 baseline)."
+  },
+  {
+    "name": "event-origin-id",
+    "kind": "generic-function",
+    "arguments": "EVENT is an immutable snapshot or current innermost event context.",
+    "returns": "Positive opaque bridge identity, or NIL for null/untracked native origin.",
+    "description": "Copy/read GetEventObject identity only when it matches a registered application, owned handler or tracked window. This differs from EVENT-SOURCE (binding receiver) and EVENT-ID (routing metadata). Pointer identity is compared without dereferencing the origin; no native pointer or wrapper reconstruction is exposed.",
+    "scope": "Saved values need no native session and imply no current liveness. Context reads require active main-thread session and innermost callback; expired/suspended contexts signal NATIVE-ERROR. Null and untracked origins both map to NIL. Registry lookup is at capture/read time, not a historical pointer-lifetime guarantee. No SETF writer, generic wxObject wrapper, origin retention or native ownership transfer.",
+    "wxwidgets": "wxEvent::GetEventObject, bounded bridge-identity mapping (wxWidgets 3.2.12 baseline)."
   }
 ]

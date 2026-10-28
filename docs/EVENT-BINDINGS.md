@@ -3,7 +3,7 @@
 This C1 slice adds independent observer bindings on standalone `event-handler`
 objects and borrowed window identities. It covers `:click` (`wxEVT_BUTTON`),
 `:text-change` (`wxEVT_TEXT`), `:toggle` (`wxEVT_CHECKBOX`) and `:selection`
-(`wxEVT_CHOICE`), using the wxWidgets 3.2.12 baseline. The bridge is ABI 20.
+(`wxEVT_CHOICE`), using the wxWidgets 3.2.12 baseline. The bridge is ABI 21.
 Optional [scoped contexts](EVENT-CONTEXTS.md) now support Skip/propagation;
 close-veto support is now available through the [close family](CLOSE-EVENTS.md).
 Registered [notify/command types](NOTIFY-EVENTS.md) now add named native tags and
@@ -68,8 +68,8 @@ routing and native virtual overrides remain missing; do not infer full wxEvent c
 
 `event-source` is the **Lisp receiver on which that callback was registered**.
 For a parent binding that observes a child's command, it is the parent, not
-necessarily the native originating child. Native origin-object lookup is not
-exposed. `event-id` copies the native command ID; it is not a globally unique
+necessarily the native originating child. EVENT-ORIGIN-ID now reports a known
+bridge origin identity; arbitrary native origin-object wrapping remains unbound. `event-id` copies the native command ID; it is not a globally unique
 event or native handle. Existing control-specific snapshots likewise carry their
 registered control as source. Snapshots and copied strings survive callbacks,
 unbinding and native receiver destruction, without requiring a session to read.
