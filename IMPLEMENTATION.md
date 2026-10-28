@@ -79,16 +79,15 @@ as if later features or platform checks already passed.
 - Idle batch: :IDLE family/resources, bounded RequestMore, session-restored
   automatic mode, own-window opt-in and native wake scheduling. Independent review
   and final verification pass.
-- Current bridge ABI: 33. Public API: 158 exports, twelve window wrapper classes
-  (ten concrete kinds plus WINDOW/DIALOG abstract bases) plus the event-handler base and frame-owned menu resources, 110 named generics and
-  thirty-four generic SETF writers. The application-handler is a borrowed view; no
+- Current bridge ABI: 34. Public API: 167 exports, fourteen window wrapper classes
+  (twelve concrete kinds plus WINDOW/DIALOG abstract bases) plus the event-handler base and frame-owned menu resources, 115 named generics and
+  thirty-six generic SETF writers. The application-handler is a borrowed view; no
   native application construction or arbitrary-event class binding exists yet; built-ins plus registered command/notify names have
   observer/contextual bindings.
-- Latest implementation verification after the scheduled-deletion repair:
-  50 GUI scenarios and native preflight
+- Latest implementation verification: all 51 GUI scenarios and native preflight
   pass on local Apple Silicon macOS SBCL 2.6.9 and CCL 1.13. Final reports:
-  `evidence/standard-dialogs/{sbcl,ccl}-20261028-final/`. Five package checks
-  pass in `evidence/packaging/standard-dialogs-20261028-final/`.
+  `evidence/message-file-dialogs/{sbcl,ccl}-20261028-final/`. Five package checks
+  pass in `evidence/packaging/message-file-dialogs-20261028/`.
   Hosted Linux/Windows GUI behavior and the graphical Cadre viewer remain open.
 
 ### Feature priorities and working order
@@ -96,8 +95,9 @@ as if later features or platform checks already passed.
 1. Preserve core ownership/invalidation, callbacks/main-thread rules, CLOS APIs
    and required documentation/examples/docset/testing for every delivered feature.
 2. Menus/actions and bounded text/single-choice dialogs extend the form/editor
-   slice. Next deliver **cancellation-safe message/file dialogs** using a tested
-   native bridge or a documented generic implementation. Add only necessary
+   slice. Next compose **form/editor open/save workflows** through generic message/file
+   dialogs and Lisp-native document IO; retain native OS backends as unbound.
+   Add only necessary
    timer/value/lifetime prerequisites; do not drain native ownership/utilities.
 3. Expand controls/layout, navigation/notebooks, list/tree, clipboard and drawing
    against form/editor, tree/list manager and drawing/monitoring acceptance.
@@ -1599,6 +1599,76 @@ evidence/standard-dialogs/{sbcl,ccl}-20261028-final/ and
 evidence/packaging/standard-dialogs-20261028-final/; final package:
 dist/wxlambda-form-standard-dialogs-final. Earlier pre-repair artifacts/reports
 are retained for diagnosis, not as proof of the corrected lifetime behavior.
+
+## Generic message/file workflows (2026-10-28, verified)
+
+ABI34 adds MESSAGE-DIALOG and FILE-DIALOG via explicit wxGenericMessageDialog/
+wxGenericFileDialog backend, with no :BACKEND selector. Native OS NSAlert/NSPanel
+remain unbound; prior watchdog probe evidence is retained, not erased by generic
+support. Both native-backed DIALOG/WINDOW families preserve direct CLOS/defaults/
+AFTER/rollback, hidden/parentless requested-parent normalization and scheduled
+receiver/ancestor deletion guards. Both new class entries have Construction
+sections. Generic message body/buttons and file mode are immutable; path/filter
+index use generic SETF. File path/directory pathnames convert via native namestring;
+path getter is current native state, not accepted-result or content-IO proof.
+
+Message results extend SHOW/END-MODAL with offered YES/NO; CANCEL is always a safe
+unwind. File selection is single-only with validated description/pattern filters,
+mode-appropriate must-exist/overwrite flags and directory preflight. Raw END-MODAL
+still bypasses UI validation/transfer and existence/overwrite enforcement. Browser
+New Directory may create directories immediately: no zero-filesystem-effect claim.
+
+Internal native prompts are redirected to generic message dialogs through a
+workflow modal hook. Depth scopes suspend borrowed contexts; errors/public
+cancellation unwind inner prompts before outer dialogs sequentially. A native
+probe ending all nested loops at once hung; the supported bridge instead waits
+for each inner unwind before ending the outer loop. Inner user
+Cancel returns to the outer workflow normally. Handled notifying errors at the
+same depth may recover; errors across a new modal boundary cancel the workflow.
+Cancellation requested before native loop entry is remembered. Public nested
+SHOW-MODAL remains forbidden. Native property calls that open internal prompts
+use the same safety boundary.
+
+Implementation dependencies: generic implementation headers/protected eager
+message control creation (for AFTER-hook native properties), native modal-hook
+overrides, generic HasFdFlag and restoring file SAVE/OVERWRITE bits that overlap
+Cocoa wxDialog button styles. Public inventory equivalents remain partial; generic
+classes absent from the pinned documentation interface are not invented as full
+public declarations. See MESSAGE-FILE-DIALOGS.md for supported scope.
+
+Independent documentation review corrected inherited dialog class scopes to
+distinguish deferred platform-native backends from supported generic message/file
+workflows. The END-MODAL contract explicitly rejects successful outer completion
+while an internal prompt is active; only CANCEL requests whole-workflow unwind.
+Example checks pass both local Lisps (quiet-run.9i9bojKS). A focused CCL fixture
+thread-scope issue is test setup, not a runtime finding; final regressions pass on both Lisps. The private native-depth helper now checks active application
+before FFI access, preserving out-of-session notifier errors without unloaded
+symbol lookup.
+
+A late private error-handoff review hardened the interval after a synchronous
+notifier captures a condition but before Lisp receives it: native code could
+otherwise open another prompt while callback dispatch was suppressed. Every CFFI
+callback error now sets a private native latch; CHECK-CALLBACK-ERROR clears it
+before rethrow. The modal hook skips new native/generic prompts while pending,
+and SHOW/constructor helpers drain the primary condition before UI/allocation.
+No public exports/counts or general native error-state API are added. Native
+rebuild (quiet-run.6HQUrMhC) and zero-assert harness (quiet-run.boeZUNDg) prove
+latched native/generic prompt suppression and re-enabled prompting after clear.
+Final post-handshake suites pass all 51 scenarios on both SBCL and CCL
+(evidence/message-file-dialogs/{sbcl,ccl}-20261028-final/). Focused handoff and
+recovery regressions also pass both (quiet-run.gvmBf8Al). Independent runtime
+review found no outstanding actionable findings. Five package checks pass
+(evidence/packaging/message-file-dialogs-20261028/); package:
+dist/wxlambda-form-message-file-dialogs. No native IO-race/allocation-failure
+injection coverage is claimed.
+
+Verified counts: 167 exports, 115 named generics, 36 SETF generics, 51 GUI
+scenarios, 32 examples and 232 docset entries. Actual-export/class/SETF checks,
+zero-problem docset validation, isolated install/discovery/lookup and 16 Python
+tests pass. Physical interactive START, hosted Windows/Linux GUI, real OS session
+delivery and graphical Cadre remain unverified. Next compose form/editor menu
+open/save workflows with Lisp-native document models/content IO; exhaustive
+native event depth is not a prerequisite.
 
 ## Decisions
 

@@ -218,3 +218,9 @@ hooks; failure cleans new resources and roots. The modal-only protocol and
 active-modal/ancestor destruction guards are documented in
 [standard dialogs](STANDARD-DIALOGS.md). No native virtual subclass or general
 modeless/validation API is implied.
+
+Generic MESSAGE-DIALOG and FILE-DIALOG extend the same DIALOG hierarchy with
+keyword-only ordinary factories and Construction entries. Their fixed generic
+wxWidgets backend preserves eager native properties for subclass AFTER hooks,
+explicit parent normalization and managed invalidation. Native OS dialog
+implementations remain unbound. See [message/file workflows](MESSAGE-FILE-DIALOGS.md).

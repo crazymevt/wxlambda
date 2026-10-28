@@ -8,6 +8,7 @@
 #include <thread>
 #include <chrono>
 #include <wx/listbox.h>
+#include <fstream>
 
 namespace {
 std::atomic<unsigned> assertion_count{0};
@@ -63,6 +64,112 @@ public:
     explicit DialogTimer(std::function<void()> fn) : action(std::move(fn)) { }
     void Notify() override { action(); }
 };
+void exercise_generic_dialogs() {
+    const auto frame = wxl_frame("Generic workflow regression", 240, 140);
+    for (int buttons = 0; buttons < 4; ++buttons) {
+        const auto message = wxl_message_dialog(frame, "message", 7, "title", 5, buttons, 0);
+        expect(message && wxl_message_dialog_buttons(message) == buttons && as<wxDialog>(message)->GetParent() == as<wxFrame>(frame),
+               "Prepared message configuration/parent failed");
+        expect(as<wxDialog>(message)->FindWindow(buttons < 2 ? wxID_OK : wxID_YES), "Message controls must exist before ShowModal");
+        int result = -1;
+        DialogTimer accept([&] {
+            expect(wxl_dialog_depth() == 1, "Message depth must count one actual loop");
+            expect(wxl_dialog_end(message, buttons < 2 ? 2 : 0) == -1, "Message unoffered success must reject");
+            wxCommandEvent event(wxEVT_BUTTON, buttons < 2 ? wxID_OK : wxID_YES);
+            event.SetEventObject(as<wxDialog>(message)->FindWindow(event.GetId()));
+            as<wxDialog>(message)->GetEventHandler()->ProcessEvent(event);
+        }); accept.StartOnce(60);
+        expect(wxl_dialog_show(message, &result) == 0 && result == (buttons < 2 ? 0 : 2), "Offered message button acceptance failed");
+        DialogTimer cancel([&] { expect(wxl_dialog_end(message, 1) == 0, "Message abort cancel must always be offered"); }); cancel.StartOnce(60);
+        expect(wxl_dialog_show(message, &result) == 0 && result == 1, "Message cancellation failed");
+        delete as<wxDialog>(message);
+    }
+    const auto temporary_file = wxFileName::CreateTempFileName("/private/tmp/wxl-generic-workflow-");
+    expect(wxRemoveFile(temporary_file) && wxMkdir(temporary_file), "Cannot prepare isolated file workflow directory");
+    const std::string directory = temporary_file.ToStdString();
+    const auto existing_path = directory + "/existing.txt";
+    std::ofstream(existing_path) << "test";
+    const auto cwd = wxGetCwd();
+    const char* wildcard = "Text|*.txt|All|*";
+    for (int scenario = 0; scenario < 4; ++scenario) {
+        const bool save = scenario == 1;
+        const auto file = wxl_file_dialog(frame, "Files", 5, directory.data(), directory.size(), save ? "existing.txt" : "missing.txt", save ? 12 : 11, wildcard, 16, save ? 1 : 0, save ? 0 : 1, save ? 1 : 0);
+        expect(file && wxl_file_dialog_mode(file) == (save ? 1 : 0), "Generic file mode restoration failed");
+        auto* native = as<wxGenericFileDialog>(file);
+        expect(!save || native->HasFdFlag(wxFD_SAVE) && native->HasFdFlag(wxFD_OVERWRITE_PROMPT), "Save/overwrite flags were stripped");
+        expect(wxl_set_file_dialog_filter_index(file, 1) == 0 && wxl_file_dialog_filter_index(file) == 1 && wxl_set_file_dialog_filter_index(file, 2) == -1,
+               "File filter bounds failed");
+        expect(wxl_set_file_dialog_path(file, existing_path.data(), existing_path.size()) == 0, "File path setter failed");
+        if (!save) { const auto missing = directory + "/missing.txt"; expect(wxl_set_file_dialog_path(file, missing.data(), missing.size()) == 0, "Missing-file path setup failed"); }
+        if (scenario == 2) expect(wxMkdir(temporary_file + "/NewName"), "Cannot prepare isolated NewDir error path");
+        int result = -1;
+        DialogTimer inner([&] {
+            expect(wxl_dialog_depth() == 2 && actual_modals.size() == 2, "Internal prompt must have depth two");
+            expect(dynamic_cast<wxMessageDialog*>(actual_modals.back().get()) == nullptr && dynamic_cast<wxGenericMessageDialog*>(actual_modals.back().get()),
+                   "Internal native message must be redirected to generic GUI");
+            expect(wxl_dialog_end(file, 0) == -1, "Outer success while internal prompt active must reject");
+            if (scenario == 3) actual_modals.back().get()->EndModal(wxID_CANCEL); // Ordinary user cancellation, not abort-all.
+            else expect(wxl_dialog_abort() == 1, "Nested modal workflow abort failed");
+        });
+        DialogTimer trigger([&] {
+            inner.StartOnce(60);
+            wxCommandEvent event;
+            if (scenario == 2) native->OnNew(event); else native->OnOk(event);
+            if (scenario == 3) {
+                expect(wxl_dialog_depth() == 1 && wxl_dialog_modal(file) == 1, "Ordinary inner Cancel must preserve outer chooser");
+                expect(wxl_dialog_end(file, 1) == 0, "Outer workflow cancellation failed");
+            }
+        }); trigger.StartOnce(60);
+        expect(wxl_dialog_show(file, &result) == 0 && result == 1 && wxl_dialog_depth() == 0,
+               "Nested generic workflow must cancel sequentially and restore depth");
+        delete native;
+        if (scenario == 2) expect(wxRmdir(temporary_file + "/NewName"), "Cannot remove isolated NewDir fixture");
+    }
+    for (int mode = 0; mode < 2; ++mode) {
+        const char* name = mode ? "new-save.txt" : "existing.txt";
+        const auto file = wxl_file_dialog(frame, "Accept", 6, directory.data(), directory.size(), name, std::strlen(name), wildcard, 16, mode, mode ? 0 : 1, mode ? 1 : 0);
+        expect(file != 0, "File acceptance fixture failed");
+        int result = -1;
+        DialogTimer accept([&] {
+            wxCommandEvent event(wxEVT_BUTTON, wxID_OK);
+            event.SetEventObject(as<wxGenericFileDialog>(file)->FindWindow(wxID_OK));
+            as<wxGenericFileDialog>(file)->GetEventHandler()->ProcessEvent(event);
+        }); accept.StartOnce(60);
+        expect(wxl_dialog_show(file, &result) == 0 && result == 0 && wxl_dialog_depth() == 0, "Actual file OK acceptance failed");
+        size_t path_length = 0;
+        const auto* path = wxl_file_dialog_path(file, &path_length);
+        expect(path && std::string(path, path_length) == directory + "/" + name, "File accepted native path mismatch");
+        delete as<wxGenericFileDialog>(file);
+    }
+    {
+        expect(wxl_callback_error_pending(1) == 0, "Pending callback error latch setup failed");
+        wxMessageDialog native_helper(as<wxFrame>(frame), "must not show", "pending", wxOK);
+        expect(native_helper.ShowModal() == wxID_CANCEL && wxl_dialog_depth() == 0,
+               "Pending callback error must skip native prompt before OS modal entry");
+        wxGenericMessageDialog generic_helper(as<wxFrame>(frame), "must not show", "pending", wxOK);
+        expect(generic_helper.ShowModal() == wxID_CANCEL && wxl_dialog_depth() == 0,
+               "Pending callback error must skip generic prompt without recording depth");
+        expect(wxl_callback_error_pending(0) == 0, "Pending callback error latch clear failed");
+    }
+    // The hook is session-wide: native helper prompts outside public ShowModal
+    // must still redirect and abort without entering an NSAlert loop.
+    {
+        wxMessageDialog helper(as<wxFrame>(frame), "outside public show", "helper", wxOK);
+        DialogTimer cancel([&] { expect(wxl_dialog_depth() == 1 && wxl_dialog_abort() == 1, "Outside workflow helper modal must be tracked/abortable"); });
+        cancel.StartOnce(60);
+        expect(helper.ShowModal() == wxID_CANCEL && wxl_dialog_depth() == 0, "Session hook must redirect a root native helper prompt");
+    }
+    // Cancellation during Show(true) occurs before wxDialog creates m_eventLoop.
+    const auto early = wxl_message_dialog(frame, "early", 5, "early", 5, 0, 0);
+    as<wxDialog>(early)->Bind(wxEVT_SHOW, [](wxShowEvent& event) { if (event.IsShown()) wxl_dialog_abort(); event.Skip(); });
+    int result = -1;
+    expect(wxl_dialog_show(early, &result) == 0 && result == 1 && wxl_dialog_depth() == 0,
+           "Pre-loop cancellation must not be lost");
+    delete as<wxDialog>(early);
+    expect(wxGetCwd() == cwd, "File workflow must not change working directory");
+    expect(wxRemoveFile(wxString::FromUTF8(existing_path)) && wxRmdir(temporary_file), "Cannot remove isolated file fixtures");
+    delete as<wxFrame>(frame);
+}
 void exercise_dialogs() {
     const auto parent = wxl_frame("Dialog native regression", 240, 140);
     const auto text = wxl_text_entry_dialog(parent, "Message", 7, "Title", 5, "initial", 7);
@@ -371,6 +478,7 @@ int main() {
         exercise_idle();
         exercise_menus();
         exercise_dialogs();
+        exercise_generic_dialogs();
         expect(wxl_finish() == 0, "Application cleanup failed");
         active = false;
         expect(wxIdleEvent::GetMode() == wxIDLE_PROCESS_ALL, "Finish did not restore pre-session idle mode");

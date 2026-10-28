@@ -1,6 +1,8 @@
 (defpackage #:wxlambda
   (:use #:cl)
-  (:export #:dialog #:text-entry-dialog #:single-choice-dialog
+  (:export #:message-dialog #:file-dialog #:make-message-dialog #:make-file-dialog
+           #:dialog-message #:message-dialog-buttons #:file-dialog-mode #:file-dialog-path #:file-dialog-filter-index
+           #:dialog #:text-entry-dialog #:single-choice-dialog
            #:make-text-entry-dialog #:make-single-choice-dialog #:show-modal #:end-modal
            #:dialog-modal-p #:dialog-title #:dialog-value #:dialog-selection #:dialog-selection-text
            #:menu-resource #:menu-bar #:menu #:menu-item #:make-menu-bar #:make-menu #:make-menu-item

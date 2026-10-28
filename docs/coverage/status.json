@@ -636,7 +636,7 @@
         "wxl_title",
         "wxl_dialog_title"
       ],
-      "scope": "Managed frame and text-entry/single-choice dialog titles. Dialog strings are Unicode NUL-free (empty allowed). Other top-level native families remain unbound; canonical SETF returns supplied value."
+      "scope": "Managed frame and supported text/choice/generic message/file dialog titles. Dialog strings are Unicode NUL-free (empty allowed). Other top-level native families remain unbound; canonical SETF returns supplied value."
     },
     {
       "header": "wx/toplevel.h",
@@ -652,7 +652,7 @@
         "wxl_set_title",
         "wxl_set_dialog_title"
       ],
-      "scope": "Managed frame and text-entry/single-choice dialog titles. Dialog strings are Unicode NUL-free (empty allowed). Other top-level native families remain unbound; canonical SETF returns supplied value."
+      "scope": "Managed frame and supported text/choice/generic message/file dialog titles. Dialog strings are Unicode NUL-free (empty allowed). Other top-level native families remain unbound; canonical SETF returns supplied value."
     },
     {
       "header": "wx/gauge.h",
@@ -3003,6 +3003,274 @@
         "wxl_menu_alive"
       ],
       "scope": "Public native prerequisite for ancestor-aware managed window/resource validity: combine wxApp scheduled-deletion state with bridge pending markers before modal entry/liveness queries, even when IsBeingDeleted is false. No dedicated Lisp scheduled-deletion query/export or arbitrary wxObject adoption. Native zero-assert regression covers public Destroy and direct native scheduled-parent rejection before modal loop entry; full GUI/package validation is tracked in the handoff."
+    },
+    {
+      "header": "wx/msgdlg.h",
+      "line": 159,
+      "declaration": "wxMessageDialog(wxWindow* parent, const wxString& message, const wxString& caption = wxMessageBoxCaptionStr, long style = wxOK | wxCENTRE, const wxPoint& pos = wxDefaultPosition);",
+      "status": "~",
+      "symbol": "wxMessageDialog::wxMessageDialog",
+      "lisp": [
+        "message-dialog",
+        "make-message-dialog"
+      ],
+      "native": [
+        "wxl_message_dialog"
+      ],
+      "scope": "Equivalent bounded generic backend constructor: managed parent, message/title, four button sets/five icons. Actual constructor is wxGenericMessageDialog via prepared subclass, not OS wxMessageDialog. Explicit wxGeneric GUI implementation only; native OS NSAlert/NSPanel variants unbound, no backend selector. Modal/context/lifetime/ancestor guards apply; no raw adoption or full native class parity."
+    },
+    {
+      "header": "wx/msgdlg.h",
+      "line": 275,
+      "declaration": "wxString GetMessage() const;",
+      "status": "~",
+      "symbol": "wxMessageDialog::GetMessage",
+      "lisp": [
+        "dialog-message"
+      ],
+      "native": [
+        "wxl_dialog_message"
+      ],
+      "scope": "Read immutable message body from wxGenericMessageDialog inherited message base; no body writer. Explicit wxGeneric GUI implementation only; native OS NSAlert/NSPanel variants unbound, no backend selector. Modal/context/lifetime/ancestor guards apply; no raw adoption or full native class parity."
+    },
+    {
+      "header": "wx/msgdlg.h",
+      "line": 277,
+      "declaration": "long GetMessageDialogStyle() const;",
+      "status": "~",
+      "symbol": "wxMessageDialog::GetMessageDialogStyle",
+      "lisp": [
+        "message-dialog-buttons"
+      ],
+      "native": [
+        "wxl_message_dialog_buttons"
+      ],
+      "scope": "Bounded offered button-set metadata captured at construction; no arbitrary style getter/writer or custom button labels. Explicit wxGeneric GUI implementation only; native OS NSAlert/NSPanel variants unbound, no backend selector. Modal/context/lifetime/ancestor guards apply; no raw adoption or full native class parity."
+    },
+    {
+      "header": "wx/msgdlg.h",
+      "line": 271,
+      "declaration": "virtual int ShowModal();",
+      "status": "~",
+      "symbol": "wxMessageDialog::ShowModal",
+      "lisp": [
+        "show-modal",
+        "end-modal"
+      ],
+      "native": [
+        "wxl_dialog_show",
+        "wxl_dialog_end"
+      ],
+      "scope": "Equivalent generic message modal processing; offered OK/YES/NO plus safe CANCEL, not native OS modal implementation. Explicit wxGeneric GUI implementation only; native OS NSAlert/NSPanel variants unbound, no backend selector. Modal/context/lifetime/ancestor guards apply; no raw adoption or full native class parity."
+    },
+    {
+      "header": "wx/filedlg.h",
+      "line": 226,
+      "declaration": "wxFileDialog(wxWindow* parent, const wxString& message = wxFileSelectorPromptStr, const wxString& defaultDir = wxEmptyString, const wxString& defaultFile = wxEmptyString, const wxString& wildcard = wxFileSelectorDefaultWildcardStr, long style = wxFD_DEFAULT_STYLE, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, const wxString& name = wxFileDialogNameStr);",
+      "status": "~",
+      "symbol": "wxFileDialog::wxFileDialog",
+      "lisp": [
+        "file-dialog",
+        "make-file-dialog"
+      ],
+      "native": [
+        "wxl_file_dialog"
+      ],
+      "scope": "Equivalent wxGenericFileDialog constructor: single open/save, initial directory/file/wildcard, mode-appropriate must-exist/overwrite, no CHANGE_DIR/multiselect/external controls. Existing directory preflight; optional parent normalized. Explicit wxGeneric GUI implementation only; native OS NSAlert/NSPanel variants unbound, no backend selector. Modal/context/lifetime/ancestor guards apply; no raw adoption or full native class parity."
+    },
+    {
+      "header": "wx/filedlg.h",
+      "line": 239,
+      "declaration": "virtual ~wxFileDialog();",
+      "status": "~",
+      "symbol": "wxFileDialog::~wxFileDialog",
+      "lisp": [
+        "destroy-window"
+      ],
+      "native": [
+        "wxl_destroy"
+      ],
+      "scope": "Generic managed native window lifetime, active modal/ancestor guards. Explicit wxGeneric GUI implementation only; native OS NSAlert/NSPanel variants unbound, no backend selector. Modal/context/lifetime/ancestor guards apply; no raw adoption or full native class parity."
+    },
+    {
+      "header": "wx/filedlg.h",
+      "line": 381,
+      "declaration": "virtual wxString GetPath() const;",
+      "status": "~",
+      "symbol": "wxFileDialog::GetPath",
+      "lisp": [
+        "file-dialog-path"
+      ],
+      "native": [
+        "wxl_file_dialog_path"
+      ],
+      "scope": "Current native selection string, not accepted/existing/overwritten/content-IO proof. Explicit wxGeneric GUI implementation only; native OS NSAlert/NSPanel variants unbound, no backend selector. Modal/context/lifetime/ancestor guards apply; no raw adoption or full native class parity."
+    },
+    {
+      "header": "wx/filedlg.h",
+      "line": 468,
+      "declaration": "virtual void SetPath(const wxString& path);",
+      "status": "~",
+      "symbol": "wxFileDialog::SetPath",
+      "lisp": [
+        "file-dialog-path"
+      ],
+      "native": [
+        "wxl_set_file_dialog_path"
+      ],
+      "scope": "Nonempty string/pathname via native namestring; existing path-directory preflight, return original Lisp value. Native prompts are guarded; no acceptance/content IO guarantee. Explicit wxGeneric GUI implementation only; native OS NSAlert/NSPanel variants unbound, no backend selector. Modal/context/lifetime/ancestor guards apply; no raw adoption or full native class parity."
+    },
+    {
+      "header": "wx/filedlg.h",
+      "line": 368,
+      "declaration": "virtual int GetFilterIndex() const;",
+      "status": "~",
+      "symbol": "wxFileDialog::GetFilterIndex",
+      "lisp": [
+        "file-dialog-filter-index"
+      ],
+      "native": [
+        "wxl_file_dialog_filter_index"
+      ],
+      "scope": "Zero-based filter-pair index for constructor validated wildcard pairs. Explicit wxGeneric GUI implementation only; native OS NSAlert/NSPanel variants unbound, no backend selector. Modal/context/lifetime/ancestor guards apply; no raw adoption or full native class parity."
+    },
+    {
+      "header": "wx/filedlg.h",
+      "line": 457,
+      "declaration": "virtual void SetFilterIndex(int filterIndex);",
+      "status": "~",
+      "symbol": "wxFileDialog::SetFilterIndex",
+      "lisp": [
+        "file-dialog-filter-index"
+      ],
+      "native": [
+        "wxl_set_file_dialog_filter_index"
+      ],
+      "scope": "In-range constructor filter pair only; no wildcard mutation. Explicit wxGeneric GUI implementation only; native OS NSAlert/NSPanel variants unbound, no backend selector. Modal/context/lifetime/ancestor guards apply; no raw adoption or full native class parity."
+    },
+    {
+      "header": "wx/filedlg.h",
+      "line": 483,
+      "declaration": "virtual int ShowModal();",
+      "status": "~",
+      "symbol": "wxFileDialog::ShowModal",
+      "lisp": [
+        "show-modal",
+        "end-modal"
+      ],
+      "native": [
+        "wxl_dialog_show",
+        "wxl_dialog_end"
+      ],
+      "scope": "Generic file modal loop with guarded internal generic message prompts. Raw EndModal OK bypasses UI validation/transfer/existence/overwrite enforcement. Explicit wxGeneric GUI implementation only; native OS NSAlert/NSPanel variants unbound, no backend selector. Modal/context/lifetime/ancestor guards apply; no raw adoption or full native class parity."
+    },
+    {
+      "header": "wx/window.h",
+      "line": 2806,
+      "declaration": "virtual long GetWindowStyleFlag() const;",
+      "status": "~",
+      "symbol": "wxWindow::GetWindowStyleFlag",
+      "lisp": [
+        "file-dialog-mode"
+      ],
+      "native": [
+        "wxl_file_dialog_mode",
+        "wxl_file_dialog"
+      ],
+      "scope": "Internal bounded generic file mode/style prerequisite; mode reader uses generic HasFdFlag implementation. No public raw window-style API. Explicit wxGeneric GUI implementation only; native OS NSAlert/NSPanel variants unbound, no backend selector. Modal/context/lifetime/ancestor guards apply; no raw adoption or full native class parity."
+    },
+    {
+      "header": "wx/window.h",
+      "line": 2842,
+      "declaration": "virtual void SetWindowStyleFlag(long style);",
+      "status": "~",
+      "symbol": "wxWindow::SetWindowStyleFlag",
+      "lisp": [
+        "make-file-dialog"
+      ],
+      "native": [
+        "wxl_file_dialog"
+      ],
+      "scope": "Internal restore of requested SAVE/OVERWRITE bits stripped by overlapping Cocoa wxDialog button flags. No public arbitrary style writer. Explicit wxGeneric GUI implementation only; native OS NSAlert/NSPanel variants unbound, no backend selector. Modal/context/lifetime/ancestor guards apply; no raw adoption or full native class parity."
+    },
+    {
+      "header": "wx/modalhook.h",
+      "line": 87,
+      "declaration": "wxModalDialogHook();",
+      "status": "~",
+      "symbol": "wxModalDialogHook::wxModalDialogHook",
+      "lisp": [
+        "show-modal",
+        "end-modal"
+      ],
+      "native": [
+        "wxl_dialog_show",
+        "wxl_dialog_end",
+        "wxl_dialog_abort"
+      ],
+      "scope": "Internal session hook object only; no public hook wrapper/factory or Lisp native virtual override. Explicit wxGeneric GUI implementation only; native OS NSAlert/NSPanel variants unbound, no backend selector. Modal/context/lifetime/ancestor guards apply; no raw adoption or full native class parity."
+    },
+    {
+      "header": "wx/modalhook.h",
+      "line": 106,
+      "declaration": "void Register();",
+      "status": "~",
+      "symbol": "wxModalDialogHook::Register",
+      "lisp": [
+        "show-modal"
+      ],
+      "native": [
+        "wxl_dialog_show"
+      ],
+      "scope": "Internal hook registration tracks generic workflow depth and redirects native internal message prompts to generic safe implementation. Explicit wxGeneric GUI implementation only; native OS NSAlert/NSPanel variants unbound, no backend selector. Modal/context/lifetime/ancestor guards apply; no raw adoption or full native class parity."
+    },
+    {
+      "header": "wx/modalhook.h",
+      "line": 116,
+      "declaration": "void Unregister();",
+      "status": "~",
+      "symbol": "wxModalDialogHook::Unregister",
+      "lisp": [
+        "show-modal"
+      ],
+      "native": [
+        "wxl_dialog_show"
+      ],
+      "scope": "Internal hook/session cleanup; no public hook management API. Explicit wxGeneric GUI implementation only; native OS NSAlert/NSPanel variants unbound, no backend selector. Modal/context/lifetime/ancestor guards apply; no raw adoption or full native class parity."
+    },
+    {
+      "header": "wx/modalhook.h",
+      "line": 136,
+      "declaration": "virtual int Enter(wxDialog* dialog) = 0;",
+      "status": "~",
+      "symbol": "wxModalDialogHook::Enter",
+      "lisp": [
+        "show-modal",
+        "end-modal"
+      ],
+      "native": [
+        "wxl_dialog_show",
+        "wxl_dialog_end",
+        "wxl_dialog_abort"
+      ],
+      "scope": "Internal native override only: borrowed-context suspension, pre-loop cancellation, prompt substitution, nested-depth tracking. Public nested SHOW-MODAL remains forbidden. Explicit wxGeneric GUI implementation only; native OS NSAlert/NSPanel variants unbound, no backend selector. Modal/context/lifetime/ancestor guards apply; no raw adoption or full native class parity."
+    },
+    {
+      "header": "wx/modalhook.h",
+      "line": 148,
+      "declaration": "virtual void Exit(wxDialog* dialog);",
+      "status": "~",
+      "symbol": "wxModalDialogHook::Exit",
+      "lisp": [
+        "show-modal",
+        "end-modal"
+      ],
+      "native": [
+        "wxl_dialog_show",
+        "wxl_dialog_end",
+        "wxl_dialog_abort"
+      ],
+      "scope": "Internal sequential prompt-to-outer cancellation and scoped modal cleanup, not a Lisp virtual hook. Explicit wxGeneric GUI implementation only; native OS NSAlert/NSPanel variants unbound, no backend selector. Modal/context/lifetime/ancestor guards apply; no raw adoption or full native class parity."
     }
   ],
   "classes": {
@@ -3122,7 +3390,7 @@
         "wxl_remove_handler",
         "wxl_dispatch_owned"
       ],
-      "scope": "Logical names, visibility and effective enabled state, layout, geometry and destruction are exposed; the remaining wxWindow API stays open. Managed handler stacks and explicit stack-aware copied routing are now supported. Push preserves bridge ownership; default pop/remove detach alive, deleting pop consumes native resource. All supported concrete native window destructors (including text/choice dialogs) pop(false) before base teardown, independent of destroy observers/enabled flags. No external adoption/SetEventHandler or retained origins. Modal-only dialog show writers reject; active modal/ancestor close/destroy guards preserve native modal lifetime. Native availability rejects pending/scheduled receiver or ancestor deletion through public wxApp::IsScheduledForDestruction plus bridge markers; no dedicated general deletion-query API."
+      "scope": "Logical names, visibility and effective enabled state, layout, geometry and destruction are exposed; the remaining wxWindow API stays open. Managed handler stacks and explicit stack-aware copied routing are now supported. Push preserves bridge ownership; default pop/remove detach alive, deleting pop consumes native resource. All supported concrete native window destructors (including supported generic dialogs) pop(false) before base teardown, independent of destroy observers/enabled flags. No external adoption/SetEventHandler or retained origins. Modal-only dialog show writers reject; active modal/ancestor close/destroy guards preserve native modal lifetime. Native availability rejects pending/scheduled receiver or ancestor deletion through public wxApp::IsScheduledForDestruction plus bridge markers; no dedicated general deletion-query API."
     },
     "wxTopLevelWindow": {
       "status": "~",
@@ -3137,7 +3405,7 @@
         "wxl_dialog_title",
         "wxl_set_dialog_title"
       ],
-      "scope": "Title get/set is exposed for managed frames and text-entry/single-choice dialogs through canonical SETF. Dialogs are modal-only; other top-level families and remaining top-level API stay open."
+      "scope": "Title get/set is exposed for managed frames and supported text/choice/generic message/file dialogs through canonical SETF. Dialogs are modal-only; other top-level families and remaining top-level API stay open."
     },
     "wxGauge": {
       "status": "~",
@@ -3604,7 +3872,7 @@
         "wxl_set_dialog_title",
         "wxl_destroy"
       ],
-      "scope": "Abstract modal protocol only; no direct native wxDialog construction/modeless/custom validation/window-modal hooks. Active modal/ancestor destruction guarded until unwind. Message/file dialogs deferred after macOS cancellation probe hang; no exposure claimed. Native availability rejects pending/scheduled receiver or ancestor deletion through public wxApp::IsScheduledForDestruction plus bridge markers; no dedicated general deletion-query API."
+      "scope": "Abstract modal protocol only; no direct native wxDialog construction/modeless/custom validation/window-modal hooks. Active modal/ancestor destruction guarded until unwind. Platform-native message/file backends remain deferred after macOS cancellation probe hang; explicit generic message/file GUI backends are supported within their documented scope. Native availability rejects pending/scheduled receiver or ancestor deletion through public wxApp::IsScheduledForDestruction plus bridge markers; no dedicated general deletion-query API."
     },
     "wxTextEntryDialog": {
       "status": "~",
@@ -3620,7 +3888,7 @@
         "wxl_dialog_value",
         "wxl_set_dialog_value"
       ],
-      "scope": "Managed modal-only text entry with fixed defaults, native stored value and CLOS lifetime/rollback. Password/styles/validators/custom buttons and live internal text control unbound. Message/file dialogs deferred after macOS cancellation probe hang; no exposure claimed."
+      "scope": "Managed modal-only text entry with fixed defaults, native stored value and CLOS lifetime/rollback. Password/styles/validators/custom buttons and live internal text control unbound. Platform-native message/file backends remain deferred after macOS cancellation probe hang; explicit generic message/file GUI backends are supported within their documented scope."
     },
     "wxSingleChoiceDialog": {
       "status": "~",
@@ -3638,7 +3906,59 @@
         "wxl_set_dialog_selection",
         "wxl_dialog_selection_text"
       ],
-      "scope": "Managed modal-only nonempty fixed choices, valid selection and native stored string; no multiselect/clientData/item mutation/custom style or generic choice control adoption. Message/file dialogs deferred after macOS cancellation probe hang; no exposure claimed."
+      "scope": "Managed modal-only nonempty fixed choices, valid selection and native stored string; no multiselect/clientData/item mutation/custom style or generic choice control adoption. Platform-native message/file backends remain deferred after macOS cancellation probe hang; explicit generic message/file GUI backends are supported within their documented scope."
+    },
+    "wxMessageDialog": {
+      "status": "~",
+      "lisp": [
+        "message-dialog",
+        "make-message-dialog",
+        "dialog-message",
+        "message-dialog-buttons",
+        "show-modal"
+      ],
+      "native": [
+        "wxl_message_dialog",
+        "wxl_dialog_message",
+        "wxl_message_dialog_buttons",
+        "wxl_dialog_show"
+      ],
+      "scope": "Equivalent inherited public surface through prepared wxGenericMessageDialog; actual OS wxMessageDialog backend unbound. Eager protected generic control creation prerequisite gives native properties in AFTER hooks. Body/buttons/icon fixed; no extended/custom-label public API. Explicit wxGeneric GUI implementation only; native OS NSAlert/NSPanel variants unbound, no backend selector. Modal/context/lifetime/ancestor guards apply; no raw adoption or full native class parity."
+    },
+    "wxFileDialog": {
+      "status": "~",
+      "lisp": [
+        "file-dialog",
+        "make-file-dialog",
+        "file-dialog-mode",
+        "file-dialog-path",
+        "file-dialog-filter-index",
+        "show-modal"
+      ],
+      "native": [
+        "wxl_file_dialog",
+        "wxl_file_dialog_mode",
+        "wxl_file_dialog_path",
+        "wxl_set_file_dialog_path",
+        "wxl_file_dialog_filter_index",
+        "wxl_set_file_dialog_filter_index",
+        "wxl_dialog_show"
+      ],
+      "scope": "Equivalent public surface through wxGenericFileDialog only; native OS panel unbound. Single-file mode, filters/path, guarded internal generic prompts. Browser actions can alter filesystem; wrapper performs no file-content IO. No multiselect/external controls/native adoption. Explicit wxGeneric GUI implementation only; native OS NSAlert/NSPanel variants unbound, no backend selector. Modal/context/lifetime/ancestor guards apply; no raw adoption or full native class parity."
+    },
+    "wxModalDialogHook": {
+      "status": "~",
+      "lisp": [
+        "show-modal",
+        "end-modal"
+      ],
+      "native": [
+        "wxl_dialog_show",
+        "wxl_dialog_end",
+        "wxl_dialog_abort",
+        "wxl_dialog_depth"
+      ],
+      "scope": "Prerequisite native workflow hook only: prompt substitution/depth/context/cancellation. No public hook class/factory, arbitrary replacement or Lisp virtual callbacks. Explicit wxGeneric GUI implementation only; native OS NSAlert/NSPanel variants unbound, no backend selector. Modal/context/lifetime/ancestor guards apply; no raw adoption or full native class parity. Private modal-depth ABI supports depth-aware Lisp notifier containment; same-depth handled errors can recover, newly entered modal-boundary errors cancel workflow."
     }
   }
 }

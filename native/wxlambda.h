@@ -58,9 +58,21 @@ WXL_API int wxl_pending_events(void);
 WXL_API int wxl_process_pending_events(void);
 WXL_API int wxl_stop(void);
 WXL_API int wxl_finish(void);
+WXL_API wxl_handle wxl_message_dialog(wxl_handle parent, const char *message, size_t message_length, const char *title, size_t title_length, int buttons, int icon);
+WXL_API wxl_handle wxl_file_dialog(wxl_handle parent, const char *title, size_t title_length, const char *directory, size_t directory_length, const char *filename, size_t filename_length, const char *wildcard, size_t wildcard_length, int mode, int must_exist, int overwrite_prompt);
+WXL_API const char *wxl_dialog_message(wxl_handle dialog, size_t *length);
+WXL_API int wxl_message_dialog_buttons(wxl_handle dialog);
+WXL_API int wxl_file_dialog_mode(wxl_handle dialog);
+WXL_API const char *wxl_file_dialog_path(wxl_handle dialog, size_t *length);
+WXL_API int wxl_set_file_dialog_path(wxl_handle dialog, const char *path, size_t length);
+WXL_API int wxl_file_dialog_filter_index(wxl_handle dialog);
+WXL_API int wxl_set_file_dialog_filter_index(wxl_handle dialog, int index);
+WXL_API int wxl_dialog_depth(void);
+/* Private Lisp error containment latch: prevents new internal modal entry until rethrow. */
+WXL_API int wxl_callback_error_pending(int pending);
 WXL_API wxl_handle wxl_text_entry_dialog(wxl_handle parent, const char *message, size_t message_length, const char *title, size_t title_length, const char *value, size_t value_length);
 WXL_API wxl_handle wxl_single_choice_dialog(wxl_handle parent, const char *message, size_t message_length, const char *title, size_t title_length, const char **items, size_t count, int selection);
-/* Show returns 0=OK/1=CANCEL through output. End accepts 0=OK,1=CANCEL without validation/transfer. */
+/* Show/End codes: 0=OK,1=CANCEL,2=YES,3=NO. Message success requires an offered button; cancellation always allowed. End does not perform validation/transfer. */
 WXL_API int wxl_dialog_show(wxl_handle dialog, int *code);
 WXL_API int wxl_dialog_end(wxl_handle dialog, int code);
 WXL_API int wxl_dialog_abort(void);

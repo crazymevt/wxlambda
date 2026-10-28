@@ -1564,10 +1564,10 @@
   {
     "name": "dialog",
     "kind": "class",
-    "arguments": "Abstract WINDOW subclass, base of TEXT-ENTRY-DIALOG and SINGLE-CHOICE-DIALOG.",
+    "arguments": "Abstract WINDOW subclass, base of supported TEXT-ENTRY-DIALOG, SINGLE-CHOICE-DIALOG, MESSAGE-DIALOG and FILE-DIALOG.",
     "returns": "No direct construction.",
     "description": "Shared bounded modal protocol and ordinary managed window lifetime.",
-    "scope": "Requires an active main-thread GUI session and a live managed dialog. Invalid native handles/state signal NATIVE-ERROR; invalid Lisp types/receivers signal Lisp conditions. Modal-only text-entry/single-choice scope; no arbitrary native adoption, GC finalizer or native virtual Lisp overrides. Native validity includes the receiver and all native ancestors: bridge pending-destruction markers and the public wxApp scheduled-deletion list reject use even before IsBeingDeleted becomes true. SHOW-MODAL preflight must not enter a loop beneath an ancestor already queued for deletion.",
+    "scope": "Requires an active main-thread GUI session and a live managed dialog. Invalid native handles/state signal NATIVE-ERROR; invalid Lisp types/receivers signal Lisp conditions. Modal-only text-entry/single-choice/generic-message/generic-file scope; no arbitrary native adoption, GC finalizer or native virtual Lisp overrides. Native validity includes the receiver and all native ancestors: bridge pending-destruction markers and the public wxApp scheduled-deletion list reject use even before IsBeingDeleted becomes true. SHOW-MODAL preflight must not enter a loop beneath an ancestor already queued for deletion.",
     "wxwidgets": "wxDialog modal base; no general wxDialog constructor.",
     "syntax": "wxlambda:dialog",
     "construction": {
@@ -1625,19 +1625,19 @@
     "name": "show-modal",
     "kind": "generic-function",
     "arguments": "DIALOG is a live supported dialog, not already shown.",
-    "returns": "Result keyword :OK or :CANCEL.",
-    "description": "Run the native modal loop. Supported from menu/event callbacks, RUN or a pump; nested modal dialogs reject. Outer event contexts suspend during the modal call and become usable again after it returns; callbacks entered by the modal loop have their own valid innermost contexts. Bare callback errors cancel the modal operation and re-signal the primary condition after unwind. A nested notifying operation whose condition is handled locally can recover without cancelling. Manual RUN/pump/finish and structural menu edits remain guarded. Native close of the current dialog is consumed and cancels it; ancestor close events are consumed while modal. Public CLOSE-WINDOW on a protected ancestor rejects.",
-    "scope": "Requires an active main-thread GUI session and a live managed dialog. Invalid native handles/state signal NATIVE-ERROR; invalid Lisp types/receivers signal Lisp conditions. Modal-only text-entry/single-choice scope; no arbitrary native adoption, GC finalizer or native virtual Lisp overrides. Native validity includes the receiver and all native ancestors: bridge pending-destruction markers and the public wxApp scheduled-deletion list reject use even before IsBeingDeleted becomes true. SHOW-MODAL preflight must not enter a loop beneath an ancestor already queued for deletion.",
+    "returns": ":OK or :CANCEL; MESSAGE-DIALOG can also return offered :YES/:NO.",
+    "description": "Run the native modal loop. Supported from menu/event callbacks, RUN or a pump; nested public SHOW-MODAL calls reject. Outer event contexts suspend during the modal call and become usable again after it returns; callbacks entered by the modal loop have their own valid innermost contexts. Bare callback errors cancel the modal operation and re-signal the primary condition after unwind. A nested notifying operation whose condition is handled locally can recover without cancelling. Manual RUN/pump/finish and structural menu edits remain guarded. Native close of the current dialog is consumed and cancels it; ancestor close events are consumed while modal. Public CLOSE-WINDOW on a protected ancestor rejects. Generic file UI prompts are redirected to guarded generic message dialogs. Internal prompts suspend borrowed contexts; errors or public cancellation unwind internal-to-outer sequentially. Cancelling an inner prompt normally returns to the outer dialog. Nested public SHOW-MODAL remains forbidden.",
+    "scope": "Requires an active main-thread GUI session and a live managed dialog. Invalid native handles/state signal NATIVE-ERROR; invalid Lisp types/receivers signal Lisp conditions. Modal-only text-entry/single-choice/generic-message/generic-file scope; no arbitrary native adoption, GC finalizer or native virtual Lisp overrides. Native validity includes the receiver and all native ancestors: bridge pending-destruction markers and the public wxApp scheduled-deletion list reject use even before IsBeingDeleted becomes true. SHOW-MODAL preflight must not enter a loop beneath an ancestor already queued for deletion.",
     "wxwidgets": "wxDialog::ShowModal with bounded callback/lifetime bridge.",
     "syntax": "(wxlambda:show-modal dialog)"
   },
   {
     "name": "end-modal",
     "kind": "generic-function",
-    "arguments": "DIALOG is the active managed modal dialog; RESULT is :OK or :CANCEL.",
+    "arguments": "DIALOG is the active managed public modal dialog; RESULT is :OK/:CANCEL or offered :YES/:NO for MESSAGE-DIALOG.",
     "returns": "DIALOG after a successful native completion request.",
-    "description": "Call raw native EndModal with the selected result. This is not an OK-button click: it does not invoke button validation or native data transfer. Native IsModal can become false before SHOW-MODAL returns; the active modal lifetime guard remains until that call unwinds.",
-    "scope": "Requires an active main-thread GUI session and a live managed dialog. Invalid native handles/state signal NATIVE-ERROR; invalid Lisp types/receivers signal Lisp conditions. Modal-only text-entry/single-choice scope; no arbitrary native adoption, GC finalizer or native virtual Lisp overrides.",
+    "description": "Call raw native EndModal with the selected result. This is not an OK-button click: it does not invoke button validation or native data transfer. Native IsModal can become false before SHOW-MODAL returns; the active modal lifetime guard remains until that call unwinds. Generic internal prompt cancellation unwinds internal-to-outer sequentially. Raw :OK does not enforce file must-exist/overwrite checks; actual native OK-button behavior handles configured validation. While an internal prompt is active, successful completion of the public outer dialog (:OK/:YES/:NO) rejects; only :CANCEL requests sequential unwind of the entire workflow.",
+    "scope": "Requires an active main-thread GUI session and a live managed dialog. Invalid native handles/state signal NATIVE-ERROR; invalid Lisp types/receivers signal Lisp conditions. Modal-only text-entry/single-choice/generic-message/generic-file scope; no arbitrary native adoption, GC finalizer or native virtual Lisp overrides.",
     "wxwidgets": "wxDialog::EndModal (wxWidgets 3.2.12 baseline).",
     "syntax": "(wxlambda:end-modal dialog :cancel)"
   },
@@ -1647,7 +1647,7 @@
     "arguments": "DIALOG is live.",
     "returns": "Native IsModal as T/NIL.",
     "description": "Read native modal state. False after END-MODAL is not permission to destroy the dialog/ancestor before SHOW-MODAL returns.",
-    "scope": "Requires an active main-thread GUI session and a live managed dialog. Invalid native handles/state signal NATIVE-ERROR; invalid Lisp types/receivers signal Lisp conditions. Modal-only text-entry/single-choice scope; no arbitrary native adoption, GC finalizer or native virtual Lisp overrides.",
+    "scope": "Requires an active main-thread GUI session and a live managed dialog. Invalid native handles/state signal NATIVE-ERROR; invalid Lisp types/receivers signal Lisp conditions. Modal-only text-entry/single-choice/generic-message/generic-file scope; no arbitrary native adoption, GC finalizer or native virtual Lisp overrides.",
     "wxwidgets": "wxDialog::IsModal",
     "syntax": "(wxlambda:dialog-modal-p dialog)"
   },
@@ -1657,7 +1657,7 @@
     "arguments": "DIALOG is live. VALUE is a Unicode string without NUL, possibly empty.",
     "returns": "Native title string.",
     "description": "Read/write native dialog title; scalar callback updates are allowed.",
-    "scope": "Requires an active main-thread GUI session and a live managed dialog. Invalid native handles/state signal NATIVE-ERROR; invalid Lisp types/receivers signal Lisp conditions. Modal-only text-entry/single-choice scope; no arbitrary native adoption, GC finalizer or native virtual Lisp overrides.",
+    "scope": "Requires an active main-thread GUI session and a live managed dialog. Invalid native handles/state signal NATIVE-ERROR; invalid Lisp types/receivers signal Lisp conditions. Modal-only text-entry/single-choice/generic-message/generic-file scope; no arbitrary native adoption, GC finalizer or native virtual Lisp overrides.",
     "wxwidgets": "wxTopLevelWindow::GetTitle / SetTitle",
     "syntax": "(wxlambda:dialog-title dialog)",
     "setf": {
@@ -1702,5 +1702,109 @@
     "scope": "Requires an active main-thread GUI session and a live managed dialog. Invalid native handles/state signal NATIVE-ERROR; invalid Lisp types/receivers signal Lisp conditions. Modal-only text-entry/single-choice scope; no arbitrary native adoption, GC finalizer or native virtual Lisp overrides.",
     "wxwidgets": "wxSingleChoiceDialog::GetStringSelection",
     "syntax": "(wxlambda:dialog-selection-text dialog)"
+  },
+  {
+    "name": "message-dialog",
+    "kind": "class",
+    "arguments": "Optional :PARENT, :MESSAGE(default empty string), :TITLE(default \"Message\"), :BUTTONS(default :OK) and :ICON(default :INFORMATION). Buttons :OK/:OK-CANCEL/:YES-NO/:YES-NO-CANCEL; icons :NONE/:INFORMATION/:WARNING/:ERROR/:QUESTION.",
+    "returns": "New native-backed dialog.",
+    "description": "Construct a generic GUI message dialog. Message body, button set and icon are fixed at construction. SHOW-MODAL/END-MODAL support offered :YES/:NO results as well as safe :CANCEL; there is no native OS alert backend.",
+    "scope": "Requires active main-thread GUI session and live managed modal dialog, including receiver/ancestor pending/scheduled-deletion checks. Uses explicit generic wxWidgets GUI backend; native OS NSAlert/NSPanel implementations remain unbound. No backend selector, native pointer adoption, modeless interface or GC finalizer.",
+    "wxwidgets": "wxGenericMessageDialog; bounded equivalent wxMessageDialog public surface (wxWidgets 3.2.12 baseline).",
+    "syntax": "wxlambda:message-dialog",
+    "construction": {
+      "syntax": "(make-instance 'wxlambda:message-dialog :message \"Save changes?\" :buttons :yes-no-cancel)",
+      "description": "Native-backed DIALOG/WINDOW subclass supporting direct construction, subclass slots/DEFAULT-INITARGS/AFTER and rollback. Optional parent is normalized to explicit requested window (including hidden) or truly parentless NIL. Construction is allowed in GUI-thread callbacks/RUN/pumps. Failed initialization cleans new resources/roots without reversing arbitrary external changes. Strings are Unicode without NUL."
+    }
+  },
+  {
+    "name": "make-message-dialog",
+    "kind": "function",
+    "arguments": "Keyword-only constructor initargs and validated :CLASS(default MESSAGE-DIALOG); subclass initargs forwarded.",
+    "returns": "New selected concrete subclass.",
+    "description": "Thin MAKE-INSTANCE factory with same backend, defaults, validation, lifetime and rollback as MESSAGE-DIALOG.",
+    "scope": "Requires active main-thread GUI session and live managed modal dialog, including receiver/ancestor pending/scheduled-deletion checks. Uses explicit generic wxWidgets GUI backend; native OS NSAlert/NSPanel implementations remain unbound. No backend selector, native pointer adoption, modeless interface or GC finalizer.",
+    "wxwidgets": "wxGenericMessageDialog; bounded equivalent wxMessageDialog public surface constructor."
+  },
+  {
+    "name": "file-dialog",
+    "kind": "class",
+    "arguments": "Optional :PARENT, :TITLE(default \"Open file\"/\"Save file\" by mode), :DIRECTORY(default empty), :FILENAME(default empty), :WILDCARD(default \"All files|*\"), :MODE(:OPEN default or :SAVE), :MUST-EXIST(default true for open), :OVERWRITE-PROMPT(default true for save), :FILTER-INDEX(default0) and optional :PATH.",
+    "returns": "New native-backed dialog.",
+    "description": "Construct a generic single-file selection dialog. Directory/path accept strings or pathnames converted through native namestring; supplied directory must exist, empty directory lets native code use cwd. Path must be nonempty; filename is a string. Filters require nonempty description/pattern pairs and valid zero-based filter index. No change-directory flag, multiselect or external controls. Dialog browser actions such as New Directory can change the filesystem; selection does not perform file-content IO. True MUST-EXIST is rejected for :SAVE, and true OVERWRITE-PROMPT for :OPEN. Supplied path directories must exist.",
+    "scope": "Requires active main-thread GUI session and live managed modal dialog, including receiver/ancestor pending/scheduled-deletion checks. Uses explicit generic wxWidgets GUI backend; native OS NSAlert/NSPanel implementations remain unbound. No backend selector, native pointer adoption, modeless interface or GC finalizer.",
+    "wxwidgets": "wxGenericFileDialog; bounded equivalent wxFileDialog public surface (wxWidgets 3.2.12 baseline).",
+    "syntax": "wxlambda:file-dialog",
+    "construction": {
+      "syntax": "(make-instance 'wxlambda:file-dialog :mode :open :wildcard \"Lisp files|*.lisp|All files|*\")",
+      "description": "Native-backed DIALOG/WINDOW subclass supporting direct construction, subclass slots/DEFAULT-INITARGS/AFTER and rollback. Optional parent is normalized to explicit requested window (including hidden) or truly parentless NIL. Construction is allowed in GUI-thread callbacks/RUN/pumps. Failed initialization cleans new resources/roots without reversing arbitrary external changes. Strings are Unicode without NUL."
+    }
+  },
+  {
+    "name": "make-file-dialog",
+    "kind": "function",
+    "arguments": "Keyword-only constructor initargs and validated :CLASS(default FILE-DIALOG); subclass initargs forwarded.",
+    "returns": "New selected concrete subclass.",
+    "description": "Thin MAKE-INSTANCE factory with same backend, defaults, validation, lifetime and rollback as FILE-DIALOG.",
+    "scope": "Requires active main-thread GUI session and live managed modal dialog, including receiver/ancestor pending/scheduled-deletion checks. Uses explicit generic wxWidgets GUI backend; native OS NSAlert/NSPanel implementations remain unbound. No backend selector, native pointer adoption, modeless interface or GC finalizer.",
+    "wxwidgets": "wxGenericFileDialog; bounded equivalent wxFileDialog public surface constructor."
+  },
+  {
+    "name": "dialog-message",
+    "kind": "generic-function",
+    "arguments": "DIALOG is a live MESSAGE-DIALOG.",
+    "returns": "Native message body string.",
+    "description": "Read immutable message body. Title is separately mutable through DIALOG-TITLE; no message-body writer in this slice.",
+    "scope": "Requires active main-thread GUI session and live managed modal dialog, including receiver/ancestor pending/scheduled-deletion checks. Uses explicit generic wxWidgets GUI backend; native OS NSAlert/NSPanel implementations remain unbound. No backend selector, native pointer adoption, modeless interface or GC finalizer.",
+    "wxwidgets": "wxMessageDialogBase::GetMessage on wxGenericMessageDialog",
+    "syntax": "(wxlambda:dialog-message dialog)"
+  },
+  {
+    "name": "message-dialog-buttons",
+    "kind": "generic-function",
+    "arguments": "DIALOG is a live MESSAGE-DIALOG.",
+    "returns": ":OK, :OK-CANCEL, :YES-NO or :YES-NO-CANCEL.",
+    "description": "Read fixed offered button set. :YES/:NO modal completion is valid only when offered; :CANCEL remains a safe unwind result.",
+    "scope": "Requires active main-thread GUI session and live managed modal dialog, including receiver/ancestor pending/scheduled-deletion checks. Uses explicit generic wxWidgets GUI backend; native OS NSAlert/NSPanel implementations remain unbound. No backend selector, native pointer adoption, modeless interface or GC finalizer.",
+    "wxwidgets": "Bounded wxMessageDialog button-style view",
+    "syntax": "(wxlambda:message-dialog-buttons dialog)"
+  },
+  {
+    "name": "file-dialog-mode",
+    "kind": "generic-function",
+    "arguments": "DIALOG is a live FILE-DIALOG.",
+    "returns": ":OPEN or :SAVE.",
+    "description": "Read fixed single-file selection mode. Configured native UI validation differs from raw END-MODAL result assignment. Reader reflects the actual restored generic file flags, including the macOS overlap repair, rather than merely echoing a Lisp requested-mode slot.",
+    "scope": "Requires active main-thread GUI session and live managed modal dialog, including receiver/ancestor pending/scheduled-deletion checks. Uses explicit generic wxWidgets GUI backend; native OS NSAlert/NSPanel implementations remain unbound. No backend selector, native pointer adoption, modeless interface or GC finalizer.",
+    "wxwidgets": "Bounded wxFileDialog open/save style view",
+    "syntax": "(wxlambda:file-dialog-mode dialog)"
+  },
+  {
+    "name": "file-dialog-path",
+    "kind": "generic-function",
+    "arguments": "DIALOG is live FILE-DIALOG. SETF VALUE is nonempty string/pathname; pathnames convert to native namestring. A directory component, when present, must exist.",
+    "returns": "Current native path string; SETF returns original supplied VALUE.",
+    "description": "Read/write current single-file path. This is not acceptance, file existence, overwrite confirmation or successful content IO. A raw END-MODAL :OK bypasses button validation/transfer, must-exist and overwrite enforcement. Native property changes can open internal prompts and use the guarded prompt workflow.",
+    "scope": "Requires active main-thread GUI session and live managed modal dialog, including receiver/ancestor pending/scheduled-deletion checks. Uses explicit generic wxWidgets GUI backend; native OS NSAlert/NSPanel implementations remain unbound. No backend selector, native pointer adoption, modeless interface or GC finalizer.",
+    "wxwidgets": "wxFileDialogBase::GetPath / wxGenericFileDialog::SetPath",
+    "syntax": "(wxlambda:file-dialog-path dialog)",
+    "setf": {
+      "syntax": "(setf (wxlambda:file-dialog-path dialog) value)",
+      "description": "Set converted nonempty native path; return original string/pathname, not the normalized getter string. No file content IO or acceptance guarantee."
+    }
+  },
+  {
+    "name": "file-dialog-filter-index",
+    "kind": "generic-function",
+    "arguments": "DIALOG is live FILE-DIALOG. SETF VALUE is valid zero-based filter-pair index.",
+    "returns": "Native filter index; SETF returns VALUE.",
+    "description": "Read/write one of the construction-time wildcard description/pattern pairs. Invalid index rejects. Filters do not prove current path acceptance.",
+    "scope": "Requires active main-thread GUI session and live managed modal dialog, including receiver/ancestor pending/scheduled-deletion checks. Uses explicit generic wxWidgets GUI backend; native OS NSAlert/NSPanel implementations remain unbound. No backend selector, native pointer adoption, modeless interface or GC finalizer.",
+    "wxwidgets": "wxFileDialogBase::GetFilterIndex / SetFilterIndex",
+    "syntax": "(wxlambda:file-dialog-filter-index dialog)",
+    "setf": {
+      "syntax": "(setf (wxlambda:file-dialog-filter-index dialog) value)",
+      "description": "Select an existing filter pair and return VALUE; no wildcard mutation or acceptance claim. Uses the notifying boundary for native prompt/callback safety."
+    }
   }
 ]

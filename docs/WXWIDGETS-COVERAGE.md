@@ -53,7 +53,7 @@ automatic release requirements.
   with its stated Lisp mapping, `[~]` means partial support with the supported
   arguments/receivers and remaining limits stated inline, and `[ ]` means pending.
   The class index uses `[~]` for the managed `wxAppConsole`/`wxApp` interfaces,
-  `wxEvtHandler`, ten concrete window families, managed menu resources,
+  `wxEvtHandler`, twelve concrete window families, managed menu resources,
   `wxBoxSizer`, `wxWindow` and `wxTopLevelWindow`; none has
   complete class coverage. Applications have lifecycle functions and a borrowed application-handler view;
   native application construction and subclass hooks remain unbound.
@@ -87,13 +87,13 @@ is scheduled by feature priority, not automatically required for a release. A cl
 works. Context, class-definition and declaration counts must not be interpreted
 as percentages of distinct wxWidgets APIs.
 
-The current baseline has ten concrete window kinds, basic layout and a deeply tested
+The current baseline has twelve concrete window kinds, basic layout and a deeply tested
 managed lifetime/event layer, including command/notify/close/idle families, owned
 resources, pending delivery, handler chains/stacks and rooted Lisp associations.
 This foundation supports breadth; it is not a mandate to keep draining C1.
 Menus/actions deliver the first part of the selected form/editor slice.
-Modal text-entry/single-choice dialogs add bounded input workflows; message/file
-families require a safe platform cancellation bridge.
+Modal text-entry/single-choice dialogs add bounded input workflows; generic message/file
+workflows extend them, with native OS implementations still unbound.
 Native notify subclasses, retained origins and other unselected depth stay
 visible as native gaps without automatically blocking that GUI work.
 See the [C1 details](coverage/phase-c1.md), [C2 details](coverage/phase-c2.md) and
@@ -103,11 +103,11 @@ The scheduled-deletion ancestor gap is repaired: the bridge uses public wxApp
 scheduled-deletion state plus its pending markers. Native regressions, independent
 review and the full GUI/package checks below validate the corrected behavior.
 
-The current bridge is ABI 33, with 158 public Lisp exports. The standard-dialog
-batch passes all 50 GUI scenarios on local Apple Silicon macOS SBCL and CCL, five
-package checks, independent reviews and the zero-assert native regression.
-Reports: `evidence/standard-dialogs/{sbcl,ccl}-20261028-final/` and
-`evidence/packaging/standard-dialogs-20261028-final/`. Docset checks pass with 221 entries
+The current bridge is ABI 34, with 167 public Lisp exports. Generic message/file
+verification passes all 51 GUI scenarios on local Apple Silicon macOS SBCL and CCL,
+five package checks, independent reviews and the zero-assert native regression.
+Reports: `evidence/message-file-dialogs/{sbcl,ccl}-20261028-final/` and
+`evidence/packaging/message-file-dialogs-20261028/`. Docset checks pass with 232 entries
 and zero problems, including actual public-export/class/SETF coverage and isolated
 discovery/lookup. These checks do not validate hosted Windows/Linux, physical
 interactive input, real OS session delivery or the graphical Cadre viewer.
@@ -260,10 +260,11 @@ widget classes has complete wxWidgets coverage yet.
   explicit unbinding of control-specific callbacks before window destruction is
   still required; generic registrations use weak invalidation and boundary pruning.
 
-No APIs in C3–C7 currently have public bindings. Using wxWidgets types internally
-for conversions or implementation is not public API coverage.
+C3 includes bounded managed menus and standard/generic dialogs. Other source
+categories remain selected feature work; internal conversions/types alone are
+not full public class coverage.
 
-The widget-facing Lisp API has nine window wrapper classes plus the public event-handler base, direct native
+The window-facing Lisp API has fourteen wrapper classes (two abstract) plus the public event-handler base, direct native
 construction and generic operations/SETF; see [CLOS API](CLOS-API.md). This establishes Lisp dispatch
 and method combination, not native C++ subclass/virtual-callback coverage.
 
@@ -297,7 +298,7 @@ feedback, standard dialogs, books/notebooks and clipboard are everyday prioritie
 Drag/drop and specialized platform/help/wizard services follow concrete demand.
 Frame-owned normal/check/separator menus and ID-routed actions are implemented
 within their verified scope. Modal text-entry/single-choice dialogs extend the
-selected workflow, with final checks pending. Message/file cancellation is deferred;
+selected workflow. Generic message/file workflows are verified; native OS cancellation remains deferred;
 popup/submenu/radio and full native menu overload depth stay in the inventory.
 
 ### C4: Models, complex controls, and document frameworks
@@ -398,7 +399,15 @@ that GUI feature.
 
 The ABI33 modal base/text-entry/single-choice batch passes its documented
 local suites, native regression, package and docset/export checks. [STANDARD-DIALOGS.md](STANDARD-DIALOGS.md) distinguishes raw modal results
-from native validation/data transfer and stored-value/cache timing. Message/file
-dialogs remain deferred after a macOS cancellation probe hang; arbitrary native
+from native validation/data transfer and stored-value/cache timing. Platform-native message/file
+backends remain deferred after a macOS cancellation probe hang; arbitrary native
 modal families are not claimed. Continue selected GUI features without requiring
 all native ownership/event declarations first.
+
+ABI34 generic message/file support passes final verification.
+[MESSAGE-FILE-DIALOGS.md](MESSAGE-FILE-DIALOGS.md) defines explicit generic backend,
+internal prompt cancellation and current-versus-accepted file state. Native OS
+backends remain unbound. Generic implementation headers/eager message creation,
+modal-hook overrides and file style-bit restoration are bounded C7 reconciliation
+dependencies, not public native class/virtual coverage. Next compose the form/editor
+open/save workflow with Lisp-native file content IO.

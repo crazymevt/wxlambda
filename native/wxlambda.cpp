@@ -6,6 +6,10 @@
 #include <wx/menu.h>
 #include <wx/textdlg.h>
 #include <wx/choicdlg.h>
+#include <wx/generic/msgdlgg.h>
+#include <wx/generic/filedlgg.h>
+#include <wx/modalhook.h>
+#include <wx/filename.h>
 #include <wx/weakref.h>
 #include <memory>
 #include <typeinfo>
@@ -100,6 +104,13 @@ constexpr int first_registered_event_kind = WXL_EVENT_MENU + 1;
 int next_event_kind = first_registered_event_kind;
 wxWeakRef<wxDialog> active_modal;
 std::unordered_map<wxWindow*, size_t> dialog_choice_counts;
+std::unordered_map<wxWindow*, int> dialog_message_buttons;
+std::unordered_map<wxWindow*, int> dialog_file_filters;
+std::vector<wxWeakRef<wxDialog>> actual_modals;
+std::vector<wxWeakRef<wxWindow>> dialog_operation_windows;
+bool modal_cancel_requested = false;
+bool pending_callback_error = false;
+uint64_t modal_workflow_epoch = 0;
 wxIdleMode initial_idle_mode = wxIDLE_PROCESS_ALL;
 wxl_handle next_handle = 1;
 wxl_handle application_handle = 0;
@@ -279,7 +290,7 @@ template<class T> class ManagedWindow final : public T, public ClientDataAccess 
 public:
     using T::T;
     wxClientDataType ClientStorageKind() const override { return this->m_clientDataType; }
-    ~ManagedWindow() override { dialog_choice_counts.erase(this); detach_window_stack(this); }
+    ~ManagedWindow() override { dialog_choice_counts.erase(this); dialog_message_buttons.erase(this); dialog_file_filters.erase(this); detach_window_stack(this); }
 };
 void set_registered_type(wxEvent& event, int type) {
         const RegisteredEvent* source = nullptr;
@@ -317,7 +328,7 @@ void invoke_callback(uint64_t token, const wxl_event& event) {
     dispatch(token, &event);
 }
 void require_dispatch_entry() {
-    require(!active_modal.get(), "Cannot enter structural dispatch during a modal dialog");
+    require(!active_modal.get() && actual_modals.empty(), "Cannot enter structural dispatch during a modal dialog");
     require(!running, "Event loop is already running");
     require(!pumping && callback_depth == 0, "Cannot enter event dispatch from a pump or callback");
 }
@@ -626,17 +637,35 @@ wxString utf8(const char* value) {
 }
 bool protected_modal_ancestor(wxWindow* object) {
     for (wxWindow* node = active_modal.get(); node; node = node->GetParent()) if (node == object) return true;
+    for (const auto& dialog : actual_modals)
+        for (wxWindow* node = dialog.get(); node; node = node->GetParent()) if (node == object) return true;
+    for (const auto& operation : dialog_operation_windows)
+        for (wxWindow* node = operation.get(); node; node = node->GetParent()) if (node == object) return true;
     return false;
 }
+// File-control setters/creation can synchronously open validation prompts even
+// outside public ShowModal. Keep their receiver/parent alive across those loops.
+struct DialogOperationScope {
+    bool protects;
+    explicit DialogOperationScope(wxWindow* object) : protects(object != nullptr) {
+        if (protects) dialog_operation_windows.emplace_back(object);
+    }
+    ~DialogOperationScope() { if (protects) dialog_operation_windows.pop_back(); }
+};
+bool request_modal_cancel();
 class ModalCloseGuard {
+    wxDialog* protected_dialog;
     std::vector<wxWindow*> ancestors;
     size_t bound = 0;
     void on_close(wxCloseEvent& event) {
-        if (auto* object = active_modal.get(); object && event.GetEventObject() == object && object->IsModal()) object->EndModal(wxID_CANCEL);
+        if (event.GetEventObject() == protected_dialog && protected_dialog && protected_dialog->IsModal()) {
+            if (protected_dialog == active_modal.get()) request_modal_cancel();
+            else protected_dialog->EndModal(wxID_CANCEL);
+        }
         event.Skip(false);
     }
 public:
-    explicit ModalCloseGuard(wxWindow* object) {
+    explicit ModalCloseGuard(wxWindow* object) : protected_dialog(dynamic_cast<wxDialog*>(object)) {
         for (auto* node = object; node; node = node->GetParent()) {
             require(!window_destruction_pending(node), "Dialog ancestor destruction is pending");
             ancestors.push_back(node);
@@ -650,6 +679,93 @@ public:
     }
     ~ModalCloseGuard() { detach(); }
 };
+// Generic message controls are created eagerly, so parent/title/lifetime exist
+// in Lisp AFTER hooks. Bypass the generic lazy ShowModal recreation path.
+class PreparedMessageDialog : public wxGenericMessageDialog {
+public:
+    PreparedMessageDialog(wxWindow* parent, const wxString& message, const wxString& title, long style)
+        : wxGenericMessageDialog(parent, message, title, style) { DoCreateMsgdialog(); }
+    int ShowModal() override { return wxMessageDialogBase::ShowModal(); }
+};
+void cancel_innermost_modal() {
+    wxDialog* object = actual_modals.empty() ? active_modal.get() : actual_modals.back().get();
+    if (object && object->IsModal()) object->EndModal(wxID_CANCEL);
+    if (!object) return;
+    const auto epoch = modal_workflow_epoch;
+    wxWeakRef<wxDialog> weak(object);
+    wxTheApp->CallAfter([weak, epoch] {
+        if (epoch != modal_workflow_epoch || !modal_cancel_requested) return;
+        if (auto* live = weak.get(); live &&
+            (actual_modals.empty() ? active_modal.get() == live : actual_modals.back().get() == live))
+            live->EndModal(wxID_CANCEL); // Also handles cancellation during Show before m_eventLoop exists.
+    });
+}
+bool request_modal_cancel() {
+    if (!active_modal.get() && actual_modals.empty()) return false;
+    modal_cancel_requested = true;
+    cancel_innermost_modal();
+    return true;
+}
+class WorkflowModalHook final : public wxModalDialogHook {
+    struct Level { unsigned references; std::unique_ptr<ModalCloseGuard> close_guard; };
+    std::vector<Level> levels;
+protected:
+    int Enter(wxDialog* object) override {
+        // Lisp may defer rethrow until its nearest notifying operation returns.
+        // Do not open a new native prompt while its callback error is pending.
+        if (pending_callback_error) return wxID_CANCEL;
+        if (modal_cancel_requested && (active_modal.get() || !actual_modals.empty())) return wxID_CANCEL;
+        // Native NSAlert modal loops cannot be aborted using wxDialog::EndModal.
+        // Replace them before their platform ShowModal implementation is entered.
+        if (auto* message = dynamic_cast<wxMessageDialogBase*>(object);
+            message && !dynamic_cast<wxGenericMessageDialog*>(object)) {
+            wxGenericMessageDialog replacement(message->GetParent(), message->GetMessage(), message->GetCaption(), message->GetMessageDialogStyle());
+            replacement.SetExtendedMessage(message->GetExtendedMessage());
+            replacement.SetYesNoLabels(message->GetYesLabel(), message->GetNoLabel());
+            replacement.SetOKCancelLabels(message->GetOKLabel(), message->GetCancelLabel());
+            replacement.SetHelpLabel(message->GetHelpLabel());
+            return replacement.ShowModal();
+        }
+        if (!actual_modals.empty() && actual_modals.back().get() == object) {
+            ++levels.back().references;
+            return wxID_NONE;
+        }
+        if (actual_modals.empty() && !active_modal.get()) { ++modal_workflow_epoch; modal_cancel_requested = false; }
+        auto guard = std::make_unique<ModalCloseGuard>(object);
+        levels.push_back({1, std::move(guard)});
+        try { actual_modals.emplace_back(object); }
+        catch (...) { levels.pop_back(); throw; }
+        ++callback_depth; // Suspend an outer borrowed context throughout this loop.
+        return wxID_NONE;
+    }
+    void Exit(wxDialog* object) override {
+        if (actual_modals.empty() || actual_modals.back().get() != object) return;
+        if (--levels.back().references) return;
+        actual_modals.pop_back();
+        levels.pop_back();
+        --callback_depth;
+        // End only one loop at a time. Ending parent and child simultaneously
+        // can leave wxModalEventLoop running indefinitely on the Cocoa backend.
+        if (modal_cancel_requested && !actual_modals.empty()) cancel_innermost_modal();
+        if (actual_modals.empty() && !active_modal.get()) { modal_cancel_requested = false; ++modal_workflow_epoch; }
+    }
+};
+std::unique_ptr<WorkflowModalHook> workflow_modal_hook;
+void validate_dialog_result(wxDialog* object, int code) {
+    require(code >= 0 && code <= 3, "Invalid modal result");
+    if (code == 1) return; // Cancellation always remains available to unwind safely.
+    const auto found = dialog_message_buttons.find(object);
+    if (found == dialog_message_buttons.end()) { require(code == 0, "This dialog supports only OK or Cancel"); return; }
+    require(code == 0 ? found->second <= 1 : found->second >= 2, "Result button is not offered by this message dialog");
+}
+int bridge_dialog_result(int code) {
+    if (code == wxID_OK) return 0;
+    if (code == wxID_CANCEL) return 1;
+    if (code == wxID_YES) return 2;
+    if (code == wxID_NO) return 3;
+    throw std::runtime_error("Unsupported modal result");
+}
+int native_dialog_result(int code) { return code == 0 ? wxID_OK : code == 1 ? wxID_CANCEL : code == 2 ? wxID_YES : wxID_NO; }
 wxString menu_string(const char* text, size_t length, bool allow_empty) {
     require(text || length == 0, "Null menu text");
     require(allow_empty || length != 0, "Menu label must be nonempty");
@@ -673,7 +789,7 @@ size_t menu_position(wxMenuBar* bar, wxMenu* menu) {
 
 }
 extern "C" {
-int wxl_abi_version() { return 33; }
+int wxl_abi_version() { return 34; }
 const char* wxl_last_error() { return error.c_str(); }
 int wxl_start(wxl_callback callback) {
     return status([&] {
@@ -681,6 +797,7 @@ int wxl_start(wxl_callback callback) {
         require(!used, "Only one application session is supported per process");
         require(wxApp::GetInstance() == nullptr, "A wxWidgets application already exists");
         require(callback != nullptr, "Missing event dispatcher");
+        pending_callback_error = false;
         initial_idle_mode = wxIdleEvent::GetMode();
         used = true;
         wxApp::SetInstance(new App);
@@ -697,6 +814,8 @@ int wxl_start(wxl_callback callback) {
         dispatch = callback;
         application_handle = next_handle++;
         started = true;
+        workflow_modal_hook = std::make_unique<WorkflowModalHook>();
+        workflow_modal_hook->Register();
     });
 }
 int wxl_run() {
@@ -753,10 +872,82 @@ int wxl_finish() {
         owned_handlers.clear();
         application_handle = 0;
         wxTheApp->OnExit();
+        workflow_modal_hook.reset();
         wxEntryCleanup();
-        windows.clear(); handlers.clear(); pending_destruction.clear(); registered_events.clear(); dispatch = nullptr; started = false;
+        windows.clear(); handlers.clear(); pending_destruction.clear(); registered_events.clear(); dispatch = nullptr; started = false; pending_callback_error = false;
     });
 }
+wxl_handle wxl_message_dialog(wxl_handle parent, const char* message, size_t message_length,
+                             const char* title, size_t title_length, int buttons, int icon) {
+    return create([&] {
+        require(buttons >= 0 && buttons <= 3 && icon >= 0 && icon <= 4, "Invalid message dialog configuration");
+        const auto msg = menu_string(message, message_length, true);
+        const auto caption = menu_string(title, title_length, true);
+        const long button_styles[] = {wxOK, wxOK | wxCANCEL, wxYES_NO, wxYES_NO | wxCANCEL};
+        const long icon_styles[] = {0, wxICON_INFORMATION, wxICON_WARNING, wxICON_ERROR, wxICON_QUESTION};
+        auto* requested_parent = parent ? window(parent) : nullptr;
+        auto object = std::make_unique<ManagedWindow<PreparedMessageDialog>>(requested_parent, msg, caption, button_styles[buttons] | icon_styles[icon]);
+        if (object->GetParent() != requested_parent) require(object->Reparent(requested_parent), "Cannot preserve requested dialog parent");
+        dialog_message_buttons.emplace(object.get(), buttons);
+        const auto id = track(object.get()); object.release(); return id;
+    });
+}
+wxl_handle wxl_file_dialog(wxl_handle parent, const char* title, size_t title_length,
+                          const char* directory, size_t directory_length, const char* filename, size_t filename_length,
+                          const char* wildcard, size_t wildcard_length, int mode, int must_exist, int overwrite_prompt) {
+    return create([&] {
+        require(mode == 0 || mode == 1, "Invalid file dialog mode");
+        require((must_exist == 0 || must_exist == 1) && (overwrite_prompt == 0 || overwrite_prompt == 1), "Invalid file dialog flags");
+        require(mode == 0 ? !overwrite_prompt : !must_exist, "File dialog flag does not apply to this mode");
+        const auto caption = menu_string(title, title_length, true);
+        const auto dir = menu_string(directory, directory_length, true);
+        const auto name = menu_string(filename, filename_length, true);
+        const auto filters = menu_string(wildcard, wildcard_length, false);
+        require(dir.empty() || wxDirExists(dir), "File dialog directory must exist");
+        size_t parts = 0, start = 0;
+        const std::string raw(wildcard, wildcard_length);
+        while (true) {
+            const auto delimiter = raw.find('|', start);
+            const auto end = delimiter == std::string::npos ? raw.size() : delimiter;
+            require(end != start, "File filters require nonempty description/pattern pairs");
+            ++parts;
+            if (delimiter == std::string::npos) break;
+            start = delimiter + 1;
+        }
+        require(parts % 2 == 0 && parts / 2 <= static_cast<size_t>(std::numeric_limits<int>::max()), "File filters require description/pattern pairs");
+        const long flags = (mode == 0 ? wxFD_OPEN : wxFD_SAVE) | (must_exist ? wxFD_FILE_MUST_EXIST : 0) | (overwrite_prompt ? wxFD_OVERWRITE_PROMPT : 0);
+        auto* requested_parent = parent ? window(parent) : nullptr;
+        DialogOperationScope operation(requested_parent);
+        auto object = std::make_unique<ManagedWindow<wxGenericFileDialog>>(requested_parent, caption, dir, name, filters, flags);
+        // Cocoa wxDialog::Create strips button flags which overlap FD_SAVE and
+        // FD_OVERWRITE_PROMPT. Restore the requested file policy after creation.
+        object->SetWindowStyleFlag(object->GetWindowStyleFlag() | flags);
+        if (object->GetParent() != requested_parent) require(object->Reparent(requested_parent), "Cannot preserve requested dialog parent");
+        dialog_file_filters.emplace(object.get(), static_cast<int>(parts / 2));
+        const auto id = track(object.get()); object.release(); return id;
+    });
+}
+const char* wxl_dialog_message(wxl_handle id, size_t* length) { return metadata_string([&] { return as<PreparedMessageDialog>(id)->GetMessage(); }, length); }
+int wxl_message_dialog_buttons(wxl_handle id) {
+    int value = -1; const auto result = status([&] { auto* object = as<PreparedMessageDialog>(id); value = dialog_message_buttons.at(object); }); return result == 0 ? value : -1;
+}
+int wxl_file_dialog_mode(wxl_handle id) { int mode = -1; const auto result = status([&] { mode = as<wxGenericFileDialog>(id)->HasFdFlag(wxFD_SAVE) ? 1 : 0; }); return result == 0 ? mode : -1; }
+const char* wxl_file_dialog_path(wxl_handle id, size_t* length) { return metadata_string([&] { return as<wxGenericFileDialog>(id)->GetPath(); }, length); }
+int wxl_set_file_dialog_path(wxl_handle id, const char* path, size_t length) { return status([&] {
+    auto* object = as<wxGenericFileDialog>(id);
+    const auto value = menu_string(path, length, true);
+    const auto directory = wxFileName(value).GetPath();
+    require(directory.empty() || wxDirExists(directory), "File dialog path directory must exist");
+    DialogOperationScope operation(object);
+    object->SetPath(value);
+}); }
+int wxl_file_dialog_filter_index(wxl_handle id) { int value = -1; const auto result = status([&] { value = as<wxGenericFileDialog>(id)->GetFilterIndex(); }); return result == 0 ? value : -1; }
+int wxl_set_file_dialog_filter_index(wxl_handle id, int value) { return status([&] {
+    auto* object = as<wxGenericFileDialog>(id);
+    require(value >= 0 && value < dialog_file_filters.at(object), "File dialog filter index out of range");
+    DialogOperationScope operation(object);
+    object->SetFilterIndex(value);
+}); }
 wxl_handle wxl_text_entry_dialog(wxl_handle parent, const char* message, size_t message_length,
                                 const char* title, size_t title_length, const char* value, size_t value_length) {
     return create([&] {
@@ -790,37 +981,45 @@ int wxl_dialog_show(wxl_handle id, int* code) {
     return status([&] {
         auto* object = as<wxDialog>(id);
         require(code, "Missing modal result output");
-        require(!active_modal.get(), "Nested modal dialogs are not supported");
+        require(!active_modal.get() && actual_modals.empty(), "Nested modal dialogs are not supported");
         require(!object->IsShown() && !object->IsModal(), "Dialog is already shown");
         struct ModalScope {
             CallbackScope suspended_context;
             ModalCloseGuard close_guard;
-            explicit ModalScope(wxDialog* object) : close_guard(object) { active_modal = object; }
+            explicit ModalScope(wxDialog* object) : close_guard(object) {
+                ++modal_workflow_epoch; modal_cancel_requested = false; active_modal = object;
+            }
             ~ModalScope() {
                 if (auto* object = active_modal.get(); object && object->IsModal()) object->EndModal(wxID_CANCEL);
-                active_modal = nullptr;
+                active_modal = nullptr; modal_cancel_requested = false; ++modal_workflow_epoch;
             }
         } scope(object);
         const auto native_code = object->ShowModal();
-        require(native_code == wxID_OK || native_code == wxID_CANCEL, "Unsupported modal result");
-        *code = native_code == wxID_OK ? 0 : 1;
+        const int result = bridge_dialog_result(native_code);
+        validate_dialog_result(object, result);
+        *code = result;
     });
 }
 int wxl_dialog_end(wxl_handle id, int code) {
     return status([&] {
         auto* object = as<wxDialog>(id);
-        require(code == 0 || code == 1, "Invalid modal result");
-        require(active_modal.get() == object && object->IsModal(), "Dialog is not currently modal");
-        object->EndModal(code == 0 ? wxID_OK : wxID_CANCEL);
+        validate_dialog_result(object, code);
+        require(active_modal.get() == object, "Dialog is not currently modal");
+        require(object->IsModal(), "Dialog is not currently modal");
+        if (code == 1) { request_modal_cancel(); return; }
+        require(actual_modals.size() == 1 && actual_modals.back().get() == object, "Cannot accept outer dialog during an internal prompt");
+        object->EndModal(native_dialog_result(code));
     });
 }
 int wxl_dialog_abort() {
     return boolean_result([] {
-        ready(); auto* object = active_modal.get(); if (!object) return false;
-        if (object->IsModal()) object->EndModal(wxID_CANCEL);
-        return true;
+        ready(); return request_modal_cancel();
     });
 }
+int wxl_callback_error_pending(int pending) {
+    return status([&] { ready(); require(pending == 0 || pending == 1, "Invalid pending callback error flag"); pending_callback_error = pending != 0; });
+}
+int wxl_dialog_depth() { int depth = -1; const auto result = status([&] { ready(); depth = static_cast<int>(actual_modals.size()); }); return result == 0 ? depth : -1; }
 int wxl_dialog_modal(wxl_handle id) { return boolean_result([&] { return as<wxDialog>(id)->IsModal(); }); }
 const char* wxl_dialog_title(wxl_handle id, size_t* length) { return metadata_string([&] { return as<wxDialog>(id)->GetTitle(); }, length); }
 int wxl_set_dialog_title(wxl_handle id, const char* title, size_t length) { return status([&] { as<wxDialog>(id)->SetTitle(menu_string(title, length, true)); }); }

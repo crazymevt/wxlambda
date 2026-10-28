@@ -142,6 +142,9 @@ MENU-BAR, MENU and MENU-ITEM. Direct constructors use :PARENT; native frame/bar/
 menu ownership controls invalidation. Structural menu edits reject callback/pump/
 RUN contexts; scalar writes follow the documented generic protocols. See
 `docs/MENUS.md`. Modal DIALOG has bounded TEXT-ENTRY-DIALOG/SINGLE-CHOICE-DIALOG families;
-message/file dialogs await safe native platform cancellation. Preserve modal
+generic MESSAGE-DIALOG/FILE-DIALOG use an explicit guarded wx GUI backend;
+platform-native message/file dialogs remain unbound. Preserve modal
 context suspension and active-dialog/ancestor lifetime guards. See
-`docs/STANDARD-DIALOGS.md`.
+`docs/STANDARD-DIALOGS.md` and `docs/MESSAGE-FILE-DIALOGS.md`. Preserve guarded
+internal prompt depth/sequential cancellation; raw modal results do not imply
+file validation or accepted selection.

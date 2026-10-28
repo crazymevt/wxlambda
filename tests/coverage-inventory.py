@@ -157,6 +157,9 @@ class CoverageInventoryChecks(unittest.TestCase):
     def test_reviewed_bindings_have_persistent_status(self):
         required = {
             'wxFrame::wxFrame', 'wxPanel::wxPanel', 'wxButton::wxButton',
+            'wxMessageDialog::wxMessageDialog', 'wxMessageDialog::GetMessage',
+            'wxFileDialog::wxFileDialog', 'wxFileDialog::GetPath', 'wxFileDialog::SetPath',
+            'wxFileDialog::GetFilterIndex', 'wxModalDialogHook::Enter',
             'wxApp::IsScheduledForDestruction', 'wxDialog::ShowModal', 'wxDialog::EndModal', 'wxDialog::IsModal',
             'wxTextEntryDialog::wxTextEntryDialog', 'wxTextEntryDialog::GetValue',
             'wxSingleChoiceDialog::wxSingleChoiceDialog', 'wxSingleChoiceDialog::GetSelection',
@@ -194,7 +197,7 @@ class CoverageInventoryChecks(unittest.TestCase):
         self.assertEqual(set(self.status['classes']), {
             'wxFrame', 'wxPanel', 'wxButton', 'wxTextCtrl', 'wxStaticText',
             'wxCheckBox', 'wxChoice', 'wxGauge', 'wxBoxSizer', 'wxWindow', 'wxTopLevelWindow',
-            'wxDialog', 'wxTextEntryDialog', 'wxSingleChoiceDialog', 'wxMenuBar', 'wxMenu', 'wxMenuItem', 'wxAppConsole', 'wxApp', 'wxEvtHandler', 'wxClientData', 'wxObject', 'wxIdleEvent', 'wxEvent', 'wxCloseEvent', 'wxNotifyEvent', 'wxCommandEvent',
+            'wxMessageDialog', 'wxFileDialog', 'wxModalDialogHook', 'wxDialog', 'wxTextEntryDialog', 'wxSingleChoiceDialog', 'wxMenuBar', 'wxMenu', 'wxMenuItem', 'wxAppConsole', 'wxApp', 'wxEvtHandler', 'wxClientData', 'wxObject', 'wxIdleEvent', 'wxEvent', 'wxCloseEvent', 'wxNotifyEvent', 'wxCommandEvent',
         })
 
     def test_compiler_scaffolding_is_context_but_public_macros_are_tasks(self):

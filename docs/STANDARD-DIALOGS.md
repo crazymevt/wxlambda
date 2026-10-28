@@ -2,9 +2,9 @@
 
 ABI 33 adds the abstract DIALOG window class and two concrete native-backed
 families: TEXT-ENTRY-DIALOG and SINGLE-CHOICE-DIALOG. This is a bounded extension
-of the form/editor GUI workflow after menus/actions. **Message and file dialogs
-are deferred** until the bridge can safely cancel their platform-native modal
-implementations. No message/file interface or verification is claimed here.
+of the form/editor GUI workflow after menus/actions. Platform-native message/file backends remain deferred after cancellation probes.
+[Generic message/file workflows](MESSAGE-FILE-DIALOGS.md) now provide a separate,
+explicit wxWidgets GUI implementation; this guide covers the text/choice families.
 The baseline is wxWidgets 3.2.12.
 
 ## Construct a dialog and obtain a result
@@ -49,8 +49,9 @@ handle checks control native lifetime. No Lisp GC finalizer owns native deletion
 ## Native modal loop and scoped callbacks
 
 SHOW-MODAL returns :OK or :CANCEL. It may run from a menu/event callback, a RUN
-loop or a native pump. Only one managed modal call may be active: nested modal
-calls and already-shown dialogs reject. Native modal processing enters its own
+loop or a native pump. Only one public managed modal call may be active: nested public
+SHOW-MODAL calls and already-shown dialogs reject. Guarded internal generic
+file prompts are described in the separate message/file guide. Native modal processing enters its own
 callbacks while SHOW-MODAL waits. The outer borrowed event context is suspended throughout SHOW-MODAL, including
 intervals without an inner callback. Each inner context is valid only in its own
 current innermost callback. After SHOW-MODAL returns, the outer context can resume under
@@ -125,13 +126,14 @@ graphical acceptance or the choice dialog; those require separate evidence.
 Current verification evidence is kept in the [handoff](../IMPLEMENTATION.md).
 
 The macOS exploratory native message/file cancellation probe hung past its
-five-second watchdog even when native IsModal was false; those families require
-a safer cancellation bridge before exposure. Text-entry/single-choice native
+five-second watchdog even when native IsModal was false; those platform-native backends remain unbound. The separate generic backend
+uses guarded native wxWidgets GUI controls instead. Text-entry/single-choice native
 cancellation completed promptly in the bounded probe. This is platform evidence,
 not proof of Windows/Linux behavior or a public guarantee about elapsed time.
 
-Continue GUI breadth with safe message/file workflows when that cancellation
-prerequisite is solved, or another selected form/editor feature. Do not drain
+Continue the form/editor open/save workflow with the explicit
+[generic message/file API](MESSAGE-FILE-DIALOGS.md), retaining platform-native
+backends as a separate gap. Do not drain
 unrelated native event ownership utilities. Graphical user acceptance, validation,
 OS-native dialog conventions and cross-platform GUI behavior require their own
 reports; the native declaration inventory remains factual and partial.
