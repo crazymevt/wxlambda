@@ -77,6 +77,7 @@
 (defvar *repl-debugging* nil)
 (defvar *handlers* nil)
 (defvar *standalone-handler-objects* nil)
+(defvar *handler-client-data-roots* nil)
 (defvar *callback-error* nil)
 (defvar *in-notifying-setter* nil)
 (defvar *next-token* 0)
@@ -116,7 +117,21 @@
       ;; handle this error. Only errors escaping that boundary stop the loop.
       (unless *in-notifying-setter* (%stop)))))
 
+(defun reap-client-data-roots ()
+  ;; Native destruction can precede Lisp wrapper cleanup (notably child windows).
+  ;; Only numeric identities cross the FFI; native storage never holds Lisp data.
+  (when (and *active* *handler-client-data-roots*)
+    (let (expired)
+      (maphash (lambda (token value)
+                 (declare (ignore value))
+                 (let ((active (%client-data-active token)))
+                   (when (minusp active) (check-status active))
+                   (when (zerop active) (push token expired))))
+               *handler-client-data-roots*)
+      (dolist (token expired) (remhash token *handler-client-data-roots*)))))
+
 (defun reap-event-bindings ()
+  (reap-client-data-roots)
   (when (and *active* *event-bindings*)
     (let (expired)
       (maphash (lambda (token binding)
@@ -143,11 +158,13 @@ Run explicitly with RUN. Only one session per process is currently supported."
   (when *active* (error "An application session is already active"))
   (load-native-library)
   (let ((*active* t) (*application-handler* nil) (*standalone-handler-objects* (make-hash-table)) (*handlers* (make-hash-table)) (*event-bindings* (make-hash-table)) (*callback-error* nil)
+        (*handler-client-data-roots* (make-hash-table))
         (*registered-event-types* (make-hash-table)) (*registered-event-kinds* (make-hash-table))
         (*registered-event-families* (make-hash-table)))
     (check-status (%start (cffi:callback dispatch-event)))
     (unwind-protect (funcall function)
-      (check-status (%finish)))))
+      (unwind-protect (check-status (%finish))
+        (clrhash *handler-client-data-roots*)))))
 
 (defun call-with-application (function)
   "Run FUNCTION in a main-thread GUI session, masking SBCL floating-point traps
@@ -321,7 +338,8 @@ RETURN-TO-APPLICATION-REPL restart. Setup errors propagate to the caller."
                              (slot-value object 'handle)))
       (when *standalone-handler-objects*
         (remhash (slot-value object 'handle) *standalone-handler-objects*))
-      (setf (slot-value object 'handle) nil))))
+      (setf (slot-value object 'handle) nil)))
+  (ignore-errors (reap-client-data-roots)))
 
 (defmethod initialize-instance :around ((object event-handler) &rest initargs)
   (declare (ignore initargs))
@@ -1382,3 +1400,34 @@ live checkbox, including when called from inside its handler."
   (write-event-field event 13 value 0))
 (defmethod (setf event-origin-id) (value (event owned-event)) (clear-event-origin event value))
 (defmethod (setf event-origin-id) (value (event event-context)) (clear-event-origin event value))
+
+;;; Handler client objects carry session-root identities, never Lisp pointers.
+(defgeneric event-handler-client-data (handler)
+  (:documentation "Read the EQ Lisp value attached to this managed handler, or NIL. SETF retains VALUE until replacement, destruction/reaping or session end."))
+(defmethod event-handler-client-data ((handler event-handler))
+  (require-active-application)
+  (reap-client-data-roots)
+  (cffi:with-foreign-object (token :uint64)
+    (check-status (%handler-client-data (handle handler) token))
+    (let ((id (cffi:mem-ref token :uint64)))
+      (unless (zerop id)
+        (multiple-value-bind (value present) (gethash id *handler-client-data-roots*)
+          (unless present
+            (error 'native-error :message "Native client object has no session Lisp root"))
+          value)))))
+(defgeneric (setf event-handler-client-data) (value handler))
+(defmethod (setf event-handler-client-data) (value (handler event-handler))
+  (require-active-application)
+  (reap-client-data-roots)
+  ;; Root before entering native code; remove the candidate on any failed write.
+  (let ((token (if value (incf *next-token*) 0)) (complete nil))
+    (unless (zerop token)
+      (setf (gethash token *handler-client-data-roots*) value))
+    (unwind-protect
+         (progn
+           (check-status (%set-handler-client-data (handle handler) token))
+           (setf complete t)
+           (reap-client-data-roots)
+           value)
+      (unless (or complete (zerop token))
+        (remhash token *handler-client-data-roots*)))))

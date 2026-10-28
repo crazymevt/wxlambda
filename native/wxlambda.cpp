@@ -18,6 +18,19 @@
 #endif
 
 namespace {
+// wxEvtHandler exposes no public storage-kind query. Its getters assert when
+// called in the opposite client-data mode, so only our native subclasses expose
+// their own protected discriminator through this private implementation view.
+class ClientDataAccess {
+public:
+    virtual ~ClientDataAccess() = default;
+    virtual wxClientDataType ClientStorageKind() const = 0;
+};
+class TokenClientData final : public wxClientData {
+public:
+    explicit TokenClientData(uint64_t value) : token(value) { }
+    const uint64_t token;
+};
 static_assert(wxEVT_CATEGORY_UI == 1 && wxEVT_CATEGORY_USER_INPUT == 2 &&
               wxEVT_CATEGORY_SOCKET == 4 && wxEVT_CATEGORY_TIMER == 8 &&
               wxEVT_CATEGORY_THREAD == 16,
@@ -26,9 +39,10 @@ bool session_type(wxEventType type) {
     return type == wxEVT_QUERY_END_SESSION || type == wxEVT_END_SESSION;
 }
 // Synthetic session probes must never fall through to wxApp's exit defaults.
-class StandaloneHandler final : public wxEvtHandler {
+class StandaloneHandler final : public wxEvtHandler, public ClientDataAccess {
     std::unordered_set<wxEvent*> queued_sessions;
 public:
+    wxClientDataType ClientStorageKind() const override { return m_clientDataType; }
     void QueueEvent(wxEvent* event) override {
         if (event && session_type(event->GetEventType())) queued_sessions.insert(event);
         wxEvtHandler::QueueEvent(event);
@@ -44,8 +58,9 @@ private:
         return session_type(event.GetEventType()) ? false : wxEvtHandler::TryAfter(event);
     }
 };
-class App final : public wxApp {
+class App final : public wxApp, public ClientDataAccess {
 public:
+    wxClientDataType ClientStorageKind() const override { return m_clientDataType; }
     bool OnInit() override { return true; }
 };
 thread_local std::string error;
@@ -123,6 +138,25 @@ wxEvtHandler* event_handler(wxl_handle id) {
     const auto it = owned_handlers.find(id);
     require(it != owned_handlers.end(), "Invalid or destroyed event-handler handle");
     return it->second.get();
+}
+const TokenClientData* token_client_data(wxEvtHandler* object, bool strict) {
+    const auto* view = dynamic_cast<const ClientDataAccess*>(object);
+    if (!view) {
+        require(!strict, "Client data requires a bridge-managed native handler");
+        return nullptr;
+    }
+    const auto kind = view->ClientStorageKind();
+    if (kind == wxClientData_None) return nullptr;
+    if (kind != wxClientData_Object) {
+        // Even an untyped NULL locks wxEvtHandler into void-data mode and
+        // cannot safely be converted with its public SetClientObject API.
+        require(!strict, "Untyped native client data is not supported");
+        return nullptr;
+    }
+    const auto* data = object->GetClientObject();
+    const auto* token = dynamic_cast<const TokenClientData*>(data);
+    require(!strict || !data || token, "Foreign native client object is not supported");
+    return token;
 }
 wxEvtHandler* standalone_handler(wxl_handle id) {
     auto* object = event_handler(id);
@@ -204,9 +238,10 @@ void remove_pushed_handler(wxl_handle id) {
     require(owner->RemoveEventHandler(owned_handlers.at(id).get()), "Pushed handler not found");
     pushed_handlers.erase(attached);
 }
-template<class T> class ManagedWindow final : public T {
+template<class T> class ManagedWindow final : public T, public ClientDataAccess {
 public:
     using T::T;
+    wxClientDataType ClientStorageKind() const override { return this->m_clientDataType; }
     ~ManagedWindow() override { detach_window_stack(this); }
 };
 void set_registered_type(wxEvent& event, int type) {
@@ -529,7 +564,7 @@ wxString utf8(const char* value) {
 }
 }
 extern "C" {
-int wxl_abi_version() { return 28; }
+int wxl_abi_version() { return 29; }
 const char* wxl_last_error() { return error.c_str(); }
 int wxl_start(wxl_callback callback) {
     return status([&] {
@@ -638,6 +673,43 @@ int wxl_handler_enabled(wxl_handle id) {
 }
 int wxl_set_handler_enabled(wxl_handle id, int enabled) {
     return status([&] { event_handler(id)->SetEvtHandlerEnabled(enabled != 0); });
+}
+int wxl_handler_client_data(wxl_handle id, uint64_t* token) {
+    return status([&] {
+        auto* object = event_handler(id);
+        require(token != nullptr, "Missing client-data token output");
+        const auto* data = token_client_data(object, true);
+        *token = data ? data->token : 0;
+    });
+}
+int wxl_set_handler_client_data(wxl_handle id, uint64_t token) {
+    return status([&] {
+        auto* object = event_handler(id);
+        token_client_data(object, true);
+        // Allocate first: allocation failure leaves the previous owned object
+        // intact. SetClientObject then owns/deletes replacement and old data.
+        auto replacement = token ? std::make_unique<TokenClientData>(token) : nullptr;
+        object->SetClientObject(replacement.get());
+        replacement.release();
+    });
+}
+int wxl_client_data_active(uint64_t token) {
+    return boolean_result([&] {
+        ready();
+        if (!token) return false;
+        const auto matches = [token](wxEvtHandler* object) {
+            const auto* data = token_client_data(object, false);
+            return data && data->token == token;
+        };
+        if (application_handle && matches(wxTheApp)) return true;
+        for (const auto& item : owned_handlers)
+            if (matches(item.second.get())) return true;
+        // A pending-destruction object can still own its token until actual
+        // deletion; only dereference windows whose weak reference is non-null.
+        for (const auto& item : windows)
+            if (auto* object = item.second.get(); object && matches(object)) return true;
+        return false;
+    });
 }
 int wxl_handler_destroy(wxl_handle id) {
     return status([&] {

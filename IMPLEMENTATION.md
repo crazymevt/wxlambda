@@ -70,15 +70,18 @@ must reconcile additional documented public interfaces beyond those headers.
 - Command-payload batch: native extra LONG/raw selection-action metadata, uniform
   kind-specific checked/selection SETF and bounded clear-only origin detachment.
   Independent runtime and documentation review pass; final verification is recorded below.
-- Current bridge ABI: 28. Public API: 125 exports, nine window wrapper classes
-  (eight concrete widget kinds) plus the event-handler base, 87 named generics and
-  twenty-six generic SETF writers. The application-handler is a borrowed view; no
+- Handler-client-data batch: EQ Lisp state via native typed token adapters,
+  managed foreign-mode protection and session-root cleanup. Independent review
+  and final verification pass.
+- Current bridge ABI: 29. Public API: 126 exports, nine window wrapper classes
+  (eight concrete widget kinds) plus the event-handler base, 88 named generics and
+  twenty-seven generic SETF writers. The application-handler is a borrowed view; no
   native application construction or arbitrary-event class binding exists yet; built-ins plus registered command/notify names have
   observer/contextual bindings.
-- Latest implementation verification: 45 GUI scenarios and native preflight
+- Latest implementation verification: 46 GUI scenarios and native preflight
   pass on local Apple Silicon macOS SBCL 2.6.9 and CCL 1.13. Final reports:
-  `evidence/command-event-payloads/{sbcl,ccl}-20261028-final/`. Five package checks
-  pass in `evidence/packaging/command-event-payloads-20261028/`.
+  `evidence/handler-client-data/{sbcl,ccl}-20261028/`. Five package checks
+  pass in `evidence/packaging/handler-client-data-20261028-final/`.
   Hosted Linux/Windows GUI behavior and the graphical Cadre viewer remain open.
 
 ### Next dependency and working order
@@ -1314,6 +1317,51 @@ session delivery, graphical Cadre and prior inaccessible pointer/class-mismatch
 branches remain unverified. Continue C1 retained origin/client/userData lifetime
 or broader native class prerequisites; do not equate raw flags with full derived
 payload semantics.
+
+## Managed handler Lisp client-data roots (2026-10-28)
+
+ABI 29 adds EVENT-HANDLER-CLIENT-DATA/SETF for standalone handlers, windows and
+the managed application. A native wxClientData subclass owns only a numeric root
+token; the Lisp session table retains the actual object by EQ. NIL clears,
+replacement/clear releases prior roots, and failed candidate assignments remove
+their root. No constructor initarg, Lisp/native pointer exposure, event payload,
+per-item client data, generic wxClientData wrapper or untyped binding is added.
+
+Foreign non-null typed objects and all untyped/Void storage modes (even NULL raw
+pointer) reject untouched. Fresh None/typedNULL read NIL. Private native interfaces
+on managed App/StandaloneHandler/ManagedWindow expose protected m_clientDataType
+before GetClientObject because wxEvtHandler has no public mode getter. Retain that
+implementation-header dependency for C7; do not export the protected field.
+Native asynchronous destruction can retain Lisp roots until actual deletion and
+next client/generic cleanup, rollback or session end; the session table clears
+after finish. Detached pushed handlers keep their own datum; deleting handlers
+or windows releases their separate association. Returned ordinary Lisp references
+remain valid. Immutable snapshots do not capture handler client data.
+
+Verified counts: 126 exports, 88 named generics, 27 generic SETF writers,
+46 GUI scenarios, 181 docset entries and twenty-seven examples. Independent
+runtime/harness and documentation reviews pass. Both local full GUI suites and
+native preflights, the example/focused regressions on SBCL and CCL, five relocated
+package checks, sixteen Python tests and twelve coverage-inventory tests pass.
+The native foreign typed/untyped/voidNULL regression passes with zero captured
+wx assertions (quiet-run.xAmVX0T2). Build the optional WXLAMBDA_BUILD_NATIVE_TESTS
+target wxlambda-client-data-native from tests/client-data-native.cpp; commands
+are in docs/HANDLER-CLIENT-DATA.md. The local separate build used
+/private/tmp/wxlambda-client-data-native-build and the pinned
+/opt/homebrew/opt/wxwidgets@3.2/bin/wx-config-3.2.
+
+Docset checking reports zero problems, with actual public-export/SETF coverage,
+isolated installation, discovery, symbol lookup and guide/example access verified.
+Reports: evidence/handler-client-data/{sbcl,ccl}-20261028/ and
+evidence/packaging/handler-client-data-20261028-final/; final package:
+dist/wxlambda-form-handler-client-data-final. An early Python run preceded the API
+reference update and failed its export-reference consistency checks; the final
+run passed after documentation generation. No runtime test failures occurred.
+Hosted Windows/Linux GUI, actual OS
+session delivery, graphical Cadre and prior inaccessible pointer/class-mismatch
+branches remain unverified. Continue C1 event/userData, retained-origin or broader
+client-data ownership contracts explicitly; this handler slot does not complete
+generic client containers or derived control item data.
 
 ## Decisions
 

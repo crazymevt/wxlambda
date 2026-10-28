@@ -1,6 +1,6 @@
 # Owned native events, detached clones and copied dispatch
 
-ABI 28 adds the native-backed `owned-event` CLOS class and `make-event`,
+ABI 29 adds the native-backed `owned-event` CLOS class and `make-event`,
 `clone-event`, `destroy-event` and `event-alive-p`. These are independently owned
 native resources, distinct from immutable `event` snapshots and borrowed
 callback-scoped `event-context` values. The baseline is wxWidgets 3.2.12.
@@ -184,3 +184,7 @@ remain unbound.
 selection-action metadata, uniform checked/selection semantic SETF and clear-only
 origin detachment. Owned construction accepts command/notify :EXTRA-LONG; keyword
 synthetic queue/process calls do not add that option.
+
+[Handler Lisp client data](HANDLER-CLIENT-DATA.md) now retains EQ values through
+a native typed token adapter with safe foreign-mode rejection. Event/client/
+userData and item-pointer ownership remain separate unbound APIs.

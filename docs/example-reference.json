@@ -102,5 +102,9 @@
   "command-event-payloads.lisp": {
     "description": "Compare semantic toggle/selection views with raw extra-LONG action metadata, mutate live owned/context payloads and safely detach a registered command origin.",
     "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/command-event-payloads.lisp --eval '(wxlambda-command-event-payloads:start)'"
+  },
+  "handler-client-data.lisp": {
+    "description": "Attach EQ-preserved Lisp state to a managed handler, read it through callback receiver identity and clear it before cleanup without exposing Lisp/native pointers.",
+    "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/handler-client-data.lisp --eval '(wxlambda-handler-client-data:start)'"
   }
 }

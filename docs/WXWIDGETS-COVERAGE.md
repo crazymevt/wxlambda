@@ -93,12 +93,12 @@ contracts first. C2 remains partial; C3–C7 have no public bindings recorded.
 See the [C1 details](coverage/phase-c1.md), [C2 details](coverage/phase-c2.md) and
 [class index](coverage/classes.md) for the remaining work within bound families.
 
-The current bridge is ABI 28, with 125 public Lisp exports. The command-payload batch passes
-45 GUI scenarios on both local Apple Silicon macOS SBCL/CCL configurations and
+The current bridge is ABI 29, with 126 public Lisp exports. The handler-client-data batch passes
+46 GUI scenarios on both local Apple Silicon macOS SBCL/CCL configurations and
 five packaging checks. These are local results retained under
-`evidence/command-event-payloads/{sbcl,ccl}-20261028-final/` and
-`evidence/packaging/command-event-payloads-20261028/`;
-they do not validate Linux/Windows or the graphical Cadre viewer. The command-payload
+`evidence/handler-client-data/{sbcl,ccl}-20261028/` and
+`evidence/packaging/handler-client-data-20261028-final/`;
+they do not validate Linux/Windows or the graphical Cadre viewer. The handler-client-data
 implementation reruns the GUI suites; documentation-only
 updates must distinguish retained results from newly run checks.
 
@@ -173,6 +173,7 @@ widget classes has complete wxWidgets coverage yet.
 - [x] Standalone handler NEXT/PREVIOUS peer readers and reciprocal SETF, HANDLER-UNLINKED-P and UNLINK-EVENT-HANDLER. Strong canonical roots preserve wrapper identity; dispatch-time edits and borrowed window/app chains reject. Native Push/Pop/Remove remain open.
 - [x] Managed window Get/Push/Pop/RemoveEventHandler and explicit ProcessWindowEvent/Locally copies. Push preserves bridge ownership; actual native window destruction detaches handlers. External stack adoption/SetEventHandler remain open.
 - [x] Native extra LONG and raw IsSelection metadata, kind-specific live checked/selection SETF and clear-only compatible registered origin detachment. Retained/new origins and full derived-class payload semantics remain open.
+- [x] Managed EVENT-HANDLER-CLIENT-DATA EQ Lisp storage through typed native root-token adapters, with foreign typed/untyped rejection. Generic wxClientData/container, untyped/event/item/userData ownership remain open.
 - [x] Native errors translated to Lisp `native-error` conditions.
 - [x] Event snapshots: `event`, `event-p`, `event-kind`, `event-source`,
   `event-text`, `event-checked-p`, `event-selection` for four command kinds plus :close.
@@ -383,6 +384,10 @@ for C7 reconciliation.
 Native window teardown requires pushed handlers to be removed; managed native
 widget destructors pop without deleting bridge-owned handlers before base teardown.
 
-The ABI 28 command-payload batch expands the runner to 45 scenarios. Local GUI/package checks and independent review pass. Raw IsSelection reports
-extra-LONG action metadata, not event kind or choice-index validity; origin
-mutation is NIL-only and never retains a native object.
+Raw IsSelection reports extra-LONG action metadata, not event kind or choice-index
+validity; origin mutation remains NIL-only and never retains a native object.
+
+The ABI 29 handler-client-data batch expands the runner to 46 scenarios. Local
+GUI/package checks, the zero-assert native guard regression and independent review pass. Protected wxEvtHandler storage-mode
+inspection avoids typed/untyped native assertions; it is an implementation-header
+C7 dependency, not a public field/mode API.

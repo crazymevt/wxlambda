@@ -187,3 +187,7 @@ standalone handlers without transferring native ownership, detach them on actual
 window destruction and provide explicit stack-aware copy processing. Standalone
 peer editing excludes attached nodes; arbitrary SetEventHandler/external adoption
 remain unbound.
+
+[Handler Lisp client data](HANDLER-CLIENT-DATA.md) now retains EQ values through
+a native typed token adapter with safe foreign-mode rejection. Event/client/
+userData and item-pointer ownership remain separate unbound APIs.

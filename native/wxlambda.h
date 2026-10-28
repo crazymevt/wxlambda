@@ -68,6 +68,13 @@ WXL_API int wxl_unlink_handler(wxl_handle handler);
 WXL_API int wxl_handler_alive(wxl_handle handler);
 WXL_API int wxl_handler_enabled(wxl_handle handler);
 WXL_API int wxl_set_handler_enabled(wxl_handle handler, int enabled);
+/* Client objects hold opaque integer tokens only, never Lisp/native pointers.
+   Get/set return 0/-1; token zero denotes clear/no object. Active returns
+   0/1/-1 and scans still-associated bridge objects, including deferred deletion.
+   Foreign typed objects and all untyped storage modes reject get/set. */
+WXL_API int wxl_handler_client_data(wxl_handle handler, uint64_t *token);
+WXL_API int wxl_set_handler_client_data(wxl_handle handler, uint64_t token);
+WXL_API int wxl_client_data_active(uint64_t token);
 /* Only standalone handlers may be destroyed here. */
 WXL_API int wxl_handler_destroy(wxl_handle handler);
 /* Independent bindings for supported command/close event kinds. Bind/queue

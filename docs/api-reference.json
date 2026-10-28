@@ -1323,5 +1323,19 @@
     "description": "Read whether command extra LONG is nonzero. This is not a :SELECTION-kind predicate or index-validity test: normal choice metadata can have a valid index while this flag is NIL. Use EVENT-EXTRA-LONG to change the underlying field.",
     "scope": "Saved reads need no session. Live access requires active main-thread session and valid owned/innermost-context lifetime. No direct SETF, arbitrary derived event class or control-state operation is provided.",
     "wxwidgets": "wxCommandEvent::IsSelection (m_extraLong !=0), including notify-derived events (wxWidgets 3.2.12 baseline)."
+  },
+  {
+    "name": "event-handler-client-data",
+    "kind": "generic-function",
+    "syntax": "(wxlambda:event-handler-client-data handler)",
+    "arguments": "HANDLER is a live managed EVENT-HANDLER, window/control or APPLICATION-HANDLER. SETF VALUE is any Lisp object; NIL clears.",
+    "returns": "The same retained Lisp object by EQ, or NIL for no bridge datum. SETF returns VALUE.",
+    "description": "Store a session-root token in a bridge wxClientData adapter; the Lisp table retains the actual object. No Lisp pointer, serialization or native ownership of the Lisp object. Replacement/clear releases old association through cleanup; an ordinary returned Lisp reference remains valid. No constructor initarg: native-backed subclass AFTER hooks may SETF.",
+    "scope": "Active main-thread session and live managed receiver required. Foreign non-null typed objects and all native untyped/Void modes, including NULL-pointer Void slots, reject untouched before typed access. Fresh None/typed-NULL slots read NIL. Roots reap during access/generic cleanup/rollback or after native session finish; asynchronous destruction may retain them until a later boundary. No untyped, event/client/userData, per-item or arbitrary native container binding.",
+    "wxwidgets": "wxEvtHandler::GetClientObject / SetClientObject with bridge wxClientData token adapter; protected native mode inspection is a private C7 reconciliation dependency (wxWidgets 3.2.12 baseline).",
+    "setf": {
+      "syntax": "(setf (wxlambda:event-handler-client-data handler) value)",
+      "description": "Retain VALUE by EQ or clear for NIL, returning VALUE. Foreign storage rejects without replacement. Candidate Lisp roots roll back on failed native write; old roots release at cleanup. Does not pump events or change native handler ownership."
+    }
   }
 ]

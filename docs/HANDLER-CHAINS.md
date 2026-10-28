@@ -1,6 +1,6 @@
 # Managed standalone event-handler chains
 
-ABI 28 adds NEXT-HANDLER, PREVIOUS-HANDLER, HANDLER-UNLINKED-P and
+ABI 29 adds NEXT-HANDLER, PREVIOUS-HANDLER, HANDLER-UNLINKED-P and
 UNLINK-EVENT-HANDLER for session-owned standalone EVENT-HANDLER objects and
 subclasses. The two peer properties have generic SETF writers. The baseline is
 wxWidgets 3.2.12. Borrowed window/application sources and peers reject these
@@ -142,3 +142,7 @@ See [handler lifetime](EVENT-HANDLERS.md), [pending delivery](PENDING-EVENTS.md)
 [Managed window stacks](WINDOW-HANDLER-STACKS.md) now provide bounded Push/Pop/
 Remove and explicit stack-aware synchronous processing; external adoption and
 general SetEventHandler remain gaps.
+
+[Handler Lisp client data](HANDLER-CLIENT-DATA.md) now retains EQ values through
+a native typed token adapter with safe foreign-mode rejection. Event/client/
+userData and item-pointer ownership remain separate unbound APIs.

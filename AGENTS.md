@@ -95,7 +95,9 @@ construction, independent cloning/disposal and copied dispatch. Reject ancestry
 combining it with `event-handler`/window resources before native allocation.
 Direct clone construction uses source native state over payload defaults; factory
 clone calls reject explicit payload overrides. No raw origin retention or
-client/userData ownership is exposed. Origin SETF is clear-only NIL: non-null
+event client/userData ownership is exposed. Managed EVENT-HANDLER-CLIENT-DATA
+retains Lisp values through typed numeric-token adapters/session roots; foreign
+typed/untyped modes reject untouched. It is not event payload or per-item data. Origin SETF is clear-only NIL: non-null
 current origins require registered compatible command/notify classes; built-in
 non-null origins reject. Semantic checked/selection views remain kind-limited,
 while raw IsSelection is extra-LONG action metadata independent of kind/index.
