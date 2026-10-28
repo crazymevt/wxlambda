@@ -120,11 +120,40 @@ live checkbox, including from inside the handler. Setter errors follow the same
 recoverable boundary as text-change handlers.
 
 Run [examples/form.lisp](examples/form.lisp) for a form using labels, text input,
-a checkbox, and a submit button:
+a checkbox, a greeting-style dropdown, row/column layouts, and submit/reopen
+buttons:
 
 ```sh
 sbcl --load ~/quicklisp/setup.lisp --load examples/form.lisp
 ```
+
+The reusable application lives in `examples/form-app.lisp`. For live development,
+load that file and evaluate `(wxlambda-form:start-live)` from a terminal REPL:
+
+```lisp
+(load "examples/form-app.lisp")
+(wxlambda-form:start-live)
+;; Evaluate these inside the application REPL:
+(wxlambda:set-text wxlambda-form:*name* "Ada λ" :notify t)
+(wxlambda:set-selection wxlambda-form:*style* 1 :notify t)
+(wxlambda:queue-click wxlambda-form:*submit*)
+(wxlambda-form:set-submit-action
+  (lambda () (wxlambda:set-label wxlambda-form:*status* "Custom submit")))
+(wxlambda:queue-click wxlambda-form:*submit*)
+(wxlambda-form:set-submit-action) ; restore the named SUBMIT-FORM action
+(wxlambda-form:close-window)      ; unbind every handler before destruction
+(wxlambda-form:open-window)       ; recreate with retained input values
+(wxlambda:stop)
+```
+
+The “Reopen form” button performs the same explicit unbinding and recreation
+within a GUI callback. The default submit action resolves `submit-form` by name,
+so redefining that function also takes effect live. The application uses public
+bindings throughout; no new native operations were needed. It retains the
+one-session-per-process limit. If the user closes the native frame before
+explicit unbinding, its stale handles cannot release the registered closures;
+those remain rooted until session cleanup. Normal startup exits with the last
+window; the application REPL remains available after closing it.
 
 ## Layout
 
@@ -391,7 +420,7 @@ operation on the same thread. See `native/wxlambda.h` for the C interface.
 
 These tests briefly open real windows, queue a button event, then exit. They need
 an interactive graphical session (or a suitable display server on Linux).
-The 21 scenarios each run in a fresh process with a 30-second timeout:
+The 23 scenarios each run in a fresh process with a 30-second timeout:
 
 ```sh
 python3 tests/run.py
@@ -410,7 +439,7 @@ WXLAMBDA_TEST_REPORT=test-results python3 tests/run.py sbcl --noinform \
 The runner records per-process logs and `summary.json` with the source commit,
 working-tree status, command, platform, scenario results, durations, and exit
 codes. It preserves partial timeout output, stops at the first failure, and
-returns a failing exit code. Preflight is separate from the 21 GUI scenarios;
+returns a failing exit code. Preflight is separate from the 23 GUI scenarios;
 a load failure cannot count as GUI coverage. An existing report directory is
 rejected to avoid mixing old and new evidence. Reporter checks can be run with
 `python3 -m unittest discover -s tests -p test_runner.py`.
@@ -419,6 +448,9 @@ Retained local Phase 3 reports live in
 `evidence/platform/{sbcl,ccl}-20261028-phase3/`. The ignored `evidence/` directory
 is separate from the disposable `.ci-deps/` cache; keep evidence there when
 retaining local runs across dependency-cache cleanup.
+The newer 23-scenario Phase 4 runs are retained in
+`evidence/phase4/{sbcl,ccl}-20261028/`; the Phase 3 records retain their original
+21-scenario count.
 
 Choice tests cover selection bounds, empty/Unicode item lists, nested selection
 snapshots, handler replacement/removal, callback errors, and stale handles.
@@ -452,12 +484,17 @@ and toggle events use notifying setters.
 The live-development example test exercises text updates, callback function
 redefinition, 50 explicit bind/unbind cycles with registry-release checks,
 unbinding before destruction, stale handles, and frame recreation in one session.
+Two representative-form scenarios exercise ordinary blocking startup and the
+application REPL, including Unicode input, checkbox/dropdown state, queued
+handler replacement, named action redefinition, unbinding all event kinds, and
+state-preserving window recreation from Lisp and a GUI callback. These use
+queued/notifying events; manual input and visual layout have not been checked.
 
 Locally tested and intended combinations are distinct:
 
 | Platform | Lisp | Validation |
 | --- | --- | --- |
-| Apple Silicon macOS, wxWidgets 3.2.12 | SBCL 2.6.9, CCL 1.13 | Local preflight and 21-scenario GUI suites; dependency cache switching verified separately |
+| Apple Silicon macOS, wxWidgets 3.2.12 | SBCL 2.6.9, CCL 1.13 | Local preflight and 23-scenario GUI suites; dependency cache switching verified separately |
 | Linux | SBCL | Intended; hosted job configured, no hosted results recorded |
 | macOS hosted runner | SBCL | Intended; hosted job configured, no hosted results recorded |
 | Windows x64 | SBCL 2.6.9 intended, not validated | Native build, preflight, and GUI suite configured; no runtime results |
@@ -469,9 +506,9 @@ The configured jobs are:
 
 | Runner | Native build | Lisp GUI tests |
 | --- | --- | --- |
-| Ubuntu 24.04 | Distribution wxWidgets 3.2, GCC | SBCL, 21 scenarios under Xvfb |
-| macOS 15 | Homebrew wxWidgets 3.2, Clang | SBCL, 21 scenarios |
-| Windows Server 2022 x64 | wxWidgets 3.2.12 from source, MSVC | Pinned SBCL 2.6.9, preflight and 21 scenarios; unexecuted |
+| Ubuntu 24.04 | Distribution wxWidgets 3.2, GCC | SBCL, 23 scenarios under Xvfb |
+| macOS 15 | Homebrew wxWidgets 3.2, Clang | SBCL, 23 scenarios |
+| Windows Server 2022 x64 | wxWidgets 3.2.12 from source, MSVC | Pinned SBCL 2.6.9, preflight and 23 scenarios; unexecuted |
 
 These are configured checks, not a claim that hosted jobs have passed. No hosted
 results have been recorded. This checkout currently has no Git remote, so a
@@ -532,7 +569,7 @@ then Quicklisp, then pinned dependencies again in fresh processes. It checks
 CFFI source locations and the compiled output destination as well as actual
 native callback dispatch. Quicklisp must already be installed; set
 `QUICKLISP_SETUP` if its setup file is not `~/quicklisp/setup.lisp`.
-These three-process regressions are separate from the 21-scenario GUI suite
+These three-process regressions are separate from the 23-scenario GUI suite
 and are local checks, not configured hosted jobs.
 
 The fetcher verifies existing checkouts and refuses modified or mismatched ones.

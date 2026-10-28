@@ -22,6 +22,8 @@ def scenarios():
         yield f"controls-{mode}", "controls.lisp", {"WXLAMBDA_CONTROL_TEST_MODE": mode}
     for name in ("repl", "repl-eof", "repl-delayed", "repl-debugger", "live"):
         yield name, f"{name}.lisp", {}
+    for mode in ("normal", "live"):
+        yield f"form-{mode}", "form.lisp", {"WXLAMBDA_FORM_TEST_MODE": mode}
     for mode in ("normal", "error-before-run", "error-in-loop"):
         yield f"choice-{mode}", "choice.lisp", {"WXLAMBDA_CHOICE_TEST_MODE": mode}
 

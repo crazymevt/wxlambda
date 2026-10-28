@@ -1,0 +1,110 @@
+(load (merge-pathnames "../examples/form-app.lisp" *load-truename*))
+
+(defvar *form-completed* nil)
+(defvar *form-old-name* nil)
+(defvar *form-old-submit* nil)
+(defvar *form-original-submit* (symbol-function 'wxlambda-form:submit-form))
+
+(defun test-normal-form ()
+  ;; Automate startup and shutdown by redefining the example's own functions,
+  ;; without adding test hooks to its entry point or calling private bindings.
+  (let ((original-open (symbol-function 'wxlambda-form:open-window))
+        (opens 0))
+    (unwind-protect
+         (progn
+           (setf (symbol-function 'wxlambda-form:open-window)
+                 (lambda ()
+                   (funcall original-open)
+                   (incf opens)
+                   ;; wxWidgets may defer destruction until this callback
+                   ;; returns. Check stale handles after RUN/cleanup below.
+                   (setf *form-old-name* wxlambda-form:*name*)
+                   (wxlambda:queue-click
+                    (ecase opens (1 wxlambda-form:*reopen*) (2 wxlambda-form:*submit*)))))
+           (setf (symbol-function 'wxlambda-form:submit-form)
+                 (lambda ()
+                   (funcall *form-original-submit*)
+                   (assert (string= "Hello, Ada!" (wxlambda:get-label wxlambda-form:*status*)))
+                   (setf *form-completed* t)
+                   (wxlambda-form:close-window)))
+           (wxlambda-form:start)
+           (assert (= opens 2)))
+      (setf (symbol-function 'wxlambda-form:open-window) original-open
+            (symbol-function 'wxlambda-form:submit-form) *form-original-submit*)))
+  (assert *form-completed*)
+  (assert (handler-case (progn (wxlambda:get-text *form-old-name*) nil)
+            (wxlambda:native-error () t))))
+
+(defun test-live-form ()
+  (let ((output (make-string-output-stream))
+        (forms
+          '((assert (string= "Ready" (wxlambda:get-label wxlambda-form:*status*)))
+            (wxlambda:set-text wxlambda-form:*name* "λ 日本語 😀" :notify t)
+            (wxlambda:set-checked wxlambda-form:*greeting* nil :notify t)
+            (wxlambda:set-selection wxlambda-form:*style* 1 :notify t)
+            (wxlambda:queue-click wxlambda-form:*submit*)
+            (assert (string= "Name: λ 日本語 😀" (wxlambda:get-label wxlambda-form:*status*)))
+            ;; Redirect an already queued click to the replacement handler.
+            (progn
+              (wxlambda:queue-click wxlambda-form:*submit*)
+              (wxlambda-form:set-submit-action
+               (lambda () (wxlambda:set-label wxlambda-form:*status* "Replacement"))))
+            (assert (string= "Replacement" (wxlambda:get-label wxlambda-form:*status*)))
+            (progn (wxlambda:off-click wxlambda-form:*submit*)
+                   (wxlambda:queue-click wxlambda-form:*submit*))
+            (assert (string= "Replacement" (wxlambda:get-label wxlambda-form:*status*)))
+            (wxlambda-form:set-submit-action)
+            ;; The default action resolves the named function at dispatch time.
+            (defun wxlambda-form:submit-form ()
+              (wxlambda:set-label wxlambda-form:*status* "Redefined form"))
+            (wxlambda:queue-click wxlambda-form:*submit*)
+            (assert (string= "Redefined form" (wxlambda:get-label wxlambda-form:*status*)))
+            (setf (symbol-function 'wxlambda-form:submit-form) *form-original-submit*)
+            (wxlambda:set-checked wxlambda-form:*greeting* t :notify t)
+            (wxlambda:queue-click wxlambda-form:*submit*)
+            (assert (string= "Good day, λ 日本語 😀." (wxlambda:get-label wxlambda-form:*status*)))
+            (setf *form-old-name* wxlambda-form:*name*)
+            (wxlambda-form:close-window)
+            (assert (handler-case (progn (wxlambda:get-text *form-old-name*) nil)
+                      (wxlambda:native-error () t)))
+            (wxlambda-form:open-window)
+            (assert (string= "λ 日本語 😀" (wxlambda:get-text wxlambda-form:*name*)))
+            (assert (wxlambda:checked-p wxlambda-form:*greeting*))
+            (assert (= 1 (wxlambda:selection wxlambda-form:*style*)))
+            (wxlambda:queue-click wxlambda-form:*submit*)
+            (assert (string= "Good day, λ 日本語 😀." (wxlambda:get-label wxlambda-form:*status*)))
+            ;; Recreate through an actual GUI callback too, within this session.
+            (setf *form-old-submit* wxlambda-form:*submit*)
+            (wxlambda:queue-click wxlambda-form:*reopen*)
+            (assert (not (eq *form-old-submit* wxlambda-form:*submit*)))
+            (assert (handler-case (progn (wxlambda:queue-click *form-old-submit*) nil)
+                      (wxlambda:native-error () t)))
+            (assert (string= "λ 日本語 😀" (wxlambda:get-text wxlambda-form:*name*)))
+            ;; All notifying setters and button events must now be silent.
+            (wxlambda-form:unbind-handlers)
+            (wxlambda:set-text wxlambda-form:*name* "Unbound" :notify t)
+            (wxlambda:set-checked wxlambda-form:*greeting* nil :notify t)
+            (wxlambda:set-selection wxlambda-form:*style* 0 :notify t)
+            (wxlambda:queue-click wxlambda-form:*submit*)
+            (assert (string= "Ready" (wxlambda:get-label wxlambda-form:*status*)))
+            (setf *form-old-submit* wxlambda-form:*submit*)
+            (wxlambda:queue-click wxlambda-form:*reopen*)
+            (assert (eq *form-old-submit* wxlambda-form:*submit*))
+            (wxlambda-form:close-window)
+            (setf *form-completed* t)
+            (wxlambda:stop))))
+    (unwind-protect
+         (wxlambda-form:start-live
+          :input (make-string-input-stream (format nil "~{~S~%~}" forms))
+          :output output :on-error :report)
+      (setf (symbol-function 'wxlambda-form:submit-form) *form-original-submit*))
+    (let ((printed (get-output-stream-string output)))
+      (assert (not (search "Backtrace (up to" printed)) ()
+              "Unexpected form application error:~%~A" printed))
+    (assert *form-completed*)))
+
+(let ((mode (or (uiop:getenv "WXLAMBDA_FORM_TEST_MODE") "normal")))
+  (cond ((string= mode "normal") (test-normal-form))
+        ((string= mode "live") (test-live-form))
+        (t (error "Unknown form test mode: ~A" mode)))
+  (format t "PASS: representative form ~A startup, controls, and cleanup~%" mode))

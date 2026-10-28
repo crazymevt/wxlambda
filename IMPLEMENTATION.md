@@ -110,7 +110,7 @@ or explicitly deferred.
 
 Windows CI now stages SHA256-pinned SBCL 2.6.9, places the bridge where the Lisp
 loader expects it, exposes dependent wxWidgets DLLs, and runs native loading/ABI
-preflight plus all 21 GUI scenarios. All hosted jobs retain per-process logs and
+preflight plus the full GUI suite. All hosted jobs retain per-process logs and
 JSON summaries for 30 days with an `always()` artifact upload. Configuration is
 not runtime evidence: the Windows setup and PowerShell installer are unexecuted
 on this macOS host.
@@ -136,11 +136,37 @@ repository access or runners remain explicit external dependencies.
 
 ## Phase 4: Complete a representative application
 
-- [ ] Extend an example using the existing controls and layouts.
-- [ ] Include handler replacement, explicit unbinding, and window recreation
+- [x] Extend an example using the existing controls and layouts.
+- [x] Include handler replacement, explicit unbinding, and window recreation
   within the same session.
-- [ ] Identify concrete gaps exposed by the example and add controls or
+- [x] Identify concrete gaps exposed by the example and add controls or
   operations only where needed.
+
+`examples/form.lisp` retains its ordinary load-and-run entry point. Its reusable
+`examples/form-app.lisp` application combines labels, Unicode text input, a
+checkbox, a style dropdown, and row/column layouts. `start-live` enters the
+terminal application REPL; submit actions can be replaced or redefined by name.
+Explicit close/reopen functions and a GUI reopen button unbind handlers before
+destruction and recreate the window with retained input values. Both entry
+points use only public bindings. The application exposed a need for reusable
+example lifecycle functions, not new native controls or operations; the binding
+API and ABI remain unchanged.
+
+Verified locally on 2026-10-28 with pinned dependencies: SBCL 2.6.9 and CCL 1.13
+each pass native preflight and all 23 GUI scenarios. `tests/form.lisp` adds normal
+and live modes covering startup, controls, Unicode values, queued handler
+replacement, named function redefinition, explicit unbinding, stale handles,
+state retention, callback-driven recreation, and cleanup. An initial assertion
+incorrectly expected deferred destruction to finish inside the recreation
+callback; it was corrected to check after the appropriate event/cleanup boundary
+and both modes pass. The six reporter tests also pass. Reports and logs are
+retained separately from dependencies in `evidence/phase4/{sbcl,ccl}-20261028/`.
+
+Accepted lifecycle limits remain visible in the README: one session per process,
+and closures for user-destroyed windows remain rooted until session cleanup if
+they were not explicitly unbound first. Manual input and visual layout have not
+been verified. Phase 3's hosted-platform checks remain pending; these local
+application results do not complete platform validation.
 
 **Acceptance:** Ordinary startup and live development work through public APIs,
 with the accepted lifecycle limits visible.
