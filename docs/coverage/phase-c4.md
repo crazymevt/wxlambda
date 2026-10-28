@@ -14,9 +14,18 @@ inherited interfaces and platform conditions have been reviewed and mapped.
 Inherited declarations name the supported receiver types explicitly; a partial
 class or constructor does not imply full upstream coverage.
 
+## Current coverage and remaining work
+
+0 implemented; 0 partial; 2328 pending; 4 context entries. Partial and pending entries remain open.
+
+Counts describe inventory entries, not distinct APIs or percent completion.
+See the [coverage summary](README.md) for phase/header comparisons.
+
 ## `wx/cmdproc.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/cmdproc.h)
+
+0 implemented; 0 partial; 32 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L21](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/cmdproc.h#L21) `class wxCommand : public wxObject {`
 - [ ] [L37](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/cmdproc.h#L37) `wxCommand(bool canUndo = false, const wxString& name = wxEmptyString);`
@@ -54,6 +63,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/dataview.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dataview.h)
+
+0 implemented; 0 partial; 488 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L99](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dataview.h#L99) `class wxDataViewModel : public wxRefCounter {`
 - [ ] [L105](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dataview.h#L105) `wxDataViewModel();`
@@ -548,6 +559,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/docmdi.h)
 
+0 implemented; 0 partial; 12 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L23](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/docmdi.h#L23) `class wxDocMDIParentFrame : public wxMDIParentFrame {`
 - [ ] [L30](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/docmdi.h#L30) `wxDocMDIParentFrame();`
 - [ ] [L31](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/docmdi.h#L31) `wxDocMDIParentFrame(wxDocManager* manager, wxFrame* parent, wxWindowID id, const wxString& title, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_FRAME_STYLE, const wxString& name = wxFrameNameStr);`
@@ -564,6 +577,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/docview.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/docview.h)
+
+0 implemented; 0 partial; 195 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L13](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/docview.h#L13) `typedef wxVector<wxDocument*> wxDocVector;`
 - [ ] [L20](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/docview.h#L20) `typedef wxVector<wxView*> wxViewVector;`
@@ -764,6 +779,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/grid.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/grid.h)
+
+0 implemented; 0 partial; 756 pending; 3 context entries. Partial and pending entries remain open.
 
 - [ ] [L11](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/grid.h#L11) `#define wxGRID_AUTOSIZE (-1)`
 - [ ] [L31](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/grid.h#L31) `class wxGridCellRenderer : public wxSharedClientDataContainer, public wxRefCounter {`
@@ -1529,6 +1546,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/headercol.h)
 
+0 implemented; 0 partial; 57 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L13](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/headercol.h#L13) `enum {`
 - [ ] [L16](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/headercol.h#L16) `wxCOL_WIDTH_DEFAULT = -1, wxCOL_WIDTH_AUTOSIZE = -2 }`
 - [ ] [L30](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/headercol.h#L30) `enum {`
@@ -1590,6 +1609,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/headerctrl.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/headerctrl.h)
+
+0 implemented; 0 partial; 76 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L11](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/headerctrl.h#L11) `enum {`
 - [ ] [L14](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/headerctrl.h#L14) `wxHD_ALLOW_REORDER = 0x0001, wxHD_ALLOW_HIDE = 0x0002, wxHD_BITMAP_ON_RIGHT = 0x0004, wxHD_DEFAULT_STYLE = wxHD_ALLOW_REORDER }`
@@ -1672,6 +1693,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/imaglist.h)
 
+0 implemented; 0 partial; 24 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L11](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/imaglist.h#L11) `enum {`
 - [ ] [L13](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/imaglist.h#L13) `wxIMAGE_LIST_NORMAL, wxIMAGE_LIST_SMALL, wxIMAGE_LIST_STATE }`
 - [ ] [L21](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/imaglist.h#L21) `#define wxIMAGELIST_DRAW_NORMAL         0x0001`
@@ -1701,6 +1724,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/itemattr.h)
 
+0 implemented; 0 partial; 16 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L22](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/itemattr.h#L22) `class wxItemAttr {`
 - [ ] [L28](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/itemattr.h#L28) `wxItemAttr();`
 - [ ] [L34](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/itemattr.h#L34) `wxItemAttr(const wxColour& colText, const wxColour& colBack, const wxFont& font);`
@@ -1721,6 +1746,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/listctrl.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/listctrl.h)
+
+0 implemented; 0 partial; 301 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L9](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/listctrl.h#L9) `#define wxLC_VRULES          0x0001`
 - [ ] [L10](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/listctrl.h#L10) `#define wxLC_HRULES          0x0002`
@@ -2028,6 +2055,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/persist/bookctrl.h)
 
+0 implemented; 0 partial; 5 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L18](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/persist/bookctrl.h#L18) `class wxPersistentBookCtrl : public wxPersistentWindow<wxBookCtrlBase> {`
 - [ ] [L27](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/persist/bookctrl.h#L27) `wxPersistentBookCtrl(wxBookCtrlBase *book);`
 - [ ] [L32](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/persist/bookctrl.h#L32) `virtual void Save() const;`
@@ -2037,6 +2066,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/persist/combobox.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/persist/combobox.h)
+
+0 implemented; 0 partial; 5 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L36](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/persist/combobox.h#L36) `class wxPersistentComboBox : public wxPersistentWindow<wxComboBox> {`
 - [ ] [L45](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/persist/combobox.h#L45) `explicit wxPersistentComboBox(wxComboBox *combobox);`
@@ -2048,6 +2079,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/persist/dataview.h)
 
+0 implemented; 0 partial; 5 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L16](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/persist/dataview.h#L16) `class wxPersistentDataViewCtrl : public wxPersistentWindow<wxDataViewCtrl> {`
 - [ ] [L24](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/persist/dataview.h#L24) `wxPersistentDataViewCtrl(wxDataViewCtrl* control);`
 - [ ] [L29](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/persist/dataview.h#L29) `void Save() const override;`
@@ -2057,6 +2090,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/persist/toplevel.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/persist/toplevel.h)
+
+0 implemented; 0 partial; 5 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L18](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/persist/toplevel.h#L18) `class wxPersistentTLW : public wxPersistentWindow<wxTopLevelWindow> {`
 - [ ] [L27](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/persist/toplevel.h#L27) `wxPersistentTLW(wxTopLevelWindow *tlw);`
@@ -2068,6 +2103,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/persist/treebook.h)
 
+0 implemented; 0 partial; 5 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L16](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/persist/treebook.h#L16) `class wxPersistentTreeBookCtrl : public wxPersistentBookCtrl {`
 - [ ] [L25](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/persist/treebook.h#L25) `wxPersistentTreeBookCtrl(wxTreebook *book);`
 - [ ] [L30](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/persist/treebook.h#L30) `virtual void Save() const;`
@@ -2077,6 +2114,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/persist/window.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/persist/window.h)
+
+0 implemented; 0 partial; 5 pending; 1 context entries. Partial and pending entries remain open.
 
 - [ ] [L21](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/persist/window.h#L21) `template <class T> class wxPersistentWindow : public wxPersistentObject {`
 - [ ] [L26](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/persist/window.h#L26) `typedef T WindowType;`
@@ -2088,6 +2127,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/persist.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/persist.h)
+
+0 implemented; 0 partial; 29 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L23](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/persist.h#L23) `class wxPersistenceManager {`
 - [ ] [L39](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/persist.h#L39) `static void Set(wxPersistenceManager& manager);`
@@ -2122,6 +2163,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/treebase.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/treebase.h)
+
+0 implemented; 0 partial; 44 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L18](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/treebase.h#L18) `class wxTreeItemId {`
 - [ ] [L26](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/treebase.h#L26) `wxTreeItemId();`
@@ -2171,6 +2214,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/treectrl.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/treectrl.h)
+
+0 implemented; 0 partial; 176 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L49](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/treectrl.h#L49) `documented style: wxTR_EDIT_LABELS`
 - [ ] [L52](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/treectrl.h#L52) `documented style: wxTR_NO_BUTTONS`
@@ -2352,6 +2397,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/treelist.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/treelist.h)
+
+0 implemented; 0 partial; 92 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L16](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/treelist.h#L16) `enum {`
 - [ ] [L18](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/treelist.h#L18) `wxTL_SINGLE = 0x0000, wxTL_MULTIPLE = 0x0001, wxTL_CHECKBOX = 0x0002, wxTL_3STATE = 0x0004, wxTL_USER_3STATE = 0x0008, wxTL_NO_HEADER = 0x0010, wxTL_DEFAULT_STYLE = wxTL_SINGLE, wxTL_STYLE_MASK = wxTL_SINGLE | wxTL_MULTIPLE | wxTL_CHECKBOX | wxTL_3STATE | wxTL_USER_3STATE }`

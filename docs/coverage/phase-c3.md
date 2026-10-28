@@ -14,9 +14,18 @@ inherited interfaces and platform conditions have been reviewed and mapped.
 Inherited declarations name the supported receiver types explicitly; a partial
 class or constructor does not imply full upstream coverage.
 
+## Current coverage and remaining work
+
+0 implemented; 0 partial; 1875 pending; 0 context entries. Partial and pending entries remain open.
+
+Counts describe inventory entries, not distinct APIs or percent completion.
+See the [coverage summary](README.md) for phase/header comparisons.
+
 ## `wx/aboutdlg.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/aboutdlg.h)
+
+0 implemented; 0 partial; 42 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L53](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/aboutdlg.h#L53) `class wxAboutDialogInfo {`
 - [ ] [L60](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/aboutdlg.h#L60) `wxAboutDialogInfo();`
@@ -64,6 +73,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/access.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/access.h)
+
+0 implemented; 0 partial; 103 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L13](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/access.h#L13) `enum wxAccStatus {`
 - [ ] [L15](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/access.h#L15) `wxACC_FAIL, wxACC_FALSE, wxACC_OK, wxACC_NOT_IMPLEMENTED, wxACC_NOT_SUPPORTED, wxACC_INVALID_ARG }`
@@ -173,6 +184,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/artprov.h)
 
+0 implemented; 0 partial; 90 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L11](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/artprov.h#L11) `typedef wxString wxArtClient;`
 - [ ] [L16](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/artprov.h#L16) `typedef wxString wxArtID;`
 - [ ] [L19](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/artprov.h#L19) `const char* wxART_TOOLBAR;`
@@ -268,6 +281,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/bookctrl.h)
 
+0 implemented; 0 partial; 41 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L17](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/bookctrl.h#L17) `enum {`
 - [ ] [L20](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/bookctrl.h#L20) `wxBK_HITTEST_NOWHERE = 1, wxBK_HITTEST_ONICON = 2, wxBK_HITTEST_ONLABEL = 4, wxBK_HITTEST_ONITEM = 16, wxBK_HITTEST_ONPAGE = 8 }`
 - [ ] [L38](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/bookctrl.h#L38) `#define wxBK_DEFAULT          0x0000`
@@ -314,6 +329,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/busyinfo.h)
 
+0 implemented; 0 partial; 16 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L85](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/busyinfo.h#L85) `class wxBusyInfo {`
 - [ ] [L98](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/busyinfo.h#L98) `wxBusyInfo(const wxBusyInfoFlags& flags);`
 - [ ] [L112](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/busyinfo.h#L112) `wxBusyInfo(const wxString& msg, wxWindow* parent = NULL);`
@@ -334,6 +351,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/choicdlg.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/choicdlg.h)
+
+0 implemented; 0 partial; 37 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L11](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/choicdlg.h#L11) `#define wxCHOICE_WIDTH 150`
 - [ ] [L16](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/choicdlg.h#L16) `#define wxCHOICE_HEIGHT 200`
@@ -377,6 +396,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/choicebk.h)
 
+0 implemented; 0 partial; 20 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L10](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/choicebk.h#L10) `#define wxCHB_DEFAULT          wxBK_DEFAULT`
 - [ ] [L11](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/choicebk.h#L11) `#define wxCHB_TOP              wxBK_TOP`
 - [ ] [L12](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/choicebk.h#L12) `#define wxCHB_BOTTOM           wxBK_BOTTOM`
@@ -402,6 +423,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/clipbrd.h)
 
+0 implemented; 0 partial; 16 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L12](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/clipbrd.h#L12) `#define wxTheClipboard`
 - [ ] [L68](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/clipbrd.h#L68) `class wxClipboard : public wxObject {`
 - [ ] [L74](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/clipbrd.h#L74) `wxClipboard();`
@@ -423,6 +446,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/colordlg.h)
 
+0 implemented; 0 partial; 14 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L54](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/colordlg.h#L54) `class wxColourDialog : public wxDialog {`
 - [ ] [L69](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/colordlg.h#L69) `wxColourDialog(wxWindow* parent, const wxColourData* data = NULL);`
 - [ ] [L74](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/colordlg.h#L74) `virtual ~wxColourDialog();`
@@ -441,6 +466,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/colourdata.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/colourdata.h)
+
+0 implemented; 0 partial; 16 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L18](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/colourdata.h#L18) `class wxColourData : public wxObject {`
 - [ ] [L22](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/colourdata.h#L22) `enum {`
@@ -463,6 +490,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/creddlg.h)
 
+0 implemented; 0 partial; 7 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L54](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/creddlg.h#L54) `class wxCredentialEntryDialog: public wxDialog {`
 - [ ] [L62](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/creddlg.h#L62) `wxCredentialEntryDialog();`
 - [ ] [L71](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/creddlg.h#L71) `wxCredentialEntryDialog(wxWindow* parent, const wxString& message, const wxString& title, const wxWebCredentials& cred = wxWebCredentials());`
@@ -474,6 +503,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/cshelp.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/cshelp.h)
+
+0 implemented; 0 partial; 22 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L24](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/cshelp.h#L24) `class wxHelpProvider {`
 - [ ] [L30](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/cshelp.h#L30) `virtual ~wxHelpProvider();`
@@ -501,6 +532,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/dataobj.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dataobj.h)
+
+0 implemented; 0 partial; 73 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L66](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dataobj.h#L66) `class wxDataFormat {`
 - [ ] [L77](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dataobj.h#L77) `wxDataFormat(wxDataFormatId format = wxDF_INVALID);`
@@ -579,6 +612,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/dialog.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dialog.h)
+
+0 implemented; 0 partial; 76 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L11](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dialog.h#L11) `enum wxDialogLayoutAdaptationMode {`
 - [ ] [L13](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dialog.h#L13) `wxDIALOG_ADAPTATION_MODE_DEFAULT = 0, wxDIALOG_ADAPTATION_MODE_ENABLED = 1, wxDIALOG_ADAPTATION_MODE_DISABLED = 2 }`
@@ -661,6 +696,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dirctrl.h)
 
+0 implemented; 0 partial; 48 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L8](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dirctrl.h#L8) `enum {`
 - [ ] [L11](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dirctrl.h#L11) `wxDIRCTRL_DIR_ONLY = 0x0010, wxDIRCTRL_SELECT_FIRST = 0x0020, wxDIRCTRL_SHOW_FILTERS = 0x0040, wxDIRCTRL_3D_INTERNAL = 0x0080, wxDIRCTRL_EDIT_LABELS = 0x0100, wxDIRCTRL_MULTIPLE = 0x0200, wxDIRCTRL_DEFAULT_STYLE = wxDIRCTRL_3D_INTERNAL }`
 - [ ] [L37](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dirctrl.h#L37) `documented style: wxDIRCTRL_DIR_ONLY`
@@ -714,6 +751,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dirdlg.h)
 
+0 implemented; 0 partial; 24 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L9](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dirdlg.h#L9) `#define wxDD_CHANGE_DIR         0x0100`
 - [ ] [L10](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dirdlg.h#L10) `#define wxDD_DIR_MUST_EXIST     0x0200`
 - [ ] [L11](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dirdlg.h#L11) `#define wxDD_MULTIPLE           0x0400`
@@ -743,6 +782,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/display.h)
 
+0 implemented; 0 partial; 20 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L16](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/display.h#L16) `class wxDisplay {`
 - [ ] [L23](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/display.h#L23) `wxDisplay();`
 - [ ] [L33](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/display.h#L33) `explicit wxDisplay(unsigned int index);`
@@ -767,6 +808,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/dnd.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dnd.h)
+
+0 implemented; 0 partial; 38 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L11](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dnd.h#L11) `enum {`
 - [ ] [L13](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dnd.h#L13) `wxDrag_CopyOnly = 0, wxDrag_AllowMove = 1, wxDrag_DefaultMove = 3 }`
@@ -811,6 +854,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dragimag.h)
 
+0 implemented; 0 partial; 16 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L39](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dragimag.h#L39) `class wxDragImage : public wxObject {`
 - [ ] [L45](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dragimag.h#L45) `wxDragImage();`
 - [ ] [L54](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dragimag.h#L54) `wxDragImage(const wxBitmap& image, const wxCursor& cursor = wxNullCursor);`
@@ -831,6 +876,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/fdrepdlg.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/fdrepdlg.h)
+
+0 implemented; 0 partial; 34 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L12](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/fdrepdlg.h#L12) `enum wxFindReplaceFlags {`
 - [ ] [L15](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/fdrepdlg.h#L15) `wxFR_DOWN = 1, wxFR_WHOLEWORD = 2, wxFR_MATCHCASE = 4 }`
@@ -870,6 +917,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/filectrl.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/filectrl.h)
+
+0 implemented; 0 partial; 46 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L8](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/filectrl.h#L8) `enum {`
 - [ ] [L10](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/filectrl.h#L10) `wxFC_OPEN = 0x0001, wxFC_SAVE = 0x0002, wxFC_MULTIPLE = 0x0004, wxFC_NOSHOWHIDDEN = 0x0008 }`
@@ -922,6 +971,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/filedlg.h)
 
+0 implemented; 0 partial; 43 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L8](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/filedlg.h#L8) `enum {`
 - [ ] [L10](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/filedlg.h#L10) `wxFD_OPEN = 0x0001, wxFD_SAVE = 0x0002, wxFD_OVERWRITE_PROMPT = 0x0004, wxFD_NO_FOLLOW = 0x0008, wxFD_FILE_MUST_EXIST = 0x0010, wxFD_CHANGE_DIR = 0x0080, wxFD_PREVIEW = 0x0100, wxFD_MULTIPLE = 0x0200, wxFD_SHOW_HIDDEN = 0x0400 }`
 - [ ] [L21](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/filedlg.h#L21) `#define wxFD_DEFAULT_STYLE      wxFD_OPEN`
@@ -970,6 +1021,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/filedlgcustomize.h)
 
+0 implemented; 0 partial; 31 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L26](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/filedlgcustomize.h#L26) `class wxFileDialogCustomControl : public wxEvtHandler {`
 - [ ] [L30](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/filedlgcustomize.h#L30) `void Show(bool show = true);`
 - [ ] [L35](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/filedlgcustomize.h#L35) `void Hide();`
@@ -1006,6 +1059,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/filehistory.h)
 
+0 implemented; 0 partial; 21 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L21](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/filehistory.h#L21) `enum wxFileHistoryMenuPathStyle {`
 - [ ] [L30](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/filehistory.h#L30) `wxFH_PATH_SHOW_IF_DIFFERENT, wxFH_PATH_SHOW_NEVER, wxFH_PATH_SHOW_ALWAYS }`
 - [ ] [L58](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/filehistory.h#L58) `class wxFileHistory : public wxObject {`
@@ -1032,6 +1087,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/fontdata.h)
 
+0 implemented; 0 partial; 18 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L18](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/fontdata.h#L18) `class wxFontData : public wxObject {`
 - [ ] [L26](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/fontdata.h#L26) `wxFontData();`
 - [ ] [L35](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/fontdata.h#L35) `void EnableEffects(bool enable);`
@@ -1055,6 +1112,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/fontdlg.h)
 
+0 implemented; 0 partial; 10 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L18](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/fontdlg.h#L18) `class wxFontDialog : public wxDialog {`
 - [ ] [L25](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/fontdlg.h#L25) `wxFontDialog();`
 - [ ] [L30](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/fontdlg.h#L30) `wxFontDialog(wxWindow* parent);`
@@ -1069,6 +1128,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/help.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/help.h)
+
+0 implemented; 0 partial; 24 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L9](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/help.h#L9) `#define wxHELP_NETSCAPE     1`
 - [ ] [L15](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/help.h#L15) `enum wxHelpSearchMode {`
@@ -1099,6 +1160,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/listbook.h)
 
+0 implemented; 0 partial; 20 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L9](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/listbook.h#L9) `#define wxLB_DEFAULT          wxBK_DEFAULT`
 - [ ] [L10](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/listbook.h#L10) `#define wxLB_TOP              wxBK_TOP`
 - [ ] [L11](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/listbook.h#L11) `#define wxLB_BOTTOM           wxBK_BOTTOM`
@@ -1123,6 +1186,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/mdi.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/mdi.h)
+
+0 implemented; 0 partial; 29 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L35](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/mdi.h#L35) `class wxMDIClientWindow : public wxWindow {`
 - [ ] [L45](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/mdi.h#L45) `wxMDIClientWindow();`
@@ -1157,6 +1222,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/menu.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h)
+
+0 implemented; 0 partial; 96 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L31](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L31) `class wxMenuBar : public wxWindow {`
 - [ ] [L40](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menu.h#L40) `wxMenuBar(long style = 0);`
@@ -1259,6 +1326,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menuitem.h)
 
+0 implemented; 0 partial; 56 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L20](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menuitem.h#L20) `documented event: EVT_MENU(id, func)`
 - [ ] [L23](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menuitem.h#L23) `documented event: EVT_MENU_RANGE(id1, id2, func)`
 - [ ] [L26](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/menuitem.h#L26) `documented event: EVT_MENU_OPEN(func)`
@@ -1320,6 +1389,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/minifram.h)
 
+0 implemented; 0 partial; 15 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L18](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/minifram.h#L18) `documented style: wxICONIZE`
 - [ ] [L20](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/minifram.h#L20) `documented style: wxCAPTION`
 - [ ] [L22](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/minifram.h#L22) `documented style: wxMINIMIZE`
@@ -1340,6 +1411,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/modalhook.h)
 
+0 implemented; 0 partial; 7 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L78](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/modalhook.h#L78) `class wxModalDialogHook {`
 - [ ] [L87](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/modalhook.h#L87) `wxModalDialogHook();`
 - [ ] [L92](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/modalhook.h#L92) `virtual ~wxModalDialogHook();`
@@ -1351,6 +1424,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/msgdlg.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/msgdlg.h)
+
+0 implemented; 0 partial; 46 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L11](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/msgdlg.h#L11) `const char wxMessageBoxCaptionStr[] = "Message";`
 - [ ] [L21](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/msgdlg.h#L21) `documented style: wxOK`
@@ -1403,6 +1478,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/notebook.h)
 
+0 implemented; 0 partial; 38 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L8](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/notebook.h#L8) `enum {`
 - [ ] [L10](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/notebook.h#L10) `wxNB_HITTEST_NOWHERE = wxBK_HITTEST_NOWHERE, wxNB_HITTEST_ONICON = wxBK_HITTEST_ONICON, wxNB_HITTEST_ONLABEL = wxBK_HITTEST_ONLABEL, wxNB_HITTEST_ONITEM = wxBK_HITTEST_ONITEM, wxNB_HITTEST_ONPAGE = wxBK_HITTEST_ONPAGE }`
 - [ ] [L17](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/notebook.h#L17) `#define wxNB_DEFAULT          wxBK_DEFAULT`
@@ -1446,6 +1523,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/notifmsg.h)
 
+0 implemented; 0 partial; 22 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L42](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/notifmsg.h#L42) `documented event: EVT_NOTIFICATION_MESSAGE_CLICK(id, func)`
 - [ ] [L45](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/notifmsg.h#L45) `documented event: EVT_NOTIFICATION_MESSAGE_DISMISSED(id, func)`
 - [ ] [L48](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/notifmsg.h#L48) `documented event: EVT_NOTIFICATION_MESSAGE_ACTION(id, func)`
@@ -1473,6 +1552,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/numdlg.h)
 
+0 implemented; 0 partial; 6 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L24](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/numdlg.h#L24) `class wxNumberEntryDialog : public wxDialog {`
 - [ ] [L32](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/numdlg.h#L32) `wxNumberEntryDialog();`
 - [ ] [L41](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/numdlg.h#L41) `wxNumberEntryDialog(wxWindow *parent, const wxString& message, const wxString& prompt, const wxString& caption, long value, long min, long max, const wxPoint& pos = wxDefaultPosition);`
@@ -1483,6 +1564,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/popupwin.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/popupwin.h)
+
+0 implemented; 0 partial; 14 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L8](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/popupwin.h#L8) `#define wxPU_CONTAINS_CONTROLS     0x0001`
 - [ ] [L17](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/popupwin.h#L17) `documented style: wxPU_CONTAINS_CONTROLS`
@@ -1502,6 +1585,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/preferences.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/preferences.h)
+
+0 implemented; 0 partial; 22 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L33](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/preferences.h#L33) `class wxPreferencesEditor {`
 - [ ] [L46](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/preferences.h#L46) `wxPreferencesEditor(const wxString& title = wxString());`
@@ -1529,6 +1614,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/progdlg.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/progdlg.h)
+
+0 implemented; 0 partial; 30 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L8](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/progdlg.h#L8) `#define wxPD_CAN_ABORT          0x0001`
 - [ ] [L9](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/progdlg.h#L9) `#define wxPD_APP_MODAL          0x0002`
@@ -1565,6 +1652,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/propdlg.h)
 
+0 implemented; 0 partial; 21 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L12](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/propdlg.h#L12) `enum wxPropertySheetDialogFlags {`
 - [ ] [L18](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/propdlg.h#L18) `wxPROPSHEET_DEFAULT = 0x0001, wxPROPSHEET_NOTEBOOK = 0x0002, wxPROPSHEET_TOOLBOOK = 0x0004, wxPROPSHEET_CHOICEBOOK = 0x0008, wxPROPSHEET_LISTBOOK = 0x0010, wxPROPSHEET_BUTTONTOOLBOOK = 0x0020, wxPROPSHEET_TREEBOOK = 0x0040, wxPROPSHEET_SHRINKTOFIT = 0x0100, }`
 - [ ] [L107](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/propdlg.h#L107) `class wxPropertySheetDialog : public wxDialog {`
@@ -1591,6 +1680,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/richmsgdlg.h)
 
+0 implemented; 0 partial; 12 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L59](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/richmsgdlg.h#L59) `class wxRichMessageDialog : public wxRichMessageDialogBase {`
 - [ ] [L66](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/richmsgdlg.h#L66) `wxRichMessageDialog(wxWindow* parent, const wxString& message, const wxString& caption = wxMessageBoxCaptionStr, long style = wxOK | wxCENTRE);`
 - [ ] [L80](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/richmsgdlg.h#L80) `void ShowCheckBox(const wxString& checkBoxText, bool checked = false);`
@@ -1607,6 +1698,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/settings.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/settings.h)
+
+0 implemented; 0 partial; 23 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L16](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/settings.h#L16) `enum wxSystemFont {`
 - [ ] [L19](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/settings.h#L19) `wxSYS_OEM_FIXED_FONT = 10, wxSYS_ANSI_FIXED_FONT, wxSYS_ANSI_VAR_FONT, wxSYS_SYSTEM_FONT, wxSYS_DEVICE_DEFAULT_FONT, wxSYS_DEFAULT_GUI_FONT }`
@@ -1636,6 +1729,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/simplebook.h)
 
+0 implemented; 0 partial; 9 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L40](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/simplebook.h#L40) `class wxSimplebook : public wxBookCtrlBase {`
 - [ ] [L48](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/simplebook.h#L48) `wxSimplebook();`
 - [ ] [L53](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/simplebook.h#L53) `wxSimplebook(wxWindow* parent, wxWindowID id = wxID_ANY, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = 0, const wxString& name = wxEmptyString);`
@@ -1649,6 +1744,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/splash.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/splash.h)
+
+0 implemented; 0 partial; 12 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L8](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/splash.h#L8) `#define wxSPLASH_CENTRE_ON_PARENT   0x01`
 - [ ] [L9](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/splash.h#L9) `#define wxSPLASH_CENTRE_ON_SCREEN   0x02`
@@ -1666,6 +1763,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/statusbr.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/statusbr.h)
+
+0 implemented; 0 partial; 40 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L9](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/statusbr.h#L9) `#define wxSTB_SIZEGRIP         0x0010`
 - [ ] [L10](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/statusbr.h#L10) `#define wxSTB_SHOW_TIPS        0x0020`
@@ -1712,6 +1811,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/stockitem.h)
 
+0 implemented; 0 partial; 4 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L14](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/stockitem.h#L14) `enum wxStockLabelQueryFlag {`
 - [ ] [L21](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/stockitem.h#L21) `wxSTOCK_NOFLAGS = 0, wxSTOCK_WITH_MNEMONIC = 1, wxSTOCK_WITH_ACCELERATOR = 2, wxSTOCK_WITHOUT_ELLIPSIS = 4, wxSTOCK_FOR_BUTTON = wxSTOCK_WITHOUT_ELLIPSIS | wxSTOCK_WITH_MNEMONIC }`
 - [ ] [L80](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/stockitem.h#L80) `wxString wxGetStockLabel(wxWindowID id, long flags = wxSTOCK_WITH_MNEMONIC);`
@@ -1720,6 +1821,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/taskbar.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/taskbar.h)
+
+0 implemented; 0 partial; 34 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L12](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/taskbar.h#L12) `enum wxTaskBarIconType {`
 - [ ] [L14](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/taskbar.h#L14) `wxTBI_DOCK, wxTBI_CUSTOM_STATUSITEM, wxTBI_DEFAULT_TYPE }`
@@ -1759,6 +1862,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/taskbarbutton.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/taskbarbutton.h)
+
+0 implemented; 0 partial; 87 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L12](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/taskbarbutton.h#L12) `enum wxTaskBarButtonState {`
 - [ ] [L14](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/taskbarbutton.h#L14) `wxTASKBAR_BUTTON_NO_PROGRESS = 0, wxTASKBAR_BUTTON_INDETERMINATE = 1, wxTASKBAR_BUTTON_NORMAL = 2, wxTASKBAR_BUTTON_ERROR = 4, wxTASKBAR_BUTTON_PAUSED = 8 }`
@@ -1852,6 +1957,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textdlg.h)
 
+0 implemented; 0 partial; 19 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L11](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textdlg.h#L11) `#define wxTextEntryDialogStyle (wxOK | wxCANCEL | wxCENTRE)`
 - [ ] [L14](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textdlg.h#L14) `const char wxGetTextFromUserPromptStr[] = "Input Text";`
 - [ ] [L17](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textdlg.h#L17) `const char wxGetPasswordFromUserPromptStr[] = "Enter Password";`
@@ -1876,6 +1983,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/tipdlg.h)
 
+0 implemented; 0 partial; 7 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L25](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/tipdlg.h#L25) `class wxTipProvider {`
 - [ ] [L34](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/tipdlg.h#L34) `wxTipProvider(size_t currentTip);`
 - [ ] [L36](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/tipdlg.h#L36) `virtual ~wxTipProvider();`
@@ -1887,6 +1996,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/toolbar.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toolbar.h)
+
+0 implemented; 0 partial; 124 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L8](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toolbar.h#L8) `enum wxToolBarToolStyle {`
 - [ ] [L10](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toolbar.h#L10) `wxTOOL_STYLE_BUTTON = 1, wxTOOL_STYLE_SEPARATOR = 2, wxTOOL_STYLE_CONTROL }`
@@ -2017,6 +2128,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toolbook.h)
 
+0 implemented; 0 partial; 15 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L8](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toolbook.h#L8) `#define wxTBK_BUTTONBAR            0x0100`
 - [ ] [L9](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toolbook.h#L9) `#define wxTBK_HORZ_LAYOUT          0x8000`
 - [ ] [L11](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toolbook.h#L11) `wxEventType wxEVT_TOOLBOOK_PAGE_CHANGED;`
@@ -2036,6 +2149,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/treebook.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/treebook.h)
+
+0 implemented; 0 partial; 23 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L9](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/treebook.h#L9) `wxEventType wxEVT_TREEBOOK_PAGE_CHANGED;`
 - [ ] [L10](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/treebook.h#L10) `wxEventType wxEVT_TREEBOOK_PAGE_CHANGING;`
@@ -2065,6 +2180,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/uiaction.h)
 
+0 implemented; 0 partial; 14 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L27](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/uiaction.h#L27) `class wxUIActionSimulator {`
 - [ ] [L33](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/uiaction.h#L33) `wxUIActionSimulator();`
 - [ ] [L44](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/uiaction.h#L44) `bool MouseMove(long x, long y);`
@@ -2084,6 +2201,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/vidmode.h)
 
+0 implemented; 0 partial; 14 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L19](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/vidmode.h#L19) `struct wxVideoMode {`
 - [ ] [L25](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/vidmode.h#L25) `wxVideoMode(int width = 0, int height = 0, int depth = 0, int freq = 0);`
 - [ ] [L32](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/vidmode.h#L32) `bool Matches(const wxVideoMode& other) const;`
@@ -2102,6 +2221,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/wizard.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/wizard.h)
+
+0 implemented; 0 partial; 70 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L10](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/wizard.h#L10) `#define wxWIZARD_EX_HELPBUTTON   0x00000010`
 - [ ] [L13](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/wizard.h#L13) `#define wxWIZARD_VALIGN_TOP       0x01`

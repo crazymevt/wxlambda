@@ -2,8 +2,9 @@
 
 This is the deliverable for implementation **Phase 6**. The former release
 preparation phase is now **Phase 7** in [IMPLEMENTATION.md](../IMPLEMENTATION.md).
-Creating this plan does not implement the remaining bindings or make exhaustive
-coverage a prerequisite for the bounded first release. Coverage implementation
+The final goal is **complete wxWidgets coverage**. A bounded first release is
+an intermediate milestone; neither the plan nor individual implemented slices
+satisfy final acceptance. All required missing and partial APIs remain work. Coverage implementation
 has its own phases **C1–C7** below, distinct from release roadmap numbering.
 
 ## Scope and inventory
@@ -19,7 +20,8 @@ not just the `core` and `base` components currently linked by this bridge.
 Extracted declarations retain the upstream [wxWindows Library Licence](coverage/UPSTREAM-LICENCE.txt)
 and its [GNU Library GPL terms](coverage/UPSTREAM-LGPL.txt).
 The checked-in [manifest](coverage/manifest.json) records every header's SHA-256,
-phase and entry count. The [class/widget index](coverage/classes.md) lists every
+phase and entry count. The [generated coverage summary](coverage/README.md) gives current implemented,
+partial and pending counts by phase and header. The [class/widget index](coverage/classes.md) lists every
 class/struct definition found there. Each C-phase links to the full source
 checklist: methods, constructors, destructors, overloads, operators, free
 functions, callback types, enums, constants, macros, templates, and documented
@@ -46,8 +48,10 @@ feature detection and clear unavailable-feature errors.
 - In generated checklists, `[x]` means the declaration's operation is implemented
   with its stated Lisp mapping, `[~]` means partial support with the supported
   arguments/receivers and remaining limits stated inline, and `[ ]` means pending.
-  The class index uses `[~]` for the eight bound widgets, `wxBoxSizer`,
-  `wxWindow` and `wxTopLevelWindow`; none has complete class coverage.
+  The class index uses `[~]` for the managed `wxAppConsole`/`wxApp` interfaces,
+  eight bound widgets, `wxBoxSizer`, `wxWindow` and `wxTopLevelWindow`; none has
+  complete class coverage. Applications have lifecycle functions, not public
+  application wrapper classes.
   Constructors with fixed IDs/styles remain partial.
 - [status.json](coverage/status.json) is the persistent source of declaration and
   class statuses, Lisp exports, native ABI names and supported scopes. Exact
@@ -68,6 +72,45 @@ feature detection and clear unavailable-feature errors.
 - C++ conveniences may map to Lisp strings, numbers, sequences, conditions or
   scoped resource forms instead of literal C++ wrappers. Such equivalences
   require an explicit mapping, including Unicode, range and lifetime behavior.
+
+## Current gaps and final acceptance
+
+Use the [generated phase/header backlog](coverage/README.md) for counts and the
+linked C1–C7 checklists for exact declarations. `[ ]` means no public binding is
+recorded; `[~]` means only the annotated scope exists, and its missing portion
+remains required. A class marked partial is not complete because its constructor
+works. Context, class-definition and declaration counts must not be interpreted
+as percentages of distinct wxWidgets APIs.
+
+Current implementation is limited to managed application/event-dispatch APIs
+and eight concrete widget kinds with a subset of inherited/layout/control APIs.
+C1 remains the active priority: event-handler ownership and generic binding,
+then timer/idle/propagation and worker dispatch, with required value and lifetime
+contracts first. C2 remains partial; C3–C7 have no public bindings recorded.
+See the [C1 details](coverage/phase-c1.md), [C2 details](coverage/phase-c2.md) and
+[class index](coverage/classes.md) for the remaining work within bound families.
+
+The current bridge is ABI 11, with 68 public Lisp exports. The latest code passes
+28 GUI scenarios on both local Apple Silicon macOS SBCL/CCL configurations and
+five packaging checks. These are local results retained under
+`evidence/application-events/` and `evidence/packaging/application-events-reviewed-20261028/`;
+they do not validate Linux/Windows or the graphical Cadre viewer. This coverage
+documentation update does not rerun GUI suites.
+
+Full coverage is finished only when:
+
+- All required C1–C7 declarations, constructor options, overloads, styles/events,
+  inherited APIs and native subclass/virtual-callback behavior are implemented
+  or covered by documented, verified equivalent Lisp mappings.
+- No required API remains pending, partial or explicitly unsupported. An
+  unsupported decision records a gap; it does not close one.
+- C7 reconciliation covers documented public APIs beyond these interface headers,
+  including generated declarations, port headers and optional build components.
+- Applicable platform/Lisp/backend combinations pass behavior, lifetime, callback,
+  Unicode and packaging checks; unavailable local runners do not close port work.
+- Public reference, guides, runnable examples and the Cadre docset match the
+  complete implementation, with zero docset checker problems and verified viewer
+  discovery, symbol lookup and guide/example navigation.
 
 ## Already implemented: bounded baseline
 

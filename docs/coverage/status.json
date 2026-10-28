@@ -8,6 +8,7 @@
       "status": "~",
       "symbol": "wxFrame::wxFrame",
       "lisp": [
+        "frame",
         "make-frame"
       ],
       "native": [
@@ -22,6 +23,7 @@
       "status": "~",
       "symbol": "wxPanel::wxPanel",
       "lisp": [
+        "panel",
         "make-panel"
       ],
       "native": [
@@ -36,6 +38,7 @@
       "status": "~",
       "symbol": "wxButton::wxButton",
       "lisp": [
+        "button",
         "make-button"
       ],
       "native": [
@@ -50,6 +53,7 @@
       "status": "~",
       "symbol": "wxTextCtrl::wxTextCtrl",
       "lisp": [
+        "text-control",
         "make-text"
       ],
       "native": [
@@ -64,6 +68,7 @@
       "status": "~",
       "symbol": "wxStaticText::wxStaticText",
       "lisp": [
+        "label",
         "make-label"
       ],
       "native": [
@@ -78,6 +83,7 @@
       "status": "~",
       "symbol": "wxCheckBox::wxCheckBox",
       "lisp": [
+        "checkbox",
         "make-checkbox"
       ],
       "native": [
@@ -92,6 +98,7 @@
       "status": "~",
       "symbol": "wxChoice::wxChoice",
       "lisp": [
+        "choice",
         "make-choice"
       ],
       "native": [
@@ -817,72 +824,79 @@
     "wxFrame": {
       "status": "~",
       "lisp": [
+        "frame",
         "make-frame"
       ],
       "native": [
         "wxl_frame"
       ],
-      "scope": "Title, width and height; parent is NULL, ID is wxID_ANY, remaining options use defaults. Full class and inherited API coverage remain open."
+      "scope": "Native-backed CLOS construction, including subclass initargs/defaults and managed rollback. Title, width and height; parent is NULL, ID is wxID_ANY, remaining options use defaults. Full class and inherited API coverage remain open."
     },
     "wxPanel": {
       "status": "~",
       "lisp": [
+        "panel",
         "make-panel"
       ],
       "native": [
         "wxl_panel"
       ],
-      "scope": "Parent only; remaining constructor options use defaults. Full class and inherited API coverage remain open."
+      "scope": "Native-backed CLOS construction, including subclass initargs/defaults and managed rollback. Parent only; remaining constructor options use defaults. Full class and inherited API coverage remain open."
     },
     "wxButton": {
       "status": "~",
       "lisp": [
+        "button",
         "make-button"
       ],
       "native": [
         "wxl_button"
       ],
-      "scope": "Parent and label; ID is wxID_ANY, remaining options use defaults. Full class and inherited API coverage remain open."
+      "scope": "Native-backed CLOS construction, including subclass initargs/defaults and managed rollback. Parent and label; ID is wxID_ANY, remaining options use defaults. Full class and inherited API coverage remain open."
     },
     "wxTextCtrl": {
       "status": "~",
       "lisp": [
+        "text-control",
         "make-text"
       ],
       "native": [
         "wxl_text"
       ],
-      "scope": "Parent and initial value; ID is wxID_ANY, remaining options use defaults. Full class and inherited API coverage remain open."
+      "scope": "Native-backed CLOS construction, including subclass initargs/defaults and managed rollback. Parent and initial value; ID is wxID_ANY, remaining options use defaults. Full class and inherited API coverage remain open."
     },
     "wxStaticText": {
       "status": "~",
       "lisp": [
+        "label",
         "make-label"
       ],
       "native": [
         "wxl_label"
       ],
-      "scope": "Parent and label; ID is wxID_ANY, remaining options use defaults. Full class and inherited API coverage remain open."
+      "scope": "Native-backed CLOS construction, including subclass initargs/defaults and managed rollback. Parent and label; ID is wxID_ANY, remaining options use defaults. Full class and inherited API coverage remain open."
     },
     "wxCheckBox": {
       "status": "~",
       "lisp": [
+        "checkbox",
         "make-checkbox"
       ],
       "native": [
         "wxl_checkbox"
       ],
-      "scope": "Parent, label and initial boolean value; two-state control, ID is wxID_ANY, remaining options use defaults. Full class and inherited API coverage remain open."
+      "scope": "Native-backed CLOS construction, including subclass initargs/defaults and managed rollback. Parent, label and initial boolean value; two-state control, ID is wxID_ANY, remaining options use defaults. Full class and inherited API coverage remain open."
     },
     "wxChoice": {
       "status": "~",
       "lisp": [
+        "choice",
         "make-choice"
       ],
       "native": [
         "wxl_choice"
       ],
-      "scope": "Parent, copied strings and initial selection; wxArrayString overload, ID is wxID_ANY, remaining options use defaults. Full class and inherited API coverage remain open."
+      "scope": "Native-backed CLOS construction, including subclass initargs/defaults and managed rollback. Parent, copied strings and initial selection; wxArrayString overload, ID is wxID_ANY, remaining options use defaults. Full class and inherited API coverage remain open."
     },
     "wxBoxSizer": {
       "status": "~",
@@ -943,7 +957,41 @@
         "wxl_gauge_vertical",
         "wxl_gauge_pulse"
       ],
-      "scope": "Parent-owned progress gauge: positive range, value, horizontal/vertical orientation and pulsing. Constructor options, two-step creation and full inherited API remain open. Native ABI 10; see docs/GAUGE.md and tests/gauge.lisp."
+      "scope": "Parent-owned progress gauge: positive range, value, horizontal/vertical orientation and pulsing. Constructor options, two-step creation and full inherited API remain open. Gauge support introduced in ABI 10; current bridge ABI 11; see docs/GAUGE.md and tests/gauge.lisp."
+    },
+    "wxAppConsole": {
+      "status": "~",
+      "lisp": [
+        "call-with-application",
+        "run",
+        "stop",
+        "process-events",
+        "main-loop-running-p",
+        "pending-events-p",
+        "process-pending-events"
+      ],
+      "native": [
+        "wxl_start",
+        "wxl_run",
+        "wxl_stop",
+        "wxl_poll",
+        "wxl_main_loop_running",
+        "wxl_pending_events",
+        "wxl_process_pending_events"
+      ],
+      "scope": "Managed bridge application only: session lifetime, native main loop, polling, queued-event status/dispatch and callback/pump guards. No public application wrapper, application traits, arbitrary event loops, command-line hooks or native virtual overrides. Generic event-handler ownership/binding, filters, propagation, idle handlers, timers and worker dispatch remain open."
+    },
+    "wxApp": {
+      "status": "~",
+      "lisp": [
+        "call-with-application",
+        "with-application"
+      ],
+      "native": [
+        "wxl_start",
+        "wxl_finish"
+      ],
+      "scope": "One managed GUI application per process on its main thread. Native initialization/cleanup only; application subclass hooks, traits, top-window APIs and remaining GUI-application interfaces are unbound. This is not a public CLOS application class."
     }
   }
 }

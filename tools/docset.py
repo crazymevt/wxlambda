@@ -118,6 +118,36 @@ def inlines(text, source=None, links=None):
     return result
 
 
+def table_cells(line):
+    """Split bordered pipe rows, respecting inline code and escaped pipes."""
+    line = line.strip()
+    if not (line.startswith('|') and line.endswith('|')):
+        return None
+    text, cells, cell, fence, pos = line[1:-1], [], [], 0, 0
+    while pos < len(text):
+        char = text[pos]
+        if char == '\\' and not fence and pos + 1 < len(text):
+            following = text[pos + 1]
+            cell.append(following if following == '|' else char + following)
+            pos += 2
+        elif char == '`':
+            end = pos + 1
+            while end < len(text) and text[end] == '`':
+                end += 1
+            length = end - pos
+            fence = length if not fence else 0 if fence == length else fence
+            cell.append(text[pos:end])
+            pos = end
+        elif char == '|' and not fence:
+            cells.append(''.join(cell).strip())
+            cell = []
+            pos += 1
+        else:
+            cell.append(char)
+            pos += 1
+    return [*cells, ''.join(cell).strip()]
+
+
 def markdown(text, source=None, links=None):
     blocks, paragraph, code = [], [], None
     language = None
@@ -127,7 +157,10 @@ def markdown(text, source=None, links=None):
             blocks.append([key('p'), *inlines(' '.join(paragraph), source, links)])
             paragraph.clear()
 
-    for line in text.splitlines():
+    lines, position = text.splitlines(), 0
+    while position < len(lines):
+        line = lines[position]
+        position += 1
         if line.startswith('```'):
             flush()
             if code is None:
@@ -137,6 +170,22 @@ def markdown(text, source=None, links=None):
                 code = None
         elif code is not None:
             code.append(line)
+        elif (table_cells(line) is not None and position < len(lines)
+              and (separator := table_cells(lines[position])) is not None
+              and all(re.fullmatch(r':?-{3,}:?', cell) for cell in separator)):
+            flush()
+            header = table_cells(line)
+            if len(header) != len(separator):
+                raise ValueError('Markdown table header/separator column mismatch')
+            position += 1
+            rows = []
+            while position < len(lines) and (cells := table_cells(lines[position])) is not None:
+                if len(cells) != len(header):
+                    raise ValueError('Markdown table row column mismatch')
+                rows.append([inlines(cell, source, links) for cell in cells])
+                position += 1
+            blocks.append([key('table'), key('header'),
+                           [inlines(cell, source, links) for cell in header], key('rows'), rows])
         elif match := re.match(r'^(#{1,6})\s+(.*)', line):
             flush()
             blocks.append([key('heading'), min(len(match[1]), 4), *inlines(match[2], source, links)])
@@ -157,7 +206,8 @@ def sources():
     # Agent instructions stay in the repository, outside the reader-facing guides.
     guides = sorted(p for p in (ROOT / 'docs').glob('*.md')
                     if p.name not in {'AGENTS.md', 'CLAUDE.md'})
-    return [ROOT / 'README.md', ROOT / 'IMPLEMENTATION.md', *guides]
+    return [ROOT / 'README.md', ROOT / 'IMPLEMENTATION.md', *guides,
+            ROOT / 'docs/coverage/README.md']
 
 
 def content():

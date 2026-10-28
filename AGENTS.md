@@ -1,5 +1,24 @@
 # Project instructions
 
+## Long-term goal and session continuity
+
+The final goal is complete wxWidgets coverage, including required public APIs,
+overloads, inherited behavior, optional components and applicable platforms.
+A bounded first release is only an intermediate milestone. Pending, partial or
+explicitly unsupported required APIs remain gaps and prevent claiming completion.
+Prioritize unfinished C1 foundations before further C2 widget-family expansion.
+
+Read the session handoff in `IMPLEMENTATION.md` and `docs/WXWIDGETS-COVERAGE.md`
+when resuming. Keep the handoff current with completed slices, the next dependency,
+review findings, verification evidence and limitations. Use independent code
+review, resolve actionable findings, then commit verified slices.
+
+With each binding change, update `docs/coverage/status.json` and regenerate the
+summary, class index and all C1–C7 checklists with `tools/coverage_inventory.py`.
+The generated `docs/coverage/README.md` is the current phase/header backlog;
+do not hand-edit generated counts or checkboxes. Check regeneration against the
+pinned upstream sources and rebuild/check the docset, including that summary.
+
 ## Implementation deliverables
 
 Every implementation change must include corresponding documentation, examples,
@@ -64,7 +83,7 @@ Application lifecycle functions, keyword-only factories, macros and the FFI can
 remain ordinary functions/macros. Event snapshots remain immutable structures.
 
 Public wrapper classes are `window` (abstract), `frame`, `panel`, `button`,
-`text-control`, `label`, `checkbox` and `choice`. Lisp subclassing does not imply
+`text-control`, `label`, `checkbox`, `choice` and `gauge`. Lisp subclassing does not imply
 native C++ subclassing or virtual-method callbacks; those need separate bridge
 support. See `docs/CLOS-API.md`.
 

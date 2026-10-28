@@ -28,7 +28,8 @@ The build requires one authored reference record per public export, derives
 function, macro and generic-function lambda lists from the implementation
 (including method defaults while omitting specializers), converts README, the
 implementation roadmap and
-`docs/*.md` guides into docset blocks, and embeds every `examples/*.lisp` source
+`docs/*.md` guides and the generated `docs/coverage/README.md` coverage summary
+into docset blocks, and embeds every `examples/*.lisp` source
 with usage notes. Agent instruction files (`AGENTS.md` and `CLAUDE.md`) are
 excluded from the guide list. Bundled guides and examples must not contain
 machine-specific paths. Update `docs/api-reference.json` and
@@ -36,6 +37,11 @@ machine-specific paths. Update `docs/api-reference.json` and
 arguments, returns, behavior, errors/scope and the related wxWidgets APIs. Class
 pages include Construction sections; mutable-property pages include SETF sections
 and searchable compound function names such as `(setf frame-title)`.
+Bordered Markdown pipe tables with a separator row become format-v1 `:table`
+blocks, retaining headers, rows and inline code/links. Escaped pipes and pipes
+inside inline code stay within their cell; inconsistent column counts are rejected.
+The generated coverage summary exercises this conversion for phase totals and
+all 398 header rows, so the backlog stays readable in Cadre.
 Guide/example filename stems that coincide with public symbols are omitted as
 aliases, so symbol lookup stays unambiguous. Their source paths remain indexed.
 Build/check requires exactly one matching API record for each symbol and SETF name.

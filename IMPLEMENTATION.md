@@ -1,10 +1,100 @@
 # Implementation plan
 
-Target a usable first release with the existing controls, reliable REPL-driven
-development, validated platforms, and standalone packaging. Full wxWidgets
-coverage is inventoried in Phase 6; its implementation remains future work.
+The final goal is complete wxWidgets coverage across C1–C7, including supported
+platforms, optional components and documented public interfaces. A usable first
+release with existing controls, reliable REPL-driven development and standalone
+packaging is an intermediate milestone. Phase 6 inventories the full scope;
+partial C1/C2 implementation is underway and does not complete that goal.
 This is a plan; unchecked steps are not claims of implemented or verified
 behavior.
+
+## Session handoff: full coverage work
+
+The user has confirmed that **complete wxWidgets coverage is the final goal**.
+Keep every required missing/partial API open; a bounded release, working example,
+local test result or explicitly unsupported decision cannot close the final goal.
+Use the [coverage overview](docs/WXWIDGETS-COVERAGE.md), generated
+[phase/header backlog](docs/coverage/README.md), class index and exact C1–C7
+declaration checklists together. The pinned inventory is wxWidgets 3.2.12; C7
+must reconcile additional documented public interfaces beyond those headers.
+
+### Completed implementation checkpoints
+
+- `6f6312e`: progress gauges, generic SETF properties, subclass example and
+  pulse-to-determinate regression; independent review finding resolved.
+- `ed3ca87`: C1 application state and pending-event dispatch, callback/pump/
+  cleanup reentrancy guards and fresh-load inactive-session regression;
+  independent review finding resolved.
+- Current bridge ABI: 11. Public API: 68 exports, nine window wrapper classes
+  (eight concrete widget kinds), 39 named generics and ten generic SETF writers.
+  No public application wrapper or generic event-handler binding exists yet.
+- Latest implementation verification: 28 GUI scenarios and native preflight
+  pass on local Apple Silicon macOS SBCL 2.6.9 and CCL 1.13. Final reports:
+  `evidence/application-events/{sbcl,ccl}-review-fix-20261028/`. Five package checks
+  pass in `evidence/packaging/application-events-reviewed-20261028/`.
+  Hosted Linux/Windows GUI behavior and the graphical Cadre viewer remain open.
+
+### Next dependency and working order
+
+1. Continue **C1**, before adding further C2 widget families. Application dispatch
+   boundaries are established only for the bridge-owned session.
+2. Define native event-handler ownership, borrowed window handlers, invalidation,
+   callback roots and teardown. Review how standalone handlers and window-backed
+   handlers fit native-backed CLOS construction without allocating a second native
+   object. Preserve existing subclass initargs, defaults, AFTER hooks and rollback.
+3. Implement the required event-handler base and generic binding/unbinding with
+   positive, error, lifetime and callback tests. Account for multiple bindings,
+   event/source/ID identity and safe unbinding during dispatch; the current
+   control-specific single-handler slots are not full generic binding support.
+4. Build timer/idle, event propagation/skip/veto and worker-to-GUI dispatch on
+   those contracts, adding prerequisite value types before their consumers.
+   Existing immutable event snapshots do not provide mutable native event access
+   or native virtual overrides. Do not mark those capabilities complete.
+5. Continue all remaining C1 groups, then C2–C7, reviewing dependencies and
+   supported platform/build variants rather than treating the current slice
+   ordering as an exhaustive design for the rest of the project.
+
+### Resume and verification checklist
+
+- Inspect `git status` and the latest log first; preserve unrelated changes.
+  Read `AGENTS.md`, this handoff and the relevant coverage declarations.
+- Use the required quiet-command wrapper for builds, tests and batch commands.
+- Treat `docs/coverage/status.json` as the source of status truth. Update exact
+  header/line/signature mappings and scopes, then regenerate all checklists,
+  the class index and backlog. Never hand-edit generated marks or totals.
+- Obtain the pinned upstream `interface/` tree if the previous temporary cache
+  is gone; verify its header hashes against `docs/coverage/manifest.json`.
+  `../docset` (or `WXLAMBDA_DOCSET_SOURCE`) supplies the shared docset reader;
+  `.ci-deps/` contains the pinned test dependencies, fetched through the CI tool.
+- Reproduction examples (replace the source placeholder):
+
+```sh
+python3 tools/coverage_inventory.py /path/to/wxWidgets-3.2.12/interface
+python3 tests/coverage-inventory.py /path/to/wxWidgets-3.2.12/interface
+python3 -m unittest discover -s tests -p 'test_*.py'
+python3 tools/docset.py build
+python3 tools/docset.py check
+```
+
+- Every implementation slice needs matching reference/guides, runnable example
+  sources, docset updates and relevant behavior/error/lifetime tests. Run affected
+  examples; verify actual-package export and SETF coverage with
+  `tests/docset.lisp` on both Lisps, plus shared-reader discovery and guide/example
+  access. The generated coverage summary is also included in the docset.
+- Follow the established workflow: finish a bounded dependency-building slice,
+  obtain independent review, resolve findings, rerun affected checks, regenerate
+  docs, commit, and record the result and next dependency here. Keep evidence
+  directories fresh; the GUI runner rejects reused report directories.
+- Distinguish local checks from hosted platform and graphical-viewer validation.
+  For documentation-only changes, verify regeneration/links/docset; do not claim
+  GUI suites were rerun. Only close a phase when all its required scope and
+  verification are complete.
+- For isolated docset installation checks, use a dedicated discovery parent such
+  as `/path/to/isolated-docsets/wxlambda`, with only one copy of this docset ID.
+  The reader deduplicates IDs across siblings; old test copies under a shared
+  temporary parent can otherwise select a previous artifact. A shared-parent
+  install check exposed that collision during the coverage-summary update;
+  repeat with a dedicated root rather than weakening content comparisons.
 
 ## Implementation rule: documentation, examples, and docset
 
@@ -249,7 +339,8 @@ inherited-API reconciliation is an explicit remaining coverage task.
 
 **Acceptance:** Every pinned interface header has phased, source-linked work
 items; existing support is distinguished from complete class/API coverage.
-The plan is complete; implementing its unchecked bindings remains future work.
+The inventory-plan deliverable is complete. C1/C2 implementation is underway;
+all remaining pending/partial scope across C1–C7 remains required for the final goal.
 
 ## Phase 7: Prepare the release
 
@@ -509,8 +600,9 @@ remains open, and no further C2 widget families were added.
 
 ## Decisions
 
-- D1 Target a bounded first release while tracking full wxWidgets coverage in
-  the Phase 6 plan; rejected: making exhaustive bindings a release requirement.
+- D1 Keep a bounded first release as an intermediate milestone. The user has
+  clarified that the final goal is complete wxWidgets coverage through C1–C7;
+  the first release and individual slices do not satisfy final acceptance.
 - D2 Gate editor support on prototype evidence because main-thread integration
   remains unproven; rejected: making release completion depend indefinitely on
   SLIME/SLY.

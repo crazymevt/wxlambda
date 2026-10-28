@@ -14,9 +14,18 @@ inherited interfaces and platform conditions have been reviewed and mapped.
 Inherited declarations name the supported receiver types explicitly; a partial
 class or constructor does not imply full upstream coverage.
 
+## Current coverage and remaining work
+
+0 implemented; 8 partial; 5284 pending; 26 context entries. Partial and pending entries remain open.
+
+Counts describe inventory entries, not distinct APIs or percent completion.
+See the [coverage summary](README.md) for phase/header comparisons.
+
 ## `wx/any.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/any.h)
+
+0 implemented; 0 partial; 62 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L60](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/any.h#L60) `class wxAny {`
 - [ ] [L66](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/any.h#L66) `wxAny();`
@@ -85,7 +94,9 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h)
 
-- [ ] [L39](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L39) `class wxAppConsole : public wxEvtHandler, public wxEventFilter {`
+0 implemented; 8 partial; 96 pending; 0 context entries. Partial and pending entries remain open.
+
+- [~] [L39](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L39) `class wxAppConsole : public wxEvtHandler, public wxEventFilter {` — **Partial**: `call-with-application`, `run`, `stop`, `process-events`, `main-loop-running-p`, `pending-events-p`, `process-pending-events`; ABI: `wxl_start`, `wxl_run`, `wxl_stop`, `wxl_poll`, `wxl_main_loop_running`, `wxl_pending_events`, `wxl_process_pending_events`. Managed bridge application only: session lifetime, native main loop, polling, queued-event status/dispatch and callback/pump guards. No public application wrapper, application traits, arbitrary event loops, command-line hooks or native virtual overrides. Generic event-handler ownership/binding, filters, propagation, idle handlers, timers and worker dispatch remain open.
 - [ ] [L48](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L48) `virtual wxAppTraits* CreateTraits();`
 - [ ] [L55](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L55) `virtual ~wxAppConsole();`
 - [ ] [L72](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L72) `virtual int MainLoop();`
@@ -142,7 +153,7 @@ class or constructor does not imply full upstream coverage.
 - [ ] [L832](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L832) `documented event: EVT_DIALUP_CONNECTED(func)`
 - [ ] [L834](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L834) `documented event: EVT_DIALUP_DISCONNECTED(func)`
 - [ ] [L836](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L836) `documented event: EVT_IDLE(func)`
-- [ ] [L845](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L845) `class wxApp : public wxAppConsole {`
+- [~] [L845](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L845) `class wxApp : public wxAppConsole {` — **Partial**: `call-with-application`, `with-application`; ABI: `wxl_start`, `wxl_finish`. One managed GUI application per process on its main thread. Native initialization/cleanup only; application subclass hooks, traits, top-window APIs and remaining GUI-application interfaces are unbound. This is not a public CLOS application class.
 - [ ] [L851](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L851) `wxApp();`
 - [ ] [L857](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L857) `virtual ~wxApp();`
 - [ ] [L863](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/app.h#L863) `virtual wxVideoMode GetDisplayMode() const;`
@@ -194,6 +205,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/appprogress.h)
 
+0 implemented; 0 partial; 7 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L22](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/appprogress.h#L22) `class WXDLLIMPEXP_CORE wxAppProgressIndicator {`
 - [ ] [L36](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/appprogress.h#L36) `wxAppProgressIndicator(wxWindow* parent = NULL, int maxValue = 100);`
 - [ ] [L42](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/appprogress.h#L42) `virtual ~wxAppProgressIndicator();`
@@ -205,6 +218,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/apptrait.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/apptrait.h)
+
+0 implemented; 0 partial; 15 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L29](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/apptrait.h#L29) `class wxAppTraits {`
 - [ ] [L40](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/apptrait.h#L40) `virtual wxConfigBase* CreateConfig();`
@@ -225,6 +240,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/archive.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/archive.h)
+
+0 implemented; 0 partial; 55 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L28](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/archive.h#L28) `class wxArchiveInputStream : public wxFilterInputStream {`
 - [ ] [L35](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/archive.h#L35) `virtual bool CloseEntry() = 0;`
@@ -286,6 +303,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/arrstr.h)
 
+0 implemented; 0 partial; 49 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L53](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/arrstr.h#L53) `class wxArrayString : public wxArray {`
 - [ ] [L67](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/arrstr.h#L67) `typedef int (*CompareFunction)(const wxString& first, const wxString& second);`
 - [ ] [L72](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/arrstr.h#L72) `wxArrayString();`
@@ -340,12 +359,16 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/atomic.h)
 
+0 implemented; 0 partial; 2 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L34](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/atomic.h#L34) `wxInt32 wxAtomicInc(wxAtomicInt& value);`
 - [ ] [L45](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/atomic.h#L45) `wxInt32 wxAtomicDec(wxAtomicInt& value);`
 
 ## `wx/base64.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/base64.h)
+
+0 implemented; 0 partial; 11 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L20](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/base64.h#L20) `enum wxBase64DecodeMode {`
 - [ ] [L22](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/base64.h#L22) `wxBase64DecodeMode_Strict, wxBase64DecodeMode_SkipWS, wxBase64DecodeMode_Relaxed }`
@@ -362,6 +385,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/buffer.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/buffer.h)
+
+0 implemented; 0 partial; 59 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L44](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/buffer.h#L44) `template <typename T> class wxScopedCharTypeBuffer {`
 - [ ] [L49](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/buffer.h#L49) `typedef T CharType;`
@@ -427,6 +452,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/chartype.h)
 
+0 implemented; 0 partial; 8 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L32](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/chartype.h#L32) `#define wxT(string)`
 - [ ] [L61](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/chartype.h#L61) `#define wxT_2(string)`
 - [ ] [L81](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/chartype.h#L81) `#define wxS(string)`
@@ -439,6 +466,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/clntdata.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/clntdata.h)
+
+0 implemented; 0 partial; 20 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L26](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/clntdata.h#L26) `class wxClientDataContainer {`
 - [ ] [L32](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/clntdata.h#L32) `wxClientDataContainer();`
@@ -464,6 +493,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/cmdline.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/cmdline.h)
+
+0 implemented; 0 partial; 70 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L39](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/cmdline.h#L39) `enum wxCmdLineEntryFlags {`
 - [ ] [L41](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/cmdline.h#L41) `wxCMD_LINE_OPTION_MANDATORY = 0x01, wxCMD_LINE_PARAM_OPTIONAL = 0x02, wxCMD_LINE_PARAM_MULTIPLE = 0x04, wxCMD_LINE_OPTION_HELP = 0x08, wxCMD_LINE_NEEDS_SEPARATOR = 0x10, wxCMD_LINE_SWITCH_NEGATABLE = 0x20, wxCMD_LINE_HIDDEN = 0x40 }`
@@ -540,6 +571,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/config.h)
 
+0 implemented; 0 partial; 70 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L10](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/config.h#L10) `enum {`
 - [ ] [L12](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/config.h#L12) `wxCONFIG_USE_LOCAL_FILE = 1, wxCONFIG_USE_GLOBAL_FILE = 2, wxCONFIG_USE_RELATIVE_PATH = 4, wxCONFIG_USE_NO_ESCAPE_CHARACTERS = 8, wxCONFIG_USE_SUBDIR = 16 }`
 - [ ] [L259](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/config.h#L259) `class wxConfigBase : public wxObject {`
@@ -615,6 +648,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/convauto.h)
 
+0 implemented; 0 partial; 12 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L17](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/convauto.h#L17) `enum wxBOM {`
 - [ ] [L25](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/convauto.h#L25) `wxBOM_Unknown = -1, wxBOM_None, wxBOM_UTF32BE, wxBOM_UTF32LE, wxBOM_UTF16BE, wxBOM_UTF16LE, wxBOM_UTF8 }`
 - [ ] [L111](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/convauto.h#L111) `class wxConvAuto : public wxMBConv {`
@@ -632,6 +667,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/cpp.h)
 
+0 implemented; 0 partial; 7 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L18](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/cpp.h#L18) `#define wxCONCAT(x1, x2)`
 - [ ] [L19](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/cpp.h#L19) `#define wxCONCAT3(x1, x2, x3)`
 - [ ] [L20](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/cpp.h#L20) `#define wxCONCAT4(x1, x2, x3, x4)`
@@ -643,6 +680,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/datetime.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/datetime.h)
+
+0 implemented; 0 partial; 253 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L76](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/datetime.h#L76) `class wxDateTime {`
 - [ ] [L86](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/datetime.h#L86) `typedef unsigned short wxDateTime_t;`
@@ -902,6 +941,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/datstrm.h)
 
+0 implemented; 0 partial; 42 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L37](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/datstrm.h#L37) `class wxDataOutputStream {`
 - [ ] [L55](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/datstrm.h#L55) `wxDataOutputStream(wxOutputStream& stream, const wxMBConv& conv = wxConvUTF8);`
 - [ ] [L61](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/datstrm.h#L61) `~wxDataOutputStream();`
@@ -949,6 +990,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/debug.h)
 
+0 implemented; 0 partial; 26 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L18](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/debug.h#L18) `void wxAbort();`
 - [ ] [L38](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/debug.h#L38) `#define wxDEBUG_LEVEL`
 - [ ] [L48](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/debug.h#L48) `#define __WXDEBUG__`
@@ -979,6 +1022,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/debugrpt.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/debugrpt.h)
+
+0 implemented; 0 partial; 41 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L25](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/debugrpt.h#L25) `class wxDebugReportPreview {`
 - [ ] [L31](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/debugrpt.h#L31) `wxDebugReportPreview();`
@@ -1025,6 +1070,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/defs.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/defs.h)
+
+0 implemented; 0 partial; 232 pending; 3 context entries. Partial and pending entries remain open.
 
 - [ ] [L16](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/defs.h#L16) `enum wxGeometryCentre {`
 - [ ] [L18](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/defs.h#L18) `wxCENTRE = 0x0001, wxCENTER = wxCENTRE }`
@@ -1266,6 +1313,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dir.h)
 
+0 implemented; 0 partial; 29 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L11](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dir.h#L11) `enum wxDirTraverseResult {`
 - [ ] [L13](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dir.h#L13) `wxDIR_IGNORE = -1, wxDIR_STOP, wxDIR_CONTINUE }`
 - [ ] [L21](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dir.h#L21) `wxULongLong wxInvalidSize;`
@@ -1299,6 +1348,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/dynarray.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dynarray.h)
+
+0 implemented; 0 partial; 58 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L218](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dynarray.h#L218) `template <typename T> class wxArray<T> {`
 - [ ] [L240](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dynarray.h#L240) `wxArray();`
@@ -1363,6 +1414,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dynlib.h)
 
+0 implemented; 0 partial; 34 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L20](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dynlib.h#L20) `class wxDynamicLibraryDetails {`
 - [ ] [L36](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dynlib.h#L36) `bool GetAddress(void* addr, size_t* len) const;`
 - [ ] [L42](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dynlib.h#L42) `wxString GetName() const;`
@@ -1402,6 +1455,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/encconv.h)
 
+0 implemented; 0 partial; 13 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L29](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/encconv.h#L29) `class wxEncodingConverter : public wxObject {`
 - [ ] [L35](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/encconv.h#L35) `wxEncodingConverter();`
 - [ ] [L45](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/encconv.h#L45) `static bool CanConvert(wxFontEncoding encIn, wxFontEncoding encOut);`
@@ -1419,6 +1474,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/event.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h)
+
+0 implemented; 0 partial; 660 pending; 16 context entries. Partial and pending entries remain open.
 
 - **Context**: [L9](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L9) `#if wxUSE_BASE`
 - [ ] [L15](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L15) `enum wxEventPropagation {`
@@ -2101,6 +2158,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/eventfilter.h)
 
+0 implemented; 0 partial; 6 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L82](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/eventfilter.h#L82) `class wxEventFilter {`
 - [ ] [L86](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/eventfilter.h#L86) `enum {`
 - [ ] [L89](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/eventfilter.h#L89) `Event_Skip = -1, Event_Ignore = 0, Event_Processed = 1 }`
@@ -2111,6 +2170,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/evtloop.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/evtloop.h)
+
+0 implemented; 0 partial; 26 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L43](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/evtloop.h#L43) `class wxEventLoopBase {`
 - [ ] [L52](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/evtloop.h#L52) `static wxEventLoopBase *GetActive();`
@@ -2142,6 +2203,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/ffile.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/ffile.h)
+
+0 implemented; 0 partial; 37 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L48](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/ffile.h#L48) `class wxTempFFile {`
 - [ ] [L56](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/ffile.h#L56) `wxTempFFile();`
@@ -2184,6 +2247,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/file.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/file.h)
+
+0 implemented; 0 partial; 44 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L46](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/file.h#L46) `class wxTempFile {`
 - [ ] [L54](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/file.h#L54) `wxTempFile();`
@@ -2234,6 +2299,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/fileconf.h)
 
+0 implemented; 0 partial; 27 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L26](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/fileconf.h#L26) `class wxFileConfig : public wxConfigBase {`
 - [ ] [L44](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/fileconf.h#L44) `wxFileConfig(const wxString& appName = wxEmptyString, const wxString& vendorName = wxEmptyString, const wxString& localFilename = wxEmptyString, const wxString& globalFilename = wxEmptyString, long style = wxCONFIG_USE_LOCAL_FILE | wxCONFIG_USE_GLOBAL_FILE, const wxMBConv& conv = wxConvAuto());`
 - [ ] [L57](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/fileconf.h#L57) `wxFileConfig(wxInputStream& is, const wxMBConv& conv = wxConvAuto());`
@@ -2265,6 +2332,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/filefn.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/filefn.h)
+
+0 implemented; 0 partial; 47 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L23](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/filefn.h#L23) `class wxPathList : public wxArrayString {`
 - [ ] [L29](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/filefn.h#L29) `wxPathList();`
@@ -2317,6 +2386,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/filename.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/filename.h)
+
+0 implemented; 0 partial; 132 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L16](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/filename.h#L16) `enum wxPathFormat {`
 - [ ] [L18](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/filename.h#L18) `wxPATH_NATIVE = 0, wxPATH_UNIX, wxPATH_BEOS = wxPATH_UNIX, wxPATH_MAC, wxPATH_DOS, wxPATH_WIN = wxPATH_DOS, wxPATH_OS2 = wxPATH_DOS, wxPATH_VMS, wxPATH_MAX }`
@@ -2455,6 +2526,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/filesys.h)
 
+0 implemented; 0 partial; 37 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L12](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/filesys.h#L12) `enum wxFileSystemOpenFlags {`
 - [ ] [L14](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/filesys.h#L14) `wxFS_READ = 1, wxFS_SEEKABLE = 4 }`
 - [ ] [L33](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/filesys.h#L33) `class wxFileSystem : public wxObject {`
@@ -2497,6 +2570,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/fs_arc.h)
 
+0 implemented; 0 partial; 5 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L14](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/fs_arc.h#L14) `class wxArchiveFSHandler : public wxFileSystemHandler {`
 - [ ] [L17](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/fs_arc.h#L17) `wxArchiveFSHandler();`
 - [ ] [L18](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/fs_arc.h#L18) `virtual ~wxArchiveFSHandler();`
@@ -2507,6 +2582,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/fs_filter.h)
 
+0 implemented; 0 partial; 3 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L15](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/fs_filter.h#L15) `class wxFilterFSHandler : public wxFileSystemHandler {`
 - [ ] [L18](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/fs_filter.h#L18) `wxFilterFSHandler();`
 - [ ] [L19](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/fs_filter.h#L19) `virtual ~wxFilterFSHandler();`
@@ -2515,12 +2592,16 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/fs_inet.h)
 
+0 implemented; 0 partial; 2 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L14](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/fs_inet.h#L14) `class wxInternetFSHandler : public wxFileSystemHandler {`
 - [ ] [L17](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/fs_inet.h#L17) `wxInternetFSHandler();`
 
 ## `wx/fs_mem.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/fs_mem.h)
+
+0 implemented; 0 partial; 9 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L71](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/fs_mem.h#L71) `class wxMemoryFSHandler : public wxFileSystemHandler {`
 - [ ] [L77](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/fs_mem.h#L77) `wxMemoryFSHandler();`
@@ -2535,6 +2616,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/fswatcher.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/fswatcher.h)
+
+0 implemented; 0 partial; 27 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L48](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/fswatcher.h#L48) `class wxFileSystemWatcher: public wxEvtHandler {`
 - [ ] [L54](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/fswatcher.h#L54) `wxFileSystemWatcher();`
@@ -2568,6 +2651,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/generic/aboutdlgg.h)
 
+0 implemented; 0 partial; 10 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L51](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/generic/aboutdlgg.h#L51) `class wxGenericAboutDialog {`
 - [ ] [L57](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/generic/aboutdlgg.h#L57) `wxGenericAboutDialog();`
 - [ ] [L62](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/generic/aboutdlgg.h#L62) `wxGenericAboutDialog(const wxAboutDialogInfo& info, wxWindow* parent = NULL);`
@@ -2582,6 +2667,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/generic/helpext.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/generic/helpext.h)
+
+0 implemented; 0 partial; 16 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L34](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/generic/helpext.h#L34) `class wxExtHelpController : public wxHelpControllerBase {`
 - [ ] [L37](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/generic/helpext.h#L37) `wxExtHelpController(wxWindow* parentWindow = NULL);`
@@ -2604,6 +2691,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/hash.h)
 
+0 implemented; 0 partial; 15 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L49](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/hash.h#L49) `class wxHashTable : public wxObject {`
 - [ ] [L56](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/hash.h#L56) `wxHashTable(wxKeyType key_type = wxKEY_INTEGER, size_t size = 1000);`
 - [ ] [L61](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/hash.h#L61) `virtual ~wxHashTable();`
@@ -2623,6 +2712,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/hashmap.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/hashmap.h)
+
+0 implemented; 0 partial; 18 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L163](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/hashmap.h#L163) `class wxHashMap {`
 - [ ] [L170](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/hashmap.h#L170) `wxHashMap(size_type size = 10);`
@@ -2647,6 +2738,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/hashset.h)
 
+0 implemented; 0 partial; 17 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L140](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/hashset.h#L140) `class wxHashSet {`
 - [ ] [L147](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/hashset.h#L147) `wxHashSet(size_type size = 10);`
 - [ ] [L152](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/hashset.h#L152) `wxHashSet(const wxHashSet& set);`
@@ -2669,6 +2762,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/init.h)
 
+0 implemented; 0 partial; 9 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L20](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/init.h#L20) `class wxInitializer {`
 - [ ] [L27](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/init.h#L27) `wxInitializer(int argc = 0, wxChar **argv = NULL);`
 - [ ] [L32](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/init.h#L32) `bool IsOk() const;`
@@ -2682,6 +2777,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/intl.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/intl.h)
+
+0 implemented; 0 partial; 59 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L13](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/intl.h#L13) `enum wxLayoutDirection {`
 - [ ] [L15](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/intl.h#L15) `wxLayout_Default, wxLayout_LeftToRight, wxLayout_RightToLeft }`
@@ -2747,6 +2844,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/ipc.h)
 
+0 implemented; 0 partial; 37 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L29](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/ipc.h#L29) `class wxConnection : public wxObject {`
 - [ ] [L53](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/ipc.h#L53) `wxConnection();`
 - [ ] [L54](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/ipc.h#L54) `wxConnection(void* buffer, size_t size);`
@@ -2789,6 +2888,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/ipcbase.h)
 
+0 implemented; 0 partial; 3 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L11](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/ipcbase.h#L11) `enum wxIPCFormat {`
 - [ ] [L13](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/ipcbase.h#L13) `wxIPC_INVALID = 0, wxIPC_TEXT = 1, wxIPC_BITMAP = 2, wxIPC_METAFILE = 3, wxIPC_SYLK = 4, wxIPC_DIF = 5, wxIPC_TIFF = 6, wxIPC_OEMTEXT = 7, wxIPC_DIB = 8, wxIPC_PALETTE = 9, wxIPC_PENDATA = 10, wxIPC_RIFF = 11, wxIPC_WAVE = 12, wxIPC_UTF16TEXT = 13, wxIPC_ENHMETAFILE = 14, wxIPC_FILENAME = 15, wxIPC_LOCALE = 16, wxIPC_UTF8TEXT = 17, wxIPC_UTF32TEXT = 18, wxIPC_UNICODETEXT = wxIPC_UTF16TEXT, wxIPC_PRIVATE = 20 }`
 - [ ] [L49](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/ipcbase.h#L49) `class wxConnectionBase: public wxObject {`
@@ -2797,6 +2898,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/language.h)
 
+0 implemented; 0 partial; 2 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L17](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/language.h#L17) `enum wxLanguage {`
 - [ ] [L20](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/language.h#L20) `wxLANGUAGE_DEFAULT, wxLANGUAGE_UNKNOWN, wxLANGUAGE_ABKHAZIAN, wxLANGUAGE_AFAR, wxLANGUAGE_AFAR_DJIBOUTI, wxLANGUAGE_AFAR_ERITREA, wxLANGUAGE_AFAR_ETHIOPIA, wxLANGUAGE_AFRIKAANS, wxLANGUAGE_AFRIKAANS_NAMIBIA, wxLANGUAGE_AFRIKAANS_SOUTH_AFRICA, wxLANGUAGE_AGHEM, wxLANGUAGE_AGHEM_CAMEROON, wxLANGUAGE_AKAN, wxLANGUAGE_AKAN_GHANA, wxLANGUAGE_ALBANIAN, wxLANGUAGE_ALBANIAN_ALBANIA, wxLANGUAGE_ALBANIAN_KOSOVO, wxLANGUAGE_ALBANIAN_NORTH_MACEDONIA, wxLANGUAGE_ALSATIAN_FRANCE, wxLANGUAGE_AMHARIC, wxLANGUAGE_AMHARIC_ETHIOPIA, wxLANGUAGE_ARABIC, wxLANGUAGE_ARABIC_ALGERIA, wxLANGUAGE_ARABIC_BAHRAIN, wxLANGUAGE_ARABIC_CHAD, wxLANGUAGE_ARABIC_COMOROS, wxLANGUAGE_ARABIC_DJIBOUTI, wxLANGUAGE_ARABIC_EGYPT, wxLANGUAGE_ARABIC_ERITREA, wxLANGUAGE_ARABIC_IRAQ, wxLANGUAGE_ARABIC_ISRAEL, wxLANGUAGE_ARABIC_JORDAN, wxLANGUAGE_ARABIC_KUWAIT, wxLANGUAGE_ARABIC_LEBANON, wxLANGUAGE_ARABIC_LIBYA, wxLANGUAGE_ARABIC_MAURITANIA, wxLANGUAGE_ARABIC_MOROCCO, wxLANGUAGE_ARABIC_OMAN, wxLANGUAGE_ARABIC_PALESTINIAN_AUTHORITY, wxLANGUAGE_ARABIC_QATAR, wxLANGUAGE_ARABIC_SAUDI_ARABIA, wxLANGUAGE_ARABIC_SOMALIA, wxLANGUAGE_ARABIC_SOUTH_SUDAN, wxLANGUAGE_ARABIC_SUDAN, wxLANGUAGE_ARABIC_SYRIA, wxLANGUAGE_ARABIC_TUNISIA, wxLANGUAGE_ARABIC_UAE, wxLANGUAGE_ARABIC_WORLD, wxLANGUAGE_ARABIC_YEMEN, wxLANGUAGE_ARMENIAN, wxLANGUAGE_ARMENIAN_ARMENIA, wxLANGUAGE_ASSAMESE, wxLANGUAGE_ASSAMESE_INDIA, wxLANGUAGE_ASTURIAN, wxLANGUAGE_ASTURIAN_SPAIN, wxLANGUAGE_ASU, wxLANGUAGE_ASU_TANZANIA, wxLANGUAGE_AYMARA, wxLANGUAGE_AZERBAIJANI, wxLANGUAGE_AZERBAIJANI_CYRILLIC, wxLANGUAGE_AZERBAIJANI_CYRILLIC_AZERBAIJAN, wxLANGUAGE_AZERBAIJANI_LATIN, wxLANGUAGE_AZERBAIJANI_LATIN_AZERBAIJAN, wxLANGUAGE_BAFIA, wxLANGUAGE_BAFIA_CAMEROON, wxLANGUAGE_BAMANANKAN, wxLANGUAGE_BAMANANKAN_LATIN, wxLANGUAGE_BAMANANKAN_LATIN_MALI, wxLANGUAGE_BANGLA, wxLANGUAGE_BANGLA_BANGLADESH, wxLANGUAGE_BANGLA_INDIA, wxLANGUAGE_BASAA, wxLANGUAGE_BASAA_CAMEROON, wxLANGUAGE_BASHKIR, wxLANGUAGE_BASHKIR_RUSSIA, wxLANGUAGE_BASQUE, wxLANGUAGE_BASQUE_SPAIN, wxLANGUAGE_BELARUSIAN, wxLANGUAGE_BELARUSIAN_BELARUS, wxLANGUAGE_BEMBA, wxLANGUAGE_BEMBA_ZAMBIA, wxLANGUAGE_BENA, wxLANGUAGE_BENA_TANZANIA, wxLANGUAGE_BIHARI, wxLANGUAGE_BISLAMA, wxLANGUAGE_BLIN, wxLANGUAGE_BLIN_ERITREA, wxLANGUAGE_BODO, wxLANGUAGE_BODO_INDIA, wxLANGUAGE_BOSNIAN, wxLANGUAGE_BOSNIAN_CYRILLIC, wxLANGUAGE_BOSNIAN_CYRILLIC_BOSNIA_AND_HERZEGOVINA, wxLANGUAGE_BOSNIAN_LATIN, wxLANGUAGE_BOSNIAN_LATIN_BOSNIA_AND_HERZEGOVINA, wxLANGUAGE_BRETON, wxLANGUAGE_BRETON_FRANCE, wxLANGUAGE_BULGARIAN, wxLANGUAGE_BULGARIAN_BULGARIA, wxLANGUAGE_BURMESE, wxLANGUAGE_BURMESE_MYANMAR, wxLANGUAGE_CATALAN, wxLANGUAGE_CATALAN_ANDORRA, wxLANGUAGE_CATALAN_FRANCE, wxLANGUAGE_CATALAN_ITALY, wxLANGUAGE_CATALAN_SPAIN, wxLANGUAGE_CEBUANO, wxLANGUAGE_CEBUANO_LATIN, wxLANGUAGE_CEBUANO_LATIN_PHILIPPINES, wxLANGUAGE_CENTRAL_ATLAS_TAMAZIGHT, wxLANGUAGE_CENTRAL_ATLAS_TAMAZIGHT_ARABIC, wxLANGUAGE_CENTRAL_ATLAS_TAMAZIGHT_ARABIC_MOROCCO, wxLANGUAGE_CENTRAL_ATLAS_TAMAZIGHT_LATIN, wxLANGUAGE_CENTRAL_ATLAS_TAMAZIGHT_LATIN_ALGERIA, wxLANGUAGE_CENTRAL_ATLAS_TAMAZIGHT_LATIN_MOROCCO, wxLANGUAGE_CENTRAL_ATLAS_TAMAZIGHT_TIFINAGH, wxLANGUAGE_CENTRAL_ATLAS_TAMAZIGHT_TIFINAGH_MOROCCO, wxLANGUAGE_CENTRAL_KURDISH, wxLANGUAGE_CENTRAL_KURDISH_IRAQ, wxLANGUAGE_CHAKMA, wxLANGUAGE_CHAKMA_CHAKMA, wxLANGUAGE_CHAKMA_CHAKMA_BANGLADESH, wxLANGUAGE_CHAKMA_CHAKMA_INDIA, wxLANGUAGE_CHECHEN, wxLANGUAGE_CHECHEN_RUSSIA, wxLANGUAGE_CHEROKEE, wxLANGUAGE_CHEROKEE_CHEROKEE, wxLANGUAGE_CHEROKEE_US, wxLANGUAGE_CHIGA, wxLANGUAGE_CHIGA_UGANDA, wxLANGUAGE_CHINESE, wxLANGUAGE_CHINESE_CHINA, wxLANGUAGE_CHINESE_HONGKONG, wxLANGUAGE_CHINESE_MACAO, wxLANGUAGE_CHINESE_SIMPLIFIED_EXPLICIT, wxLANGUAGE_CHINESE_SIMPLIFIED_HONGKONG, wxLANGUAGE_CHINESE_SIMPLIFIED_MACAO, wxLANGUAGE_CHINESE_SINGAPORE, wxLANGUAGE_CHINESE_TAIWAN, wxLANGUAGE_CHINESE_TRADITIONAL_EXPLICIT, wxLANGUAGE_CHURCH_SLAVIC, wxLANGUAGE_CHURCH_SLAVIC_RUSSIA, wxLANGUAGE_COLOGNIAN, wxLANGUAGE_COLOGNIAN_GERMANY, wxLANGUAGE_CORNISH, wxLANGUAGE_CORNISH_UK, wxLANGUAGE_CORSICAN, wxLANGUAGE_CORSICAN_FRANCE, wxLANGUAGE_CROATIAN, wxLANGUAGE_CROATIAN_BOSNIA_AND_HERZEGOVINA, wxLANGUAGE_CROATIAN_CROATIA, wxLANGUAGE_CZECH, wxLANGUAGE_CZECH_CZECHIA, wxLANGUAGE_DANISH, wxLANGUAGE_DANISH_DENMARK, wxLANGUAGE_DANISH_GREENLAND, wxLANGUAGE_DARI, wxLANGUAGE_DARI_AFGHANISTAN, wxLANGUAGE_DIVEHI, wxLANGUAGE_DIVEHI_MALDIVES, wxLANGUAGE_DUALA, wxLANGUAGE_DUALA_CAMEROON, wxLANGUAGE_DUTCH, wxLANGUAGE_DUTCH_ARUBA, wxLANGUAGE_DUTCH_BELGIAN, wxLANGUAGE_DUTCH_BONAIRE_SINT_EUSTATIUS_AND_SABA, wxLANGUAGE_DUTCH_CURACAO, wxLANGUAGE_DUTCH_NETHERLANDS, wxLANGUAGE_DUTCH_SINT_MAARTEN, wxLANGUAGE_DUTCH_SURINAME, wxLANGUAGE_DZONGKHA, wxLANGUAGE_DZONGKHA_BHUTAN, wxLANGUAGE_EDO, wxLANGUAGE_EDO_NIGERIA, wxLANGUAGE_EMBU, wxLANGUAGE_EMBU_KENYA, wxLANGUAGE_ENGLISH, wxLANGUAGE_ENGLISH_AMERICAN_SAMOA, wxLANGUAGE_ENGLISH_ANGUILLA, wxLANGUAGE_ENGLISH_ANTIGUA_AND_BARBUDA, wxLANGUAGE_ENGLISH_AUSTRALIA, wxLANGUAGE_ENGLISH_AUSTRIA, wxLANGUAGE_ENGLISH_BAHAMAS, wxLANGUAGE_ENGLISH_BARBADOS, wxLANGUAGE_ENGLISH_BELGIUM, wxLANGUAGE_ENGLISH_BELIZE, wxLANGUAGE_ENGLISH_BERMUDA, wxLANGUAGE_ENGLISH_BOTSWANA, wxLANGUAGE_ENGLISH_BRITISH_INDIAN_OCEAN_TERRITORY, wxLANGUAGE_ENGLISH_BRITISH_VIRGIN_ISLANDS, wxLANGUAGE_ENGLISH_BURUNDI, wxLANGUAGE_ENGLISH_CAMEROON, wxLANGUAGE_ENGLISH_CANADA, wxLANGUAGE_ENGLISH_CARIBBEAN, wxLANGUAGE_ENGLISH_CARIBBEAN_CB, wxLANGUAGE_ENGLISH_CAYMAN_ISLANDS, wxLANGUAGE_ENGLISH_CHRISTMAS_ISLAND, wxLANGUAGE_ENGLISH_COCOS_KEELING_ISLANDS, wxLANGUAGE_ENGLISH_COOK_ISLANDS, wxLANGUAGE_ENGLISH_CYPRUS, wxLANGUAGE_ENGLISH_DENMARK, wxLANGUAGE_ENGLISH_DOMINICA, wxLANGUAGE_ENGLISH_EIRE, wxLANGUAGE_ENGLISH_ERITREA, wxLANGUAGE_ENGLISH_ESWATINI, wxLANGUAGE_ENGLISH_EUROPE, wxLANGUAGE_ENGLISH_FALKLAND_ISLANDS, wxLANGUAGE_ENGLISH_FIJI, wxLANGUAGE_ENGLISH_FINLAND, wxLANGUAGE_ENGLISH_GAMBIA, wxLANGUAGE_ENGLISH_GERMANY, wxLANGUAGE_ENGLISH_GHANA, wxLANGUAGE_ENGLISH_GIBRALTAR, wxLANGUAGE_ENGLISH_GRENADA, wxLANGUAGE_ENGLISH_GUAM, wxLANGUAGE_ENGLISH_GUERNSEY, wxLANGUAGE_ENGLISH_GUYANA, wxLANGUAGE_ENGLISH_HONG_KONG_SAR, wxLANGUAGE_ENGLISH_INDIA, wxLANGUAGE_ENGLISH_INDONESIA, wxLANGUAGE_ENGLISH_ISLE_OF_MAN, wxLANGUAGE_ENGLISH_ISRAEL, wxLANGUAGE_ENGLISH_JAMAICA, wxLANGUAGE_ENGLISH_JERSEY, wxLANGUAGE_ENGLISH_KENYA, wxLANGUAGE_ENGLISH_KIRIBATI, wxLANGUAGE_ENGLISH_LESOTHO, wxLANGUAGE_ENGLISH_LIBERIA, wxLANGUAGE_ENGLISH_MACAO_SAR, wxLANGUAGE_ENGLISH_MADAGASCAR, wxLANGUAGE_ENGLISH_MALAWI, wxLANGUAGE_ENGLISH_MALAYSIA, wxLANGUAGE_ENGLISH_MALTA, wxLANGUAGE_ENGLISH_MARSHALL_ISLANDS, wxLANGUAGE_ENGLISH_MAURITIUS, wxLANGUAGE_ENGLISH_MICRONESIA, wxLANGUAGE_ENGLISH_MONTSERRAT, wxLANGUAGE_ENGLISH_NAMIBIA, wxLANGUAGE_ENGLISH_NAURU, wxLANGUAGE_ENGLISH_NETHERLANDS, wxLANGUAGE_ENGLISH_NEW_ZEALAND, wxLANGUAGE_ENGLISH_NIGERIA, wxLANGUAGE_ENGLISH_NIUE, wxLANGUAGE_ENGLISH_NORFOLK_ISLAND, wxLANGUAGE_ENGLISH_NORTHERN_MARIANA_ISLANDS, wxLANGUAGE_ENGLISH_PAKISTAN, wxLANGUAGE_ENGLISH_PALAU, wxLANGUAGE_ENGLISH_PAPUA_NEW_GUINEA, wxLANGUAGE_ENGLISH_PHILIPPINES, wxLANGUAGE_ENGLISH_PITCAIRN_ISLANDS, wxLANGUAGE_ENGLISH_PUERTO_RICO, wxLANGUAGE_ENGLISH_RWANDA, wxLANGUAGE_ENGLISH_SAMOA, wxLANGUAGE_ENGLISH_SEYCHELLES, wxLANGUAGE_ENGLISH_SIERRA_LEONE, wxLANGUAGE_ENGLISH_SINGAPORE, wxLANGUAGE_ENGLISH_SINT_MAARTEN, wxLANGUAGE_ENGLISH_SLOVENIA, wxLANGUAGE_ENGLISH_SOLOMON_ISLANDS, wxLANGUAGE_ENGLISH_SOUTH_AFRICA, wxLANGUAGE_ENGLISH_SOUTH_SUDAN, wxLANGUAGE_ENGLISH_ST_HELENA_ASCENSION_TRISTAN_DA_CUNHA, wxLANGUAGE_ENGLISH_ST_KITTS_AND_NEVIS, wxLANGUAGE_ENGLISH_ST_LUCIA, wxLANGUAGE_ENGLISH_ST_VINCENT_AND_GRENADINES, wxLANGUAGE_ENGLISH_SUDAN, wxLANGUAGE_ENGLISH_SWEDEN, wxLANGUAGE_ENGLISH_SWITZERLAND, wxLANGUAGE_ENGLISH_TANZANIA, wxLANGUAGE_ENGLISH_TOKELAU, wxLANGUAGE_ENGLISH_TONGA, wxLANGUAGE_ENGLISH_TRINIDAD, wxLANGUAGE_ENGLISH_TURKS_AND_CAICOS_ISLANDS, wxLANGUAGE_ENGLISH_TUVALU, wxLANGUAGE_ENGLISH_UGANDA, wxLANGUAGE_ENGLISH_UK, wxLANGUAGE_ENGLISH_UNITED_ARAB_EMIRATES, wxLANGUAGE_ENGLISH_US, wxLANGUAGE_ENGLISH_US_OUTLYING_ISLANDS, wxLANGUAGE_ENGLISH_US_VIRGIN_ISLANDS, wxLANGUAGE_ENGLISH_VANUATU, wxLANGUAGE_ENGLISH_WORLD, wxLANGUAGE_ENGLISH_ZAMBIA, wxLANGUAGE_ENGLISH_ZIMBABWE, wxLANGUAGE_ESPERANTO, wxLANGUAGE_ESPERANTO_WORLD, wxLANGUAGE_ESTONIAN, wxLANGUAGE_ESTONIAN_ESTONIA, wxLANGUAGE_EWE, wxLANGUAGE_EWE_GHANA, wxLANGUAGE_EWE_TOGO, wxLANGUAGE_EWONDO, wxLANGUAGE_EWONDO_CAMEROON, wxLANGUAGE_FAEROESE, wxLANGUAGE_FAEROESE_DENMARK, wxLANGUAGE_FAEROESE_FAROE_ISLANDS, wxLANGUAGE_FARSI, wxLANGUAGE_FIJI, wxLANGUAGE_FILIPINO, wxLANGUAGE_FILIPINO_PHILIPPINES, wxLANGUAGE_FINNISH, wxLANGUAGE_FINNISH_FINLAND, wxLANGUAGE_FRENCH, wxLANGUAGE_FRENCH_ALGERIA, wxLANGUAGE_FRENCH_BELGIAN, wxLANGUAGE_FRENCH_BENIN, wxLANGUAGE_FRENCH_BURKINA_FASO, wxLANGUAGE_FRENCH_BURUNDI, wxLANGUAGE_FRENCH_CAMEROON, wxLANGUAGE_FRENCH_CANADIAN, wxLANGUAGE_FRENCH_CARIBBEAN, wxLANGUAGE_FRENCH_CENTRAL_AFRICAN_REPUBLIC, wxLANGUAGE_FRENCH_CHAD, wxLANGUAGE_FRENCH_COMOROS, wxLANGUAGE_FRENCH_CONGO, wxLANGUAGE_FRENCH_CONGO_DRC, wxLANGUAGE_FRENCH_COTE_DIVOIRE, wxLANGUAGE_FRENCH_DJIBOUTI, wxLANGUAGE_FRENCH_EQUATORIAL_GUINEA, wxLANGUAGE_FRENCH_FRANCE, wxLANGUAGE_FRENCH_FRENCH_GUIANA, wxLANGUAGE_FRENCH_FRENCH_POLYNESIA, wxLANGUAGE_FRENCH_GABON, wxLANGUAGE_FRENCH_GUADELOUPE, wxLANGUAGE_FRENCH_GUINEA, wxLANGUAGE_FRENCH_HAITI, wxLANGUAGE_FRENCH_LUXEMBOURG, wxLANGUAGE_FRENCH_MADAGASCAR, wxLANGUAGE_FRENCH_MALI, wxLANGUAGE_FRENCH_MARTINIQUE, wxLANGUAGE_FRENCH_MAURITANIA, wxLANGUAGE_FRENCH_MAURITIUS, wxLANGUAGE_FRENCH_MAYOTTE, wxLANGUAGE_FRENCH_MONACO, wxLANGUAGE_FRENCH_MOROCCO, wxLANGUAGE_FRENCH_NEW_CALEDONIA, wxLANGUAGE_FRENCH_NIGER, wxLANGUAGE_FRENCH_REUNION, wxLANGUAGE_FRENCH_RWANDA, wxLANGUAGE_FRENCH_SENEGAL, wxLANGUAGE_FRENCH_SEYCHELLES, wxLANGUAGE_FRENCH_ST_BARTHELEMY, wxLANGUAGE_FRENCH_ST_MARTIN, wxLANGUAGE_FRENCH_ST_PIERRE_AND_MIQUELON, wxLANGUAGE_FRENCH_SWISS, wxLANGUAGE_FRENCH_SYRIA, wxLANGUAGE_FRENCH_TOGO, wxLANGUAGE_FRENCH_TUNISIA, wxLANGUAGE_FRENCH_VANUATU, wxLANGUAGE_FRENCH_WALLIS_AND_FUTUNA, wxLANGUAGE_FRISIAN, wxLANGUAGE_FRISIAN_NETHERLANDS, wxLANGUAGE_FRIULIAN, wxLANGUAGE_FRIULIAN_ITALY, wxLANGUAGE_FULAH, wxLANGUAGE_FULAH_LATIN, wxLANGUAGE_FULAH_LATIN_BURKINA_FASO, wxLANGUAGE_FULAH_LATIN_CAMEROON, wxLANGUAGE_FULAH_LATIN_GAMBIA, wxLANGUAGE_FULAH_LATIN_GHANA, wxLANGUAGE_FULAH_LATIN_GUINEA, wxLANGUAGE_FULAH_LATIN_GUINEA_BISSAU, wxLANGUAGE_FULAH_LATIN_LIBERIA, wxLANGUAGE_FULAH_LATIN_MAURITANIA, wxLANGUAGE_FULAH_LATIN_NIGER, wxLANGUAGE_FULAH_LATIN_NIGERIA, wxLANGUAGE_FULAH_LATIN_SENEGAL, wxLANGUAGE_FULAH_LATIN_SIERRA_LEONE, wxLANGUAGE_GALICIAN, wxLANGUAGE_GALICIAN_SPAIN, wxLANGUAGE_GANDA, wxLANGUAGE_GANDA_UGANDA, wxLANGUAGE_GEORGIAN, wxLANGUAGE_GEORGIAN_GEORGIA, wxLANGUAGE_GERMAN, wxLANGUAGE_GERMAN_AUSTRIAN, wxLANGUAGE_GERMAN_BELGIUM, wxLANGUAGE_GERMAN_GERMANY, wxLANGUAGE_GERMAN_ITALY, wxLANGUAGE_GERMAN_LIECHTENSTEIN, wxLANGUAGE_GERMAN_LUXEMBOURG, wxLANGUAGE_GERMAN_SWISS, wxLANGUAGE_GREEK, wxLANGUAGE_GREEK_CYPRUS, wxLANGUAGE_GREEK_GREECE, wxLANGUAGE_GREENLANDIC, wxLANGUAGE_GUARANI, wxLANGUAGE_GUARANI_PARAGUAY, wxLANGUAGE_GUJARATI, wxLANGUAGE_GUJARATI_INDIA, wxLANGUAGE_GUSII, wxLANGUAGE_GUSII_KENYA, wxLANGUAGE_HAUSA, wxLANGUAGE_HAUSA_LATIN, wxLANGUAGE_HAUSA_LATIN_GHANA, wxLANGUAGE_HAUSA_LATIN_NIGER, wxLANGUAGE_HAUSA_LATIN_NIGERIA, wxLANGUAGE_HAWAIIAN, wxLANGUAGE_HAWAIIAN_US, wxLANGUAGE_HEBREW, wxLANGUAGE_HEBREW_ISRAEL, wxLANGUAGE_HINDI, wxLANGUAGE_HINDI_INDIA, wxLANGUAGE_HUNGARIAN, wxLANGUAGE_HUNGARIAN_HUNGARY, wxLANGUAGE_IBIBIO, wxLANGUAGE_IBIBIO_NIGERIA, wxLANGUAGE_ICELANDIC, wxLANGUAGE_ICELANDIC_ICELAND, wxLANGUAGE_IGBO, wxLANGUAGE_IGBO_NIGERIA, wxLANGUAGE_INDONESIAN, wxLANGUAGE_INDONESIAN_INDONESIA, wxLANGUAGE_INTERLINGUA, wxLANGUAGE_INTERLINGUA_WORLD, wxLANGUAGE_INTERLINGUE, wxLANGUAGE_INUKTITUT, wxLANGUAGE_INUKTITUT_LATIN, wxLANGUAGE_INUKTITUT_LATIN_CANADA, wxLANGUAGE_INUKTITUT_SYLLABICS, wxLANGUAGE_INUKTITUT_SYLLABICS_CANADA, wxLANGUAGE_INUPIAK, wxLANGUAGE_IRISH, wxLANGUAGE_IRISH_IRELAND, wxLANGUAGE_ITALIAN, wxLANGUAGE_ITALIAN_ITALY, wxLANGUAGE_ITALIAN_SAN_MARINO, wxLANGUAGE_ITALIAN_SWISS, wxLANGUAGE_ITALIAN_VATICAN_CITY, wxLANGUAGE_JAPANESE, wxLANGUAGE_JAPANESE_JAPAN, wxLANGUAGE_JAVANESE, wxLANGUAGE_JAVANESE_INDONESIA, wxLANGUAGE_JAVANESE_JAVANESE, wxLANGUAGE_JAVANESE_JAVANESE_INDONESIA, wxLANGUAGE_JOLA_FONYI, wxLANGUAGE_JOLA_FONYI_SENEGAL, wxLANGUAGE_KABUVERDIANU, wxLANGUAGE_KABUVERDIANU_CABO_VERDE, wxLANGUAGE_KABYLE, wxLANGUAGE_KABYLE_ALGERIA, wxLANGUAGE_KAKO, wxLANGUAGE_KAKO_CAMEROON, wxLANGUAGE_KALAALLISUT, wxLANGUAGE_KALENJIN, wxLANGUAGE_KALENJIN_KENYA, wxLANGUAGE_KAMBA, wxLANGUAGE_KAMBA_KENYA, wxLANGUAGE_KANNADA, wxLANGUAGE_KANNADA_INDIA, wxLANGUAGE_KANURI, wxLANGUAGE_KANURI_LATIN, wxLANGUAGE_KANURI_NIGERIA, wxLANGUAGE_KASHMIRI, wxLANGUAGE_KASHMIRI_DEVANAGARI, wxLANGUAGE_KASHMIRI_DEVANAGARI_INDIA, wxLANGUAGE_KASHMIRI_INDIA, wxLANGUAGE_KASHMIRI_PERSO_ARABIC, wxLANGUAGE_KASHMIRI_PERSO_ARABIC_INDIA, wxLANGUAGE_KAZAKH, wxLANGUAGE_KAZAKH_KAZAKHSTAN, wxLANGUAGE_KHMER, wxLANGUAGE_KHMER_CAMBODIA, wxLANGUAGE_KICHE, wxLANGUAGE_KICHE_GUATEMALA, wxLANGUAGE_KICHE_LATIN, wxLANGUAGE_KIKUYU, wxLANGUAGE_KIKUYU_KENYA, wxLANGUAGE_KINYARWANDA, wxLANGUAGE_KINYARWANDA_RWANDA, wxLANGUAGE_KIRGHIZ, wxLANGUAGE_KIRGHIZ_KYRGYZSTAN, wxLANGUAGE_KIRUNDI, wxLANGUAGE_KIRUNDI_BURUNDI, wxLANGUAGE_KONKANI, wxLANGUAGE_KONKANI_INDIA, wxLANGUAGE_KOREAN, wxLANGUAGE_KOREAN_KOREA, wxLANGUAGE_KOREAN_NORTH_KOREA, wxLANGUAGE_KOYRABORO_SENNI, wxLANGUAGE_KOYRABORO_SENNI_MALI, wxLANGUAGE_KOYRA_CHIINI, wxLANGUAGE_KOYRA_CHIINI_MALI, wxLANGUAGE_KURDISH, wxLANGUAGE_KURDISH_PERSO_ARABIC_IRAN, wxLANGUAGE_KWASIO, wxLANGUAGE_KWASIO_CAMEROON, wxLANGUAGE_LAKOTA, wxLANGUAGE_LAKOTA_US, wxLANGUAGE_LANGI, wxLANGUAGE_LANGI_TANZANIA, wxLANGUAGE_LAOTHIAN, wxLANGUAGE_LAOTHIAN_LAOS, wxLANGUAGE_LATIN, wxLANGUAGE_LATIN_WORLD, wxLANGUAGE_LATVIAN, wxLANGUAGE_LATVIAN_LATVIA, wxLANGUAGE_LINGALA, wxLANGUAGE_LINGALA_ANGOLA, wxLANGUAGE_LINGALA_CENTRAL_AFRICAN_REPUBLIC, wxLANGUAGE_LINGALA_CONGO, wxLANGUAGE_LINGALA_CONGO_DRC, wxLANGUAGE_LITHUANIAN, wxLANGUAGE_LITHUANIAN_LITHUANIA, wxLANGUAGE_LOWER_SORBIAN, wxLANGUAGE_LOWER_SORBIAN_GERMANY, wxLANGUAGE_LOW_GERMAN, wxLANGUAGE_LOW_GERMAN_GERMANY, wxLANGUAGE_LOW_GERMAN_NETHERLANDS, wxLANGUAGE_LUBA_KATANGA, wxLANGUAGE_LUBA_KATANGA_CONGO_DRC, wxLANGUAGE_LUO, wxLANGUAGE_LUO_KENYA, wxLANGUAGE_LUXEMBOURGISH, wxLANGUAGE_LUXEMBOURGISH_LUXEMBOURG, wxLANGUAGE_LUYIA, wxLANGUAGE_LUYIA_KENYA, wxLANGUAGE_MACEDONIAN, wxLANGUAGE_MACEDONIAN_NORTH_MACEDONIA, wxLANGUAGE_MACHAME, wxLANGUAGE_MACHAME_TANZANIA, wxLANGUAGE_MAKHUWA_MEETTO, wxLANGUAGE_MAKHUWA_MEETTO_MOZAMBIQUE, wxLANGUAGE_MAKONDE, wxLANGUAGE_MAKONDE_TANZANIA, wxLANGUAGE_MALAGASY, wxLANGUAGE_MALAGASY_MADAGASCAR, wxLANGUAGE_MALAY, wxLANGUAGE_MALAYALAM, wxLANGUAGE_MALAYALAM_INDIA, wxLANGUAGE_MALAY_BRUNEI, wxLANGUAGE_MALAY_MALAYSIA, wxLANGUAGE_MALAY_SINGAPORE, wxLANGUAGE_MALTESE, wxLANGUAGE_MALTESE_MALTA, wxLANGUAGE_MANIPURI, wxLANGUAGE_MANIPURI_INDIA, wxLANGUAGE_MANX, wxLANGUAGE_MANX_ISLE_OF_MAN, wxLANGUAGE_MAORI, wxLANGUAGE_MAORI_NEW_ZEALAND, wxLANGUAGE_MAPUCHE, wxLANGUAGE_MAPUCHE_CHILE, wxLANGUAGE_MARATHI, wxLANGUAGE_MARATHI_INDIA, wxLANGUAGE_MASAI, wxLANGUAGE_MASAI_KENYA, wxLANGUAGE_MASAI_TANZANIA, wxLANGUAGE_MAZANDERANI, wxLANGUAGE_MAZANDERANI_IRAN, wxLANGUAGE_MERU, wxLANGUAGE_MERU_KENYA, wxLANGUAGE_META, wxLANGUAGE_META_CAMEROON, wxLANGUAGE_MOHAWK, wxLANGUAGE_MOHAWK_CANADA, wxLANGUAGE_MOLDAVIAN, wxLANGUAGE_MONGOLIAN, wxLANGUAGE_MONGOLIAN_CYRILLIC, wxLANGUAGE_MONGOLIAN_MONGOLIA, wxLANGUAGE_MONGOLIAN_TRADITIONAL, wxLANGUAGE_MONGOLIAN_TRADITIONAL_CHINA, wxLANGUAGE_MONGOLIAN_TRADITIONAL_MONGOLIA, wxLANGUAGE_MORISYEN, wxLANGUAGE_MORISYEN_MAURITIUS, wxLANGUAGE_MUNDANG, wxLANGUAGE_MUNDANG_CAMEROON, wxLANGUAGE_NAMA, wxLANGUAGE_NAMA_NAMIBIA, wxLANGUAGE_NAURU, wxLANGUAGE_NEPALI, wxLANGUAGE_NEPALI_INDIA, wxLANGUAGE_NEPALI_NEPAL, wxLANGUAGE_NGIEMBOON, wxLANGUAGE_NGIEMBOON_CAMEROON, wxLANGUAGE_NGOMBA, wxLANGUAGE_NGOMBA_CAMEROON, wxLANGUAGE_NKO, wxLANGUAGE_NKO_GUINEA, wxLANGUAGE_NORTHERN_LURI, wxLANGUAGE_NORTHERN_LURI_IRAN, wxLANGUAGE_NORTHERN_LURI_IRAQ, wxLANGUAGE_NORTH_NDEBELE, wxLANGUAGE_NORTH_NDEBELE_ZIMBABWE, wxLANGUAGE_NORWEGIAN, wxLANGUAGE_NORWEGIAN_BOKMAL, wxLANGUAGE_NORWEGIAN_BOKMAL_NORWAY, wxLANGUAGE_NORWEGIAN_BOKMAL_SVALBARD_AND_JAN_MAYEN, wxLANGUAGE_NORWEGIAN_NYNORSK, wxLANGUAGE_NORWEGIAN_NYNORSK_NORWAY, wxLANGUAGE_NUER, wxLANGUAGE_NUER_SOUTH_SUDAN, wxLANGUAGE_NYANKOLE, wxLANGUAGE_NYANKOLE_UGANDA, wxLANGUAGE_OCCITAN, wxLANGUAGE_OCCITAN_FRANCE, wxLANGUAGE_ODIA, wxLANGUAGE_ODIA_INDIA, wxLANGUAGE_OROMO, wxLANGUAGE_OROMO_ETHIOPIA, wxLANGUAGE_OROMO_KENYA, wxLANGUAGE_OSSETIC, wxLANGUAGE_OSSETIC_GEORGIA, wxLANGUAGE_OSSETIC_RUSSIA, wxLANGUAGE_PAPIAMENTO, wxLANGUAGE_PAPIAMENTO_CARIBBEAN, wxLANGUAGE_PASHTO, wxLANGUAGE_PASHTO_AFGHANISTAN, wxLANGUAGE_PASHTO_PAKISTAN, wxLANGUAGE_PERSIAN_IRAN, wxLANGUAGE_POLISH, wxLANGUAGE_POLISH_POLAND, wxLANGUAGE_PORTUGUESE, wxLANGUAGE_PORTUGUESE_ANGOLA, wxLANGUAGE_PORTUGUESE_BRAZILIAN, wxLANGUAGE_PORTUGUESE_CABO_VERDE, wxLANGUAGE_PORTUGUESE_EQUATORIAL_GUINEA, wxLANGUAGE_PORTUGUESE_GUINEA_BISSAU, wxLANGUAGE_PORTUGUESE_LUXEMBOURG, wxLANGUAGE_PORTUGUESE_MACAO_SAR, wxLANGUAGE_PORTUGUESE_MOZAMBIQUE, wxLANGUAGE_PORTUGUESE_PORTUGAL, wxLANGUAGE_PORTUGUESE_SAO_TOME_AND_PRINCIPE, wxLANGUAGE_PORTUGUESE_SWITZERLAND, wxLANGUAGE_PORTUGUESE_TIMOR_LESTE, wxLANGUAGE_PRUSSIAN, wxLANGUAGE_PRUSSIAN_WORLD, wxLANGUAGE_PUNJABI, wxLANGUAGE_PUNJABI_ARABIC, wxLANGUAGE_PUNJABI_GURMUKHI, wxLANGUAGE_PUNJABI_INDIA, wxLANGUAGE_PUNJABI_PAKISTAN, wxLANGUAGE_QUECHUA, wxLANGUAGE_QUECHUA_BOLIVIA, wxLANGUAGE_QUECHUA_ECUADOR, wxLANGUAGE_QUECHUA_MACRO, wxLANGUAGE_QUECHUA_PERU, wxLANGUAGE_RHAETO_ROMANCE, wxLANGUAGE_RHAETO_ROMANCE_SWITZERLAND, wxLANGUAGE_ROMANIAN, wxLANGUAGE_ROMANIAN_MOLDOVA, wxLANGUAGE_ROMANIAN_ROMANIA, wxLANGUAGE_ROMBO, wxLANGUAGE_ROMBO_TANZANIA, wxLANGUAGE_RUSSIAN, wxLANGUAGE_RUSSIAN_BELARUS, wxLANGUAGE_RUSSIAN_KAZAKHSTAN, wxLANGUAGE_RUSSIAN_KYRGYZSTAN, wxLANGUAGE_RUSSIAN_MOLDOVA, wxLANGUAGE_RUSSIAN_RUSSIA, wxLANGUAGE_RUSSIAN_UKRAINE, wxLANGUAGE_RWA, wxLANGUAGE_RWA_TANZANIA, wxLANGUAGE_SAHO, wxLANGUAGE_SAHO_ERITREA, wxLANGUAGE_SAKHA, wxLANGUAGE_SAKHA_RUSSIA, wxLANGUAGE_SAMBURU, wxLANGUAGE_SAMBURU_KENYA, wxLANGUAGE_SAMI, wxLANGUAGE_SAMI_FINLAND, wxLANGUAGE_SAMI_INARI, wxLANGUAGE_SAMI_INARI_FINLAND, wxLANGUAGE_SAMI_LULE, wxLANGUAGE_SAMI_LULE_NORWAY, wxLANGUAGE_SAMI_LULE_SWEDEN, wxLANGUAGE_SAMI_NORWAY, wxLANGUAGE_SAMI_SKOLT, wxLANGUAGE_SAMI_SKOLT_FINLAND, wxLANGUAGE_SAMI_SOUTHERN, wxLANGUAGE_SAMI_SOUTHERN_NORWAY, wxLANGUAGE_SAMI_SOUTHERN_SWEDEN, wxLANGUAGE_SAMI_SWEDEN, wxLANGUAGE_SAMOAN, wxLANGUAGE_SANGHO, wxLANGUAGE_SANGHO_CENTRAL_AFRICAN_REPUBLIC, wxLANGUAGE_SANGU, wxLANGUAGE_SANGU_TANZANIA, wxLANGUAGE_SANSKRIT, wxLANGUAGE_SANSKRIT_INDIA, wxLANGUAGE_SCOTS_GAELIC, wxLANGUAGE_SCOTS_GAELIC_UK, wxLANGUAGE_SENA, wxLANGUAGE_SENA_MOZAMBIQUE, wxLANGUAGE_SERBIAN, wxLANGUAGE_SERBIAN_CYRILLIC, wxLANGUAGE_SERBIAN_CYRILLIC_BOSNIA_AND_HERZEGOVINA, wxLANGUAGE_SERBIAN_CYRILLIC_KOSOVO, wxLANGUAGE_SERBIAN_CYRILLIC_MONTENEGRO, wxLANGUAGE_SERBIAN_CYRILLIC_SERBIA, wxLANGUAGE_SERBIAN_CYRILLIC_YU, wxLANGUAGE_SERBIAN_LATIN, wxLANGUAGE_SERBIAN_LATIN_BOSNIA_AND_HERZEGOVINA, wxLANGUAGE_SERBIAN_LATIN_KOSOVO, wxLANGUAGE_SERBIAN_LATIN_MONTENEGRO, wxLANGUAGE_SERBIAN_LATIN_SERBIA, wxLANGUAGE_SERBIAN_LATIN_YU, wxLANGUAGE_SERBIAN_SERBIA, wxLANGUAGE_SERBIAN_YU, wxLANGUAGE_SERBO_CROATIAN, wxLANGUAGE_SESOTHO, wxLANGUAGE_SESOTHO_LESOTHO, wxLANGUAGE_SESOTHO_SA_LEBOA, wxLANGUAGE_SESOTHO_SA_LEBOA_SOUTH_AFRICA, wxLANGUAGE_SESOTHO_SOUTH_AFRICA, wxLANGUAGE_SETSWANA, wxLANGUAGE_SETSWANA_BOTSWANA, wxLANGUAGE_SETSWANA_SOUTH_AFRICA, wxLANGUAGE_SHAMBALA, wxLANGUAGE_SHAMBALA_TANZANIA, wxLANGUAGE_SHONA, wxLANGUAGE_SHONA_LATIN, wxLANGUAGE_SHONA_LATIN_ZIMBABWE, wxLANGUAGE_SINDHI, wxLANGUAGE_SINDHI_ARABIC, wxLANGUAGE_SINDHI_DEVANAGARI, wxLANGUAGE_SINDHI_DEVANAGARI_INDIA, wxLANGUAGE_SINDHI_PAKISTAN, wxLANGUAGE_SINHALESE, wxLANGUAGE_SINHALESE_SRI_LANKA, wxLANGUAGE_SISWATI, wxLANGUAGE_SISWATI_ESWATINI, wxLANGUAGE_SISWATI_SOUTH_AFRICA, wxLANGUAGE_SLOVAK, wxLANGUAGE_SLOVAK_SLOVAKIA, wxLANGUAGE_SLOVENIAN, wxLANGUAGE_SLOVENIAN_SLOVENIA, wxLANGUAGE_SOGA, wxLANGUAGE_SOGA_UGANDA, wxLANGUAGE_SOMALI, wxLANGUAGE_SOMALI_DJIBOUTI, wxLANGUAGE_SOMALI_ETHIOPIA, wxLANGUAGE_SOMALI_KENYA, wxLANGUAGE_SOMALI_SOMALIA, wxLANGUAGE_SOUTH_NDEBELE, wxLANGUAGE_SOUTH_NDEBELE_SOUTH_AFRICA, wxLANGUAGE_SPANISH, wxLANGUAGE_SPANISH_ARGENTINA, wxLANGUAGE_SPANISH_BELIZE, wxLANGUAGE_SPANISH_BOLIVIA, wxLANGUAGE_SPANISH_BRAZIL, wxLANGUAGE_SPANISH_CHILE, wxLANGUAGE_SPANISH_COLOMBIA, wxLANGUAGE_SPANISH_COSTA_RICA, wxLANGUAGE_SPANISH_CUBA, wxLANGUAGE_SPANISH_DOMINICAN_REPUBLIC, wxLANGUAGE_SPANISH_ECUADOR, wxLANGUAGE_SPANISH_EL_SALVADOR, wxLANGUAGE_SPANISH_EQUATORIAL_GUINEA, wxLANGUAGE_SPANISH_GUATEMALA, wxLANGUAGE_SPANISH_HONDURAS, wxLANGUAGE_SPANISH_LATIN_AMERICA, wxLANGUAGE_SPANISH_MEXICAN, wxLANGUAGE_SPANISH_NICARAGUA, wxLANGUAGE_SPANISH_PANAMA, wxLANGUAGE_SPANISH_PARAGUAY, wxLANGUAGE_SPANISH_PERU, wxLANGUAGE_SPANISH_PHILIPPINES, wxLANGUAGE_SPANISH_PUERTO_RICO, wxLANGUAGE_SPANISH_SPAIN, wxLANGUAGE_SPANISH_URUGUAY, wxLANGUAGE_SPANISH_US, wxLANGUAGE_SPANISH_VENEZUELA, wxLANGUAGE_STANDARD_MOROCCAN_TAMAZIGHT, wxLANGUAGE_STANDARD_MOROCCAN_TAMAZIGHT_TIFINAGH, wxLANGUAGE_STANDARD_MOROCCAN_TAMAZIGHT_TIFINAGH_MOROCCO, wxLANGUAGE_SUNDANESE, wxLANGUAGE_SWAHILI, wxLANGUAGE_SWAHILI_CONGO_DRC, wxLANGUAGE_SWAHILI_KENYA, wxLANGUAGE_SWAHILI_TANZANIA, wxLANGUAGE_SWAHILI_UGANDA, wxLANGUAGE_SWEDISH, wxLANGUAGE_SWEDISH_ALAND_ISLANDS, wxLANGUAGE_SWEDISH_FINLAND, wxLANGUAGE_SWEDISH_SWEDEN, wxLANGUAGE_SWISS_GERMAN, wxLANGUAGE_SWISS_GERMAN_LIECHTENSTEIN, wxLANGUAGE_SWISS_GERMAN_SWITZERLAND, wxLANGUAGE_SYRIAC, wxLANGUAGE_SYRIAC_SYRIA, wxLANGUAGE_TACHELHIT, wxLANGUAGE_TACHELHIT_LATIN, wxLANGUAGE_TACHELHIT_LATIN_MOROCCO, wxLANGUAGE_TACHELHIT_TIFINAGH, wxLANGUAGE_TACHELHIT_TIFINAGH_MOROCCO, wxLANGUAGE_TAGALOG, wxLANGUAGE_TAITA, wxLANGUAGE_TAITA_KENYA, wxLANGUAGE_TAJIK, wxLANGUAGE_TAJIK_CYRILLIC, wxLANGUAGE_TAJIK_CYRILLIC_TAJIKISTAN, wxLANGUAGE_TAMIL, wxLANGUAGE_TAMIL_INDIA, wxLANGUAGE_TAMIL_MALAYSIA, wxLANGUAGE_TAMIL_SINGAPORE, wxLANGUAGE_TAMIL_SRI_LANKA, wxLANGUAGE_TASAWAQ, wxLANGUAGE_TASAWAQ_NIGER, wxLANGUAGE_TATAR, wxLANGUAGE_TATAR_RUSSIA, wxLANGUAGE_TELUGU, wxLANGUAGE_TELUGU_INDIA, wxLANGUAGE_TESO, wxLANGUAGE_TESO_KENYA, wxLANGUAGE_TESO_UGANDA, wxLANGUAGE_THAI, wxLANGUAGE_THAI_THAILAND, wxLANGUAGE_TIBETAN, wxLANGUAGE_TIBETAN_CHINA, wxLANGUAGE_TIBETAN_INDIA, wxLANGUAGE_TIGRE, wxLANGUAGE_TIGRE_ERITREA, wxLANGUAGE_TIGRINYA, wxLANGUAGE_TIGRINYA_ERITREA, wxLANGUAGE_TIGRINYA_ETHIOPIA, wxLANGUAGE_TONGA, wxLANGUAGE_TONGA_TONGA, wxLANGUAGE_TSONGA, wxLANGUAGE_TSONGA_SOUTH_AFRICA, wxLANGUAGE_TURKISH, wxLANGUAGE_TURKISH_CYPRUS, wxLANGUAGE_TURKISH_TURKEY, wxLANGUAGE_TURKMEN, wxLANGUAGE_TURKMEN_TURKMENISTAN, wxLANGUAGE_TWI, wxLANGUAGE_UIGHUR, wxLANGUAGE_UIGHUR_CHINA, wxLANGUAGE_UKRAINIAN, wxLANGUAGE_UKRAINIAN_UKRAINE, wxLANGUAGE_UPPER_SORBIAN, wxLANGUAGE_UPPER_SORBIAN_GERMANY, wxLANGUAGE_URDU, wxLANGUAGE_URDU_INDIA, wxLANGUAGE_URDU_PAKISTAN, wxLANGUAGE_UZBEK, wxLANGUAGE_UZBEK_CYRILLIC, wxLANGUAGE_UZBEK_CYRILLIC_UZBEKISTAN, wxLANGUAGE_UZBEK_LATIN, wxLANGUAGE_UZBEK_LATIN_UZBEKISTAN, wxLANGUAGE_UZBEK_PERSO_ARABIC, wxLANGUAGE_UZBEK_PERSO_ARABIC_AFGHANISTAN, wxLANGUAGE_VAI, wxLANGUAGE_VAI_LATIN, wxLANGUAGE_VAI_LATIN_LIBERIA, wxLANGUAGE_VAI_VAI, wxLANGUAGE_VAI_VAI_LIBERIA, wxLANGUAGE_VALENCIAN, wxLANGUAGE_VENDA, wxLANGUAGE_VENDA_SOUTH_AFRICA, wxLANGUAGE_VIETNAMESE, wxLANGUAGE_VIETNAMESE_VIETNAM, wxLANGUAGE_VOLAPUK, wxLANGUAGE_VOLAPUK_WORLD, wxLANGUAGE_VUNJO, wxLANGUAGE_VUNJO_TANZANIA, wxLANGUAGE_WALSER, wxLANGUAGE_WALSER_SWITZERLAND, wxLANGUAGE_WELSH, wxLANGUAGE_WELSH_UK, wxLANGUAGE_WOLAYTTA, wxLANGUAGE_WOLAYTTA_ETHIOPIA, wxLANGUAGE_WOLOF, wxLANGUAGE_WOLOF_SENEGAL, wxLANGUAGE_XHOSA, wxLANGUAGE_XHOSA_SOUTH_AFRICA, wxLANGUAGE_YANGBEN, wxLANGUAGE_YANGBEN_CAMEROON, wxLANGUAGE_YI, wxLANGUAGE_YIDDISH, wxLANGUAGE_YIDDISH_WORLD, wxLANGUAGE_YI_CHINA, wxLANGUAGE_YORUBA, wxLANGUAGE_YORUBA_BENIN, wxLANGUAGE_YORUBA_NIGERIA, wxLANGUAGE_ZARMA, wxLANGUAGE_ZARMA_NIGER, wxLANGUAGE_ZHUANG, wxLANGUAGE_ZULU, wxLANGUAGE_ZULU_SOUTH_AFRICA, wxLANGUAGE_USER_DEFINED, wxLANGUAGE_AZERI = wxLANGUAGE_AZERBAIJANI, wxLANGUAGE_AZERI_CYRILLIC = wxLANGUAGE_AZERBAIJANI_CYRILLIC, wxLANGUAGE_AZERI_LATIN = wxLANGUAGE_AZERBAIJANI_LATIN, wxLANGUAGE_BENGALI = wxLANGUAGE_BANGLA, wxLANGUAGE_BENGALI_BANGLADESH = wxLANGUAGE_BANGLA_BANGLADESH, wxLANGUAGE_BENGALI_INDIA = wxLANGUAGE_BANGLA_INDIA, wxLANGUAGE_BHUTANI = wxLANGUAGE_DZONGKHA, wxLANGUAGE_CHINESE_SIMPLIFIED = wxLANGUAGE_CHINESE_CHINA, wxLANGUAGE_CHINESE_TRADITIONAL = wxLANGUAGE_CHINESE_TAIWAN, wxLANGUAGE_CHINESE_MACAU = wxLANGUAGE_CHINESE_MACAO, wxLANGUAGE_KERNEWEK = wxLANGUAGE_CORNISH, wxLANGUAGE_MALAY_BRUNEI_DARUSSALAM = wxLANGUAGE_MALAY_BRUNEI, wxLANGUAGE_ORIYA = wxLANGUAGE_ODIA, wxLANGUAGE_ORIYA_INDIA = wxLANGUAGE_ODIA_INDIA, wxLANGUAGE_SPANISH_MODERN = wxLANGUAGE_SPANISH, wxLANGUAGE_CAMBODIAN = wxLANGUAGE_KHMER }`
 
@@ -2804,12 +2907,16 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/link.h)
 
+0 implemented; 0 partial; 2 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L22](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/link.h#L22) `#define wxFORCE_LINK_THIS_MODULE( moduleName )`
 - [ ] [L36](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/link.h#L36) `#define wxFORCE_LINK_MODULE( moduleName )`
 
 ## `wx/list.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/list.h)
+
+0 implemented; 0 partial; 61 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L95](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/list.h#L95) `template<typename T> class wxList<T> {`
 - [ ] [L102](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/list.h#L102) `wxList();`
@@ -2876,6 +2983,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/log.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/log.h)
+
+0 implemented; 0 partial; 123 pending; 6 context entries. Partial and pending entries remain open.
 
 - **Context**: [L8](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/log.h#L8) `#if wxUSE_BASE`
 - [ ] [L14](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/log.h#L14) `enum wxLogLevelValues {`
@@ -3011,6 +3120,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/longlong.h)
 
+0 implemented; 0 partial; 53 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L43](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/longlong.h#L43) `class wxLongLong {`
 - [ ] [L49](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/longlong.h#L49) `wxLongLong();`
 - [ ] [L54](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/longlong.h#L54) `wxLongLong(wxLongLong_t ll);`
@@ -3069,6 +3180,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/lzmastream.h)
 
+0 implemented; 0 partial; 7 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L43](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/lzmastream.h#L43) `class wxLZMAInputStream : public wxFilterInputStream {`
 - [ ] [L52](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/lzmastream.h#L52) `wxLZMAInputStream(wxInputStream& stream);`
 - [ ] [L62](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/lzmastream.h#L62) `wxLZMAInputStream(wxInputStream* stream);`
@@ -3080,6 +3193,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/math.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/math.h)
+
+0 implemented; 0 partial; 12 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L17](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/math.h#L17) `int wxFinite(double x);`
 - [ ] [L26](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/math.h#L26) `unsigned int wxGCD(unsigned int u, unsigned int v);`
@@ -3097,6 +3212,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/memory.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/memory.h)
+
+0 implemented; 0 partial; 17 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L24](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/memory.h#L24) `class wxDebugContext {`
 - [ ] [L35](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/memory.h#L35) `static int Check(bool checkAll = false);`
@@ -3119,6 +3236,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/mimetype.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/mimetype.h)
+
+0 implemented; 0 partial; 53 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L53](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/mimetype.h#L53) `class wxMimeTypesManager {`
 - [ ] [L59](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/mimetype.h#L59) `wxMimeTypesManager();`
@@ -3178,6 +3297,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/module.h)
 
+0 implemented; 0 partial; 7 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L77](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/module.h#L77) `class wxModule : public wxObject {`
 - [ ] [L83](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/module.h#L83) `wxModule();`
 - [ ] [L88](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/module.h#L88) `virtual ~wxModule();`
@@ -3189,6 +3310,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/msgout.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/msgout.h)
+
+0 implemented; 0 partial; 15 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L39](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/msgout.h#L39) `class wxMessageOutput {`
 - [ ] [L51](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/msgout.h#L51) `static wxMessageOutput* Get();`
@@ -3210,6 +3333,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/msgqueue.h)
 
+0 implemented; 0 partial; 9 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L16](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/msgqueue.h#L16) `enum wxMessageQueueError {`
 - [ ] [L19](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/msgqueue.h#L19) `wxMSGQUEUE_NO_ERROR = 0, wxMSGQUEUE_TIMEOUT, wxMSGQUEUE_MISC_ERROR }`
 - [ ] [L53](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/msgqueue.h#L53) `template <typename T> class wxMessageQueue<T> {`
@@ -3223,6 +3348,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/mstream.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/mstream.h)
+
+0 implemented; 0 partial; 11 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L37](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/mstream.h#L37) `class wxMemoryOutputStream : public wxOutputStream {`
 - [ ] [L48](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/mstream.h#L48) `wxMemoryOutputStream(void* data = NULL, size_t length = 0);`
@@ -3239,6 +3366,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/numformatter.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/numformatter.h)
+
+0 implemented; 0 partial; 14 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L24](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/numformatter.h#L24) `class wxNumberFormatter {`
 - [ ] [L30](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/numformatter.h#L30) `enum Style {`
@@ -3258,6 +3387,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/object.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/object.h)
+
+0 implemented; 0 partial; 66 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L143](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/object.h#L143) `typedef wxRefCounter wxObjectRefData;`
 - [ ] [L162](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/object.h#L162) `class wxRefCounter {`
@@ -3330,6 +3461,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/platform.h)
 
+0 implemented; 0 partial; 4 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L17](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/platform.h#L17) `#define wxCHECK_GCC_VERSION( major, minor )`
 - [ ] [L25](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/platform.h#L25) `#define wxCHECK_SUNCC_VERSION( major, minor )`
 - [ ] [L33](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/platform.h#L33) `#define wxCHECK_VISUALC_VERSION( major )`
@@ -3338,6 +3471,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/platinfo.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/platinfo.h)
+
+0 implemented; 0 partial; 77 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L21](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/platinfo.h#L21) `enum wxOperatingSystemId {`
 - [ ] [L23](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/platinfo.h#L23) `wxOS_UNKNOWN = 0, wxOS_MAC_OS = 1 << 0, wxOS_MAC_OSX_DARWIN = 1 << 1, wxOS_MAC = wxOS_MAC_OS|wxOS_MAC_OSX_DARWIN, wxOS_WINDOWS_NT = 1 << 3, wxOS_WINDOWS = wxOS_WINDOWS_NT, wxOS_UNIX_LINUX = 1 << 6, wxOS_UNIX_FREEBSD = 1 << 7, wxOS_UNIX_OPENBSD = 1 << 8, wxOS_UNIX_NETBSD = 1 << 9, wxOS_UNIX_SOLARIS = 1 << 10, wxOS_UNIX_AIX = 1 << 11, wxOS_UNIX_HPUX = 1 << 12, wxOS_UNIX = wxOS_UNIX_LINUX | wxOS_UNIX_FREEBSD | wxOS_UNIX_OPENBSD | wxOS_UNIX_NETBSD | wxOS_UNIX_SOLARIS | wxOS_UNIX_AIX | wxOS_UNIX_HPUX }`
@@ -3421,6 +3556,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/position.h)
 
+0 implemented; 0 partial; 19 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L19](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/position.h#L19) `class wxPosition {`
 - [ ] [L27](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/position.h#L27) `wxPosition();`
 - [ ] [L33](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/position.h#L33) `wxPosition(int row, int col);`
@@ -3444,6 +3581,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/process.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/process.h)
+
+0 implemented; 0 partial; 27 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L34](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/process.h#L34) `documented event: EVT_END_PROCESS(id, func)`
 - [ ] [L49](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/process.h#L49) `class wxProcess : public wxEvtHandler {`
@@ -3476,6 +3615,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/protocol/ftp.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/protocol/ftp.h)
+
+0 implemented; 0 partial; 30 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L89](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/protocol/ftp.h#L89) `class wxFTP : public wxProtocol {`
 - [ ] [L95](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/protocol/ftp.h#L95) `enum TransferMode {`
@@ -3512,6 +3653,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/protocol/http.h)
 
+0 implemented; 0 partial; 15 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L23](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/protocol/http.h#L23) `class wxHTTP : public wxProtocol {`
 - [ ] [L29](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/protocol/http.h#L29) `wxHTTP();`
 - [ ] [L34](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/protocol/http.h#L34) `virtual ~wxHTTP();`
@@ -3532,6 +3675,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/protocol/log.h)
 
+0 implemented; 0 partial; 5 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L18](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/protocol/log.h#L18) `class wxProtocolLog {`
 - [ ] [L29](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/protocol/log.h#L29) `wxProtocolLog(const wxString& traceMask);`
 - [ ] [L37](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/protocol/log.h#L37) `virtual void LogRequest(const wxString& str);`
@@ -3541,6 +3686,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/protocol/protocol.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/protocol/protocol.h)
+
+0 implemented; 0 partial; 16 pending; 1 context entries. Partial and pending entries remain open.
 
 - [ ] [L11](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/protocol/protocol.h#L11) `enum wxProtocolError {`
 - [ ] [L13](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/protocol/protocol.h#L13) `wxPROTO_NOERR = 0, wxPROTO_NETERR, wxPROTO_PROTERR, wxPROTO_CONNERR, wxPROTO_INVVAL, wxPROTO_NOHNDLR, wxPROTO_NOFILE, wxPROTO_ABRT, wxPROTO_RCNCT, wxPROTO_STREAMING }`
@@ -3564,6 +3711,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/recguard.h)
 
+0 implemented; 0 partial; 5 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L22](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/recguard.h#L22) `class wxRecursionGuardFlag {`
 - [ ] [L67](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/recguard.h#L67) `class wxRecursionGuard {`
 - [ ] [L76](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/recguard.h#L76) `wxRecursionGuard(wxRecursionGuardFlag& flag);`
@@ -3573,6 +3722,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/regex.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/regex.h)
+
+0 implemented; 0 partial; 22 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L13](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/regex.h#L13) `enum {`
 - [ ] [L20](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/regex.h#L20) `wxRE_EXTENDED = 0, wxRE_ADVANCED = 1, wxRE_BASIC = 2, wxRE_ICASE = 4, wxRE_NOSUB = 8, wxRE_NEWLINE = 16, wxRE_DEFAULT = wxRE_EXTENDED }`
@@ -3600,6 +3751,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/sckipc.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/sckipc.h)
+
+0 implemented; 0 partial; 37 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L12](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/sckipc.h#L12) `enum wxIPCFormat {`
 - [ ] [L14](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/sckipc.h#L14) `wxIPC_INVALID = 0, wxIPC_TEXT = 1, wxIPC_BITMAP = 2, wxIPC_METAFILE = 3, wxIPC_SYLK = 4, wxIPC_DIF = 5, wxIPC_TIFF = 6, wxIPC_OEMTEXT = 7, wxIPC_DIB = 8, wxIPC_PALETTE = 9, wxIPC_PENDATA = 10, wxIPC_RIFF = 11, wxIPC_WAVE = 12, wxIPC_UTF16TEXT = 13, wxIPC_ENHMETAFILE = 14, wxIPC_FILENAME = 15, wxIPC_LOCALE = 16, wxIPC_UTF8TEXT = 17, wxIPC_UTF32TEXT = 18, wxIPC_UNICODETEXT, wxIPC_PRIVATE = 20 }`
@@ -3643,6 +3796,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/sckstrm.h)
 
+0 implemented; 0 partial; 4 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L20](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/sckstrm.h#L20) `class wxSocketOutputStream : public wxOutputStream {`
 - [ ] [L27](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/sckstrm.h#L27) `wxSocketOutputStream(wxSocketBase& s);`
 - [ ] [L44](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/sckstrm.h#L44) `class wxSocketInputStream : public wxInputStream {`
@@ -3651,6 +3806,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/scopedarray.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/scopedarray.h)
+
+0 implemented; 0 partial; 16 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L69](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/scopedarray.h#L69) `class wxScopedArray {`
 - [ ] [L76](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/scopedarray.h#L76) `wxScopedArray(type* T = NULL);`
@@ -3672,6 +3829,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/scopedptr.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/scopedptr.h)
+
+0 implemented; 0 partial; 22 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L91](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/scopedptr.h#L91) `class wxScopedPtr {`
 - [ ] [L99](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/scopedptr.h#L99) `explicit wxScopedPtr(type* T = NULL);`
@@ -3700,6 +3859,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/scopeguard.h)
 
+0 implemented; 0 partial; 20 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L18](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/scopeguard.h#L18) `class wxScopeGuard {`
 - [ ] [L37](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/scopeguard.h#L37) `void Dismiss();`
 - [ ] [L52](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/scopeguard.h#L52) `template <typename F, typename P1, ..., typename PN> wxScopeGuard wxMakeGuard(F func, P1 p1, ..., PN pN);`
@@ -3724,6 +3885,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/secretstore.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/secretstore.h)
+
+0 implemented; 0 partial; 26 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L30](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/secretstore.h#L30) `class wxSecretString : public wxString {`
 - [ ] [L34](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/secretstore.h#L34) `wxSecretString();`
@@ -3756,6 +3919,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/sharedptr.h)
 
+0 implemented; 0 partial; 15 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L19](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/sharedptr.h#L19) `template<typename T> class wxSharedPtr<T> {`
 - [ ] [L29](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/sharedptr.h#L29) `explicit wxSharedPtr(T* ptr = NULL);`
 - [ ] [L44](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/sharedptr.h#L44) `template<typename Deleter> explicit wxSharedPtr(T* ptr, Deleter d);`
@@ -3776,6 +3941,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/snglinst.h)
 
+0 implemented; 0 partial; 7 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L62](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/snglinst.h#L62) `class wxSingleInstanceChecker {`
 - [ ] [L72](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/snglinst.h#L72) `wxSingleInstanceChecker();`
 - [ ] [L80](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/snglinst.h#L80) `wxSingleInstanceChecker(const wxString& name, const wxString& path = wxEmptyString);`
@@ -3787,6 +3954,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/socket.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/socket.h)
+
+0 implemented; 0 partial; 101 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L17](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/socket.h#L17) `typedef int wxSOCKET_T;`
 - [ ] [L29](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/socket.h#L29) `class wxIPaddress : public wxSockAddress {`
@@ -3894,6 +4063,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/sstream.h)
 
+0 implemented; 0 partial; 5 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L17](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/sstream.h#L17) `class wxStringInputStream : public wxInputStream {`
 - [ ] [L27](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/sstream.h#L27) `wxStringInputStream(const wxString& s);`
 - [ ] [L44](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/sstream.h#L44) `class wxStringOutputStream : public wxOutputStream {`
@@ -3903,6 +4074,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/stack.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/stack.h)
+
+0 implemented; 0 partial; 12 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L32](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/stack.h#L32) `template <typename T> class wxStack<T> {`
 - [ ] [L37](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/stack.h#L37) `typedef wxVector<T> container_type;`
@@ -3920,6 +4093,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/stackwalk.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/stackwalk.h)
+
+0 implemented; 0 partial; 18 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L11](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/stackwalk.h#L11) `#define wxSTACKWALKER_MAX_DEPTH   (200)`
 - [ ] [L53](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/stackwalk.h#L53) `class wxStackWalker {`
@@ -3943,6 +4118,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/stdpaths.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/stdpaths.h)
+
+0 implemented; 0 partial; 36 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L56](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/stdpaths.h#L56) `class wxStandardPaths {`
 - [ ] [L60](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/stdpaths.h#L60) `enum ResourceCat {`
@@ -3985,6 +4162,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/stdstream.h)
 
+0 implemented; 0 partial; 12 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L41](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/stdstream.h#L41) `class wxStdInputStreamBuffer : public std::streambuf {`
 - [ ] [L51](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/stdstream.h#L51) `wxStdInputStreamBuffer(wxInputStream& stream);`
 - [ ] [L56](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/stdstream.h#L56) `virtual ~wxStdInputStreamBuffer();`
@@ -4002,6 +4181,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/stopwatch.h)
 
+0 implemented; 0 partial; 7 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L39](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/stopwatch.h#L39) `class wxStopWatch {`
 - [ ] [L45](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/stopwatch.h#L45) `wxStopWatch();`
 - [ ] [L54](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/stopwatch.h#L54) `void Pause();`
@@ -4013,6 +4194,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/strconv.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/strconv.h)
+
+0 implemented; 0 partial; 33 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L34](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/strconv.h#L34) `class wxMBConv {`
 - [ ] [L40](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/strconv.h#L40) `wxMBConv();`
@@ -4051,6 +4234,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/stream.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/stream.h)
+
+0 implemented; 0 partial; 118 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L13](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/stream.h#L13) `enum wxStreamError {`
 - [ ] [L15](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/stream.h#L15) `wxSTREAM_NO_ERROR = 0, wxSTREAM_EOF, wxSTREAM_WRITE_ERROR, wxSTREAM_READ_ERROR }`
@@ -4174,6 +4359,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/string.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/string.h)
+
+0 implemented; 0 partial; 313 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L314](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/string.h#L314) `class wxString {`
 - [ ] [L323](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/string.h#L323) `typedef wxUniChar value_type;`
@@ -4493,6 +4680,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/sysopt.h)
 
+0 implemented; 0 partial; 8 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L138](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/sysopt.h#L138) `class wxSystemOptions : public wxObject {`
 - [ ] [L147](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/sysopt.h#L147) `wxSystemOptions();`
 - [ ] [L155](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/sysopt.h#L155) `static wxString GetOption(const wxString& name);`
@@ -4505,6 +4694,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/tarstrm.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/tarstrm.h)
+
+0 implemented; 0 partial; 54 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L10](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/tarstrm.h#L10) `enum wxTarType {`
 - [ ] [L12](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/tarstrm.h#L12) `wxTAR_REGTYPE = '0', wxTAR_LNKTYPE = '1', wxTAR_SYMTYPE = '2', wxTAR_CHRTYPE = '3', wxTAR_BLKTYPE = '4', wxTAR_DIRTYPE = '5', wxTAR_FIFOTYPE = '6', wxTAR_CONTTYPE = '7' }`
@@ -4565,6 +4756,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textfile.h)
 
+0 implemented; 0 partial; 34 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L13](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textfile.h#L13) `enum wxTextFileType {`
 - [ ] [L15](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textfile.h#L15) `wxTextFileType_None, wxTextFileType_Unix, wxTextFileType_Dos, wxTextFileType_Mac, wxTextFileType_Os2 }`
 - [ ] [L65](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/textfile.h#L65) `class wxTextFile {`
@@ -4603,6 +4796,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/thread.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/thread.h)
+
+0 implemented; 0 partial; 105 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L10](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/thread.h#L10) `enum wxCondError {`
 - [ ] [L12](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/thread.h#L12) `wxCOND_NO_ERROR = 0, wxCOND_INVALID, wxCOND_TIMEOUT, wxCOND_MISC_ERROR }`
@@ -4714,6 +4909,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/time.h)
 
+0 implemented; 0 partial; 6 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L21](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/time.h#L21) `int wxGetTimeZone();`
 - [ ] [L30](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/time.h#L30) `long wxGetLocalTime();`
 - [ ] [L43](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/time.h#L43) `wxLongLong wxGetLocalTimeMillis();`
@@ -4724,6 +4921,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/timer.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/timer.h)
+
+0 implemented; 0 partial; 26 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L9](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/timer.h#L9) `#define wxTIMER_CONTINUOUS false`
 - [ ] [L12](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/timer.h#L12) `#define wxTIMER_ONE_SHOT true`
@@ -4756,6 +4955,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/tls.h)
 
+0 implemented; 0 partial; 3 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L37](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/tls.h#L37) `#define wxTLS_TYPE(type) compiler-dependent-implementation`
 - [ ] [L55](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/tls.h#L55) `#define wxTLS_VALUE(var)`
 - [ ] [L67](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/tls.h#L67) `#define wxTLS_PTR(var)`
@@ -4763,6 +4964,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/tokenzr.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/tokenzr.h)
+
+0 implemented; 0 partial; 14 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L13](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/tokenzr.h#L13) `enum wxStringTokenizerMode {`
 - [ ] [L15](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/tokenzr.h#L15) `wxTOKEN_INVALID = -1, wxTOKEN_DEFAULT, wxTOKEN_RET_EMPTY, wxTOKEN_RET_EMPTY_ALL, wxTOKEN_RET_DELIMS, wxTOKEN_STRTOK }`
@@ -4783,11 +4986,15 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/tracker.h)
 
+0 implemented; 0 partial; 1 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L29](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/tracker.h#L29) `class wxTrackable {`
 
 ## `wx/translation.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/translation.h)
+
+0 implemented; 0 partial; 39 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L34](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/translation.h#L34) `class wxTranslations {`
 - [ ] [L38](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/translation.h#L38) `wxTranslations();`
@@ -4832,6 +5039,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/txtstrm.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/txtstrm.h)
+
+0 implemented; 0 partial; 60 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L53](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/txtstrm.h#L53) `class wxTextInputStream {`
 - [ ] [L67](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/txtstrm.h#L67) `wxTextInputStream(wxInputStream& stream, const wxString& sep = " \\ t", const wxMBConv& conv = wxConvAuto());`
@@ -4898,6 +5107,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/uilocale.h)
 
+0 implemented; 0 partial; 46 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L15](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/uilocale.h#L15) `enum {`
 - [ ] [L18](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/uilocale.h#L18) `wxCompare_CaseSensitive = 0, wxCompare_CaseInsensitive = 1 }`
 - [ ] [L70](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/uilocale.h#L70) `class wxUILocale {`
@@ -4948,6 +5159,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/unichar.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/unichar.h)
+
+0 implemented; 0 partial; 50 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L17](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/unichar.h#L17) `class wxUniChar {`
 - [ ] [L25](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/unichar.h#L25) `typedef wxUint32 value_type;`
@@ -5004,6 +5217,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/uri.h)
 
+0 implemented; 0 partial; 30 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L11](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/uri.h#L11) `enum wxURIHostType {`
 - [ ] [L13](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/uri.h#L13) `wxURI_REGNAME, wxURI_IPV4ADDRESS, wxURI_IPV6ADDRESS, wxURI_IPVFUTURE }`
 - [ ] [L59](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/uri.h#L59) `class wxURI : public wxObject {`
@@ -5039,6 +5254,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/url.h)
 
+0 implemented; 0 partial; 12 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L11](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/url.h#L11) `enum wxURLError {`
 - [ ] [L12](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/url.h#L12) `wxURL_NOERR = 0, wxURL_SNTXERR, wxURL_NOPROTO, wxURL_NOHOST, wxURL_NOPATH, wxURL_CONNERR, wxURL_PROTOERR }`
 - [ ] [L36](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/url.h#L36) `class wxURL : public wxURI {`
@@ -5055,6 +5272,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/ustring.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/ustring.h)
+
+0 implemented; 0 partial; 52 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L38](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/ustring.h#L38) `class WXDLLIMPEXP_BASE wxUString: public std::basic_string<wxChar32> {`
 - [ ] [L44](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/ustring.h#L44) `wxUString();`
@@ -5112,6 +5331,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/utils.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/utils.h)
+
+0 implemented; 0 partial; 97 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L11](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/utils.h#L11) `enum wxSignal {`
 - [ ] [L13](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/utils.h#L13) `wxSIGNONE = 0, wxSIGHUP, wxSIGINT, wxSIGQUIT, wxSIGILL, wxSIGTRAP, wxSIGABRT, wxSIGEMT, wxSIGFPE, wxSIGKILL, wxSIGBUS, wxSIGSEGV, wxSIGSYS, wxSIGPIPE, wxSIGALRM, wxSIGTERM }`
@@ -5214,6 +5435,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/variant.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/variant.h)
+
+0 implemented; 0 partial; 125 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L162](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/variant.h#L162) `class wxVariant : public wxObject {`
 - [ ] [L168](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/variant.h#L168) `wxVariant();`
@@ -5345,6 +5568,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/vector.h)
 
+0 implemented; 0 partial; 50 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L24](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/vector.h#L24) `template<typename T> class wxVector<T> {`
 - [ ] [L28](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/vector.h#L28) `typedef size_t size_type;`
 - [ ] [L29](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/vector.h#L29) `typedef size_t difference_type;`
@@ -5400,12 +5625,16 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/version.h)
 
+0 implemented; 0 partial; 2 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L32](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/version.h#L32) `#define wxCHECK_VERSION( major, minor, release )`
 - [ ] [L40](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/version.h#L40) `#define wxCHECK_VERSION_FULL( major, minor, release, subrel )`
 
 ## `wx/versioninfo.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/versioninfo.h)
+
+0 implemented; 0 partial; 13 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L24](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/versioninfo.h#L24) `class wxVersionInfo {`
 - [ ] [L45](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/versioninfo.h#L45) `wxVersionInfo(const wxString& name = wxString(), int major = 0, int minor = 0, int micro = 0, int revision = 0, const wxString& description = wxString(), const wxString& copyright = wxString());`
@@ -5424,6 +5653,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/volume.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/volume.h)
+
+0 implemented; 0 partial; 19 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L11](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/volume.h#L11) `enum wxFSVolumeFlags {`
 - [ ] [L14](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/volume.h#L14) `wxFS_VOL_MOUNTED = 0x0001, wxFS_VOL_REMOVABLE = 0x0002, wxFS_VOL_READONLY = 0x0004, wxFS_VOL_REMOTE = 0x0008 }`
@@ -5449,6 +5680,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/weakref.h)
 
+0 implemented; 0 partial; 14 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L34](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/weakref.h#L34) `template<typename T> class wxWeakRefDynamic<T> {`
 - [ ] [L100](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/weakref.h#L100) `template<typename T> class wxWeakRef<T> : public wxTrackerNode {`
 - [ ] [L105](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/weakref.h#L105) `typedef T element_type;`
@@ -5467,6 +5700,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/webrequest.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/webrequest.h)
+
+0 implemented; 0 partial; 71 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L118](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/webrequest.h#L118) `documented event: wxEVT_WEBREQUEST_STATE(id, func)`
 - [ ] [L120](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/webrequest.h#L120) `documented event: wxEVT_WEBREQUEST_DATA(id, func)`
@@ -5544,6 +5779,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/wfstream.h)
 
+0 implemented; 0 partial; 42 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L20](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/wfstream.h#L20) `class wxTempFileOutputStream : public wxOutputStream {`
 - [ ] [L33](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/wfstream.h#L33) `wxTempFileOutputStream(const wxString& fileName);`
 - [ ] [L43](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/wfstream.h#L43) `virtual bool Commit();`
@@ -5590,6 +5827,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/wxcrt.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/wxcrt.h)
+
+0 implemented; 0 partial; 212 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L12](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/wxcrt.h#L12) `bool wxIsEmpty(const char *s);`
 - [ ] [L13](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/wxcrt.h#L13) `bool wxIsEmpty(const wchar_t *s);`
@@ -5808,6 +6047,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/xlocale.h)
 
+0 implemented; 0 partial; 24 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L55](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/xlocale.h#L55) `class wxXLocale {`
 - [ ] [L61](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/xlocale.h#L61) `wxXLocale();`
 - [ ] [L66](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/xlocale.h#L66) `wxXLocale(wxLanguage lang);`
@@ -5836,6 +6077,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/zipstrm.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/zipstrm.h)
+
+0 implemented; 0 partial; 68 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L11](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/zipstrm.h#L11) `enum wxZipMethod {`
 - [ ] [L13](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/zipstrm.h#L13) `wxZIP_METHOD_STORE, wxZIP_METHOD_SHRINK, wxZIP_METHOD_REDUCE1, wxZIP_METHOD_REDUCE2, wxZIP_METHOD_REDUCE3, wxZIP_METHOD_REDUCE4, wxZIP_METHOD_IMPLODE, wxZIP_METHOD_TOKENIZE, wxZIP_METHOD_DEFLATE, wxZIP_METHOD_DEFLATE64, wxZIP_METHOD_BZIP2 = 12, wxZIP_METHOD_DEFAULT = 0xffff }`
@@ -5909,6 +6152,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/zstream.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/zstream.h)
+
+0 implemented; 0 partial; 16 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L10](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/zstream.h#L10) `enum wxZlibCompressionLevels {`
 - [ ] [L11](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/zstream.h#L11) `wxZ_DEFAULT_COMPRESSION = -1, wxZ_NO_COMPRESSION = 0, wxZ_BEST_SPEED = 1, wxZ_BEST_COMPRESSION = 9 }`

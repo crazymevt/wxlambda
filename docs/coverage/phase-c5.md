@@ -14,9 +14,18 @@ inherited interfaces and platform conditions have been reviewed and mapped.
 Inherited declarations name the supported receiver types explicitly; a partial
 class or constructor does not imply full upstream coverage.
 
+## Current coverage and remaining work
+
+0 implemented; 0 partial; 2245 pending; 0 context entries. Partial and pending entries remain open.
+
+Counts describe inventory entries, not distinct APIs or percent completion.
+See the [coverage summary](README.md) for phase/header comparisons.
+
 ## `wx/affinematrix2d.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/affinematrix2d.h)
+
+0 implemented; 0 partial; 18 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L18](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/affinematrix2d.h#L18) `class wxAffineMatrix2D : public wxAffineMatrix2DBase {`
 - [ ] [L26](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/affinematrix2d.h#L26) `wxAffineMatrix2D();`
@@ -40,6 +49,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/affinematrix2dbase.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/affinematrix2dbase.h)
+
+0 implemented; 0 partial; 22 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L20](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/affinematrix2dbase.h#L20) `struct wxMatrix2D {`
 - [ ] [L27](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/affinematrix2dbase.h#L27) `wxMatrix2D(wxDouble v11 = 1, wxDouble v12 = 0, wxDouble v21 = 0, wxDouble v22 = 1);`
@@ -68,6 +79,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/anidecod.h)
 
+0 implemented; 0 partial; 13 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L14](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/anidecod.h#L14) `class wxANIDecoder : public wxAnimationDecoder {`
 - [ ] [L17](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/anidecod.h#L17) `wxANIDecoder();`
 - [ ] [L18](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/anidecod.h#L18) `~wxANIDecoder();`
@@ -85,6 +98,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/animate.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/animate.h)
+
+0 implemented; 0 partial; 47 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L11](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/animate.h#L11) `enum wxAnimationType {`
 - [ ] [L13](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/animate.h#L13) `wxANIMATION_TYPE_INVALID, wxANIMATION_TYPE_GIF, wxANIMATION_TYPE_ANI, wxANIMATION_TYPE_ANY }`
@@ -138,6 +153,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/animdecod.h)
 
+0 implemented; 0 partial; 18 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L9](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/animdecod.h#L9) `enum wxAnimationDisposal {`
 - [ ] [L12](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/animdecod.h#L12) `wxANIM_UNSPECIFIED = -1, wxANIM_DONOTREMOVE = 0, wxANIM_TOBACKGROUND = 1, wxANIM_TOPREVIOUS = 2 }`
 - [ ] [L35](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/animdecod.h#L35) `class wxAnimationDecoder : public wxObjectRefData {`
@@ -160,6 +177,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/bitmap.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/bitmap.h)
+
+0 implemented; 0 partial; 84 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L12](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/bitmap.h#L12) `#define wxBITMAP_SCREEN_DEPTH       (-1)`
 - [ ] [L35](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/bitmap.h#L35) `class wxBitmapHandler : public wxObject {`
@@ -250,6 +269,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/bmpbndl.h)
 
+0 implemented; 0 partial; 41 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L99](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/bmpbndl.h#L99) `class wxBitmapBundle {`
 - [ ] [L108](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/bmpbndl.h#L108) `wxBitmapBundle();`
 - [ ] [L116](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/bmpbndl.h#L116) `wxBitmapBundle(const wxBitmap& bitmap);`
@@ -296,6 +317,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/brush.h)
 
+0 implemented; 0 partial; 36 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L11](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/brush.h#L11) `enum wxBrushStyle {`
 - [ ] [L13](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/brush.h#L13) `wxBRUSHSTYLE_INVALID = -1, wxBRUSHSTYLE_SOLID = wxSOLID, wxBRUSHSTYLE_TRANSPARENT = wxTRANSPARENT, wxBRUSHSTYLE_STIPPLE_MASK_OPAQUE = wxSTIPPLE_MASK_OPAQUE, wxBRUSHSTYLE_STIPPLE_MASK = wxSTIPPLE_MASK, wxBRUSHSTYLE_STIPPLE = wxSTIPPLE, wxBRUSHSTYLE_BDIAGONAL_HATCH, wxBRUSHSTYLE_CROSSDIAG_HATCH, wxBRUSHSTYLE_FDIAGONAL_HATCH, wxBRUSHSTYLE_CROSS_HATCH, wxBRUSHSTYLE_HORIZONTAL_HATCH, wxBRUSHSTYLE_VERTICAL_HATCH, wxBRUSHSTYLE_FIRST_HATCH, wxBRUSHSTYLE_LAST_HATCH }`
 - [ ] [L104](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/brush.h#L104) `class wxBrush : public wxGDIObject {`
@@ -336,6 +359,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/cmndata.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/cmndata.h)
+
+0 implemented; 0 partial; 100 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L22](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/cmndata.h#L22) `class wxPageSetupDialogData : public wxObject {`
 - [ ] [L28](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/cmndata.h#L28) `wxPageSetupDialogData();`
@@ -442,6 +467,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/colour.h)
 
+0 implemented; 0 partial; 53 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L14](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/colour.h#L14) `enum {`
 - [ ] [L15](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/colour.h#L15) `wxC2S_NAME = 1, wxC2S_CSS_SYNTAX = 2, wxC2S_HTML_SYNTAX = 4 }`
 - [ ] [L22](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/colour.h#L22) `const unsigned char wxALPHA_TRANSPARENT = 0;`
@@ -499,6 +526,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/dc.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dc.h)
+
+0 implemented; 0 partial; 188 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L28](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dc.h#L28) `enum wxRasterOperationMode {`
 - [ ] [L30](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dc.h#L30) `wxCLEAR, wxXOR, wxINVERT, wxOR_REVERSE, wxAND_REVERSE, wxCOPY, wxAND, wxAND_INVERT, wxNO_OP, wxNOR, wxEQUIV, wxSRC_INVERT, wxOR_INVERT, wxNAND, wxOR, wxSET }`
@@ -693,6 +722,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dcbuffer.h)
 
+0 implemented; 0 partial; 20 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L10](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dcbuffer.h#L10) `#define wxBUFFER_VIRTUAL_AREA       0x01`
 - [ ] [L14](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dcbuffer.h#L14) `#define wxBUFFER_CLIENT_AREA        0x02`
 - [ ] [L18](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dcbuffer.h#L18) `#define wxBUFFER_USES_SHARED_BUFFER 0x04`
@@ -718,6 +749,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dcclient.h)
 
+0 implemented; 0 partial; 6 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L29](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dcclient.h#L29) `class wxPaintDC : public wxClientDC {`
 - [ ] [L35](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dcclient.h#L35) `wxPaintDC(wxWindow* window);`
 - [ ] [L82](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dcclient.h#L82) `class wxClientDC : public wxWindowDC {`
@@ -728,6 +761,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/dcgraph.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dcgraph.h)
+
+0 implemented; 0 partial; 10 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L41](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dcgraph.h#L41) `class wxGCDC: public wxDC {`
 - [ ] [L47](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dcgraph.h#L47) `wxGCDC( const wxWindowDC& windowDC );`
@@ -744,6 +779,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dcmemory.h)
 
+0 implemented; 0 partial; 8 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L65](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dcmemory.h#L65) `class wxMemoryDC : public wxDC {`
 - [ ] [L75](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dcmemory.h#L75) `wxMemoryDC();`
 - [ ] [L86](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dcmemory.h#L86) `wxMemoryDC(wxDC *dc);`
@@ -757,12 +794,16 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dcmirror.h)
 
+0 implemented; 0 partial; 2 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L22](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dcmirror.h#L22) `class wxMirrorDC : public wxDC {`
 - [ ] [L33](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dcmirror.h#L33) `wxMirrorDC(wxDC& dc, bool mirror);`
 
 ## `wx/dcprint.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dcprint.h)
+
+0 implemented; 0 partial; 3 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L21](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dcprint.h#L21) `class wxPrinterDC : public wxDC {`
 - [ ] [L31](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dcprint.h#L31) `wxPrinterDC(const wxPrintData& printData);`
@@ -772,6 +813,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dcps.h)
 
+0 implemented; 0 partial; 3 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L25](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dcps.h#L25) `class wxPostScriptDC : public wxDC {`
 - [ ] [L28](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dcps.h#L28) `wxPostScriptDC();`
 - [ ] [L33](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dcps.h#L33) `wxPostScriptDC(const wxPrintData& printData);`
@@ -779,6 +822,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/dcscreen.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dcscreen.h)
+
+0 implemented; 0 partial; 5 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L23](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dcscreen.h#L23) `class wxScreenDC : public wxDC {`
 - [ ] [L29](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dcscreen.h#L29) `wxScreenDC();`
@@ -789,6 +834,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/dcsvg.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dcsvg.h)
+
+0 implemented; 0 partial; 26 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L14](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dcsvg.h#L14) `enum wxSVGShapeRenderingMode {`
 - [ ] [L16](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dcsvg.h#L16) `wxSVG_SHAPE_RENDERING_AUTO = 0, wxSVG_SHAPE_RENDERING_OPTIMIZE_SPEED, wxSVG_SHAPE_RENDERING_CRISP_EDGES, wxSVG_SHAPE_RENDERING_GEOMETRIC_PRECISION, wxSVG_SHAPE_RENDERING_OPTIMISE_SPEED = wxSVG_SHAPE_RENDERING_OPTIMIZE_SPEED }`
@@ -820,6 +867,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/font.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/font.h)
+
+0 implemented; 0 partial; 111 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L18](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/font.h#L18) `enum wxFontFamily {`
 - [ ] [L20](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/font.h#L20) `wxFONTFAMILY_DEFAULT = wxDEFAULT, wxFONTFAMILY_DECORATIVE = wxDECORATIVE, wxFONTFAMILY_ROMAN = wxROMAN, wxFONTFAMILY_SCRIPT = wxSCRIPT, wxFONTFAMILY_SWISS = wxSWISS, wxFONTFAMILY_MODERN = wxMODERN, wxFONTFAMILY_TELETYPE = wxTELETYPE, wxFONTFAMILY_MAX, wxFONTFAMILY_UNKNOWN = wxFONTFAMILY_MAX }`
@@ -937,6 +986,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/fontenum.h)
 
+0 implemented; 0 partial; 11 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L34](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/fontenum.h#L34) `class wxFontEnumerator {`
 - [ ] [L37](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/fontenum.h#L37) `wxFontEnumerator();`
 - [ ] [L38](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/fontenum.h#L38) `virtual ~wxFontEnumerator();`
@@ -952,6 +1003,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/fontmap.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/fontmap.h)
+
+0 implemented; 0 partial; 18 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L60](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/fontmap.h#L60) `class wxFontMapper {`
 - [ ] [L69](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/fontmap.h#L69) `wxFontMapper();`
@@ -975,6 +1028,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/fontutil.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/fontutil.h)
+
+0 implemented; 0 partial; 32 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L21](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/fontutil.h#L21) `class wxNativeFontInfo {`
 - [ ] [L24](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/fontutil.h#L24) `wxNativeFontInfo();`
@@ -1012,6 +1067,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/gdicmn.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/gdicmn.h)
+
+0 implemented; 0 partial; 187 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L12](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/gdicmn.h#L12) `enum wxBitmapType {`
 - [ ] [L14](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/gdicmn.h#L14) `wxBITMAP_TYPE_INVALID, wxBITMAP_TYPE_BMP, wxBITMAP_TYPE_BMP_RESOURCE, wxBITMAP_TYPE_RESOURCE = wxBITMAP_TYPE_BMP_RESOURCE, wxBITMAP_TYPE_ICO, wxBITMAP_TYPE_ICO_RESOURCE, wxBITMAP_TYPE_CUR, wxBITMAP_TYPE_CUR_RESOURCE, wxBITMAP_TYPE_XBM, wxBITMAP_TYPE_XBM_DATA, wxBITMAP_TYPE_XPM, wxBITMAP_TYPE_XPM_DATA, wxBITMAP_TYPE_TIFF, wxBITMAP_TYPE_TIF = wxBITMAP_TYPE_TIFF, wxBITMAP_TYPE_TIFF_RESOURCE, wxBITMAP_TYPE_TIF_RESOURCE = wxBITMAP_TYPE_TIFF_RESOURCE, wxBITMAP_TYPE_GIF, wxBITMAP_TYPE_GIF_RESOURCE, wxBITMAP_TYPE_PNG, wxBITMAP_TYPE_PNG_RESOURCE, wxBITMAP_TYPE_JPEG, wxBITMAP_TYPE_JPEG_RESOURCE, wxBITMAP_TYPE_PNM, wxBITMAP_TYPE_PNM_RESOURCE, wxBITMAP_TYPE_PCX, wxBITMAP_TYPE_PCX_RESOURCE, wxBITMAP_TYPE_PICT, wxBITMAP_TYPE_PICT_RESOURCE, wxBITMAP_TYPE_ICON, wxBITMAP_TYPE_ICON_RESOURCE, wxBITMAP_TYPE_ANI, wxBITMAP_TYPE_IFF, wxBITMAP_TYPE_TGA, wxBITMAP_TYPE_MACCURSOR, wxBITMAP_TYPE_MACCURSOR_RESOURCE, wxBITMAP_TYPE_ANY = 50 }`
@@ -1205,12 +1262,16 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/gdiobj.h)
 
+0 implemented; 0 partial; 2 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L24](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/gdiobj.h#L24) `class wxGDIObject : public wxObject {`
 - [ ] [L30](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/gdiobj.h#L30) `wxGDIObject();`
 
 ## `wx/geometry.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/geometry.h)
+
+0 implemented; 0 partial; 218 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L9](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/geometry.h#L9) `enum wxOutCode {`
 - [ ] [L11](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/geometry.h#L11) `wxInside = 0x00 , wxOutLeft = 0x01 , wxOutRight = 0x02 , wxOutTop = 0x08 , wxOutBottom = 0x04 }`
@@ -1435,6 +1496,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/gifdecod.h)
 
+0 implemented; 0 partial; 13 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L15](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/gifdecod.h#L15) `class wxGIFDecoder : public wxAnimationDecoder {`
 - [ ] [L18](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/gifdecod.h#L18) `wxGIFDecoder();`
 - [ ] [L19](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/gifdecod.h#L19) `~wxGIFDecoder();`
@@ -1452,6 +1515,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/graphics.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/graphics.h)
+
+0 implemented; 0 partial; 238 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L20](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/graphics.h#L20) `class wxGraphicsPath : public wxGraphicsObject {`
 - [ ] [L45](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/graphics.h#L45) `virtual void AddArc(wxDouble x, wxDouble y, wxDouble r, wxDouble startAngle, wxDouble endAngle, bool clockwise);`
@@ -1696,6 +1761,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/icon.h)
 
+0 implemented; 0 partial; 27 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L13](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/icon.h#L13) `#define wxICON_SCREEN_DEPTH       (-1)`
 - [ ] [L52](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/icon.h#L52) `class wxIcon : public wxGDIObject {`
 - [ ] [L61](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/icon.h#L61) `wxIcon();`
@@ -1728,6 +1795,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/iconbndl.h)
 
+0 implemented; 0 partial; 22 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L20](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/iconbndl.h#L20) `class wxIconBundle : public wxGDIObject {`
 - [ ] [L29](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/iconbndl.h#L29) `enum {`
 - [ ] [L32](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/iconbndl.h#L32) `FALLBACK_NONE = 0, FALLBACK_SYSTEM = 1, FALLBACK_NEAREST_LARGER = 2 }`
@@ -1755,6 +1824,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/iconloc.h)
 
+0 implemented; 0 partial; 4 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L28](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/iconloc.h#L28) `class wxIconLocation {`
 - [ ] [L35](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/iconloc.h#L35) `bool IsOk() const;`
 - [ ] [L37](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/iconloc.h#L37) `void SetFileName(const wxString& filename);`
@@ -1763,6 +1834,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/image.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/image.h)
+
+0 implemented; 0 partial; 197 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L13](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/image.h#L13) `enum wxImageResolution {`
 - [ ] [L16](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/image.h#L16) `wxIMAGE_RESOLUTION_NONE = 0, wxIMAGE_RESOLUTION_INCHES = 1, wxIMAGE_RESOLUTION_CM = 2 }`
@@ -1966,6 +2039,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/imaggif.h)
 
+0 implemented; 0 partial; 8 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L8](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/imaggif.h#L8) `#define wxIMAGE_OPTION_GIF_COMMENT wxT("GifComment")`
 - [ ] [L20](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/imaggif.h#L20) `class wxGIFHandler : public wxImageHandler {`
 - [ ] [L26](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/imaggif.h#L26) `wxGIFHandler();`
@@ -1979,6 +2054,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/imagiff.h)
 
+0 implemented; 0 partial; 5 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L18](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/imagiff.h#L18) `class wxIFFHandler : public wxImageHandler {`
 - [ ] [L24](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/imagiff.h#L24) `wxIFFHandler();`
 - [ ] [L26](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/imagiff.h#L26) `virtual bool LoadFile(wxImage *image, wxInputStream& stream, bool verbose=true, int index=-1);`
@@ -1988,6 +2065,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/imagjpeg.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/imagjpeg.h)
+
+0 implemented; 0 partial; 6 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L18](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/imagjpeg.h#L18) `class wxJPEGHandler : public wxImageHandler {`
 - [ ] [L24](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/imagjpeg.h#L24) `wxJPEGHandler();`
@@ -2000,6 +2079,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/imagpcx.h)
 
+0 implemented; 0 partial; 5 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L18](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/imagpcx.h#L18) `class wxPCXHandler : public wxImageHandler {`
 - [ ] [L24](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/imagpcx.h#L24) `wxPCXHandler();`
 - [ ] [L27](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/imagpcx.h#L27) `virtual bool LoadFile(wxImage *image, wxInputStream& stream, bool verbose=true, int index=-1);`
@@ -2009,6 +2090,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/imagpng.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/imagpng.h)
+
+0 implemented; 0 partial; 12 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L8](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/imagpng.h#L8) `#define wxIMAGE_OPTION_PNG_FORMAT                   wxT("PngFormat")`
 - [ ] [L9](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/imagpng.h#L9) `#define wxIMAGE_OPTION_PNG_BITDEPTH                 wxT("PngBitDepth")`
@@ -2027,6 +2110,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/imagpnm.h)
 
+0 implemented; 0 partial; 5 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L18](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/imagpnm.h#L18) `class wxPNMHandler : public wxImageHandler {`
 - [ ] [L24](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/imagpnm.h#L24) `wxPNMHandler();`
 - [ ] [L27](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/imagpnm.h#L27) `virtual bool LoadFile(wxImage *image, wxInputStream& stream, bool verbose=true, int index=-1);`
@@ -2037,6 +2122,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/imagtga.h)
 
+0 implemented; 0 partial; 5 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L18](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/imagtga.h#L18) `class wxTGAHandler : public wxImageHandler {`
 - [ ] [L24](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/imagtga.h#L24) `wxTGAHandler();`
 - [ ] [L27](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/imagtga.h#L27) `virtual bool LoadFile(wxImage *image, wxInputStream& stream, bool verbose=true, int index=-1);`
@@ -2046,6 +2133,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/imagtiff.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/imagtiff.h)
+
+0 implemented; 0 partial; 12 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L8](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/imagtiff.h#L8) `#define wxIMAGE_OPTION_TIFF_BITSPERSAMPLE           wxString("BitsPerSample")`
 - [ ] [L9](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/imagtiff.h#L9) `#define wxIMAGE_OPTION_TIFF_SAMPLESPERPIXEL         wxString("SamplesPerPixel")`
@@ -2064,6 +2153,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/imagxpm.h)
 
+0 implemented; 0 partial; 5 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L18](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/imagxpm.h#L18) `class wxXPMHandler : public wxImageHandler {`
 - [ ] [L24](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/imagxpm.h#L24) `wxXPMHandler();`
 - [ ] [L27](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/imagxpm.h#L27) `virtual bool LoadFile(wxImage *image, wxInputStream& stream, bool verbose=true, int index=-1);`
@@ -2073,6 +2164,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/metafile.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/metafile.h)
+
+0 implemented; 0 partial; 11 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L34](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/metafile.h#L34) `class wxMetafileDC : public wxDC {`
 - [ ] [L41](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/metafile.h#L41) `wxMetafileDC(const wxString& filename = wxEmptyString);`
@@ -2090,6 +2183,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/overlay.h)
 
+0 implemented; 0 partial; 9 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L19](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/overlay.h#L19) `class wxOverlay {`
 - [ ] [L22](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/overlay.h#L22) `wxOverlay();`
 - [ ] [L23](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/overlay.h#L23) `~wxOverlay();`
@@ -2103,6 +2198,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/palette.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/palette.h)
+
+0 implemented; 0 partial; 12 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L32](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/palette.h#L32) `class wxPalette : public wxGDIObject {`
 - [ ] [L39](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/palette.h#L39) `wxPalette();`
@@ -2120,6 +2217,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/pen.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/pen.h)
+
+0 implemented; 0 partial; 78 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L14](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/pen.h#L14) `enum wxPenStyle {`
 - [ ] [L16](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/pen.h#L16) `wxPENSTYLE_INVALID = -1, wxPENSTYLE_SOLID, wxPENSTYLE_DOT, wxPENSTYLE_LONG_DASH, wxPENSTYLE_SHORT_DASH, wxPENSTYLE_DOT_DASH, wxPENSTYLE_USER_DASH, wxPENSTYLE_TRANSPARENT, wxPENSTYLE_STIPPLE_MASK_OPAQUE, wxPENSTYLE_STIPPLE_MASK, wxPENSTYLE_STIPPLE, wxPENSTYLE_BDIAGONAL_HATCH, wxPENSTYLE_CROSSDIAG_HATCH, wxPENSTYLE_FDIAGONAL_HATCH, wxPENSTYLE_CROSS_HATCH, wxPENSTYLE_HORIZONTAL_HATCH, wxPENSTYLE_VERTICAL_HATCH, wxPENSTYLE_FIRST_HATCH, wxPENSTYLE_LAST_HATCH }`
@@ -2203,6 +2302,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/print.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h)
+
+0 implemented; 0 partial; 107 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L8](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L8) `enum wxPrinterError {`
 - [ ] [L10](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/print.h#L10) `wxPRINTER_NO_ERROR = 0, wxPRINTER_CANCELLED, wxPRINTER_ERROR }`
@@ -2316,6 +2417,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/printdlg.h)
 
+0 implemented; 0 partial; 13 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L20](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/printdlg.h#L20) `class wxPrintDialog : public wxObject {`
 - [ ] [L31](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/printdlg.h#L31) `wxPrintDialog(wxWindow* parent, wxPrintDialogData* data = NULL);`
 - [ ] [L32](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/printdlg.h#L32) `wxPrintDialog(wxWindow *parent, wxPrintData* data);`
@@ -2334,6 +2437,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/quantize.h)
 
+0 implemented; 0 partial; 5 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L19](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/quantize.h#L19) `class wxQuantize : public wxObject {`
 - [ ] [L26](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/quantize.h#L26) `wxQuantize();`
 - [ ] [L35](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/quantize.h#L35) `static void DoQuantize(unsigned int w, unsigned int h, unsigned char** in_rows, unsigned char** out_rows, unsigned char* palette, int desiredNoColours);`
@@ -2343,6 +2448,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/rawbmp.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/rawbmp.h)
+
+0 implemented; 0 partial; 28 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L76](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/rawbmp.h#L76) `template <class Image, class PixelFormat = wxPixelFormatFor<Image> > class wxPixelData : public wxPixelDataOut<Image>::template wxPixelDataIn<PixelFormat> {`
 - [ ] [L84](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/rawbmp.h#L84) `typedef Image ImageType;`
@@ -2376,6 +2483,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/region.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/region.h)
+
+0 implemented; 0 partial; 54 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L11](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/region.h#L11) `enum wxRegionContain {`
 - [ ] [L14](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/region.h#L14) `wxOutRegion = 0, wxPartRegion = 1, wxInRegion = 2 }`
@@ -2435,6 +2544,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/renderer.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/renderer.h)
+
+0 implemented; 0 partial; 82 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L13](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/renderer.h#L13) `enum {`
 - [ ] [L20](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/renderer.h#L20) `wxCONTROL_NONE = 0x00000000, wxCONTROL_DISABLED = 0x00000001, wxCONTROL_FOCUSED = 0x00000002, wxCONTROL_PRESSED = 0x00000004, wxCONTROL_SPECIAL = 0x00000008, wxCONTROL_ISDEFAULT = wxCONTROL_SPECIAL, wxCONTROL_ISSUBMENU = wxCONTROL_SPECIAL, wxCONTROL_EXPANDED = wxCONTROL_SPECIAL, wxCONTROL_SIZEGRIP = wxCONTROL_SPECIAL, wxCONTROL_FLAT = wxCONTROL_SPECIAL, wxCONTROL_CELL = wxCONTROL_SPECIAL, wxCONTROL_CURRENT = 0x00000010, wxCONTROL_SELECTED = 0x00000020, wxCONTROL_CHECKED = 0x00000040, wxCONTROL_CHECKABLE = 0x00000080, wxCONTROL_UNDETERMINED = wxCONTROL_CHECKABLE }`

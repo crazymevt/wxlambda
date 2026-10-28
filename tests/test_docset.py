@@ -15,6 +15,26 @@ spec.loader.exec_module(tool)
 
 
 class DocsetChecks(unittest.TestCase):
+    def test_coverage_summary_uses_docset_tables(self):
+        path = ROOT / 'docs/coverage/README.md'
+        blocks = tool.markdown(path.read_text(), path, {})
+        tables = [block for block in blocks if block[0] == ':table']
+        self.assertEqual(len(tables), 8)  # phase totals plus seven header backlogs
+        self.assertEqual(len(tables[0][4]), 8)  # C1-C7 and total
+        self.assertEqual(sum(len(table[4]) for table in tables[1:]), 398)
+        self.assertIn('"guide/docs/coverage/README.md"', tool.sexp(tool.content()[1]))
+
+    def test_markdown_tables_preserve_inline_code_escaped_pipes_and_links(self):
+        text = '| Name | Detail |\n| :--- | ---: |\n| `a|b` | left\\|right |\n| [Guide](DOCSET.md) | |'
+        path = ROOT / 'docs/example.md'
+        blocks = tool.markdown(text, path, {(ROOT / 'docs/DOCSET.md').resolve(): 'guide/docs/DOCSET.md'})
+        self.assertEqual(blocks, [[tool.key('table'), tool.key('header'), [['Name'], ['Detail']],
+                                  tool.key('rows'), [[[[tool.key('code'), 'a|b']], ['left|right']],
+                                                     [[[tool.key('ref'), 'guide/docs/DOCSET.md', 'Guide']], []]]]])
+        self.assertEqual(tool.markdown('```text\n' + text + '\n```')[0][0], ':code-block')
+        with self.assertRaisesRegex(ValueError, 'column mismatch'):
+            tool.markdown('| A | B |\n| --- | --- |\n| missing |')
+
     def test_guide_and_example_names_do_not_shadow_public_symbols(self):
         _, entries = tool.content()
         public = {name.casefold() for name in tool.exports()}

@@ -14,9 +14,18 @@ inherited interfaces and platform conditions have been reviewed and mapped.
 Inherited declarations name the supported receiver types explicitly; a partial
 class or constructor does not imply full upstream coverage.
 
+## Current coverage and remaining work
+
+0 implemented; 0 partial; 279 pending; 3 context entries. Partial and pending entries remain open.
+
+Counts describe inventory entries, not distinct APIs or percent completion.
+See the [coverage summary](README.md) for phase/header comparisons.
+
 ## `wx/dde.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dde.h)
+
+0 implemented; 0 partial; 37 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L31](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dde.h#L31) `class wxDDEConnection : public wxConnectionBase {`
 - [ ] [L46](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dde.h#L46) `wxDDEConnection();`
@@ -60,6 +69,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dialup.h)
 
+0 implemented; 0 partial; 22 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L28](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dialup.h#L28) `documented event: EVT_DIALUP_CONNECTED(func)`
 - [ ] [L30](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dialup.h#L30) `documented event: EVT_DIALUP_DISCONNECTED(func)`
 - [ ] [L39](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dialup.h#L39) `class wxDialUpManager {`
@@ -86,6 +97,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/joystick.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/joystick.h)
+
+0 implemented; 0 partial; 45 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L18](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/joystick.h#L18) `class wxJoystick : public wxObject {`
 - [ ] [L27](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/joystick.h#L27) `wxJoystick(int joystick = wxJOYSTICK1);`
@@ -137,6 +150,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/msw/ole/activex.h)
 
+0 implemented; 0 partial; 11 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L19](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/msw/ole/activex.h#L19) `documented event: EVT_ACTIVEX(func)`
 - [ ] [L38](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/msw/ole/activex.h#L38) `class wxActiveXEvent : public wxCommandEvent {`
 - [ ] [L45](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/msw/ole/activex.h#L45) `DISPID GetDispatchId(int idx) const;`
@@ -152,6 +167,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/msw/ole/automtn.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/msw/ole/automtn.h)
+
+0 implemented; 0 partial; 22 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L15](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/msw/ole/automtn.h#L15) `enum wxAutomationInstanceFlags {`
 - [ ] [L23](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/msw/ole/automtn.h#L23) `wxAutomationInstance_UseExistingOnly = 0, wxAutomationInstance_CreateIfNeeded = 1, wxAutomationInstance_SilentIfNone = 2 }`
@@ -179,6 +196,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/msw/ole/oleutils.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/msw/ole/oleutils.h)
+
+0 implemented; 0 partial; 30 pending; 1 context entries. Partial and pending entries remain open.
 
 - [ ] [L20](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/msw/ole/oleutils.h#L20) `enum wxOleConvertVariantFlags {`
 - [ ] [L25](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/msw/ole/oleutils.h#L25) `wxOleConvertVariant_Default = 0, wxOleConvertVariant_ReturnSafeArrays = 1 }`
@@ -216,6 +235,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/msw/ole/safearray.h)
 
+0 implemented; 0 partial; 21 pending; 1 context entries. Partial and pending entries remain open.
+
 - [ ] [L32](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/msw/ole/safearray.h#L32) `template <VARTYPE varType> class wxSafeArray<varType> {`
 - [ ] [L40](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/msw/ole/safearray.h#L40) `wxSafeArray();`
 - [ ] [L45](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/msw/ole/safearray.h#L45) `~wxSafeArray();`
@@ -243,12 +264,16 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/msw/regconf.h)
 
+0 implemented; 0 partial; 2 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L22](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/msw/regconf.h#L22) `class wxRegConfig : public wxConfigBase {`
 - [ ] [L32](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/msw/regconf.h#L32) `wxRegConfig(const wxString& appName = wxEmptyString, const wxString& vendorName = wxEmptyString, const wxString& localFilename = wxEmptyString, const wxString& globalFilename = wxEmptyString, long style = wxCONFIG_USE_GLOBAL_FILE);`
 
 ## `wx/msw/registry.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/msw/registry.h)
+
+0 implemented; 0 partial; 58 pending; 1 context entries. Partial and pending entries remain open.
 
 - [ ] [L66](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/msw/registry.h#L66) `class wxRegKey {`
 - [ ] [L74](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/msw/registry.h#L74) `wxRegKey(WOW64ViewMode viewMode = WOW64ViewMode_Default);`
@@ -314,6 +339,8 @@ class or constructor does not imply full upstream coverage.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/nativewin.h)
 
+0 implemented; 0 partial; 5 pending; 0 context entries. Partial and pending entries remain open.
+
 - [ ] [L53](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/nativewin.h#L53) `class wxNativeWindow : public wxWindow {`
 - [ ] [L59](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/nativewin.h#L59) `wxNativeWindow();`
 - [ ] [L72](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/nativewin.h#L72) `wxNativeWindow(wxWindow* parent, wxWindowID winid, wxNativeWindowHandle handle);`
@@ -323,6 +350,8 @@ class or constructor does not imply full upstream coverage.
 ## `wx/power.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/power.h)
+
+0 implemented; 0 partial; 26 pending; 0 context entries. Partial and pending entries remain open.
 
 - [ ] [L8](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/power.h#L8) `enum wxPowerType {`
 - [ ] [L10](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/power.h#L10) `wxPOWER_SOCKET, wxPOWER_BATTERY, wxPOWER_UNKNOWN }`

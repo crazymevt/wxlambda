@@ -9,10 +9,14 @@ Forward declarations are represented in the per-header declaration inventories.
 
 ## C1: Foundation, values, application, events, and base utilities
 
+Class/struct definitions: 0 complete; 2 partial; 300 pending. Partial and pending classes remain open.
+
+[Declaration counts and remaining work](README.md).
+
 - [ ] `wxAny` — [`wx/any.h`](phase-c1.md), upstream line 60.
 - [ ] `wxAnyValueType` — [`wx/any.h`](phase-c1.md), upstream line 382.
-- [ ] `wxAppConsole` — [`wx/app.h`](phase-c1.md), upstream line 39.
-- [ ] `wxApp` — [`wx/app.h`](phase-c1.md), upstream line 845.
+- [~] `wxAppConsole` — [`wx/app.h`](phase-c1.md), upstream line 39. — **Partial**: `call-with-application`, `run`, `stop`, `process-events`, `main-loop-running-p`, `pending-events-p`, `process-pending-events`; ABI: `wxl_start`, `wxl_run`, `wxl_stop`, `wxl_poll`, `wxl_main_loop_running`, `wxl_pending_events`, `wxl_process_pending_events`. Managed bridge application only: session lifetime, native main loop, polling, queued-event status/dispatch and callback/pump guards. No public application wrapper, application traits, arbitrary event loops, command-line hooks or native virtual overrides. Generic event-handler ownership/binding, filters, propagation, idle handlers, timers and worker dispatch remain open.
+- [~] `wxApp` — [`wx/app.h`](phase-c1.md), upstream line 845. — **Partial**: `call-with-application`, `with-application`; ABI: `wxl_start`, `wxl_finish`. One managed GUI application per process on its main thread. Native initialization/cleanup only; application subclass hooks, traits, top-window APIs and remaining GUI-application interfaces are unbound. This is not a public CLOS application class.
 - [ ] `wxAppProgressIndicator` — [`wx/appprogress.h`](phase-c1.md), upstream line 22.
 - [ ] `wxAppTraits` — [`wx/apptrait.h`](phase-c1.md), upstream line 29.
 - [ ] `wxArchiveInputStream` — [`wx/archive.h`](phase-c1.md), upstream line 28.
@@ -314,6 +318,10 @@ Forward declarations are represented in the per-header declaration inventories.
 
 ## C2: Windows, layout, basic controls, and input
 
+Class/struct definitions: 0 complete; 11 partial; 121 pending. Partial and pending classes remain open.
+
+[Declaration counts and remaining work](README.md).
+
 - [ ] `wxAcceleratorEntry` — [`wx/accel.h`](phase-c2.md), upstream line 43.
 - [ ] `wxAcceleratorTable` — [`wx/accel.h`](phase-c2.md), upstream line 191.
 - [ ] `wxActivityIndicator` — [`wx/activityindicator.h`](phase-c2.md), upstream line 22.
@@ -323,14 +331,14 @@ Forward declarations are represented in the per-header declaration inventories.
 - [ ] `wxBannerWindow` — [`wx/bannerwindow.h`](phase-c2.md), upstream line 51.
 - [ ] `wxBitmapButton` — [`wx/bmpbuttn.h`](phase-c2.md), upstream line 44.
 - [ ] `wxBitmapComboBox` — [`wx/bmpcbox.h`](phase-c2.md), upstream line 55.
-- [~] `wxButton` — [`wx/button.h`](phase-c2.md), upstream line 102. — **Partial**: `make-button`; ABI: `wxl_button`. Parent and label; ID is wxID_ANY, remaining options use defaults. Full class and inherited API coverage remain open.
+- [~] `wxButton` — [`wx/button.h`](phase-c2.md), upstream line 102. — **Partial**: `button`, `make-button`; ABI: `wxl_button`. Native-backed CLOS construction, including subclass initargs/defaults and managed rollback. Parent and label; ID is wxID_ANY, remaining options use defaults. Full class and inherited API coverage remain open.
 - [ ] `wxCalendarEvent` — [`wx/calctrl.h`](phase-c2.md), upstream line 48.
 - [ ] `wxCalendarDateAttr` — [`wx/calctrl.h`](phase-c2.md), upstream line 98.
 - [ ] `wxCalendarCtrl` — [`wx/calctrl.h`](phase-c2.md), upstream line 308.
 - [ ] `wxCaret` — [`wx/caret.h`](phase-c2.md), upstream line 26.
-- [~] `wxCheckBox` — [`wx/checkbox.h`](phase-c2.md), upstream line 74. — **Partial**: `make-checkbox`; ABI: `wxl_checkbox`. Parent, label and initial boolean value; two-state control, ID is wxID_ANY, remaining options use defaults. Full class and inherited API coverage remain open.
+- [~] `wxCheckBox` — [`wx/checkbox.h`](phase-c2.md), upstream line 74. — **Partial**: `checkbox`, `make-checkbox`; ABI: `wxl_checkbox`. Native-backed CLOS construction, including subclass initargs/defaults and managed rollback. Parent, label and initial boolean value; two-state control, ID is wxID_ANY, remaining options use defaults. Full class and inherited API coverage remain open.
 - [ ] `wxCheckListBox` — [`wx/checklst.h`](phase-c2.md), upstream line 32.
-- [~] `wxChoice` — [`wx/choice.h`](phase-c2.md), upstream line 32. — **Partial**: `make-choice`; ABI: `wxl_choice`. Parent, copied strings and initial selection; wxArrayString overload, ID is wxID_ANY, remaining options use defaults. Full class and inherited API coverage remain open.
+- [~] `wxChoice` — [`wx/choice.h`](phase-c2.md), upstream line 32. — **Partial**: `choice`, `make-choice`; ABI: `wxl_choice`. Native-backed CLOS construction, including subclass initargs/defaults and managed rollback. Parent, copied strings and initial selection; wxArrayString overload, ID is wxID_ANY, remaining options use defaults. Full class and inherited API coverage remain open.
 - [ ] `wxColourPickerCtrl` — [`wx/clrpicker.h`](phase-c2.md), upstream line 71.
 - [ ] `wxColourPickerEvent` — [`wx/clrpicker.h`](phase-c2.md), upstream line 158.
 - [ ] `wxCollapsibleHeaderCtrl` — [`wx/collheaderctrl.h`](phase-c2.md), upstream line 32.
@@ -356,8 +364,8 @@ Forward declarations are represented in the per-header declaration inventories.
 - [ ] `wxFileDirPickerEvent` — [`wx/filepicker.h`](phase-c2.md), upstream line 351.
 - [ ] `wxFontPickerCtrl` — [`wx/fontpicker.h`](phase-c2.md), upstream line 58.
 - [ ] `wxFontPickerEvent` — [`wx/fontpicker.h`](phase-c2.md), upstream line 191.
-- [~] `wxFrame` — [`wx/frame.h`](phase-c2.md), upstream line 163. — **Partial**: `make-frame`; ABI: `wxl_frame`. Title, width and height; parent is NULL, ID is wxID_ANY, remaining options use defaults. Full class and inherited API coverage remain open.
-- [~] `wxGauge` — [`wx/gauge.h`](phase-c2.md), upstream line 69. — **Partial**: `gauge`, `make-gauge`, `gauge-value`, `gauge-range`, `gauge-vertical-p`, `pulse-gauge`; ABI: `wxl_gauge`, `wxl_gauge_value`, `wxl_gauge_range`, `wxl_set_gauge_value`, `wxl_set_gauge_range`, `wxl_gauge_vertical`, `wxl_gauge_pulse`. Parent-owned progress gauge: positive range, value, horizontal/vertical orientation and pulsing. Constructor options, two-step creation and full inherited API remain open. Native ABI 10; see docs/GAUGE.md and tests/gauge.lisp.
+- [~] `wxFrame` — [`wx/frame.h`](phase-c2.md), upstream line 163. — **Partial**: `frame`, `make-frame`; ABI: `wxl_frame`. Native-backed CLOS construction, including subclass initargs/defaults and managed rollback. Title, width and height; parent is NULL, ID is wxID_ANY, remaining options use defaults. Full class and inherited API coverage remain open.
+- [~] `wxGauge` — [`wx/gauge.h`](phase-c2.md), upstream line 69. — **Partial**: `gauge`, `make-gauge`, `gauge-value`, `gauge-range`, `gauge-vertical-p`, `pulse-gauge`; ABI: `wxl_gauge`, `wxl_gauge_value`, `wxl_gauge_range`, `wxl_set_gauge_value`, `wxl_set_gauge_range`, `wxl_gauge_vertical`, `wxl_gauge_pulse`. Parent-owned progress gauge: positive range, value, horizontal/vertical orientation and pulsing. Constructor options, two-step creation and full inherited API remain open. Gauge support introduced in ABI 10; current bridge ABI 11; see docs/GAUGE.md and tests/gauge.lisp.
 - [ ] `wxGBPosition` — [`wx/gbsizer.h`](phase-c2.md), upstream line 17.
 - [ ] `wxGridBagSizer` — [`wx/gbsizer.h`](phase-c2.md), upstream line 73.
 - [ ] `wxGBSizerItem` — [`wx/gbsizer.h`](phase-c2.md), upstream line 234.
@@ -377,7 +385,7 @@ Forward declarations are represented in the per-header declaration inventories.
 - [ ] `wxMouseState` — [`wx/mousestate.h`](phase-c2.md), upstream line 56.
 - [ ] `wxNonOwnedWindow` — [`wx/nonownedwnd.h`](phase-c2.md), upstream line 28.
 - [ ] `wxOwnerDrawnComboBox` — [`wx/odcombo.h`](phase-c2.md), upstream line 83.
-- [~] `wxPanel` — [`wx/panel.h`](phase-c2.md), upstream line 37. — **Partial**: `make-panel`; ABI: `wxl_panel`. Parent only; remaining constructor options use defaults. Full class and inherited API coverage remain open.
+- [~] `wxPanel` — [`wx/panel.h`](phase-c2.md), upstream line 37. — **Partial**: `panel`, `make-panel`; ABI: `wxl_panel`. Native-backed CLOS construction, including subclass initargs/defaults and managed rollback. Parent only; remaining constructor options use defaults. Full class and inherited API coverage remain open.
 - [ ] `wxPickerBase` — [`wx/pickerbase.h`](phase-c2.md), upstream line 37.
 - [ ] `wxRadioBox` — [`wx/radiobox.h`](phase-c2.md), upstream line 35.
 - [ ] `wxRadioButton` — [`wx/radiobut.h`](phase-c2.md), upstream line 54.
@@ -408,13 +416,13 @@ Forward declarations are represented in the per-header declaration inventories.
 - [ ] `wxStaticBitmap` — [`wx/statbmp.h`](phase-c2.md), upstream line 31.
 - [ ] `wxStaticBox` — [`wx/statbox.h`](phase-c2.md), upstream line 46.
 - [ ] `wxStaticLine` — [`wx/statline.h`](phase-c2.md), upstream line 31.
-- [~] `wxStaticText` — [`wx/stattext.h`](phase-c2.md), upstream line 53. — **Partial**: `make-label`; ABI: `wxl_label`. Parent and label; ID is wxID_ANY, remaining options use defaults. Full class and inherited API coverage remain open.
+- [~] `wxStaticText` — [`wx/stattext.h`](phase-c2.md), upstream line 53. — **Partial**: `label`, `make-label`; ABI: `wxl_label`. Native-backed CLOS construction, including subclass initargs/defaults and managed rollback. Parent and label; ID is wxID_ANY, remaining options use defaults. Full class and inherited API coverage remain open.
 - [ ] `wxSystemThemedControl` — [`wx/systhemectrl.h`](phase-c2.md), upstream line 79.
 - [ ] `wxTextCompleter` — [`wx/textcompleter.h`](phase-c2.md), upstream line 31.
 - [ ] `wxTextCompleterSimple` — [`wx/textcompleter.h`](phase-c2.md), upstream line 115.
 - [ ] `wxTextAttr` — [`wx/textctrl.h`](phase-c2.md), upstream line 282.
 - [ ] `wxTextProofOptions` — [`wx/textctrl.h`](phase-c2.md), upstream line 1129.
-- [~] `wxTextCtrl` — [`wx/textctrl.h`](phase-c2.md), upstream line 1434. — **Partial**: `make-text`; ABI: `wxl_text`. Parent and initial value; ID is wxID_ANY, remaining options use defaults. Full class and inherited API coverage remain open.
+- [~] `wxTextCtrl` — [`wx/textctrl.h`](phase-c2.md), upstream line 1434. — **Partial**: `text-control`, `make-text`; ABI: `wxl_text`. Native-backed CLOS construction, including subclass initargs/defaults and managed rollback. Parent and initial value; ID is wxID_ANY, remaining options use defaults. Full class and inherited API coverage remain open.
 - [ ] `wxTextUrlEvent` — [`wx/textctrl.h`](phase-c2.md), upstream line 1972.
 - [ ] `wxStreamToTextRedirector` — [`wx/textctrl.h`](phase-c2.md), upstream line 2027.
 - [ ] `wxTextEntry` — [`wx/textentry.h`](phase-c2.md), upstream line 33.
@@ -448,6 +456,10 @@ Forward declarations are represented in the per-header declaration inventories.
 - [ ] `wxWindowUpdateLocker` — [`wx/wupdlock.h`](phase-c2.md), upstream line 35.
 
 ## C3: Dialogs, navigation, menus, and application services
+
+Class/struct definitions: 0 complete; 0 partial; 111 pending. Partial and pending classes remain open.
+
+[Declaration counts and remaining work](README.md).
 
 - [ ] `wxAboutDialogInfo` — [`wx/aboutdlg.h`](phase-c3.md), upstream line 53.
 - [ ] `wxAccessible` — [`wx/access.h`](phase-c3.md), upstream line 354.
@@ -563,6 +575,10 @@ Forward declarations are represented in the per-header declaration inventories.
 
 ## C4: Models, complex controls, and document frameworks
 
+Class/struct definitions: 0 complete; 0 partial; 112 pending. Partial and pending classes remain open.
+
+[Declaration counts and remaining work](README.md).
+
 - [ ] `wxCommand` — [`wx/cmdproc.h`](phase-c4.md), upstream line 21.
 - [ ] `wxCommandProcessor` — [`wx/cmdproc.h`](phase-c4.md), upstream line 104.
 - [ ] `wxDataViewModel` — [`wx/dataview.h`](phase-c4.md), upstream line 99.
@@ -677,6 +693,10 @@ Forward declarations are represented in the per-header declaration inventories.
 - [ ] `wxTreeListEvent` — [`wx/treelist.h`](phase-c4.md), upstream line 910.
 
 ## C5: Drawing, images, graphics, and printing
+
+Class/struct definitions: 0 complete; 0 partial; 115 pending. Partial and pending classes remain open.
+
+[Declaration counts and remaining work](README.md).
 
 - [ ] `wxAffineMatrix2D` — [`wx/affinematrix2d.h`](phase-c5.md), upstream line 18.
 - [ ] `wxMatrix2D` — [`wx/affinematrix2dbase.h`](phase-c5.md), upstream line 20.
@@ -795,6 +815,10 @@ Forward declarations are represented in the per-header declaration inventories.
 - [ ] `wxRendererVersion` — [`wx/renderer.h`](phase-c5.md), upstream line 678.
 
 ## C6: Optional libraries, rich content, and integration
+
+Class/struct definitions: 0 complete; 0 partial; 225 pending. Partial and pending classes remain open.
+
+[Declaration counts and remaining work](README.md).
 
 - [ ] `wxAuiToolBarEvent` — [`wx/aui/auibar.h`](phase-c6.md), upstream line 155.
 - [ ] `wxAuiToolBarItem` — [`wx/aui/auibar.h`](phase-c6.md), upstream line 213.
@@ -1023,6 +1047,10 @@ Forward declarations are represented in the per-header declaration inventories.
 - [ ] `wxXmlResourceHandler` — [`wx/xrc/xmlres.h`](phase-c6.md), upstream line 511.
 
 ## C7: Platform extensions and remaining portability APIs
+
+Class/struct definitions: 0 complete; 0 partial; 19 pending. Partial and pending classes remain open.
+
+[Declaration counts and remaining work](README.md).
 
 - [ ] `wxDDEConnection` — [`wx/dde.h`](phase-c7.md), upstream line 31.
 - [ ] `wxDDEClient` — [`wx/dde.h`](phase-c7.md), upstream line 229.

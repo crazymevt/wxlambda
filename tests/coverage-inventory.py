@@ -94,6 +94,38 @@ class CoverageInventoryChecks(unittest.TestCase):
                 if '://' not in target and not target.startswith('#'):
                     self.assertTrue((page.parent / target.split('#')[0]).exists(), (page, target))
 
+    def test_backlog_counts_match_rendered_checkboxes_and_manifest(self):
+        self.build()
+        output = self.root / 'docs/coverage'
+        summary = (output / 'README.md').read_text()
+        manifest = json.loads((output / 'manifest.json').read_text())
+        total = Counter()
+        for number in inventory.PHASES:
+            text = (output / f'phase-c{number}.md').read_text()
+            counts = Counter(re.findall(r'^- \[([x~ ])\]', text, re.M))
+            counts['context'] = len(re.findall(r'^- \*\*Context\*\*:', text, re.M))
+            headers = [row for row in manifest['headers'] if row['phase'] == number]
+            tasks = sum(row['tasks'] for row in headers)
+            self.assertEqual(tasks, sum(counts[mark] for mark in ('x', '~', ' ')))
+            self.assertEqual(counts['context'], sum(row['context_entries'] for row in headers))
+            row = next(line for line in summary.splitlines() if line.startswith(f'| [C{number}:'))
+            values = [int(value.strip()) for value in row.split('|')[2:-1]]
+            self.assertEqual(values, [len(headers), tasks, counts['x'], counts['~'],
+                                      counts[' '], counts['context']])
+            total.update(counts)
+            for section in re.split(r'^## `', text, flags=re.M)[1:]:
+                header = section.split('`', 1)[0]
+                local = Counter(re.findall(r'^- \[([x~ ])\]', section, re.M))
+                context = len(re.findall(r'^- \*\*Context\*\*:', section, re.M))
+                row = next(line for line in summary.splitlines() if line.startswith(f'| [{header}]'))
+                values = [int(value.strip()) for value in row.split('|')[2:-1]]
+                self.assertEqual(values, [local['x'], local['~'], local[' '], context])
+        row = next(line for line in summary.splitlines() if line.startswith('| Total |'))
+        self.assertEqual([int(value.strip()) for value in row.split('|')[2:-1]],
+                         [398, sum(total[mark] for mark in ('x', '~', ' ')),
+                          total['x'], total['~'], total[' '], total['context']])
+        self.assertIn('unsupported still prevent a full-coverage claim', summary)
+
     def test_multiline_macro_keeps_following_methods_separate(self):
         source = ("#define wxSTYLE (wxONE | \\" + "\n"
                   "    wxTWO)\n"
@@ -132,6 +164,7 @@ class CoverageInventoryChecks(unittest.TestCase):
         self.assertEqual(set(self.status['classes']), {
             'wxFrame', 'wxPanel', 'wxButton', 'wxTextCtrl', 'wxStaticText',
             'wxCheckBox', 'wxChoice', 'wxGauge', 'wxBoxSizer', 'wxWindow', 'wxTopLevelWindow',
+            'wxAppConsole', 'wxApp',
         })
 
     def test_compiler_scaffolding_is_context_but_public_macros_are_tasks(self):
