@@ -58,5 +58,9 @@
   "application-handler.lisp": {
     "description": "Borrow the cached application event-handler view, queue a registered command, verify delivery and release the binding without destroying wxApp.",
     "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/application-handler.lisp --eval '(wxlambda-application-handler:start)'"
+  },
+  "session-events.lisp": {
+    "description": "Isolated standalone query-end-session policy with logging-off metadata and checked veto. Never dispatches synthetic session events to wxApp or triggers real OS logout/shutdown.",
+    "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/session-events.lisp --eval '(wxlambda-session-events:start)'"
   }
 }

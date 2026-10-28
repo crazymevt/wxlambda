@@ -17,6 +17,15 @@
 #endif
 
 namespace {
+bool session_type(wxEventType type) {
+    return type == wxEVT_QUERY_END_SESSION || type == wxEVT_END_SESSION;
+}
+// Synthetic session probes must never fall through to wxApp's exit defaults.
+class StandaloneHandler final : public wxEvtHandler {
+    bool TryAfter(wxEvent& event) override {
+        return session_type(event.GetEventType()) ? false : wxEvtHandler::TryAfter(event);
+    }
+};
 class App final : public wxApp {
 public:
     bool OnInit() override { return true; }
@@ -131,6 +140,8 @@ wxEventTypeTag<wxEvent> native_event_type(int kind) {
         case WXL_EVENT_TOGGLE: return wxEventTypeTag<wxEvent>(wxEVT_CHECKBOX);
         case WXL_EVENT_SELECTION: return wxEventTypeTag<wxEvent>(wxEVT_CHOICE);
         case WXL_EVENT_CLOSE: return wxEventTypeTag<wxEvent>(wxEVT_CLOSE_WINDOW);
+        case WXL_EVENT_QUERY_END_SESSION: return wxEventTypeTag<wxEvent>(wxEVT_QUERY_END_SESSION);
+        case WXL_EVENT_END_SESSION: return wxEventTypeTag<wxEvent>(wxEVT_END_SESSION);
         default: {
             const auto it = registered_events.find(kind);
             require(it != registered_events.end(), "Unsupported event kind");
@@ -140,7 +151,7 @@ wxEventTypeTag<wxEvent> native_event_type(int kind) {
 }
 int native_event_family(int kind) {
     if (kind >= WXL_EVENT_CLICK && kind <= WXL_EVENT_SELECTION) return WXL_FAMILY_COMMAND;
-    if (kind == WXL_EVENT_CLOSE) return WXL_FAMILY_CLOSE;
+    if (kind >= WXL_EVENT_CLOSE && kind <= WXL_EVENT_END_SESSION) return WXL_FAMILY_CLOSE;
     const auto it = registered_events.find(kind);
     require(it != registered_events.end(), "Unsupported event kind");
     return it->second.family;
@@ -156,17 +167,19 @@ bool event_vetoed(wxEvent& event) {
 }
 std::unique_ptr<wxEvent> synthetic_event(wxEvtHandler* receiver, int kind, int event_id,
                                        const char* text, size_t length, int value,
-                                       int can_veto, int vetoed) {
+                                       int can_veto, int vetoed, int logging_off) {
     const auto type = native_event_type(kind);
     const int family = native_event_family(kind);
     require(text || length == 0, "Null event text");
     require(kind != WXL_EVENT_SELECTION || value >= -1, "Invalid selection event index");
+    require(session_type(type) || logging_off == 0, "Logging-off applies only to session events");
     require(family == WXL_FAMILY_NOTIFY || vetoed == 0, "Initial veto applies only to notify types");
     std::unique_ptr<wxEvent> event;
-    if (kind == WXL_EVENT_CLOSE) {
+    if (family == WXL_FAMILY_CLOSE) {
         require(length == 0 && value == 0, "Close events do not take command payloads");
         auto close = std::make_unique<wxCloseEvent>(type, event_id);
         close->SetCanVeto(can_veto != 0);
+        if (session_type(type)) close->SetLoggingOff(logging_off != 0);
         event = std::move(close);
     } else if (family == WXL_FAMILY_NOTIFY) {
         auto notify = std::make_unique<wxNotifyEvent>(type, event_id);
@@ -211,7 +224,8 @@ struct Binding {
                                      kind == WXL_EVENT_SELECTION && command ? command->GetSelection() : -1,
                                      event.GetId(), carries_text ? bytes.length() : 0,
                                      0, event.GetEventType(), event_can_veto(event) ? 1 : 0, event_vetoed(event) ? 1 : 0,
-                                     family, command ? command->GetInt() : 0};
+                                     family, command ? command->GetInt() : 0,
+                                     session_type(event.GetEventType()) ? (static_cast<wxCloseEvent&>(event).GetLoggingOff() ? 1 : 0) : 0};
             if (with_context) {
                 event.Skip(false);
                 EventScope scope(event);
@@ -285,7 +299,7 @@ wxString utf8(const char* value) {
 }
 }
 extern "C" {
-int wxl_abi_version() { return 17; }
+int wxl_abi_version() { return 18; }
 const char* wxl_last_error() { return error.c_str(); }
 int wxl_start(wxl_callback callback) {
     return status([&] {
@@ -365,7 +379,7 @@ wxl_handle wxl_application_handler() {
 }
 wxl_handle wxl_event_handler() {
     return create([] {
-        auto object = std::make_unique<wxEvtHandler>();
+        auto object = std::make_unique<StandaloneHandler>();
         const auto id = next_handle++;
         owned_handlers.emplace(id, std::move(object));
         return id;
@@ -456,6 +470,20 @@ int wxl_context_set_vetoed(uint64_t token, int vetoed) {
         } else throw std::runtime_error("This event family has no veto state");
     });
 }
+int wxl_context_logging_off(uint64_t token) {
+    return boolean_result([&] {
+        auto& event = current_event(token);
+        require(session_type(event.GetEventType()), "Logging-off requires a session event");
+        return static_cast<wxCloseEvent&>(event).GetLoggingOff();
+    });
+}
+int wxl_context_set_logging_off(uint64_t token, int value) {
+    return status([&] {
+        auto& event = current_event(token);
+        require(session_type(event.GetEventType()), "Logging-off requires a session event");
+        static_cast<wxCloseEvent&>(event).SetLoggingOff(value != 0);
+    });
+}
 int wxl_close(wxl_handle id, int force) {
     return boolean_result([&] { return as<wxFrame>(id)->Close(force != 0); });
 }
@@ -470,6 +498,8 @@ int wxl_bind(wxl_handle id, int kind, uint64_t token, int first, int last, int w
     return status([&] {
         auto* receiver = event_handler(id);
         const auto type = native_event_type(kind);
+        require(!session_type(type) || id == application_handle || owned_handlers.count(id),
+                "Session bindings require the application view or an owned standalone handler");
         require(with_context == 0 || with_context == 1, "Invalid binding context mode");
         require(token && !bindings.count(token), "Invalid or duplicate binding token");
         require(last == wxID_ANY || (first != wxID_ANY && first <= last), "Invalid event ID range");
@@ -514,20 +544,24 @@ int wxl_register_event_type(int family) {
     return result == 0 ? kind : -1;
 }
 int wxl_queue_event(wxl_handle id, int kind, int event_id, const char* text, size_t length,
-                    int value, int can_veto, int vetoed) {
+                    int value, int can_veto, int vetoed, int logging_off) {
     return status([&] {
         auto* receiver = event_handler(id);
-        auto event = synthetic_event(receiver, kind, event_id, text, length, value, can_veto, vetoed);
+        require(!session_type(native_event_type(kind)) || owned_handlers.count(id),
+                "Synthetic session events require an isolated owned standalone handler");
+        auto event = synthetic_event(receiver, kind, event_id, text, length, value, can_veto, vetoed, logging_off);
         receiver->QueueEvent(event.release());
     });
 }
 int wxl_process_event(wxl_handle id, int kind, int event_id, const char* text, size_t length,
-                      int value, int can_veto, int vetoed, int* final_veto) {
+                      int value, int can_veto, int vetoed, int logging_off, int* final_veto) {
     return boolean_result([&] {
         require(final_veto != nullptr, "Missing final veto output");
         *final_veto = 0;
         auto* receiver = event_handler(id);
-        auto event = synthetic_event(receiver, kind, event_id, text, length, value, can_veto, vetoed);
+        require(!session_type(native_event_type(kind)) || owned_handlers.count(id),
+                "Synthetic session events require an isolated owned standalone handler");
+        auto event = synthetic_event(receiver, kind, event_id, text, length, value, can_veto, vetoed, logging_off);
         const bool handled = receiver->ProcessEvent(*event);
         *final_veto = event_vetoed(*event) ? 1 : 0;
         return handled;
@@ -545,7 +579,7 @@ wxl_handle wxl_button(wxl_handle parent, const char* label) {
         auto* control = new wxButton(window(parent), wxID_ANY, utf8(label));
         auto id = track(control);
         control->Bind(wxEVT_BUTTON, [id](wxCommandEvent& event) {
-            emit_event(id, {WXL_EVENT_CLICK, nullptr, 0, -1, event.GetId(), 0, 0, event.GetEventType(), 0, 0, WXL_FAMILY_COMMAND, event.GetInt()});
+            emit_event(id, {WXL_EVENT_CLICK, nullptr, 0, -1, event.GetId(), 0, 0, event.GetEventType(), 0, 0, WXL_FAMILY_COMMAND, event.GetInt(), 0});
             event.Skip();
         });
         return id;
@@ -562,7 +596,7 @@ wxl_handle wxl_text(wxl_handle parent, const char* value) {
                 // Both objects must survive reentrant callbacks and conversion.
                 const auto text = event.GetString();
                 const auto bytes = text.ToUTF8();
-                const wxl_event payload{WXL_EVENT_TEXT_CHANGE, bytes.data() ? bytes.data() : "", 0, -1, event.GetId(), bytes.length(), 0, event.GetEventType(), 0, 0, WXL_FAMILY_COMMAND, event.GetInt()};
+                const wxl_event payload{WXL_EVENT_TEXT_CHANGE, bytes.data() ? bytes.data() : "", 0, -1, event.GetId(), bytes.length(), 0, event.GetEventType(), 0, 0, WXL_FAMILY_COMMAND, event.GetInt(), 0};
                 invoke_callback(token, payload);
             }
             event.Skip();
@@ -634,7 +668,7 @@ wxl_handle wxl_checkbox(wxl_handle parent, const char* label, int checked) {
         control->SetValue(checked != 0);
         const auto id = track(control);
         control->Bind(wxEVT_CHECKBOX, [id](wxCommandEvent& event) {
-            emit_event(id, {WXL_EVENT_TOGGLE, nullptr, event.IsChecked() ? 1 : 0, -1, event.GetId(), 0, 0, event.GetEventType(), 0, 0, WXL_FAMILY_COMMAND, event.GetInt()});
+            emit_event(id, {WXL_EVENT_TOGGLE, nullptr, event.IsChecked() ? 1 : 0, -1, event.GetId(), 0, 0, event.GetEventType(), 0, 0, WXL_FAMILY_COMMAND, event.GetInt(), 0});
             event.Skip();
         });
         return id;
@@ -674,7 +708,7 @@ wxl_handle wxl_choice(wxl_handle parent, const char** items, int count, int sele
         control->SetSelection(selection);
         const auto id = track(control);
         control->Bind(wxEVT_CHOICE, [id](wxCommandEvent& event) {
-            emit_event(id, {WXL_EVENT_SELECTION, nullptr, 0, event.GetSelection(), event.GetId(), 0, 0, event.GetEventType(), 0, 0, WXL_FAMILY_COMMAND, event.GetInt()});
+            emit_event(id, {WXL_EVENT_SELECTION, nullptr, 0, event.GetSelection(), event.GetId(), 0, 0, event.GetEventType(), 0, 0, WXL_FAMILY_COMMAND, event.GetInt(), 0});
             event.Skip();
         });
         return id;

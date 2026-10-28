@@ -3,7 +3,7 @@
 This C1 slice adds independent observer bindings on standalone `event-handler`
 objects and borrowed window identities. It covers `:click` (`wxEVT_BUTTON`),
 `:text-change` (`wxEVT_TEXT`), `:toggle` (`wxEVT_CHECKBOX`) and `:selection`
-(`wxEVT_CHOICE`), using the wxWidgets 3.2.12 baseline. The bridge is ABI 17.
+(`wxEVT_CHOICE`), using the wxWidgets 3.2.12 baseline. The bridge is ABI 18.
 Optional [scoped contexts](EVENT-CONTEXTS.md) now support Skip/propagation;
 close-veto support is now available through the [close family](CLOSE-EVENTS.md).
 Registered [notify/command types](NOTIFY-EVENTS.md) now add named native tags and
@@ -147,3 +147,5 @@ observer routing and disposal during queued and synchronous setter callbacks.
 The API, guide and example are indexed in the [Cadre docset](DOCSET.md), installable
 under `$XDG_DATA_HOME/docsets/wxlambda/` (default `~/.local/share/docsets/wxlambda/`).
 Graphical Cadre and hosted-platform GUI verification remain separate checks.
+
+[Session events](SESSION-EVENTS.md) extend the close family with query/end-session kinds, scoped logging-off metadata and isolated synthetic dispatch. Native OS session delivery remains unverified.

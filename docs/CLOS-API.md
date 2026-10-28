@@ -168,4 +168,6 @@ requests use the generic `close-window`; see [close-family scope](CLOSE-EVENTS.m
 native handled/final-veto values. Registered custom families remain session-scoped
 metadata; see [notify type scope](NOTIFY-EVENTS.md).
 
-See the [borrowed application-handler view](APPLICATION-HANDLER.md) for managed wxApp identity, inherited dispatch and lifetime restrictions. Session-event routing remains unbound.
+See the [borrowed application-handler view](APPLICATION-HANDLER.md) for managed wxApp identity, inherited dispatch and lifetime restrictions. Session bindings and logging-off metadata are available; real OS delivery remains unverified.
+
+[Session events](SESSION-EVENTS.md) extend the close family with query/end-session kinds, scoped logging-off metadata and isolated synthetic dispatch. Native OS session delivery remains unverified.

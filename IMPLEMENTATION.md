@@ -42,15 +42,18 @@ must reconcile additional documented public interfaces beyond those headers.
   dispatch with native handled/final-veto results. Session routing remains open.
 - Borrowed application milestone: cached application-handler view with inherited
   bindings, dispatch and enabled state; no native ownership transfer or construction.
-- Current bridge ABI: 17. Public API: 98 exports, nine window wrapper classes
-  (eight concrete widget kinds) plus the event-handler base, 55 named generics and
-  thirteen generic SETF writers. The application-handler is a borrowed view; no
+- Session-event milestone: query/end-session tags and scoped logging-off metadata,
+  native application bindings and isolated owned-handler synthetic probes.
+  Real OS session delivery remains unverified.
+- Current bridge ABI: 18. Public API: 99 exports, nine window wrapper classes
+  (eight concrete widget kinds) plus the event-handler base, 56 named generics and
+  fourteen generic SETF writers. The application-handler is a borrowed view; no
   native application construction or arbitrary-event class binding exists yet; built-ins plus registered command/notify names have
   observer/contextual bindings.
-- Latest implementation verification: 34 GUI scenarios and native preflight
+- Latest implementation verification: 35 GUI scenarios and native preflight
   pass on local Apple Silicon macOS SBCL 2.6.9 and CCL 1.13. Final reports:
-  `evidence/application-handler/{sbcl,ccl}-20261028/`. Five package checks
-  pass in `evidence/packaging/application-handler-20261028/`.
+  `evidence/session-events/{sbcl,ccl}-20261028/`. Five package checks
+  pass in `evidence/packaging/session-events-20261028/`.
   Hosted Linux/Windows GUI behavior and the graphical Cadre viewer remain open.
 
 ### Next dependency and working order
@@ -67,11 +70,14 @@ must reconcile additional documented public interfaces beyond those headers.
    borrowed contexts now control Skip/propagation in the innermost callback; saved
    snapshots carry process-local native type IDs. Close veto and frame request
    policy are implemented. Registered command/notify types and synchronous dispatch are implemented.
-   The borrowed application handler view and its lifetime are implemented. Next add
-   query/end-session metadata and controlled routing, plus logging-off state. Native session events are
+   The borrowed application handler view and query/end-session metadata/bindings
+   are implemented. Next add scoped CanVeto mutation and remaining event metadata
+   before broader event ownership/families. Native OS session delivery is unverified. Native session events are
    wxApp-only, and default END_SESSION handling can exit the process: never
    synthesize live application end-session events as an ordinary test. Use owned
    handlers for synthetic family tests and distinguish OS validation from them.
+   Standalone native TryAfter must suppress app fallback for session kinds;
+   ordinary standalone wxEvtHandler dispatch can otherwise reach app defaults.
    Native control-specific notify subclasses and remaining event ownership stay open. Preserve immutable
    snapshots and opaque binding/context identities; never expose a native event
    pointer after callback return. Arbitrary native event classes/userData, session routing and
@@ -877,6 +883,34 @@ Continue C1 with session-family metadata and synthetic owned-handler tests befor
 validating OS application routing. Default END_SESSION may exit the process;
 never emit it on the managed application as an ordinary regression test.
 All required missing/partial C1–C7 APIs remain open in the coverage inventory.
+
+## Query/end-session and logging-off metadata (2026-10-28)
+
+ABI 18 adds :QUERY-END-SESSION and :END-SESSION to the close family, with
+immutable logging-off snapshots and generic EVENT-LOGGING-OFF-P context SETF.
+Native bindings accept the borrowed application view and owned standalone
+handlers; window bindings reject. Synthetic queue/process accepts only owned
+handlers. Internal StandaloneHandler::TryAfter blocks wxApp fallback for session
+tags, including unmatched, skipped and disabled dispatch. Upstream source
+inspection showed that plain wxEvtHandler otherwise forwards unhandled events
+to wxApp; native default END_SESSION can exit the process. Other kinds retain
+normal dispatch. Native application bindings are tested without emitting events.
+
+Focused example/regressions and all 35 GUI scenarios plus preflight pass on local
+SBCL and CCL. Python and pinned inventory regressions pass. Five relocated
+package checks pass; evidence paths are in the handoff. The 132-entry docset
+covers all 99 exports, guides and sixteen examples, with zero checker problems
+and actual-package export/SETF coverage, discovery, isolated installation and
+API/guide/example lookup checks on both Lisps.
+
+Independent review identified missing reserved-kind snapshot decoding while the
+slice was being assembled; the decoder was corrected before verification.
+Review then found no actionable runtime issue. Documentation distinguishes
+synthetic CanVeto defaults from native flags; changing logging-off metadata does
+not change OS intent. Real OS session delivery/policy, hosted Windows/Linux GUI
+and graphical Cadre validation remain unverified. All native session-event
+coverage remains partial. Next complete scoped CanVeto mutation and remaining
+native snapshot metadata, then event ownership/family prerequisites in C1.
 
 ## Decisions
 

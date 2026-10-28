@@ -27,6 +27,7 @@ def scenarios():
     yield "event-bindings", "event-bindings.lisp", {}
     yield "event-contexts", "event-contexts.lisp", {}
     yield "close-events", "close-events.lisp", {}
+    yield "session-events", "session-events.lisp", {}
     yield "application-handler", "application-handler.lisp", {}
     yield "notify-events", "notify-events.lisp", {}
     for mode in ("normal", "error-before-run", "error-in-loop", "error-handled-in-loop"):

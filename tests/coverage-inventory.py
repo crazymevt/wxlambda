@@ -151,7 +151,7 @@ class CoverageInventoryChecks(unittest.TestCase):
             'wxEvent::GetEventType', 'wxEvent::GetSkipped', 'wxEvent::Skip',
             'wxEvent::ShouldPropagate', 'wxEvent::StopPropagation', 'wxEvent::ResumePropagation',
             'wxCloseEvent::wxCloseEvent', 'wxCloseEvent::CanVeto', 'wxCloseEvent::Veto',
-            'wxCloseEvent::GetVeto', 'wxCloseEvent::SetCanVeto', 'wxWindow::Close',
+            'wxCloseEvent::GetLoggingOff', 'wxCloseEvent::SetLoggingOff', 'wxEVT_END_SESSION', 'wxEVT_QUERY_END_SESSION', 'wxCloseEvent::GetVeto', 'wxCloseEvent::SetCanVeto', 'wxWindow::Close',
             'wxAppConsole::GetInstance', 'wxNewEventType', 'wxEvtHandler::ProcessEvent', 'wxCommandEvent::wxCommandEvent',
             'wxNotifyEvent::wxNotifyEvent', 'wxNotifyEvent::Veto', 'wxNotifyEvent::Allow', 'wxNotifyEvent::IsAllowed',
             'wxTextCtrl::wxTextCtrl', 'wxStaticText::wxStaticText',

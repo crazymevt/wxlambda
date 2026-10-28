@@ -88,16 +88,16 @@ and queuing, and eight concrete widget kinds with a subset of inherited/layout/c
 C1 remains the active priority: event-handler ownership/state now has bounded
 support. Generic bindings, scoped Skip/propagation and copied native type IDs
 cover command and close kinds. Checked close veto is implemented; registered notify support is also implemented. Native notify subclasses,
-the borrowed application handler view is implemented; OS session routing remains next, then timer/idle and worker dispatch, with required value and lifetime
+the borrowed application handler view is implemented; session bindings/metadata and isolated synthetic routing are implemented; native OS delivery remains unverified, then timer/idle and worker dispatch, with required value and lifetime
 contracts first. C2 remains partial; C3–C7 have no public bindings recorded.
 See the [C1 details](coverage/phase-c1.md), [C2 details](coverage/phase-c2.md) and
 [class index](coverage/classes.md) for the remaining work within bound families.
 
-The current bridge is ABI 17, with 98 public Lisp exports. The latest code passes
-34 GUI scenarios on both local Apple Silicon macOS SBCL/CCL configurations and
+The current bridge is ABI 18, with 99 public Lisp exports. The latest code passes
+35 GUI scenarios on both local Apple Silicon macOS SBCL/CCL configurations and
 five packaging checks. These are local results retained under
-`evidence/application-handler/` and `evidence/packaging/application-handler-20261028/`;
-they do not validate Linux/Windows or the graphical Cadre viewer. The borrowed-application-handler
+`evidence/session-events/` and `evidence/packaging/session-events-20261028/`;
+they do not validate Linux/Windows or the graphical Cadre viewer. The session-event
 implementation reruns the GUI suites; documentation-only
 updates must distinguish retained results from newly run checks.
 
@@ -161,6 +161,7 @@ widget classes has complete wxWidgets coverage yet.
   with native handled plus final-veto results. No unregister or type-declaration
   rollback; session-event routing remains open. See [notify limits](NOTIFY-EVENTS.md).
 - [x] Borrowed `application-handler` identity via `current-application-handler`, with inherited binding/dispatch/state and rejected construction/destruction. Native application hooks and session routing remain open.
+- [x] Query/end-session tags, current/saved `event-logging-off-p`, scoped SETF, application bindings and isolated owned-handler synthetic queues/dispatch. Real OS delivery and native shutdown policy validation remain open.
 - [x] Native errors translated to Lisp `native-error` conditions.
 - [x] Event snapshots: `event`, `event-p`, `event-kind`, `event-source`,
   `event-text`, `event-checked-p`, `event-selection` for four command kinds plus :close.
@@ -231,7 +232,7 @@ Prerequisite value and ownership contracts must precede each consumer.
 Application dispatch does not close the broader application or event checklist.
 
 - [ ] Complete application traits, initialization, event loops, generic
-  `wxEvtHandler` binding/unbinding, event filters, event classes, propagation,
+  `wxEvtHandler` binding/unbinding, event filters,ok  event classes, propagation,
   veto/skip, idle processing, timers and thread-to-GUI dispatch.
 - [ ] Complete object/type information, client data, strings/encodings, buffers,
   arrays/containers, variants/any, numeric/date/time types and conversions.

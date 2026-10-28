@@ -2,7 +2,7 @@
 
 This C1 slice binds `wxNewEventType`, synthetic `wxCommandEvent`/`wxNotifyEvent`
 families and synchronous `wxEvtHandler::ProcessEvent`. The baseline is wxWidgets
-3.2.12 and the native bridge is ABI 17. It does not bind native control-specific
+3.2.12 and the native bridge is ABI 18. It does not bind native control-specific
 notify subclasses or OS session routing.
 
 ## Register a named native type
@@ -106,9 +106,10 @@ Worker-to-GUI dispatch is not supplied here.
 
 Native query/end-session events belong to `wxApp`, not a window handler. The
 default end-session action may exit the process. A borrowed application handler
-view is now available; this notify slice still does not register, bind or
-synthesize OS session tags. Session-family metadata and routing remain the next
-C1 work. Tests do not emit real OS logout/shutdown events.
+view and session-family bindings/metadata are now available; synthetic session
+events require isolated owned handlers and never reach wxApp fallback.
+Real OS delivery remains unverified. See [session events](SESSION-EVENTS.md).
+Tests do not emit real OS logout/shutdown events.
 
 Native control-specific notify subclasses, arbitrary native class registration,
 userData, persistent event ownership/cloning, remaining native payload fields,

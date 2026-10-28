@@ -46,11 +46,13 @@ without implying that the source is still live.
 
 This is a bounded wxWidgets 3.2.12 GetInstance/wxTheApp mapping. Application
 construction, subclass hooks, traits, top-window operations, replacement of an
-external wxApp, session events and logging-off state remain unbound. In
+external wxApp and native application overrides remain unbound. Session-event
+bindings and logging-off metadata are available; real OS delivery remains
+unverified. In
 particular, native query/end-session events route to wxApp and default
-END_SESSION can exit the process. This slice emits no native session events.
-The next C1 step is scoped session-family support with synthetic tests on owned
-handlers, followed by separately validated application/OS routing.
+END_SESSION can exit the process. Synthetic session events are restricted to isolated owned handlers;
+application/window receivers reject emission before event creation. See
+[session events](SESSION-EVENTS.md) for routing restrictions and native policy.
 
 Run the example (it queues a message, verifies delivery, unbinds and exits):
 

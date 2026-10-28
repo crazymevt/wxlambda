@@ -5,10 +5,10 @@ This C1 slice extends bindings beyond command events with `:close`, backed by
 `event-family` classifies these snapshots as `:command` or `:close`;
 registered [notify events](NOTIFY-EVENTS.md) additionally use `:notify`; this is a portable
 supported-kind classification, not arbitrary native RTTI or event registration.
-The baseline is wxWidgets 3.2.12 and the native bridge is ABI 17.
+The baseline is wxWidgets 3.2.12 and the native bridge is ABI 18.
 
 The native type lookup is now **`event-type`**, replacing `command-event-type`
-without an alias. It accepts the five built-in kinds and registered command/notify names. Native type IDs remain
+without an alias. It accepts the seven built-in kinds and registered command/notify names. Native type IDs remain
 process-local; saved snapshots keep immutable copied values.
 
 ## Veto a real frame close request
@@ -88,8 +88,10 @@ unbinding and deferred callback-disposal rules remain as documented in
 
 ## Scope still missing
 
-This binds only `wxEVT_CLOSE_WINDOW`. native control-specific notify subclasses, query/end-session tags,
-logging-off state, arbitrary native event tags/factories and type registration,
+This guide covers `wxEVT_CLOSE_WINDOW`; [session events](SESSION-EVENTS.md)
+add query/end-session tags and logging-off state. Registered command/notify
+types are supported. Native control-specific notify subclasses, arbitrary
+native event classes/factories,
 persistent event ownership/cloning, origin/ID/type mutation and userData remain
 open. The frame-only close request is a bounded mapping of an inherited window
 operation; panel/dialog/other top-level receivers are not exposed here. Native
@@ -122,3 +124,5 @@ while RUN continues. These APIs, this guide and example are included in the
 [Cadre docset](DOCSET.md), installable under `$XDG_DATA_HOME/docsets/wxlambda/`
 (default `~/.local/share/docsets/wxlambda/`). Hosted GUI and graphical Cadre checks
 remain separate from local shared-reader validation.
+
+[Session events](SESSION-EVENTS.md) extend the close family with query/end-session kinds, scoped logging-off metadata and isolated synthetic dispatch. Native OS session delivery remains unverified.

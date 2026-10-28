@@ -36,7 +36,7 @@
 (defclass checkbox (window)
   ((handler-token :initform nil :accessor handler-token)))
 
-(defstruct (event (:constructor %make-event (kind source text checked-p selection id native-type can-veto veto family-code integer)))
+(defstruct (event (:constructor %make-event (kind source text checked-p selection id native-type can-veto veto family-code integer logging-off)))
   "A Lisp-owned snapshot. Slots are read-only; TEXT is an independent string."
   (kind nil :read-only t)
   (source nil :read-only t)
@@ -48,7 +48,8 @@
   (can-veto nil :read-only t)
   (veto nil :read-only t)
   (family-code 0 :read-only t)
-  (integer 0 :read-only t))
+  (integer 0 :read-only t)
+  (logging-off nil :read-only t))
 
 (defstruct (event-binding (:constructor %make-event-binding (source kind token)))
   (source nil :read-only t) (kind nil :read-only t) (token 0 :read-only t))
@@ -80,8 +81,8 @@
         (let ((handler (gethash token *handlers*)))
           (when handler
             (when (cffi:null-pointer-p payload) (error "Missing event payload"))
-            (cffi:with-foreign-slots ((kind text checked selection id text-length context native-type can-veto vetoed family integer) payload (:struct native-event))
-              (let* ((event-kind (or (case kind (1 :click) (2 :text-change) (3 :toggle) (4 :selection) (5 :close))
+            (cffi:with-foreign-slots ((kind text checked selection id text-length context native-type can-veto vetoed family integer logging-off) payload (:struct native-event))
+              (let* ((event-kind (or (case kind (1 :click) (2 :text-change) (3 :toggle) (4 :selection) (5 :close) (6 :query-end-session) (7 :end-session))
                                      (gethash kind *registered-event-kinds*)
                                      (error "Unregistered native event kind ~S" kind)))
                      (value (progn
@@ -92,7 +93,7 @@
                      (checked-p (and (= kind 3) (not (zerop checked))))
                      (event (%make-event event-kind (handler-source handler) value checked-p
                                          (when (= kind 4) (unless (= selection -1) selection)) id native-type
-                                         (not (zerop can-veto)) (not (zerop vetoed)) family integer)))
+                                         (not (zerop can-veto)) (not (zerop vetoed)) family integer (not (zerop logging-off)))))
                 (if (handler-with-context handler)
                     (funcall (handler-function handler) event (%make-event-context context))
                     (funcall (handler-function handler) event)))))))
@@ -769,7 +770,7 @@ live checkbox, including when called from inside its handler."
   t)
 
 (defun builtin-event-kind (kind)
-  (case kind (:click 1) (:text-change 2) (:toggle 3) (:selection 4) (:close 5)))
+  (case kind (:click 1) (:text-change 2) (:toggle 3) (:selection 4) (:close 5) (:query-end-session 6) (:end-session 7)))
 (defun native-event-kind (kind)
   (or (builtin-event-kind kind)
       (and *registered-event-types* (gethash kind *registered-event-types*))
@@ -818,10 +819,12 @@ live checkbox, including when called from inside its handler."
       (remhash token *handlers*)
       removed)))
 (defun call-synthetic-event (function handler kind id text checked-p selection can-veto-p can-supplied
-                            integer integer-supplied vetoed-p veto-supplied)
+                            integer integer-supplied vetoed-p veto-supplied logging-off-p logging-supplied)
   (require-active-application)
   (let* ((native-kind (native-event-kind kind))
          (custom (and *registered-event-families* (gethash kind *registered-event-families*))))
+    (when (and logging-supplied (not (member kind '(:query-end-session :end-session))))
+      (error "LOGGING-OFF-P applies only to session events"))
     (check-event-id id)
     (check-type text string)
     (check-type selection (or null (integer 0 2147483647)))
@@ -830,26 +833,26 @@ live checkbox, including when called from inside its handler."
       (error "TEXT applies only to text-change or registered event types"))
     (when (and checked-p (not (eq kind :toggle))) (error "CHECKED-P applies only to :TOGGLE"))
     (when (and selection (not (eq kind :selection))) (error "SELECTION applies only to :SELECTION"))
-    (when (and can-supplied (not (eq kind :close))) (error "CAN-VETO-P applies only to :CLOSE"))
+    (when (and can-supplied (not (member kind '(:close :query-end-session :end-session)))) (error "CAN-VETO-P applies only to close/session events"))
     (when (and integer-supplied (not custom)) (error "INTEGER applies only to registered event types"))
     (when (and veto-supplied (not (eq custom :notify))) (error "VETOED-P applies only to registered notify types"))
     (cffi:with-foreign-string ((pointer bytes) text :encoding :utf-8)
       (funcall function (handle handler) native-kind id pointer (1- bytes)
                (cond (custom integer) ((eq kind :toggle) (if checked-p 1 0))
                      ((eq kind :selection) (or selection -1)) (t 0))
-               (if can-veto-p 1 0) (if vetoed-p 1 0)))))
-(defgeneric queue-event (handler kind &key id text checked-p selection can-veto-p integer vetoed-p)
+               (if can-veto-p 1 0) (if vetoed-p 1 0) (if logging-off-p 1 0)))))
+(defgeneric queue-event (handler kind &key id text checked-p selection can-veto-p integer vetoed-p logging-off-p)
   (:documentation "Queue a copied supported event; queued frame-close events may invoke native closing."))
 (defmethod queue-event ((handler event-handler) kind &key (id 0) (text "") checked-p selection
-                         (can-veto-p t can-supplied) (integer 0 integer-supplied) (vetoed-p nil veto-supplied))
+                         (can-veto-p t can-supplied) (integer 0 integer-supplied) (vetoed-p nil veto-supplied) (logging-off-p nil logging-supplied))
   (call-synthetic-event (lambda (&rest arguments) (check-status (apply #'%queue-event arguments)))
                         handler kind id text checked-p selection can-veto-p can-supplied
-                        integer integer-supplied vetoed-p veto-supplied)
+                        integer integer-supplied vetoed-p veto-supplied logging-off-p logging-supplied)
   handler)
-(defgeneric process-event (handler kind &key id text checked-p selection can-veto-p integer vetoed-p)
+(defgeneric process-event (handler kind &key id text checked-p selection can-veto-p integer vetoed-p logging-off-p)
   (:documentation "Synchronously dispatch a fresh supported event; return native handled and final veto values."))
 (defmethod process-event ((handler event-handler) kind &key (id 0) (text "") checked-p selection
-                           (can-veto-p t can-supplied) (integer 0 integer-supplied) (vetoed-p nil veto-supplied))
+                           (can-veto-p t can-supplied) (integer 0 integer-supplied) (vetoed-p nil veto-supplied) (logging-off-p nil logging-supplied))
   (require-active-application)
   (cffi:with-foreign-object (final-veto :int)
     (let ((handled
@@ -858,7 +861,7 @@ live checkbox, including when called from inside its handler."
                (lambda (&rest arguments)
                  (boolean-result (apply #'%process-event (append arguments (list final-veto)))))
                handler kind id text checked-p selection can-veto-p can-supplied
-               integer integer-supplied vetoed-p veto-supplied))))
+               integer integer-supplied vetoed-p veto-supplied logging-off-p logging-supplied))))
       (check-callback-error)
       (values handled (not (zerop (cffi:mem-ref final-veto :int)))))))
 (defun register-event-type (name &key (family :notify))
@@ -941,3 +944,18 @@ live checkbox, including when called from inside its handler."
                   (boolean-result (%close (handle frame) (if force 1 0))))))
     (check-callback-error)
     result))
+
+(defgeneric event-logging-off-p (event)
+  (:documentation "Read session logging-off metadata; SETF requires the current session-event context."))
+(defmethod event-logging-off-p ((event event))
+  (unless (member (event-kind event) '(:query-end-session :end-session))
+    (error "Logging-off requires a session-event snapshot"))
+  (event-logging-off event))
+(defmethod event-logging-off-p ((context event-context))
+  (require-active-application)
+  (boolean-result (%context-logging-off (event-context-token context))))
+(defgeneric (setf event-logging-off-p) (value event))
+(defmethod (setf event-logging-off-p) (value (context event-context))
+  (require-active-application)
+  (check-status (%context-set-logging-off (event-context-token context) (if value 1 0)))
+  value)

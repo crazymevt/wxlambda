@@ -17,7 +17,8 @@
   (can-veto :int)
   (vetoed :int)
   (family :int)
-  (integer :int))
+  (integer :int)
+  (logging-off :int))
 
 (cffi:defcfun ("wxl_abi_version" %abi-version) :int)
 (cffi:defcfun ("wxl_last_error" %last-error) :string)
@@ -84,7 +85,7 @@
           (if (probe-file local)
               (cffi:load-foreign-library local)
               (cffi:use-foreign-library wxlambda-native))))
-    (unless (= 17 (%abi-version)) (error "Unsupported wxlambda native ABI"))
+    (unless (= 18 (%abi-version)) (error "Unsupported wxlambda native ABI"))
     (setf *native-loaded* t))
   t)
 
@@ -112,7 +113,7 @@
 (cffi:defcfun ("wxl_bind" %bind) :int (handler :uint64) (kind :int) (token :uint64) (id :int) (last-id :int) (with-context :int))
 (cffi:defcfun ("wxl_unbind" %unbind) :int (token :uint64))
 (cffi:defcfun ("wxl_binding_active" %binding-active) :int (token :uint64))
-(cffi:defcfun ("wxl_queue_event" %queue-event) :int (handler :uint64) (kind :int) (id :int) (text :pointer) (length :size) (value :int) (can-veto :int) (vetoed :int))
+(cffi:defcfun ("wxl_queue_event" %queue-event) :int (handler :uint64) (kind :int) (id :int) (text :pointer) (length :size) (value :int) (can-veto :int) (vetoed :int) (logging-off :int))
 
 (cffi:defcfun ("wxl_event_type" %event-type) :int (kind :int))
 (cffi:defcfun ("wxl_context_active" %context-active) :int (context :uint64))
@@ -129,4 +130,7 @@
 
 (cffi:defcfun ("wxl_register_event_type" %register-event-type) :int (family :int))
 (cffi:defcfun ("wxl_process_event" %process-event) :int (handler :uint64) (kind :int) (id :int)
-  (text :pointer) (length :size) (value :int) (can-veto :int) (vetoed :int) (final-veto :pointer))
+  (text :pointer) (length :size) (value :int) (can-veto :int) (vetoed :int) (logging-off :int) (final-veto :pointer))
+
+(cffi:defcfun ("wxl_context_logging_off" %context-logging-off) :int (context :uint64))
+(cffi:defcfun ("wxl_context_set_logging_off" %context-set-logging-off) :int (context :uint64) (value :int))

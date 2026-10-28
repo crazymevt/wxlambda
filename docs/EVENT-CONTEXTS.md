@@ -2,7 +2,7 @@
 
 This C1 slice adds borrowed `event-context` values for native Skip and propagation
 control. Existing `event` snapshots remain immutable Lisp-owned data. The bridge
-is ABI 17, using the wxWidgets 3.2.12 inventory baseline. Supported events now include
+is ABI 18, using the wxWidgets 3.2.12 inventory baseline. Supported events now include
 four command kinds plus the [close family](CLOSE-EVENTS.md); arbitrary classes
 and native notify subclasses/session routing remain open. Registered
 [notify types](NOTIFY-EVENTS.md) now support scoped Veto/Allow.
@@ -129,3 +129,5 @@ The API, this guide and the example are included in the [Cadre docset](DOCSET.md
 installable under `$XDG_DATA_HOME/docsets/wxlambda/` (default
 `~/.local/share/docsets/wxlambda/`). Hosted-platform GUI and graphical Cadre
 verification remain separate checks.
+
+[Session events](SESSION-EVENTS.md) extend the close family with query/end-session kinds, scoped logging-off metadata and isolated synthetic dispatch. Native OS session delivery remains unverified.
