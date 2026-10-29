@@ -9,7 +9,9 @@ Native controls may ignore explicit backgrounds or retain system-drawn chrome.
 `notebook-tab-colours` takes `(base active)` packed RGB24 integers, or NIL to
 restore default art. Its reader reports last configured metadata, not an art
 provider object. The owned generic AUI art chooses contrasting tab text; native
-close/scroll glyphs still follow system appearance. Pages/selection are retained.
+close/scroll glyphs still follow system appearance. Pages/selection are retained. Replacing art immediately initializes the sizing
+information in every existing private tab group, even when the strip height
+stays unchanged; captions and close controls remain within the visible strip.
 
 `stc-caret-colour` reads/writes native caret RGB24. `stc-selection-colours` takes
 `(foreground background)` RGB24 or NIL for toolkit defaults. Its reader reports

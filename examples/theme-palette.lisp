@@ -28,6 +28,9 @@
            (assert (equal '(#x17191E #x303440) (wxlambda:notebook-tab-colours book)))
            (assert (equal '(230 230 230) (wxlambda:window-colours panel)))
            (assert (equal "Theme palette λ" (wxlambda:stc-text editor)))
+           ;; Reapplying the same palette must not require a frame resize to
+           ;; keep tab captions visible. Native geometry is regression-tested.
+           (setf (wxlambda:notebook-tab-colours book) '(#x17191E #x303440))
            (wxlambda:system-colours)
            (setf (wxlambda:stc-selection-colours editor) nil
                  (wxlambda:notebook-tab-colours book) nil

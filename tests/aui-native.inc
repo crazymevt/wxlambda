@@ -29,6 +29,37 @@ void exercise_aui_notebook() {
     wxAuiTabCtrl *left=nullptr,*right=nullptr; int left_index=-1,right_index=-1;
     expect(book->FindTab(window(a),&left,&left_index) && book->FindTab(window(b),&right,&right_index) && left!=right,
            "Native Split creates distinct private tab groups");
+    // Replacing same-height tab art used to leave its drawing height at zero.
+    // Exercise both private groups without a resize to catch clipped captions.
+    const auto selected_before_theme=book->GetCurrentPage();
+    for (int pass=0;pass<4;++pass) {
+        int64_t base=pass%2 ? 0xE3E6EC : 0x181818;
+        int64_t active=pass%2 ? 0xFFFFFF : 0x1F1F1F; int present=0;
+        expect(wxl_aui_tab_colours(id,1,0,&base,&active,&present)==0 && present==1,
+               "Apply repeated dark/light tab art without resizing");
+        for (auto* tabs:{left,right}) {
+            const wxSize size=tabs->GetClientSize();
+            expect(size.x>0 && size.y>0,"Private tab group has drawable extent");
+            wxBitmap bitmap(size.x,size.y); wxMemoryDC dc(bitmap);
+            dc.SetBackground(wxBrush(*wxBLACK)); dc.Clear();
+            wxRect tab,close; int extent=0;
+            tabs->GetArtProvider()->DrawTab(dc,tabs,tabs->GetPage(0),wxRect(wxPoint(0,0),size),
+                                           wxAUI_BUTTON_STATE_NORMAL,&tab,&close,&extent);
+            expect(tab.height>0 && tab.y>=0 && tab.GetBottom()<size.y,
+                   "Themed tab artwork and caption stay inside the tab strip");
+            expect(close.width>0 && close.height>0 && close.y>=0 && close.y+close.width<=size.y,
+                   "Themed square close glyph remains inside the tab strip");
+            dc.SelectObject(wxNullBitmap);
+            if (pass==0 && tabs==left) {
+                const auto image=publish_image(bitmap.ConvertToImage());
+                const char* path="/private/tmp/wxlambda-themed-tab.png";
+                expect(wxl_save_image(image,path,std::strlen(path))==0,"Save themed-tab drawing fixture");
+                expect(wxl_image_destroy(image,0)==0,"Release themed-tab drawing fixture");
+            }
+        }
+        expect(book->GetCurrentPage()==selected_before_theme && book->GetPageCount()==3,
+               "Tab palette replacement preserves selection and page identities");
+    }
     expect(window(a)->GetParent()==book && window(b)->GetParent()==book && window(c)->GetParent()==book &&
            wxl_aui_page_index(id,b)==2,"Native split preserves native page parent and global catalogue identity");
     expect(!(book->GetWindowStyleFlag() & wxAUI_NB_TAB_MOVE),"Native mouse reorder disabled while private groups have different index spaces");

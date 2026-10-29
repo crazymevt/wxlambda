@@ -5736,7 +5736,7 @@
     "kind": "generic-function",
     "arguments": "AUI-NOTEBOOK; SETF takes NIL or (base-RGB24 active-RGB24).",
     "returns": "Last explicitly configured pair, or NIL.",
-    "description": "Install owned wxAuiGenericTabArt with copied colors; NIL restores default art. Text contrast follows the generic art algorithm. Close/scroll glyphs and other native chrome still follow system appearance. Preserves pages and selection.",
+    "description": "Install owned wxAuiGenericTabArt with copied colors; NIL restores default art. Text contrast follows the generic art algorithm. Close/scroll glyphs and other native chrome still follow system appearance. Preserves pages and selection. Replacement art receives current sizing in every private tab group without requiring a resize, keeping captions visible.",
     "scope": "Main-thread active session; reads are callback-safe, writes reject callbacks and use the existing native operation/lifetime guards. Native decoration support varies by platform.",
     "wxwidgets": "wxAuiNotebook::SetArtProvider / wxAuiTabArt::SetColour / SetActiveColour",
     "setf": {

@@ -17869,7 +17869,7 @@
       "native": [
         "wxl_aui_tab_colours"
       ],
-      "scope": "Bounded copied theme colors, callback-safe reads and guarded writes; no raw ownership or full class parity. See docs/THEME-COLOURS.md."
+      "scope": "Bounded copied theme colors, callback-safe reads and guarded writes; no raw ownership or full class parity. See docs/THEME-COLOURS.md. Replacement art clones receive immediate private-tab sizing, including unchanged-height and split groups."
     },
     {
       "header": "wx/aui/auibook.h",
@@ -17883,7 +17883,7 @@
       "native": [
         "wxl_aui_tab_colours"
       ],
-      "scope": "Bounded copied theme colors, callback-safe reads and guarded writes; no raw ownership or full class parity. See docs/THEME-COLOURS.md."
+      "scope": "Bounded copied theme colors, callback-safe reads and guarded writes; no raw ownership or full class parity. See docs/THEME-COLOURS.md. Replacement art clones receive immediate private-tab sizing, including unchanged-height and split groups."
     },
     {
       "header": "wx/stc/stc.h",

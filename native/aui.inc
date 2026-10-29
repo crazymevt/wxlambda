@@ -156,6 +156,15 @@ int wxl_aui_tab_colours(wxl_handle id,int write,int reset,int64_t* base,int64_t*
             custom->SetColour(stc_unpack_colour(*base)); custom->SetActiveColour(stc_unpack_colour(*active)); art=std::move(custom);
         }
         book->SetArtProvider(art.release());
+        // SetArtProvider clones the art into each private group. If the height
+        // is unchanged wxAUI does not resize the controls, leaving fresh generic
+        // art with m_tabCtrlHeight=0. Initialize every clone's current geometry
+        // explicitly, without waiting for a later native resize event.
+        for (auto* child:book->GetChildren())
+            if (auto* tabs=dynamic_cast<wxAuiTabCtrl*>(child)) {
+                tabs->SetRect(tabs->GetClientRect());
+                tabs->Refresh();
+            }
         book->themed_colours=!reset;
         if (!reset) { book->theme_base=stc_unpack_colour(*base); book->theme_active=stc_unpack_colour(*active); }
         book->Refresh();

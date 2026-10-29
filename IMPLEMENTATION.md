@@ -3658,3 +3658,19 @@ pass; actual SBCL/CCL docset checks cover all public exports, SETF lookup and
 Cadre discovery. Independent review found no remaining binding issues; two app
 preview/timer lifecycle findings were corrected in KryptonEdit. Native decoration
 support still varies; Windows/Linux did not run. Next work is application-driven.
+
+## Theme tab-caption sizing correction (2026-10-29)
+
+wxAUI SetArtProvider can clone fresh generic art into same-height tab strips
+without sending sizing information. Initialize each private tab control's SetRect
+after provider replacement. Native repeated dark/light drawing checks cover
+positive in-strip tab rectangles and close glyphs in both split groups and preserved page
+selection; examples and theme reference describe immediate sizing. ABI unchanged.
+
+Verification: macOS native fixture passes repeated dark/light drawing on both
+split groups; its PNG fixture was visually inspected and shows the complete
+caption and close glyph. SBCL/CCL theme example/tests pass; KryptonEdit478 UI
+checks pass with the rebuilt bridge. Pinned coverage consistency and docset
+build/check, actual SBCL/CCL reader and isolated install pass. Independent review
+caught the initial SetRect overload mismatch, corrected before verification;
+no remaining findings. Windows/Linux rendering was not run.
