@@ -21,3 +21,8 @@ WXL_API int wxl_display_info(int index,int client,int* rectangle,int* ppi,double
 WXL_API int wxl_window_display(wxl_handle id);
 WXL_API int wxl_window_point(wxl_handle id,int operation,int x,int y,int* result);
 WXL_API int wxl_window_content_scale(wxl_handle id,double* scale);
+
+WXL_API int wxl_bitmap_toggle_supported();
+WXL_API wxl_handle wxl_bitmap_toggle(wxl_handle parent,wxl_handle bitmap,int checked);
+WXL_API wxl_handle wxl_bitmap_toggle_get(wxl_handle id);
+WXL_API int wxl_bitmap_toggle_set(wxl_handle id,wxl_handle bitmap);

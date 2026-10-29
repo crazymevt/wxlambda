@@ -3602,3 +3602,24 @@ No full-suite/native rebuild was needed for a package-only nickname. Pinned
 inventory regeneration and14 checks pass unchanged (quiet-run.YRDot8vM).
 Docset661 entries/all527 public exports, both-Lisp class/SETF coverage and zero
 checker problems pass (quiet-run.JcDA4ejS); final handoff regeneration follows.
+
+## ABI62 bitmap toggle buttons (2026-10-29)
+
+Application-requested extension for KryptonEdit font-independent activity icons.
+Adds BITMAP-TOGGLE-BUTTON, factory, build availability query and copied
+BITMAP-VALUE/SETF; inherits checked events, native source/ancestor guards and
+CLOS rollback. Default geometry/style only; wxHAS_BITMAPTOGGLEBUTTON gates
+unsupported ports. Independent implementation review found no actionable issue.
+Native bridge rebuild passes (quiet-run.OZFncg94); three pre-existing C-linkage
+warnings remain in unrelated search/combo/grid helpers. Bitmap-toggle tests and
+EXERCISE pass on macOS/SBCL (oKLhhJu7) and CCL (0bOoDwDv); existing text-toggle
+(TJHm0mXY) and image-resource (rmHPeZuM) regressions pass. All14 pinned inventory
+checks pass after adding the two reviewed class scopes (6K8A7zR8). The first
+inventory run failed because its expected reviewed-class set lacked the new
+wxBitmapToggleButton/wxAnyButton entries; that registry is now updated.
+Docset666entries/530API exports, guides/examples, zero checker problems, actual
+class/SETF coverage under SBCL and CCL, and isolated install all pass
+(47j8QTVQ, EqgirvEZ, Hx1xrvaD, YTpaxBW9). Final docset includes this record and all three content groups.
+KryptonEdit's native menu/panel/bitmap-icon integration passes319UI checks
+(iBivWn1m); its781141headless checks also pass (FdOfrlyD). No platform beyond
+macOS or physical-input/appearance/DPI validation is claimed.

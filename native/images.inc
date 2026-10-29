@@ -122,3 +122,50 @@ int wxl_window_point(wxl_handle id,int operation,int x,int y,int* result) { retu
 }); }
 int wxl_window_content_scale(wxl_handle id,double* scale) { return status([&] { require(scale,"Missing scale output"); *scale=window(id)->GetContentScaleFactor(); }); }
 }
+
+extern "C" {
+int wxl_bitmap_toggle_supported() { return boolean_result([&] {
+    ready();
+#ifdef wxHAS_BITMAPTOGGLEBUTTON
+    return true;
+#else
+    return false;
+#endif
+}); }
+wxl_handle wxl_bitmap_toggle(wxl_handle parent_id,wxl_handle bitmap_id,int checked) { return create([&]() -> wxl_handle {
+    image_mutation();
+#ifdef wxHAS_BITMAPTOGGLEBUTTON
+    auto* parent=window(parent_id);
+    require(checked==0 || checked==1,"Invalid toggle state");
+    const wxBitmap value=bitmap_resource(bitmap_id);
+    struct CreationScope { CreationScope() { ++input_creation_depth; } ~CreationScope() { --input_creation_depth; } } creation;
+    auto object=std::make_unique<ManagedWindow<wxBitmapToggleButton>>();
+    { wxEventBlocker blocker(object.get());
+      require(object->Create(parent,wxID_ANY,wxBitmapBundle::FromBitmap(value)),"Native bitmap toggle creation failed");
+      object->SetValue(checked!=0); }
+    const auto id=track(object.get()); input_owners.emplace(object.get(),false); object.release(); return id;
+#else
+    (void)parent_id; (void)bitmap_id; (void)checked;
+    throw std::runtime_error("Bitmap toggle buttons are unavailable on this wxWidgets port");
+#endif
+}); }
+wxl_handle wxl_bitmap_toggle_get(wxl_handle id) { return create([&]() -> wxl_handle {
+    image_mutation();
+#ifdef wxHAS_BITMAPTOGGLEBUTTON
+    return publish_bitmap(as<wxBitmapToggleButton>(id)->GetBitmap());
+#else
+    (void)id; throw std::runtime_error("Bitmap toggle buttons are unavailable on this wxWidgets port");
+#endif
+}); }
+int wxl_bitmap_toggle_set(wxl_handle id,wxl_handle bitmap_id) { return status([&] {
+    image_mutation();
+#ifdef wxHAS_BITMAPTOGGLEBUTTON
+    auto* object=as<wxBitmapToggleButton>(id);
+    const wxBitmap value=bitmap_resource(bitmap_id);
+    InputOperation operation(object);
+    object->SetBitmap(wxBitmapBundle::FromBitmap(value));
+#else
+    (void)id; (void)bitmap_id; throw std::runtime_error("Bitmap toggle buttons are unavailable on this wxWidgets port");
+#endif
+}); }
+}

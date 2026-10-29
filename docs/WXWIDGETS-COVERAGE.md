@@ -613,3 +613,10 @@ range/hidden veto is observational and Hide can later commit. Owned string-table
 axes can become empty and be restored within0..256/16384cells. Native inventory
 classes stay partial; custom models, renderers and editor ownership remain
 on-demand backlog. Independent review and verification are recorded in the handoff.
+
+## ABI62 application-driven bitmap toggles
+
+Native wxBitmapToggleButton construction and copied normal bitmap read/write,
+inherited checked events/state and availability query are bound. Source ports
+are macro-gated; local runtime scope is macOS. State artwork/bundles, margins and
+complete class coverage remain pending. See [bitmap toggles](BITMAP-TOGGLES.md).

@@ -22,3 +22,8 @@
 (cffi:defcfun ("wxl_static_bitmap" %static-bitmap) :uint64 (parent :uint64) (bitmap :uint64))
 (cffi:defcfun ("wxl_static_bitmap_get" %static-bitmap-get) :uint64 (id :uint64))
 (cffi:defcfun ("wxl_static_bitmap_set" %static-bitmap-set) :int (id :uint64) (bitmap :uint64))
+
+(cffi:defcfun ("wxl_bitmap_toggle_supported" %bitmap-toggle-supported) :int)
+(cffi:defcfun ("wxl_bitmap_toggle" %bitmap-toggle) :uint64 (parent :uint64) (bitmap :uint64) (checked :int))
+(cffi:defcfun ("wxl_bitmap_toggle_get" %bitmap-toggle-get) :uint64 (id :uint64))
+(cffi:defcfun ("wxl_bitmap_toggle_set" %bitmap-toggle-set) :int (id :uint64) (bitmap :uint64))

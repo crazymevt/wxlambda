@@ -77,6 +77,7 @@
 (defclass date-picker (window) ())
 (defclass combo-box (window) ())
 (defclass toggle-button (window) ())
+(defclass bitmap-toggle-button (toggle-button) ())
 (defclass radio-box (window) ())
 (defclass slider (window) ())
 (defclass spin-control (window) ())
@@ -2552,8 +2553,10 @@ live checkbox, including when called from inside its handler."
 
 ;;; Persistent two-state push buttons, independent of radio groups and toolbars.
 (defmethod initialize-instance :after ((object toggle-button) &key parent (label "") checked)
-  (check-type parent window) (check-text-value label)
-  (adopt-native object (%toggle-button (handle parent) label (if checked 1 0))))
+  ;; Bitmap subclasses create their native widget after image bindings load.
+  (unless (typep object 'bitmap-toggle-button)
+    (check-type parent window) (check-text-value label)
+    (adopt-native object (%toggle-button (handle parent) label (if checked 1 0)))))
 (defgeneric make-toggle-button (parent &rest initargs &key class label checked &allow-other-keys))
 (defmethod make-toggle-button ((parent window) &rest initargs &key (class 'toggle-button) &allow-other-keys)
   (apply #'make-widget class 'toggle-button :parent parent initargs))

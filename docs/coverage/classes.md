@@ -320,7 +320,7 @@ Class/struct definitions: 0 complete; 18 partial; 284 pending. Partial and pendi
 
 ## C2: Windows, layout, basic controls, and input
 
-Class/struct definitions: 0 complete; 33 partial; 99 pending. Partial and pending classes remain open.
+Class/struct definitions: 0 complete; 35 partial; 97 pending. Partial and pending classes remain open.
 
 [Declaration counts and remaining work](README.md).
 
@@ -329,7 +329,7 @@ Class/struct definitions: 0 complete; 33 partial; 99 pending. Partial and pendin
 - [~] `wxActivityIndicator` — [`wx/activityindicator.h`](phase-c2.md), upstream line 22. — **Partial**: `activity-indicator`, `make-activity-indicator`, `activity-running-p`; ABI: `wxl_activity_indicator`, `wxl_activity_running`, `wxl_set_activity_running`. Bounded ACTIVITY-INDICATOR WINDOW, native-backed :parent/:running-p CLOS construction, initially stopped by default, state readback, noncumulative Start/Stop and generic ACTIVITY-RUNNING-P/SETF. Callback writes defer; synchronous Input lifetime/native-entry protection. Native appearance/timer internals remain owned; no raw adoption, artwork/style/size/task or full class parity. Requires ACTIVITYINDICATOR/GRAPHICS_CONTEXT/TIMER and existing adv linkage. See docs/ACTIVITY-INDICATORS.md.
 - [ ] `wxAddRemoveAdaptor` — [`wx/addremovectrl.h`](phase-c2.md), upstream line 26.
 - [ ] `wxAddRemoveCtrl` — [`wx/addremovectrl.h`](phase-c2.md), upstream line 140.
-- [ ] `wxAnyButton` — [`wx/anybutton.h`](phase-c2.md), upstream line 25.
+- [~] `wxAnyButton` — [`wx/anybutton.h`](phase-c2.md), upstream line 25. — **Partial**: `bitmap-value`; ABI: `wxl_bitmap_toggle_get`, `wxl_bitmap_toggle_set`. Only copied GetBitmap/SetBitmap for BITMAP-TOGGLE-BUTTON receivers. Other button receivers, state artwork, margins/alignment and full wxAnyButton coverage remain unbound. See docs/BITMAP-TOGGLES.md.
 - [ ] `wxBannerWindow` — [`wx/bannerwindow.h`](phase-c2.md), upstream line 51.
 - [ ] `wxBitmapButton` — [`wx/bmpbuttn.h`](phase-c2.md), upstream line 44.
 - [ ] `wxBitmapComboBox` — [`wx/bmpcbox.h`](phase-c2.md), upstream line 55.
@@ -429,8 +429,8 @@ Class/struct definitions: 0 complete; 33 partial; 99 pending. Partial and pendin
 - [ ] `wxStreamToTextRedirector` — [`wx/textctrl.h`](phase-c2.md), upstream line 2027.
 - [ ] `wxTextEntry` — [`wx/textentry.h`](phase-c2.md), upstream line 33.
 - [ ] `wxTextWrapper` — [`wx/textwrapper.h`](phase-c2.md), upstream line 59.
-- [~] `wxToggleButton` — [`wx/tglbtn.h`](phase-c2.md), upstream line 32. — **Partial**: `toggle-button`, `make-toggle-button`, `checked-p`, `label-text`, `event-checked-p`; ABI: `wxl_toggle_button`, `wxl_toggle_button_checked`, `wxl_set_toggle_button_checked`, `wxl_toggle_button_label`, `wxl_set_toggle_button_label`. Bounded independent two-state TOGGLE-BUTTON, default style, native-backed CLOS and checked/label generic SETF; silent defaults and explicit one native-class update. Native checked/text snapshots/current contexts, source lifetime/reentry guards. No bitmap toggle, grouping, raw adoption, owned/synthetic/cloned toggle-button events or full class parity. See docs/TOGGLE-BUTTONS.md.
-- [ ] `wxBitmapToggleButton` — [`wx/tglbtn.h`](phase-c2.md), upstream line 129.
+- [~] `wxToggleButton` — [`wx/tglbtn.h`](phase-c2.md), upstream line 32. — **Partial**: `toggle-button`, `make-toggle-button`, `checked-p`, `label-text`, `event-checked-p`; ABI: `wxl_toggle_button`, `wxl_toggle_button_checked`, `wxl_set_toggle_button_checked`, `wxl_toggle_button_label`, `wxl_set_toggle_button_label`. Bounded independent two-state TOGGLE-BUTTON, default style, native-backed CLOS and checked/label generic SETF; silent defaults and explicit one native-class update. Native checked/text snapshots/current contexts, source lifetime/reentry guards. Separate bitmap variant in BITMAP-TOGGLE-BUTTON; no grouping, raw adoption, owned/synthetic/cloned toggle-button events or full class parity. See docs/TOGGLE-BUTTONS.md.
+- [~] `wxBitmapToggleButton` — [`wx/tglbtn.h`](phase-c2.md), upstream line 129. — **Partial**: `bitmap-toggle-button`, `make-bitmap-toggle-button`, `bitmap-toggle-button-supported-p`, `bitmap-value`, `checked-p`; ABI: `wxl_bitmap_toggle_supported`, `wxl_bitmap_toggle`, `wxl_bitmap_toggle_get`, `wxl_bitmap_toggle_set`, `wxl_toggle_button_checked`, `wxl_set_toggle_button_checked`. Native-backed BITMAP-TOGGLE-BUTTON inherits TOGGLE-BUTTON; required copied BITMAP, :checked state, bitmap-value/SETF owned readback, inherited native toggle events/guards. Availability is gated by wxHAS_BITMAPTOGGLEBUTTON. Fixed default IDs/styles/size; no raw ownership, arbitrary state artwork/bundles, grouping or full class parity. See docs/BITMAP-TOGGLES.md.
 - [~] `wxTimePickerCtrl` — [`wx/timectrl.h`](phase-c2.md), upstream line 53. — **Partial**: `time-picker`, `make-time-picker`, `clock-time`, `event-time`; ABI: `wxl_time_picker`, `wxl_clock_time`, `wxl_set_clock_time`. Bounded required TIME-PICKER WINDOW with copied (hour minute second) values, hour0..23 and minute/second0..59, midnight default. Fixed local2012-01-01 input anchor and native component readback, silent SETF/explicit native time event, immutable copied time snapshots/current contexts and shared Input/early Destroy protection. No date/timezone/scheduling/raw resources, nullable/range/styles, owned/synthetic/time clones or full parity. See docs/TIME-PICKER.md.
 - [ ] `wxTipWindow` — [`wx/tipwin.h`](phase-c2.md), upstream line 24.
 - [ ] `wxToolTip` — [`wx/tooltip.h`](phase-c2.md), upstream line 21.

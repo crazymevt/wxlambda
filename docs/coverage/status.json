@@ -7334,7 +7334,7 @@
         "wxl_toggle_button_label",
         "wxl_set_toggle_button_label"
       ],
-      "scope": "Bounded independent two-state TOGGLE-BUTTON, default style, native-backed CLOS and checked/label generic SETF; silent defaults and explicit one native-class update. Native checked/text snapshots/current contexts, source lifetime/reentry guards. No bitmap toggle, grouping, raw adoption, owned/synthetic/cloned toggle-button events or full class parity. See docs/TOGGLE-BUTTONS.md."
+      "scope": "Bounded independent two-state TOGGLE-BUTTON, default style, native-backed CLOS and checked/label generic SETF; silent defaults and explicit one native-class update. Native checked/text snapshots/current contexts, source lifetime/reentry guards. Separate bitmap variant in BITMAP-TOGGLE-BUTTON; no grouping, raw adoption, owned/synthetic/cloned toggle-button events or full class parity. See docs/TOGGLE-BUTTONS.md."
     },
     {
       "header": "wx/tglbtn.h",
@@ -7356,7 +7356,7 @@
         "wxl_toggle_button_label",
         "wxl_set_toggle_button_label"
       ],
-      "scope": "Bounded independent two-state TOGGLE-BUTTON, default style, native-backed CLOS and checked/label generic SETF; silent defaults and explicit one native-class update. Native checked/text snapshots/current contexts, source lifetime/reentry guards. No bitmap toggle, grouping, raw adoption, owned/synthetic/cloned toggle-button events or full class parity. See docs/TOGGLE-BUTTONS.md."
+      "scope": "Bounded independent two-state TOGGLE-BUTTON, default style, native-backed CLOS and checked/label generic SETF; silent defaults and explicit one native-class update. Native checked/text snapshots/current contexts, source lifetime/reentry guards. Separate bitmap variant in BITMAP-TOGGLE-BUTTON; no grouping, raw adoption, owned/synthetic/cloned toggle-button events or full class parity. See docs/TOGGLE-BUTTONS.md."
     },
     {
       "header": "wx/tglbtn.h",
@@ -7378,7 +7378,7 @@
         "wxl_toggle_button_label",
         "wxl_set_toggle_button_label"
       ],
-      "scope": "Bounded independent two-state TOGGLE-BUTTON, default style, native-backed CLOS and checked/label generic SETF; silent defaults and explicit one native-class update. Native checked/text snapshots/current contexts, source lifetime/reentry guards. No bitmap toggle, grouping, raw adoption, owned/synthetic/cloned toggle-button events or full class parity. See docs/TOGGLE-BUTTONS.md."
+      "scope": "Bounded independent two-state TOGGLE-BUTTON, default style, native-backed CLOS and checked/label generic SETF; silent defaults and explicit one native-class update. Native checked/text snapshots/current contexts, source lifetime/reentry guards. Separate bitmap variant in BITMAP-TOGGLE-BUTTON; no grouping, raw adoption, owned/synthetic/cloned toggle-button events or full class parity. See docs/TOGGLE-BUTTONS.md."
     },
     {
       "header": "wx/tglbtn.h",
@@ -7400,7 +7400,7 @@
         "wxl_toggle_button_label",
         "wxl_set_toggle_button_label"
       ],
-      "scope": "Bounded independent two-state TOGGLE-BUTTON, default style, native-backed CLOS and checked/label generic SETF; silent defaults and explicit one native-class update. Native checked/text snapshots/current contexts, source lifetime/reentry guards. No bitmap toggle, grouping, raw adoption, owned/synthetic/cloned toggle-button events or full class parity. See docs/TOGGLE-BUTTONS.md."
+      "scope": "Bounded independent two-state TOGGLE-BUTTON, default style, native-backed CLOS and checked/label generic SETF; silent defaults and explicit one native-class update. Native checked/text snapshots/current contexts, source lifetime/reentry guards. Separate bitmap variant in BITMAP-TOGGLE-BUTTON; no grouping, raw adoption, owned/synthetic/cloned toggle-button events or full class parity. See docs/TOGGLE-BUTTONS.md."
     },
     {
       "header": "wx/tglbtn.h",
@@ -7422,7 +7422,7 @@
         "wxl_toggle_button_label",
         "wxl_set_toggle_button_label"
       ],
-      "scope": "Bounded independent two-state TOGGLE-BUTTON, default style, native-backed CLOS and checked/label generic SETF; silent defaults and explicit one native-class update. Native checked/text snapshots/current contexts, source lifetime/reentry guards. No bitmap toggle, grouping, raw adoption, owned/synthetic/cloned toggle-button events or full class parity. See docs/TOGGLE-BUTTONS.md."
+      "scope": "Bounded independent two-state TOGGLE-BUTTON, default style, native-backed CLOS and checked/label generic SETF; silent defaults and explicit one native-class update. Native checked/text snapshots/current contexts, source lifetime/reentry guards. Separate bitmap variant in BITMAP-TOGGLE-BUTTON; no grouping, raw adoption, owned/synthetic/cloned toggle-button events or full class parity. See docs/TOGGLE-BUTTONS.md."
     },
     {
       "header": "wx/combobox.h",
@@ -17625,6 +17625,167 @@
         "wxl_grid_event_value"
       ],
       "scope": "Selected native-only grid notify bindings160..170 with immutable payload snapshots and current-innermost borrowed contexts. Copied inclusive native range coordinates, Selecting and modifiers; native sender ignores veto outcome. Native metadata is read-only; no owned/synthetic/clone resource or full event/class API parity. docs/GRID-EDITING.md."
+    },
+    {
+      "header": "wx/tglbtn.h",
+      "line": 135,
+      "declaration": "wxBitmapToggleButton();",
+      "status": "~",
+      "symbol": "wxBitmapToggleButton::wxBitmapToggleButton",
+      "lisp": [
+        "bitmap-toggle-button",
+        "make-bitmap-toggle-button",
+        "bitmap-toggle-button-supported-p",
+        "bitmap-value",
+        "checked-p"
+      ],
+      "native": [
+        "wxl_bitmap_toggle_supported",
+        "wxl_bitmap_toggle",
+        "wxl_bitmap_toggle_get",
+        "wxl_bitmap_toggle_set",
+        "wxl_toggle_button_checked",
+        "wxl_set_toggle_button_checked"
+      ],
+      "scope": "Native-backed BITMAP-TOGGLE-BUTTON inherits TOGGLE-BUTTON; required copied BITMAP, :checked state, bitmap-value/SETF owned readback, inherited native toggle events/guards. Availability is gated by wxHAS_BITMAPTOGGLEBUTTON. Fixed default IDs/styles/size; no raw ownership, arbitrary state artwork/bundles, grouping or full class parity. See docs/BITMAP-TOGGLES.md."
+    },
+    {
+      "header": "wx/tglbtn.h",
+      "line": 141,
+      "declaration": "wxBitmapToggleButton(wxWindow* parent, wxWindowID id, const wxBitmapBundle& label, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = 0, const wxValidator& val = wxDefaultValidator, const wxString& name = wxCheckBoxNameStr);",
+      "status": "~",
+      "symbol": "wxBitmapToggleButton::wxBitmapToggleButton",
+      "lisp": [
+        "bitmap-toggle-button",
+        "make-bitmap-toggle-button",
+        "bitmap-toggle-button-supported-p",
+        "bitmap-value",
+        "checked-p"
+      ],
+      "native": [
+        "wxl_bitmap_toggle_supported",
+        "wxl_bitmap_toggle",
+        "wxl_bitmap_toggle_get",
+        "wxl_bitmap_toggle_set",
+        "wxl_toggle_button_checked",
+        "wxl_set_toggle_button_checked"
+      ],
+      "scope": "Native-backed BITMAP-TOGGLE-BUTTON inherits TOGGLE-BUTTON; required copied BITMAP, :checked state, bitmap-value/SETF owned readback, inherited native toggle events/guards. Availability is gated by wxHAS_BITMAPTOGGLEBUTTON. Fixed default IDs/styles/size; no raw ownership, arbitrary state artwork/bundles, grouping or full class parity. See docs/BITMAP-TOGGLES.md."
+    },
+    {
+      "header": "wx/tglbtn.h",
+      "line": 152,
+      "declaration": "bool Create(wxWindow* parent, wxWindowID id, const wxBitmapBundle& label, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = 0, const wxValidator& val = wxDefaultValidator, const wxString& name = wxCheckBoxNameStr);",
+      "status": "~",
+      "symbol": "wxBitmapToggleButton::Create",
+      "lisp": [
+        "bitmap-toggle-button",
+        "make-bitmap-toggle-button",
+        "bitmap-toggle-button-supported-p",
+        "bitmap-value",
+        "checked-p"
+      ],
+      "native": [
+        "wxl_bitmap_toggle_supported",
+        "wxl_bitmap_toggle",
+        "wxl_bitmap_toggle_get",
+        "wxl_bitmap_toggle_set",
+        "wxl_toggle_button_checked",
+        "wxl_set_toggle_button_checked"
+      ],
+      "scope": "Native-backed BITMAP-TOGGLE-BUTTON inherits TOGGLE-BUTTON; required copied BITMAP, :checked state, bitmap-value/SETF owned readback, inherited native toggle events/guards. Availability is gated by wxHAS_BITMAPTOGGLEBUTTON. Fixed default IDs/styles/size; no raw ownership, arbitrary state artwork/bundles, grouping or full class parity. See docs/BITMAP-TOGGLES.md."
+    },
+    {
+      "header": "wx/tglbtn.h",
+      "line": 165,
+      "declaration": "virtual bool GetValue() const;",
+      "status": "~",
+      "symbol": "wxBitmapToggleButton::GetValue",
+      "lisp": [
+        "bitmap-toggle-button",
+        "make-bitmap-toggle-button",
+        "bitmap-toggle-button-supported-p",
+        "bitmap-value",
+        "checked-p"
+      ],
+      "native": [
+        "wxl_bitmap_toggle_supported",
+        "wxl_bitmap_toggle",
+        "wxl_bitmap_toggle_get",
+        "wxl_bitmap_toggle_set",
+        "wxl_toggle_button_checked",
+        "wxl_set_toggle_button_checked"
+      ],
+      "scope": "Native-backed BITMAP-TOGGLE-BUTTON inherits TOGGLE-BUTTON; required copied BITMAP, :checked state, bitmap-value/SETF owned readback, inherited native toggle events/guards. Availability is gated by wxHAS_BITMAPTOGGLEBUTTON. Fixed default IDs/styles/size; no raw ownership, arbitrary state artwork/bundles, grouping or full class parity. See docs/BITMAP-TOGGLES.md."
+    },
+    {
+      "header": "wx/tglbtn.h",
+      "line": 174,
+      "declaration": "virtual void SetValue(bool state);",
+      "status": "~",
+      "symbol": "wxBitmapToggleButton::SetValue",
+      "lisp": [
+        "bitmap-toggle-button",
+        "make-bitmap-toggle-button",
+        "bitmap-toggle-button-supported-p",
+        "bitmap-value",
+        "checked-p"
+      ],
+      "native": [
+        "wxl_bitmap_toggle_supported",
+        "wxl_bitmap_toggle",
+        "wxl_bitmap_toggle_get",
+        "wxl_bitmap_toggle_set",
+        "wxl_toggle_button_checked",
+        "wxl_set_toggle_button_checked"
+      ],
+      "scope": "Native-backed BITMAP-TOGGLE-BUTTON inherits TOGGLE-BUTTON; required copied BITMAP, :checked state, bitmap-value/SETF owned readback, inherited native toggle events/guards. Availability is gated by wxHAS_BITMAPTOGGLEBUTTON. Fixed default IDs/styles/size; no raw ownership, arbitrary state artwork/bundles, grouping or full class parity. See docs/BITMAP-TOGGLES.md."
+    },
+    {
+      "header": "wx/anybutton.h",
+      "line": 41,
+      "declaration": "wxBitmap GetBitmap() const;",
+      "status": "~",
+      "symbol": "wxAnyButton::GetBitmap",
+      "lisp": [
+        "bitmap-toggle-button",
+        "make-bitmap-toggle-button",
+        "bitmap-toggle-button-supported-p",
+        "bitmap-value",
+        "checked-p"
+      ],
+      "native": [
+        "wxl_bitmap_toggle_supported",
+        "wxl_bitmap_toggle",
+        "wxl_bitmap_toggle_get",
+        "wxl_bitmap_toggle_set",
+        "wxl_toggle_button_checked",
+        "wxl_set_toggle_button_checked"
+      ],
+      "scope": "Native-backed BITMAP-TOGGLE-BUTTON inherits TOGGLE-BUTTON; required copied BITMAP, :checked state, bitmap-value/SETF owned readback, inherited native toggle events/guards. Availability is gated by wxHAS_BITMAPTOGGLEBUTTON. Fixed default IDs/styles/size; no raw ownership, arbitrary state artwork/bundles, grouping or full class parity. See docs/BITMAP-TOGGLES.md."
+    },
+    {
+      "header": "wx/anybutton.h",
+      "line": 122,
+      "declaration": "void SetBitmap(const wxBitmapBundle& bitmap, wxDirection dir = wxLEFT);",
+      "status": "~",
+      "symbol": "wxAnyButton::SetBitmap",
+      "lisp": [
+        "bitmap-toggle-button",
+        "make-bitmap-toggle-button",
+        "bitmap-toggle-button-supported-p",
+        "bitmap-value",
+        "checked-p"
+      ],
+      "native": [
+        "wxl_bitmap_toggle_supported",
+        "wxl_bitmap_toggle",
+        "wxl_bitmap_toggle_get",
+        "wxl_bitmap_toggle_set",
+        "wxl_toggle_button_checked",
+        "wxl_set_toggle_button_checked"
+      ],
+      "scope": "Native-backed BITMAP-TOGGLE-BUTTON inherits TOGGLE-BUTTON; required copied BITMAP, :checked state, bitmap-value/SETF owned readback, inherited native toggle events/guards. Availability is gated by wxHAS_BITMAPTOGGLEBUTTON. Fixed default IDs/styles/size; no raw ownership, arbitrary state artwork/bundles, grouping or full class parity. See docs/BITMAP-TOGGLES.md."
     }
   ],
   "classes": {
@@ -18909,7 +19070,7 @@
         "wxl_toggle_button_label",
         "wxl_set_toggle_button_label"
       ],
-      "scope": "Bounded independent two-state TOGGLE-BUTTON, default style, native-backed CLOS and checked/label generic SETF; silent defaults and explicit one native-class update. Native checked/text snapshots/current contexts, source lifetime/reentry guards. No bitmap toggle, grouping, raw adoption, owned/synthetic/cloned toggle-button events or full class parity. See docs/TOGGLE-BUTTONS.md."
+      "scope": "Bounded independent two-state TOGGLE-BUTTON, default style, native-backed CLOS and checked/label generic SETF; silent defaults and explicit one native-class update. Native checked/text snapshots/current contexts, source lifetime/reentry guards. Separate bitmap variant in BITMAP-TOGGLE-BUTTON; no grouping, raw adoption, owned/synthetic/cloned toggle-button events or full class parity. See docs/TOGGLE-BUTTONS.md."
     },
     "wxComboBox": {
       "status": "~",
@@ -19818,6 +19979,36 @@
         "wxl_grid_event_value"
       ],
       "scope": "Selected native-only grid notify bindings160..170 with immutable payload snapshots and current-innermost borrowed contexts. Copied inclusive native range coordinates, Selecting and modifiers; native sender ignores veto outcome. Native metadata is read-only; no owned/synthetic/clone resource or full event/class API parity. docs/GRID-EDITING.md."
+    },
+    "wxBitmapToggleButton": {
+      "status": "~",
+      "lisp": [
+        "bitmap-toggle-button",
+        "make-bitmap-toggle-button",
+        "bitmap-toggle-button-supported-p",
+        "bitmap-value",
+        "checked-p"
+      ],
+      "native": [
+        "wxl_bitmap_toggle_supported",
+        "wxl_bitmap_toggle",
+        "wxl_bitmap_toggle_get",
+        "wxl_bitmap_toggle_set",
+        "wxl_toggle_button_checked",
+        "wxl_set_toggle_button_checked"
+      ],
+      "scope": "Native-backed BITMAP-TOGGLE-BUTTON inherits TOGGLE-BUTTON; required copied BITMAP, :checked state, bitmap-value/SETF owned readback, inherited native toggle events/guards. Availability is gated by wxHAS_BITMAPTOGGLEBUTTON. Fixed default IDs/styles/size; no raw ownership, arbitrary state artwork/bundles, grouping or full class parity. See docs/BITMAP-TOGGLES.md."
+    },
+    "wxAnyButton": {
+      "status": "~",
+      "lisp": [
+        "bitmap-value"
+      ],
+      "native": [
+        "wxl_bitmap_toggle_get",
+        "wxl_bitmap_toggle_set"
+      ],
+      "scope": "Only copied GetBitmap/SetBitmap for BITMAP-TOGGLE-BUTTON receivers. Other button receivers, state artwork, margins/alignment and full wxAnyButton coverage remain unbound. See docs/BITMAP-TOGGLES.md."
     }
   }
 }

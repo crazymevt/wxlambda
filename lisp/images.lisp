@@ -57,7 +57,8 @@
     (if image (progn (check-type image image) (%bitmap (handle image)))
         (etypecase source
           (bitmap (%copy-bitmap (handle source)))
-          (static-bitmap (%static-bitmap-get (handle source)))))))
+          (static-bitmap (%static-bitmap-get (handle source)))
+          (bitmap-toggle-button (%bitmap-toggle-get (handle source)))))))
 (defun make-image (&rest initargs &key (class 'image) &allow-other-keys)
   (apply #'make-widget class 'image initargs))
 (defun make-bitmap (&rest initargs &key (class 'bitmap) &allow-other-keys)
@@ -178,3 +179,20 @@
 (defmethod window-content-scale-factor ((object window))
   (cffi:with-foreign-object (scale :double)
     (check-status (%window-content-scale (handle object) scale)) (cffi:mem-ref scale :double)))
+
+(defun bitmap-toggle-button-supported-p ()
+  "Report native bitmap-toggle availability in the current main-thread session."
+  (boolean-result (%bitmap-toggle-supported)))
+(defmethod initialize-instance :after ((object bitmap-toggle-button) &key parent bitmap checked (label ""))
+  (check-type parent window) (check-type bitmap bitmap)
+  (unless (string= label "") (error "Bitmap toggle construction takes :BITMAP, not a text label"))
+  (adopt-native object (%bitmap-toggle (handle parent) (handle bitmap) (if checked 1 0))))
+(defgeneric make-bitmap-toggle-button (parent bitmap &rest initargs &key class checked &allow-other-keys))
+(defmethod make-bitmap-toggle-button ((parent window) (bitmap bitmap) &rest initargs
+                                    &key (class 'bitmap-toggle-button) &allow-other-keys)
+  (apply #'make-widget class 'bitmap-toggle-button :parent parent :bitmap bitmap initargs))
+(defmethod bitmap-value ((control bitmap-toggle-button))
+  ;; An independent, session-owned native bitmap, just like STATIC-BITMAP reads.
+  (make-bitmap :source control))
+(defmethod (setf bitmap-value) ((value bitmap) (control bitmap-toggle-button))
+  (call-setter (lambda () (%bitmap-toggle-set (handle control) (handle value))) t) value)

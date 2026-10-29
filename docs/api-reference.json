@@ -2675,7 +2675,7 @@
     "arguments": "PARENT (or :parent for MAKE-INSTANCE), :label NUL-free string default empty, :checked generalized boolean default NIL; :class and subclass initargs for factory.",
     "returns": "New native-backed TOGGLE-BUTTON or validated subclass.",
     "description": "Persistent independent two-state push button. Generic CHECKED-P/SETF and LABEL-TEXT/SETF properties; BIND-EVENT :TOGGLE-BUTTON-CHANGE.",
-    "scope": "Active main-thread GUI session, native handle/type/lifetime guards. No bitmap toggle, grouping, arbitrary styles or full class parity. Same-source value/label callback writes reject; silent other-source updates allowed. See docs/TOGGLE-BUTTONS.md.",
+    "scope": "Active main-thread GUI session, native handle/type/lifetime guards. Separate BITMAP-TOGGLE-BUTTON variant; no grouping, arbitrary styles or full class parity. Same-source value/label callback writes reject; silent other-source updates allowed. See docs/TOGGLE-BUTTONS.md.",
     "wxwidgets": "wxToggleButton::Create/GetValue/SetValue, inherited wxControl::GetLabel/SetLabel; wxWidgets3.2.12.",
     "syntax": "wxlambda:toggle-button",
     "construction": {
@@ -2689,7 +2689,7 @@
     "arguments": "PARENT (or :parent for MAKE-INSTANCE), :label NUL-free string default empty, :checked generalized boolean default NIL; :class and subclass initargs for factory.",
     "returns": "New native-backed TOGGLE-BUTTON or validated subclass.",
     "description": "Persistent independent two-state push button. Generic CHECKED-P/SETF and LABEL-TEXT/SETF properties; BIND-EVENT :TOGGLE-BUTTON-CHANGE.",
-    "scope": "Active main-thread GUI session, native handle/type/lifetime guards. No bitmap toggle, grouping, arbitrary styles or full class parity. Same-source value/label callback writes reject; silent other-source updates allowed. See docs/TOGGLE-BUTTONS.md.",
+    "scope": "Active main-thread GUI session, native handle/type/lifetime guards. Separate BITMAP-TOGGLE-BUTTON variant; no grouping, arbitrary styles or full class parity. Same-source value/label callback writes reject; silent other-source updates allowed. See docs/TOGGLE-BUTTONS.md.",
     "wxwidgets": "wxToggleButton::Create/GetValue/SetValue, inherited wxControl::GetLabel/SetLabel; wxWidgets3.2.12."
   },
   {
@@ -5063,9 +5063,9 @@
   {
     "name": "bitmap",
     "kind": "class",
-    "arguments": "Session-owned wxBitmap constructed from exactly one IMAGE or SOURCE; SOURCE copies BITMAP or native STATIC-BITMAP. Native backing pixel/logical/DIP size and scale remain distinct.",
+    "arguments": "Session-owned wxBitmap constructed from exactly one IMAGE or SOURCE; SOURCE copies BITMAP, native STATIC-BITMAP or BITMAP-TOGGLE-BUTTON. Native backing pixel/logical/DIP size and scale remain distinct.",
     "returns": "A native-backed instance.",
-    "description": "Session-owned wxBitmap constructed from exactly one IMAGE or SOURCE; SOURCE copies BITMAP or native STATIC-BITMAP. Native backing pixel/logical/DIP size and scale remain distinct.",
+    "description": "Session-owned wxBitmap constructed from exactly one IMAGE or SOURCE; SOURCE copies BITMAP or native STATIC-BITMAP. Native backing pixel/logical/DIP size and scale remain distinct. SOURCE additionally accepts a BITMAP-TOGGLE-BUTTON for an owned copied native bitmap.",
     "scope": "Active GUI/main-thread session and checked native lifetime. Image/bitmap values are session-owned and explicitly disposable; no raw pointers/finalizers. Native reads are callback-safe; writes, file IO, allocation/conversion, disposal and BITMAP-VALUE copying reject callback execution. Copied channels,256 resources/64Mi pixel aggregate,1..4096 pixel axes; PNG24 bytes..64MiB encoded. Native bitmap alpha/DPI conversion can change pixels. Invalid bounds/types/stale handles and native failures signal errors. See docs/IMAGES-DISPLAYS.md.",
     "wxwidgets": "wxBitmap, wxWidgets3.2.12.",
     "syntax": "wxlambda:bitmap",
@@ -5102,9 +5102,9 @@
     "name": "make-bitmap",
     "kind": "function",
     "syntax": "(wxlambda:make-bitmap &rest initargs &key class image source)",
-    "arguments": "Exactly one IMAGE or SOURCE; SOURCE is BITMAP or STATIC-BITMAP. CLASS and subclass initargs.",
+    "arguments": "Exactly one IMAGE or SOURCE; SOURCE is BITMAP, STATIC-BITMAP or BITMAP-TOGGLE-BUTTON. CLASS and subclass initargs.",
     "returns": "A new BITMAP.",
-    "description": "Construct a native display bitmap from IMAGE, with validated CLASS and forwarded subclass initargs. SOURCE copies an existing bitmap value or native static display GetBitmap through managed CLOS construction.",
+    "description": "Construct a native display bitmap from IMAGE, with validated CLASS and forwarded subclass initargs. SOURCE copies an existing bitmap value or native static display GetBitmap through managed CLOS construction. SOURCE additionally accepts a BITMAP-TOGGLE-BUTTON for an owned copied native bitmap.",
     "scope": "Active GUI/main-thread session and checked native lifetime. Image/bitmap values are session-owned and explicitly disposable; no raw pointers/finalizers. Native reads are callback-safe; writes, file IO, allocation/conversion, disposal and BITMAP-VALUE copying reject callback execution. Copied channels,256 resources/64Mi pixel aggregate,1..4096 pixel axes; PNG24 bytes..64MiB encoded. Native bitmap alpha/DPI conversion can change pixels. Invalid bounds/types/stale handles and native failures signal errors. See docs/IMAGES-DISPLAYS.md.",
     "wxwidgets": "wxImage/wxBitmap/wxStaticBitmap/wxDisplay/wxWindow, selected native methods in wxWidgets3.2.12."
   },
@@ -5293,10 +5293,10 @@
   {
     "name": "bitmap-value",
     "kind": "generic-function",
-    "syntax": "(wxlambda:bitmap-value static-bitmap)",
-    "arguments": "static-bitmap",
+    "syntax": "(wxlambda:bitmap-value control)",
+    "arguments": "STATIC-BITMAP or BITMAP-TOGGLE-BUTTON control; SETF value is a live BITMAP.",
     "returns": "A new owned BITMAP on each read.",
-    "description": "Copy native GetBitmap; caller must dispose result. SETF invokes native SetBitmap and retains an independent native value. Native DPI resampling may change backing pixels and scale.",
+    "description": "Read a newly owned native bitmap copy; caller disposes it. SETF copies source bitmap into the control. Source disposal does not invalidate the control. Bitmap-toggle receiver is availability-gated; copied allocation and all writes reject callbacks.",
     "scope": "Active GUI/main-thread session and checked native lifetime. Image/bitmap values are session-owned and explicitly disposable; no raw pointers/finalizers. Native reads are callback-safe; writes, file IO, allocation/conversion, disposal and BITMAP-VALUE copying reject callback execution. Copied channels,256 resources/64Mi pixel aggregate,1..4096 pixel axes; PNG24 bytes..64MiB encoded. Native bitmap alpha/DPI conversion can change pixels. Invalid bounds/types/stale handles and native failures signal errors. See docs/IMAGES-DISPLAYS.md.",
     "wxwidgets": "wxImage/wxBitmap/wxStaticBitmap/wxDisplay/wxWindow, selected native methods in wxWidgets3.2.12.",
     "setf": {
@@ -5673,5 +5673,39 @@
     "description": "Read copied current table string on CHANGING/CHANGED only, or NIL for invalid native cell. Kind mismatch signals. Cell-value snapshot copied before user callback; contexts read during callback. EVENT-TEXT separately preserves proposed CHANGING/old CHANGED GetString.",
     "scope": "Owned wxGridStringTable only. Callback and active native editor guards apply to writes. wxWidgets3.2.12 audited semantics; see GRID-EDITING guide. No custom model/editor ownership.",
     "wxwidgets": "wxGridEvent / wxGridRangeSelectEvent metadata"
+  },
+  {
+    "name": "bitmap-toggle-button",
+    "kind": "class",
+    "arguments": "PARENT window, BITMAP resource; :checked generalized boolean, :class and forwarded subclass initargs for factory.",
+    "returns": "New native-backed BITMAP-TOGGLE-BUTTON or validated subclass.",
+    "description": "Native wxBitmapToggleButton, not a text glyph. Inherits CHECKED-P/SETF and :TOGGLE-BUTTON-CHANGE. BITMAP-VALUE/SETF uses copied native values.",
+    "scope": "Native-backed BITMAP-TOGGLE-BUTTON inherits TOGGLE-BUTTON; required copied BITMAP, :checked state, bitmap-value/SETF owned readback, inherited native toggle events/guards. Availability is gated by wxHAS_BITMAPTOGGLEBUTTON. Fixed default IDs/styles/size; no raw ownership, arbitrary state artwork/bundles, grouping or full class parity. See docs/BITMAP-TOGGLES.md.",
+    "wxwidgets": "wxBitmapToggleButton::Create and inherited wxAnyButton::GetBitmap/SetBitmap, wxToggleButton::GetValue/SetValue; pinned wxWidgets3.2.12.",
+    "syntax": "wxlambda:bitmap-toggle-button",
+    "construction": {
+      "syntax": "(make-instance 'wxlambda:bitmap-toggle-button :parent panel :bitmap bitmap :checked t)",
+      "description": "Native-backed subclass slots/default initargs and AFTER hooks; checked parent/resource ancestry, rollback on failure, no raw adoption. Initial label must be empty."
+    }
+  },
+  {
+    "name": "make-bitmap-toggle-button",
+    "kind": "generic-function",
+    "arguments": "PARENT window, BITMAP resource; :checked generalized boolean, :class and forwarded subclass initargs for factory.",
+    "returns": "New native-backed BITMAP-TOGGLE-BUTTON or validated subclass.",
+    "description": "Native wxBitmapToggleButton, not a text glyph. Inherits CHECKED-P/SETF and :TOGGLE-BUTTON-CHANGE. BITMAP-VALUE/SETF uses copied native values.",
+    "scope": "Native-backed BITMAP-TOGGLE-BUTTON inherits TOGGLE-BUTTON; required copied BITMAP, :checked state, bitmap-value/SETF owned readback, inherited native toggle events/guards. Availability is gated by wxHAS_BITMAPTOGGLEBUTTON. Fixed default IDs/styles/size; no raw ownership, arbitrary state artwork/bundles, grouping or full class parity. See docs/BITMAP-TOGGLES.md.",
+    "wxwidgets": "wxBitmapToggleButton::Create and inherited wxAnyButton::GetBitmap/SetBitmap, wxToggleButton::GetValue/SetValue; pinned wxWidgets3.2.12.",
+    "syntax": "(wxlambda:make-bitmap-toggle-button parent bitmap &key checked class &allow-other-keys)"
+  },
+  {
+    "name": "bitmap-toggle-button-supported-p",
+    "kind": "function",
+    "arguments": "None; active main-thread GUI session.",
+    "returns": "T when this native build defines wxHAS_BITMAPTOGGLEBUTTON, otherwise NIL.",
+    "description": "Report build/port availability; unavailable construction signals NATIVE-ERROR. Does not create a control or imply runtime verification on every port.",
+    "scope": "Native-backed BITMAP-TOGGLE-BUTTON inherits TOGGLE-BUTTON; required copied BITMAP, :checked state, bitmap-value/SETF owned readback, inherited native toggle events/guards. Availability is gated by wxHAS_BITMAPTOGGLEBUTTON. Fixed default IDs/styles/size; no raw ownership, arbitrary state artwork/bundles, grouping or full class parity. See docs/BITMAP-TOGGLES.md.",
+    "wxwidgets": "wxBitmapToggleButton::Create and inherited wxAnyButton::GetBitmap/SetBitmap, wxToggleButton::GetValue/SetValue; pinned wxWidgets3.2.12.",
+    "syntax": "(wxlambda:bitmap-toggle-button-supported-p)"
   }
 ]

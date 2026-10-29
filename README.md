@@ -853,3 +853,6 @@ run `examples/radio-groups.lisp` for export-format selection.
 [Time pickers](docs/TIME-PICKER.md) add copied hour/minute/second form values; run `examples/time-picker.lisp`. CMake requires wxUSE_TIMEPICKCTRL/wxUSE_DATETIME with wxWidgets adv.
 
 [Search controls](docs/SEARCH-CONTROLS.md) add query/hint fields and native search/cancel gestures with a deferred Lisp list-filter example; run `examples/search-controls.lisp`. CMake requires wxUSE_SEARCHCTRL/wxUSE_TEXTCTRL.
+
+ABI62 adds native [bitmap toggle buttons](docs/BITMAP-TOGGLES.md), with copied
+bitmap artwork and the existing toggle event/state protocol.
