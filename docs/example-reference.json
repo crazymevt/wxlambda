@@ -280,7 +280,7 @@
     "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/context-menus.lisp --eval '(wxlambda-context-menus:start)'"
   },
   "tree-drag.lisp": {
-    "description": "Deferred guarded same-tree native drag; prints the dropped-on item without mutating the tree. EXERCISE validates hidden-source rejection; START is interactive.",
+    "description": "Synchronous native drag in its BEGIN callback; only the completion action defers. EXERCISE verifies idle/hidden entry rejection; START is interactive.",
     "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/tree-drag.lisp --eval '(wxlambda-tree-drag:start)'"
   }
 }

@@ -1509,7 +1509,7 @@ bool process_deferred_ui_action() {
 
 }
 extern "C" {
-int wxl_abi_version() { return 68; }
+int wxl_abi_version() { return 69; }
 const char* wxl_last_error() { return error.c_str(); }
 int wxl_clipboard_text_available() {
     return boolean_result([&] {
@@ -3908,14 +3908,29 @@ public:
         return target.IsOk()?wxDragMove:wxDragNone;
     }
 };
+#ifdef WXLAMBDA_NATIVE_TESTS
+std::function<wxDragResult(wxTreeCtrl*,TreeMoveTarget*)> tree_drag_test_driver;
+#endif
 int wxl_tree_drag(wxl_handle item,wxl_handle* result) {
     return status([&] {
         require(result,"Null tree drag target output"); *result=0;
-        require_dispatch_entry(true);
+        ready();
+        require(callback_depth && !EventScope::stack.empty(),"Start tree dragging inside its native BEGIN callback");
+        auto& event=current_event(EventScope::stack.back().token);
         const auto node=tree_node(item); auto* tree=as<wxTreeCtrl>(node.owner);
+        auto* begin=dynamic_cast<wxTreeEvent*>(&event);
+        require(begin && event.GetEventType()==wxEVT_TREE_BEGIN_DRAG && event.GetEventObject()==tree && begin->GetItem()==node.native,
+                "Tree drag must match the current BEGIN source item");
+        require(!active_modal.get() && actual_modals.empty() && dialog_operation_windows.empty() &&
+                !pending_callback_error && input_operations.empty() && notebook_operations.empty() &&
+                list_callback_operations.empty() && splitter_operations.empty() && toolbar_operations.empty() &&
+                accelerator_action_frames.empty() && tree_operations.size()==1 && tree_operations.front().get()==tree,
+                "Cannot start a nested tree drag or drag during another native operation");
         require(tree->IsShownOnScreen() && tree->IsEnabled(),"Drag source must be shown and enabled");
         require(!tree->GetDropTarget(),"Tree already has a drop target");
-        TreeOperation tree_operation(tree); InputOperation input_operation(tree);
+        // The matching TreeCallbackOperation remains alive across this entire
+        // loop; acquiring a second TreeOperation would reject the active tree.
+        InputOperation input_operation(tree);
         const auto payload=std::to_string(node.owner)+":"+std::to_string(item)+":"+std::to_string(next_handle++);
         wxCustomDataObject data(wxDataFormat("application/x-wxlambda-tree-item"));
         data.SetData(payload.size(),payload.data());
@@ -3924,7 +3939,17 @@ int wxl_tree_drag(wxl_handle item,wxl_handle* result) {
         tree->SetDropTarget(target.release());
         struct Cleanup {wxTreeCtrl* tree; ~Cleanup(){tree->SetDropTarget(nullptr);}} cleanup{tree};
         wxDropSource source(tree); source.SetData(data);
-        const auto outcome=source.DoDragDrop(wxDrag_DefaultMove);
+        wxDragResult outcome;
+#ifdef WXLAMBDA_NATIVE_TESTS
+        if (tree_drag_test_driver) outcome=tree_drag_test_driver(tree,receiver);
+        else
+#endif
+        {
+#ifdef __WXOSX_COCOA__
+            require(wxTheApp->MacGetCurrentEvent()!=nullptr,"Tree dragging requires a current native mouse event");
+#endif
+            outcome=source.DoDragDrop(wxDrag_DefaultMove);
+        }
         require(outcome!=wxDragError,"Native tree drag failed");
         if (outcome==wxDragMove && receiver->target.IsOk()) *result=tree_token(tree,receiver->target);
     });

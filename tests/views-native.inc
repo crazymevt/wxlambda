@@ -82,6 +82,33 @@ void exercise_report_views() {
    receiver.SetHover(hovered);}
   expect(native->GetItemTextColour(hovered)==wxColour(17,34,51)&&native->GetItemBackgroundColour(hovered)==wxColour(68,85,102),"Drag teardown must restore custom colors");
  }
+ expect(wxl_show(frame)==0&&wxl_poll()==0,"Visible native drag fixture");
+ unsigned driver_calls=0;bool cancel_drag=false;
+ tree_drag_test_driver=[&](wxTreeCtrl* native,TreeMoveTarget* receiver){
+   ++driver_calls;
+   expect(callback_depth>0&&!EventScope::stack.empty()&&tree_operations.size()==1&&input_operations.size()==1,
+          "Native drag must start inside the live mouse callback with lifetime guards");
+   wxl_handle nested=0;
+   expect(wxl_tree_delete(child)==-1&&wxl_destroy(tree)==-1&&wxl_destroy(frame)==-1&&
+          wxl_tree_drag(child,&nested)==-1,"Active drag protects nodes/ancestors and rejects recursion");
+   receiver->target=tree_node(item).native;
+   expect(native->GetDropTarget()==receiver,"Temporary drop receiver installed during drag");
+   return cancel_drag?wxDragCancel:wxDragMove;
+ };
+ event_checks=[&](uint64_t,const wxl_event* event){
+   expect(event->kind==156,"Expected drag BEGIN");wxl_handle dropped=99;
+   expect(wxl_tree_drag(item,&dropped)==-1&&dropped==0,"Drag source must match the current BEGIN item");
+   expect(wxl_tree_drag(child,&dropped)==0&&dropped==(cancel_drag?0:item),"Live BEGIN must start drag and return only successful drop targets");
+   expect(as<wxTreeCtrl>(tree)->GetDropTarget()==nullptr&&input_operations.empty(),"Native drag teardown completed before callback resumes");
+ };
+ expect(wxl_bind(tree,156,973,wxID_ANY,wxID_ANY,1,0)==0,"Synchronous drag binding");
+ for(int pass=0;pass<2;++pass){cancel_drag=pass!=0;
+   wxTreeEvent event(wxEVT_TREE_BEGIN_DRAG,window(tree)->GetId());event.SetEventObject(window(tree));
+   event.SetItem(tree_node(child).native);event.Veto();window(tree)->GetEventHandler()->ProcessEvent(event);
+   expect(!event.IsAllowed(),"Custom synchronous drag must not enable built-in dragging");
+ }
+ expect(driver_calls==2&&wxl_unbind(973)==1,"Native drag callback startup/cancel coverage");
+ event_checks={};tree_drag_test_driver={};
  expect(views_provider_owners.empty(),"Provider ancestry scope restored");
  {wxListEvent event(wxEVT_LIST_ITEM_RIGHT_CLICK);event.SetIndex(7);event.SetColumn(2);event.SetPoint(wxPoint(11,19));wxl_event snapshot{};fill_views_detail(event,snapshot);expect(snapshot.detail[0]==7&&snapshot.detail[4]==11&&snapshot.detail[5]==19,"Copied native list event fields");}
  {wxListEvent event(wxEVT_LIST_CACHE_HINT);event.SetCacheFrom(3);event.SetCacheTo(900);wxl_event snapshot{};fill_views_detail(event,snapshot);expect(snapshot.detail[2]==3&&snapshot.detail[3]==900,"Copied native cache hint range");}

@@ -3765,3 +3765,20 @@ still need interactive validation; Windows/Linux native paths remain unrun.
 Final hover review caught native SetItemDropHighlight clearing custom item colors.
 The drag target now snapshots/restores foreground/background on leave and
 teardown; the native fixture covers both cleanup paths.
+
+ABI69 corrects ABI68's deferred drag startup: Cocoa DoDragDrop requires the
+original native mouse event, which has ended by idle. DRAG-TREE-ITEM now runs
+synchronously only within the matching live BEGIN callback. Existing tree
+callback guards and InputOperation span the loop/teardown; only completed
+filesystem/tree mutations defer. Native regressions exercise matched callback
+entry, wrong-source and recursive rejection, move/cancel results and teardown.
+The native test driver bypasses OS mouse input; physical dragging still needs
+interactive validation.
+
+ABI69 verification on macOS: native build and fixture pass, including the new
+synchronous-start/cancel test driver and source/recursion/lifetime rejection.
+KryptonEdit580 UI checks pass, with a regression proving native drag is invoked
+synchronously and filesystem work stays deferred. SBCL/CCL example and docset
+export/discovery checks pass; pinned coverage regeneration/regression passes.
+Independent review found no actionable defects. OS mouse dragging remains a
+manual check; the regression driver does not call Cocoa DoDragDrop.

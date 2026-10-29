@@ -639,3 +639,12 @@ that generic native dragging retains raw nodes after capture loss; the custom
 wxDropSource/temporary target instead holds tree/input guards for its full loop.
 See TREE-DRAG.md. No filesystem behavior enters the binding. Interactive drag,
 Escape/capture-loss and Windows/Linux runtime checks remain outstanding.
+
+ABI69 corrects ABI68's deferred drag startup: Cocoa DoDragDrop requires the
+original native mouse event, which has ended by idle. DRAG-TREE-ITEM now runs
+synchronously only within the matching live BEGIN callback. Existing tree
+callback guards and InputOperation span the loop/teardown; only completed
+filesystem/tree mutations defer. Native regressions exercise matched callback
+entry, wrong-source and recursive rejection, move/cancel results and teardown.
+The native test driver bypasses OS mouse input; physical dragging still needs
+interactive validation.

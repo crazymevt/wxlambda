@@ -5891,10 +5891,10 @@
     "name": "drag-tree-item",
     "kind": "generic-function",
     "syntax": "(wxlambda:drag-tree-item item)",
-    "arguments": "A live TREE-ITEM whose tree is shown on screen and enabled, with no existing native drop target.",
+    "arguments": "Live TREE-ITEM matching the current native :TREE-BEGIN-DRAG event object and item, in its innermost callback. Tree must be shown/enabled and have no existing drop target.",
     "returns": "Live same-tree target TREE-ITEM after a successful native move drop, or NIL on cancellation/rejected drop.",
-    "description": "Run a bounded native move drag with a temporary same-tree drop target. Copied private per-drag identity prevents foreign, stale and cross-tree drops. This returns a target only; it does not mutate items or touch files.",
-    "scope": "GUI main thread outside callbacks/pumps, or a deferred UI action. Input/tree guards protect the tree and ancestors and pause timers/actions through drop-target teardown. Native errors signal NATIVE-ERROR. Use from deferred :TREE-BEGIN-DRAG; built-in tree dragging stays vetoed, including rejection of Allow via EVENT-VETOED-P.",
+    "description": "Run a bounded native move drag with a temporary same-tree drop target. Copied private per-drag identity prevents foreign, stale and cross-tree drops. This returns a target only; it does not mutate items or touch files. Starts synchronously while the original mouse event is live, required by Cocoa.",
+    "scope": "GUI main thread inside the matching native BEGIN callback only; calls deferred to idle reject. Existing tree callback and input guards span the nested drag and target teardown. Other callbacks, stale sources and recursive drag reject. Built-in tree dragging stays vetoed. Defer application/tree mutations until the callback returns. Callback errors propagate at the drag boundary after tracking completes.",
     "wxwidgets": "wxDropSource::DoDragDrop, wxDropTarget, wxTreeEvent; wxWidgets 3.2.12."
   }
 ]

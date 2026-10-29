@@ -28,8 +28,12 @@
       (wxlambda:make-column frame) (wxlambda:add-child frame tree :proportion 1)
       (wxlambda:bind-event tree :tree-begin-drag
         (lambda (event)
-          (let ((source (wxlambda:event-tree-item event)))
-            (wxlambda:defer-ui-action
-              (lambda () (let ((target (wxlambda:drag-tree-item source)))
-                           (format t "Drop on ~S~%" (when target (wxlambda:tree-item-text target)))))))))
+          (let* ((source (wxlambda:event-tree-item event))
+                 (target (wxlambda:drag-tree-item source)))
+            ;; Only application mutations defer; native dragging needs this
+            ;; mouse event to remain live (in particular on Cocoa).
+            (when target
+              (wxlambda:defer-ui-action
+                (lambda () (format t "Drop on ~S~%" (when (wxlambda:tree-item-alive-p target)
+                                                       (wxlambda:tree-item-text target)))))))))
       (wxlambda:show-window frame) (wxlambda:run))))
