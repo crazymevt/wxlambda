@@ -932,7 +932,7 @@
     "arguments": "KIND is a built-in event keyword or a name registered in this active session.",
     "returns": "The corresponding process-local native wxEventType integer.",
     "description": "Look up a process-local native type ID. Twenty-two built-in kinds plus registered command/notify names are supported. Registry names are session-scoped; saved snapshot native IDs remain plain data after cleanup. Borrowed application handler access is supported; arbitrary native event-class binding and OS session delivery remains unverified.",
-    "scope": "Active main-thread session required; inactive calls signal NATIVE-ERROR before native-library lookup. Native IDs are process-local and may change between runs. RADIO-BOX :radio-selection is a native-only command kind with copied/current index and native label metadata. Snapshot reads survive source/session cleanup; borrowed contexts require the exact innermost current callback. No owned/synthetic/cloned radio events. See docs/RADIO-GROUPS.md.",
+    "scope": "Active main-thread session required; inactive calls signal NATIVE-ERROR before native-library lookup. Native IDs are process-local and may change between runs. RADIO-BOX :radio-selection is a native-only command kind with copied/current index and native label metadata. Snapshot reads survive source/session cleanup; borrowed contexts require the exact innermost current callback. No owned/synthetic/cloned radio events. See docs/RADIO-GROUPS.md. Scrolling panels add no new public scroll event kind.",
     "wxwidgets": "wxEVT_BUTTON, wxEVT_TEXT, wxEVT_CHECKBOX, wxEVT_CHOICE, wxEVT_CLOSE_WINDOW, wxEVT_QUERY_END_SESSION, wxEVT_END_SESSION, wxEVT_IDLE, wxEVT_MENU, wxEVT_NOTEBOOK_PAGE_CHANGING, wxEVT_NOTEBOOK_PAGE_CHANGED, wxEVT_LISTBOX, wxEVT_LISTBOX_DCLICK; registered wxNewEventType values (wxWidgets 3.2.12). wxEVT_TREE_SEL_CHANGING and wxEVT_TREE_SEL_CHANGED in ABI39. Includes wxEVT_SPLITTER_SASH_POS_CHANGING/CHANGED, wxEVT_SLIDER, wxEVT_SPINCTRL and wxEVT_RADIOBOX (wxWidgets3.2.12). wxEVT_TOGGLEBUTTON. wxEVT_COMBOBOX."
   },
   {
@@ -1248,7 +1248,7 @@
     "arguments": "WINDOW is a valid bridge-managed window/subclass.",
     "returns": "Canonical top pushed handler wrapper, or the identical WINDOW when no managed handler is pushed.",
     "description": "Read native GetEventHandler through the bridge managed-stack identity map. It does not reconstruct or adopt unknown native handlers and has no SETF writer.",
-    "scope": "Active main-thread session; reads allowed in callbacks while window is valid/non-deleting. No arbitrary SetEventHandler, external native stack adoption or raw pointer access.",
+    "scope": "Active main-thread session; reads allowed in callbacks while window is valid/non-deleting. No arbitrary SetEventHandler, external native stack adoption or raw pointer access. SCROLLED-PANEL rejects because wxWidgets owns a private scroll-helper handler; no helper adoption/removal. Ordinary bindings still work. See docs/SCROLLING-PANELS.md.",
     "wxwidgets": "wxWindow::GetEventHandler, managed stack only (wxWidgets 3.2.12 baseline)."
   },
   {
@@ -1258,7 +1258,7 @@
     "arguments": "WINDOW is bridge-managed; HANDLER is a live unlinked standalone owned EVENT-HANDLER/subclass, not already attached.",
     "returns": "HANDLER after managed push.",
     "description": "Push above the existing stack top while keeping native ownership in the bridge registry. Reject linked/attached or borrowed window/app peers, active session bindings and queued session events before mutation.",
-    "scope": "Active main-thread non-dispatch boundary; RUN/pump/callback use rejects. Canonical wrapper rooting continues. No raw native adoption or window ownership transfer. ABI43 safe deferred UI actions are explicit structural boundaries even under RUN/poll; nested RUN/pumps remain rejected. See docs/DEFERRED-UI-ACTIONS.md.",
+    "scope": "Active main-thread non-dispatch boundary; RUN/pump/callback use rejects. Canonical wrapper rooting continues. No raw native adoption or window ownership transfer. ABI43 safe deferred UI actions are explicit structural boundaries even under RUN/poll; nested RUN/pumps remain rejected. See docs/DEFERRED-UI-ACTIONS.md. SCROLLED-PANEL rejects because wxWidgets owns a private scroll-helper handler; no helper adoption/removal. Ordinary bindings still work. See docs/SCROLLING-PANELS.md.",
     "wxwidgets": "wxWindow::PushEventHandler with managed ownership/session guards (wxWidgets 3.2.12 baseline)."
   },
   {
@@ -1268,7 +1268,7 @@
     "arguments": "WINDOW is bridge-managed with a nonempty managed stack. DELETE defaults NIL; true requests native deletion.",
     "returns": "Popped canonical handler, alive/unlinked, or NIL when DELETE is true.",
     "description": "Detach the top entry. Default preserves native owned registry/root; DELETE true releases bridge ownership before native PopEventHandler deletion and clears canonical roots/bindings. Empty stacks reject instead of invoking native assertions.",
-    "scope": "Active main-thread non-dispatch boundary; RUN/pump/callback use rejects. Consumed/deleted wrappers reject later native access. No deletion of the base window or arbitrary native stack entry. ABI43 safe deferred UI actions are explicit structural boundaries even under RUN/poll; nested RUN/pumps remain rejected. See docs/DEFERRED-UI-ACTIONS.md.",
+    "scope": "Active main-thread non-dispatch boundary; RUN/pump/callback use rejects. Consumed/deleted wrappers reject later native access. No deletion of the base window or arbitrary native stack entry. ABI43 safe deferred UI actions are explicit structural boundaries even under RUN/poll; nested RUN/pumps remain rejected. See docs/DEFERRED-UI-ACTIONS.md. SCROLLED-PANEL rejects because wxWidgets owns a private scroll-helper handler; no helper adoption/removal. Ordinary bindings still work. See docs/SCROLLING-PANELS.md.",
     "wxwidgets": "wxWindow::PopEventHandler(bool) (wxWidgets 3.2.12 baseline)."
   },
   {
@@ -1278,7 +1278,7 @@
     "arguments": "WINDOW is bridge-managed; HANDLER is a live owned standalone handler.",
     "returns": "T if removed from this window; NIL for a valid nonmember.",
     "description": "Preflight membership and detach without deletion. A live detached handler or handler belonging to another window returns NIL unchanged; only present entries reach native RemoveEventHandler, avoiding its absent-entry assertion.",
-    "scope": "Active main-thread non-dispatch boundary; RUN/pump/callback use, stale peers and borrowed window/application peers reject. Own pending queue and native ownership survive; other stack entries remain intact. ABI43 safe deferred UI actions are explicit structural boundaries even under RUN/poll; nested RUN/pumps remain rejected. See docs/DEFERRED-UI-ACTIONS.md.",
+    "scope": "Active main-thread non-dispatch boundary; RUN/pump/callback use, stale peers and borrowed window/application peers reject. Own pending queue and native ownership survive; other stack entries remain intact. ABI43 safe deferred UI actions are explicit structural boundaries even under RUN/poll; nested RUN/pumps remain rejected. See docs/DEFERRED-UI-ACTIONS.md. SCROLLED-PANEL rejects because wxWidgets owns a private scroll-helper handler; no helper adoption/removal. Ordinary bindings still work. See docs/SCROLLING-PANELS.md.",
     "wxwidgets": "wxWindow::RemoveEventHandler with safe managed membership probe (wxWidgets 3.2.12 baseline)."
   },
   {
@@ -1288,7 +1288,7 @@
     "arguments": "WINDOW is bridge-managed; EVENT is a live supported OWNED-EVENT. No payload overrides.",
     "returns": "Two values: native handled-p and final-vetoed-p of an independent copy.",
     "description": "Process a detached copy through native GetEventHandler stack routing, window and normal parent/application fallback. Source remains alive/unchanged; copy origin is WINDOW and callback source can be a pushed handler. Callback conditions re-signal at the nearer Lisp boundary.",
-    "scope": "Active main-thread session with copied-event exact-class/session/lazy-text guards. Synthetic session delivery rejects; no origin retention or native class replacement. Generic PROCESS-EVENT and queued window operations still bypass pushed handlers.",
+    "scope": "Active main-thread session with copied-event exact-class/session/lazy-text guards. Synthetic session delivery rejects; no origin retention or native class replacement. Generic PROCESS-EVENT and queued window operations still bypass pushed handlers. SCROLLED-PANEL rejects because wxWidgets owns a private scroll-helper handler; no helper adoption/removal. Ordinary bindings still work. See docs/SCROLLING-PANELS.md.",
     "wxwidgets": "wxWindow::ProcessWindowEvent on an independent owned-event copy (wxWidgets 3.2.12 baseline)."
   },
   {
@@ -1298,7 +1298,7 @@
     "arguments": "WINDOW is bridge-managed; EVENT is a live supported OWNED-EVENT. No payload overrides.",
     "returns": "Two values: native handled-p and final-vetoed-p of the local copy.",
     "description": "Search the window and its pushed handlers with local pre-processing/validators, without normal upward window propagation. Process an independent detached copy with receiver-window origin and unchanged source. Observer delivery may still return handled NIL. Native local static/default handlers can still run, including frame-close behavior; local routing is not observer-only.",
-    "scope": "Active main-thread session and existing copied-event/session/lazy-text guards. Current contexts stay innermost-scoped; callback errors re-signal at the nearer boundary. No pending pump, external native chain adoption or native virtual Lisp hooks.",
+    "scope": "Active main-thread session and existing copied-event/session/lazy-text guards. Current contexts stay innermost-scoped; callback errors re-signal at the nearer boundary. No pending pump, external native chain adoption or native virtual Lisp hooks. SCROLLED-PANEL rejects because wxWidgets owns a private scroll-helper handler; no helper adoption/removal. Ordinary bindings still work. See docs/SCROLLING-PANELS.md.",
     "wxwidgets": "wxWindow::ProcessWindowEventLocally on an independent copy (wxWidgets 3.2.12 baseline)."
   },
   {
@@ -2706,5 +2706,72 @@
     "description": "Editable single-line fixed unsorted choices with generic TEXT/SETF, SELECTION/SETF, ITEM-COUNT and ITEM-TEXT. Native CmpNoCase duplicate/case-only choices reject.",
     "scope": "Active main-thread GUI session and native lifetime guards. Strings reject NUL/CR/LF. No readonly/sort/item-mutation/text-position API, native adoption or full class parity. See docs/COMBO-BOXES.md.",
     "wxwidgets": "wxComboBox::Create/GetSelection/SetSelection/GetCount/GetString; wxTextEntry::GetValue/ChangeValue (wxWidgets3.2.12)."
+  },
+  {
+    "name": "scrolled-panel",
+    "kind": "class",
+    "arguments": ":parent required, :scroll-rate exact pair0..256 default(0 16), subclass initargs.",
+    "returns": "Native-backed SCROLLED-PANEL.",
+    "description": ":parent required, :scroll-rate exact pair0..256 default(0 16), subclass initargs.",
+    "scope": "Active main-thread GUI session and valid native lifetime. No callback-time fit/rate/position changes: defer via owner-bound UI action. Supported extent<=1000000 pixels/axis checked before explicit mutation, not globally enforced on inherited/native layout. Private native scroll helper stays owned; managed handler-stack APIs reject for this class. See docs/SCROLLING-PANELS.md.",
+    "wxwidgets": "wxScrolled<wxPanel>/wxScrolledWindow (wxWidgets3.2.12).",
+    "syntax": "wxlambda:scrolled-panel",
+    "construction": {
+      "syntax": "(make-instance 'wxlambda:scrolled-panel :parent parent :scroll-rate '(0 16))",
+      "description": "WINDOW subtype, not concrete Lisp PANEL; slots/default initargs, native-ready AFTER hooks and managed rollback supported."
+    }
+  },
+  {
+    "name": "make-scrolled-panel",
+    "kind": "generic-function",
+    "arguments": "PARENT plus :class/:scroll-rate and subclass initargs.",
+    "returns": "New SCROLLED-PANEL or validated subclass.",
+    "description": "PARENT plus :class/:scroll-rate and subclass initargs.",
+    "scope": "Active main-thread GUI session and valid native lifetime. No callback-time fit/rate/position changes: defer via owner-bound UI action. Supported extent<=1000000 pixels/axis checked before explicit mutation, not globally enforced on inherited/native layout. Private native scroll helper stays owned; managed handler-stack APIs reject for this class. See docs/SCROLLING-PANELS.md.",
+    "wxwidgets": "wxScrolled::Create (wxWidgets3.2.12)."
+  },
+  {
+    "name": "scroll-rate",
+    "kind": "generic-function",
+    "arguments": "SCROLLED-PANEL. SETF value is exact two-integer list0..256 pixels/unit.",
+    "returns": "Fresh (x y) pixels/unit pair; writer returns supplied list.",
+    "description": "SCROLLED-PANEL. SETF value is exact two-integer list0..256 pixels/unit.",
+    "scope": "Active main-thread GUI session and valid native lifetime. No callback-time fit/rate/position changes: defer via owner-bound UI action. Supported extent<=1000000 pixels/axis checked before explicit mutation, not globally enforced on inherited/native layout. Private native scroll helper stays owned; managed handler-stack APIs reject for this class. See docs/SCROLLING-PANELS.md.",
+    "wxwidgets": "wxScrolled::GetScrollPixelsPerUnit/SetScrollRate (wxWidgets3.2.12).",
+    "setf": {
+      "syntax": "(setf (wxlambda:scroll-rate panel) '(0 16))",
+      "description": "Zero disables an axis, including both zero. Returns supplied list, not retained; native rate changes may change pixel origin/clamp view. No callback mutation."
+    }
+  },
+  {
+    "name": "scroll-position",
+    "kind": "generic-function",
+    "arguments": "SCROLLED-PANEL. SETF exact pair0..1000000 scroll units.",
+    "returns": "Fresh native view-start pair; writer returns requested list, not clamped result.",
+    "description": "SCROLLED-PANEL. SETF exact pair0..1000000 scroll units.",
+    "scope": "Active main-thread GUI session and valid native lifetime. No callback-time fit/rate/position changes: defer via owner-bound UI action. Supported extent<=1000000 pixels/axis checked before explicit mutation, not globally enforced on inherited/native layout. Private native scroll helper stays owned; managed handler-stack APIs reject for this class. See docs/SCROLLING-PANELS.md.",
+    "wxwidgets": "wxScrolled::GetViewStart/Scroll (wxWidgets3.2.12).",
+    "setf": {
+      "syntax": "(setf (wxlambda:scroll-position panel) '(0 10))",
+      "description": "Native clamp/disabled axes can change accepted result; read back actual view-start. No -1 unchanged sentinel or partial setter; list not retained. Native focus/resize can change position later."
+    }
+  },
+  {
+    "name": "scroll-extent",
+    "kind": "generic-function",
+    "arguments": "SCROLLED-PANEL. Read-only.",
+    "returns": "Fresh current virtual (width height) pixel pair.",
+    "description": "SCROLLED-PANEL. Read-only.",
+    "scope": "Active main-thread GUI session and valid native lifetime. No callback-time fit/rate/position changes: defer via owner-bound UI action. Supported extent<=1000000 pixels/axis checked before explicit mutation, not globally enforced on inherited/native layout. Private native scroll helper stays owned; managed handler-stack APIs reject for this class. See docs/SCROLLING-PANELS.md.",
+    "wxwidgets": "wxScrolled::GetVirtualSize (wxWidgets3.2.12)."
+  },
+  {
+    "name": "fit-scroll-content",
+    "kind": "generic-function",
+    "arguments": "SCROLLED-PANEL with own attached sizer.",
+    "returns": "The supplied panel.",
+    "description": "Layout/FitInside/Layout refreshes virtual extent from max(client,sizer minimum), without resizing frame. Requires own sizer and supported content extent; no callback mutation.",
+    "scope": "Active main-thread GUI session and valid native lifetime. No callback-time fit/rate/position changes: defer via owner-bound UI action. Supported extent<=1000000 pixels/axis checked before explicit mutation, not globally enforced on inherited/native layout. Private native scroll helper stays owned; managed handler-stack APIs reject for this class. See docs/SCROLLING-PANELS.md.",
+    "wxwidgets": "wxWindow::Layout/FitInside (wxWidgets3.2.12)."
   }
 ]

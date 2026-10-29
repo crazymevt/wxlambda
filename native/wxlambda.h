@@ -361,6 +361,12 @@ WXL_API int wxl_on_click(wxl_handle button, uint64_t token);
 /* Queue a normal button event; useful for lifecycle smoke tests. */
 WXL_API int wxl_click(wxl_handle button);
 
+/* Scrolled-panel pairs: field0 pixels/unit, field1 view-start units, field2 extent pixels.
+   Setters allow fields0/1 only; native scrolling can clamp requested positions. */
+WXL_API wxl_handle wxl_scrolled_panel(wxl_handle parent, int xrate, int yrate);
+WXL_API int wxl_scroll_pair(wxl_handle control, int field, int* x, int* y);
+WXL_API int wxl_set_scroll_pair(wxl_handle control, int field, int x, int y);
+WXL_API int wxl_fit_scroll_content(wxl_handle control);
 WXL_API wxl_handle wxl_combo_box(wxl_handle parent, const char** items, const size_t* lengths, size_t count, const char* value, size_t value_length, int selection);
 /* field0 selection (-1 none), field1 count; -2 error. */
 WXL_API int wxl_combo_field(wxl_handle control, int field);

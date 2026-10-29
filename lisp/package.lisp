@@ -1,6 +1,6 @@
 (defpackage #:wxlambda
   (:use #:cl)
-  (:export #:combo-box #:make-combo-box #:toggle-button #:make-toggle-button #:radio-box #:make-radio-box #:splitter-window #:make-splitter-window #:split-window #:splitter-pane #:splitter-split-p
+  (:export #:scrolled-panel #:make-scrolled-panel #:scroll-rate #:scroll-position #:scroll-extent #:fit-scroll-content #:combo-box #:make-combo-box #:toggle-button #:make-toggle-button #:radio-box #:make-radio-box #:splitter-window #:make-splitter-window #:split-window #:splitter-pane #:splitter-split-p
            #:splitter-orientation #:splitter-sash-position #:splitter-minimum-pane-size #:splitter-sash-gravity #:event-sash-position
            #:tree-control #:tree-item #:make-tree-control #:add-tree-root #:append-tree-item
            #:tree-root #:tree-item-parent #:tree-item-children #:tree-item-text #:tree-item-expanded-p

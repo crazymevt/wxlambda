@@ -35,7 +35,7 @@ void inspect_binding(uint64_t token, const wxl_event* event) {
     saved_context = event->context;
     binding_called = true;
 }
-std::function<void(uint64_t, const wxl_event*)> notebook_probe, list_probe, tree_probe, splitter_probe, toolbar_probe, accelerator_probe, deferred_event_probe, numeric_probe, radio_probe, toggle_probe, combo_probe;
+std::function<void(uint64_t, const wxl_event*)> notebook_probe, list_probe, tree_probe, splitter_probe, toolbar_probe, accelerator_probe, deferred_event_probe, numeric_probe, radio_probe, toggle_probe, combo_probe, scroll_probe;
 std::function<void(uint64_t,int)> ui_action_probe;
 void ignore_ui_action(uint64_t token, int execute) { if (ui_action_probe) ui_action_probe(token, execute); }
 void ignore_event(uint64_t token, const wxl_event* event) {
@@ -50,6 +50,7 @@ void ignore_event(uint64_t token, const wxl_event* event) {
     if ((token == 921 || token == 922) && radio_probe) radio_probe(token, event);
     if ((token == 923 || token == 924) && toggle_probe) toggle_probe(token, event);
     if (token>=925 && token<=927 && combo_probe) combo_probe(token,event);
+    if (token==928 && scroll_probe) scroll_probe(token,event);
     if (token == 901) inspect_binding(token, event);
     if (token == 903) { ++menu_calls; menu_checked_payload = event->checked; menu_integer_payload = event->integer; menu_origin = event->origin_id; }
 }
@@ -809,6 +810,53 @@ struct SplitterProbe : FixedSplitter {
     using FixedSplitter::FixedSplitter;
     using wxSplitterWindow::SetSashPositionAndNotify;
 };
+class ScrollProbe : public wxScrolledWindow {
+public:
+    using wxScrolledWindow::wxScrolledWindow;
+    std::function<void()> during_scroll;
+    void ScrollWindow(int dx,int dy,const wxRect* rect=nullptr) override {
+        if (during_scroll) during_scroll();
+        wxScrolledWindow::ScrollWindow(dx,dy,rect);
+    }
+};
+void exercise_scrolling_panels() {
+    const auto frame=wxl_frame("Scroll",400,240);
+    const auto viewport=wxl_scrolled_panel(frame,0,16);
+    int x=-1,y=-1;
+    expect(viewport && wxl_scroll_pair(viewport,0,&x,&y)==0 && x==0 && y==16,"Scroll default rate");
+    expect(!wxl_scrolled_panel(frame,-1,1) && !wxl_scrolled_panel(frame,1,257) &&
+           wxl_scroll_pair(frame,0,&x,&y)==-1 && wxl_scroll_pair(viewport,3,&x,&y)==-1 &&
+           wxl_scroll_pair(viewport,0,nullptr,&y)==-1 && wxl_set_scroll_pair(viewport,2,1,1)==-1 &&
+           wxl_set_scroll_pair(viewport,0,257,0)==-1 && wxl_set_scroll_pair(viewport,1,-1,0)==-1 &&
+           wxl_set_scroll_pair(viewport,1,0,1000001)==-1 && wxl_fit_scroll_content(viewport)==-1,"Scroll raw validation");
+    uint64_t handler=0; expect(wxl_window_handler(viewport,&handler)==-1,"Private scroll helper cannot be exposed");
+    wxl_column(viewport); wxl_spacer(viewport,1800);
+    expect(wxl_fit_scroll_content(viewport)==0 && wxl_scroll_pair(viewport,2,&x,&y)==0 && y>=1800,"Scroll fit extent");
+    expect(wxl_set_scroll_pair(viewport,1,1000000,1000000)==0 && wxl_scroll_pair(viewport,1,&x,&y)==0 && x==0 && y>=0 && y<1000000,"Scroll native clamp");
+    expect(wxl_set_scroll_pair(viewport,0,0,0)==0 && wxl_set_scroll_pair(viewport,1,20,20)==0 &&
+           wxl_scroll_pair(viewport,1,&x,&y)==0 && x==0 && y==0,"Disabled scroll axes");
+    // Test-only subclass injects supported native callback during virtual ScrollWindow.
+    auto* probe=new ManagedWindow<ScrollProbe>(window(frame),wxID_ANY);
+    const auto target=track(probe); probe->SetSize(300,150); probe->SetSizer(new wxBoxSizer(wxVERTICAL));
+    probe->GetSizer()->AddSpacer(2000); probe->FitInside(); probe->SetScrollRate(0,16);
+    const auto dialog=wxl_message_dialog(frame,"Scroll",6,"Probe",5,0,0);
+    unsigned calls=0;
+    scroll_probe=[&](uint64_t,const wxl_event*) {
+        ++calls;
+        expect(wxl_destroy(target)==-1 && wxl_destroy(frame)==-1 && wxl_close(frame,1)==-1,"Scroll native-operation lifetime guard");
+        expect(wxl_set_scroll_pair(target,1,0,1)==-1 && wxl_set_scroll_pair(target,0,0,8)==-1 &&
+               wxl_fit_scroll_content(target)==-1,"Scroll callback mutation guard");
+        int result=-1; expect(wxl_poll()==-1 && wxl_clipboard_text_available()==-1 && wxl_dialog_show(dialog,&result)==-1,"Scroll native-operation entry guard");
+    };
+    expect(wxl_bind(frame,WXL_EVENT_CLICK,928,wxID_ANY,wxID_ANY,1,0)==0,"Scroll native probe binding");
+    probe->during_scroll=[&] { wxCommandEvent event(wxEVT_BUTTON,probe->GetId()); event.SetEventObject(probe); probe->HandleWindowEvent(event); };
+    expect(wxl_set_scroll_pair(target,1,0,5)==0 && calls>0 && input_operations.empty(),"Protected synchronous native scroll callback");
+    probe->during_scroll={}; scroll_probe={}; expect(wxl_unbind(928)==1,"Scroll native probe unbind");
+    // Oversized content is rejected by explicit operations, without claiming to police all native layout.
+    wxl_spacer(viewport,1000001);
+    expect(wxl_fit_scroll_content(viewport)==-1 && wxl_set_scroll_pair(viewport,1,0,1)==-1,"Oversized scroll content gate");
+    expect(wxl_destroy(frame)==0 && wxl_poll()==0 && wxl_scroll_pair(viewport,0,&x,&y)==-1,"Scroll teardown with private helper intact");
+}
 void exercise_combo_boxes() {
     const auto frame=wxl_frame("Combo",460,250), panel=wxl_panel(frame);
     const char* labels[]={"First λ","Second"}; const size_t lengths[]={8,6};
@@ -1358,6 +1406,7 @@ int main() {
         exercise_radio_groups();
         exercise_toggle_buttons();
         exercise_combo_boxes();
+        exercise_scrolling_panels();
         bool shutdown_ran=false;
         ui_action_probe=[&](uint64_t,int) { shutdown_ran=true; };
         expect(wxl_defer_ui_action(5000,0)==0 && wxl_start_ui_timer(5001,1,0,0)==0,"Queue shutdown action/timer");

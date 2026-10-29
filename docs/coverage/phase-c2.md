@@ -17,7 +17,7 @@ class or constructor does not imply full upstream coverage.
 
 ## Current coverage and remaining work
 
-23 implemented; 157 partial; 2682 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
+23 implemented; 168 partial; 2671 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
 
 Counts describe inventory entries, not distinct APIs or percent completion.
 See the [coverage summary](README.md) for phase/header comparisons.
@@ -1646,7 +1646,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/scrolwin.h)
 
-0 implemented; 0 partial; 57 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
+0 implemented; 8 partial; 49 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
 
 - [ ] [L11](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/scrolwin.h#L11) `enum wxScrollbarVisibility {`
 - [ ] [L13](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/scrolwin.h#L13) `wxSHOW_SB_NEVER = -1, wxSHOW_SB_DEFAULT, wxSHOW_SB_ALWAYS }`
@@ -1664,27 +1664,27 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [ ] [L137](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/scrolwin.h#L137) `documented event: EVT_SCROLLWIN_THUMBTRACK(func)`
 - [ ] [L140](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/scrolwin.h#L140) `documented event: EVT_SCROLLWIN_THUMBRELEASE(func)`
 - [ ] [L166](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/scrolwin.h#L166) `template<class T> class wxScrolled : public T {`
-- [ ] [L171](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/scrolwin.h#L171) `wxScrolled();`
+- [~] [L171](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/scrolwin.h#L171) `wxScrolled();` — **Partial**: `scrolled-panel`, `make-scrolled-panel`, `scroll-rate`, `scroll-position`, `scroll-extent`, `fit-scroll-content`; ABI: `wxl_scrolled_panel`, `wxl_scroll_pair`, `wxl_set_scroll_pair`, `wxl_fit_scroll_content`. Bounded wxScrolled<wxPanel> specialization only (wxScrolledWindow alias), native-backed child container, sizer fit/current virtual extent, rate0..256 and position0..1000000 pairs. Supported pixel extent<=1000000 checked at explicit mutation; inherited/native layout not globally constrained. Protected synchronous native operations and callback-time mutation deferral. Private helper retained; no managed stack APIs, drawing/target/coordinate/scroll events, raw adoption or full class parity. See docs/SCROLLING-PANELS.md.
 - [ ] [L195](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/scrolwin.h#L195) `wxScrolled(wxWindow* parent, wxWindowID id = -1, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxHSCROLL | wxVSCROLL, const wxString& name = "scrolledWindow");`
 - [ ] [L215](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/scrolwin.h#L215) `void CalcScrolledPosition(int x, int y, int* xx, int* yy) const;`
 - [ ] [L216](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/scrolwin.h#L216) `wxPoint CalcScrolledPosition(const wxPoint& pt) const;`
 - [ ] [L232](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/scrolwin.h#L232) `void CalcUnscrolledPosition(int x, int y, int* xx, int* yy) const;`
 - [ ] [L233](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/scrolwin.h#L233) `wxPoint CalcUnscrolledPosition(const wxPoint& pt) const;`
-- [ ] [L245](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/scrolwin.h#L245) `bool Create(wxWindow* parent, wxWindowID id = -1, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxHSCROLL | wxVSCROLL, const wxString& name = "scrolledWindow");`
+- [~] [L245](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/scrolwin.h#L245) `bool Create(wxWindow* parent, wxWindowID id = -1, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxHSCROLL | wxVSCROLL, const wxString& name = "scrolledWindow");` — **Partial**: `scrolled-panel`, `make-scrolled-panel`, `scroll-rate`, `scroll-position`, `scroll-extent`, `fit-scroll-content`; ABI: `wxl_scrolled_panel`, `wxl_scroll_pair`, `wxl_set_scroll_pair`, `wxl_fit_scroll_content`. Bounded wxScrolled<wxPanel> specialization only (wxScrolledWindow alias), native-backed child container, sizer fit/current virtual extent, rate0..256 and position0..1000000 pairs. Supported pixel extent<=1000000 checked at explicit mutation; inherited/native layout not globally constrained. Protected synchronous native operations and callback-time mutation deferral. Private helper retained; no managed stack APIs, drawing/target/coordinate/scroll events, raw adoption or full class parity. See docs/SCROLLING-PANELS.md.
 - [ ] [L265](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/scrolwin.h#L265) `void DisableKeyboardScrolling();`
 - [ ] [L304](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/scrolwin.h#L304) `void DoPrepareDC(wxDC& dc);`
 - [ ] [L324](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/scrolwin.h#L324) `void EnableScrolling(bool xScrolling, bool yScrolling);`
 - [ ] [L352](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/scrolwin.h#L352) `void ShowScrollbars(wxScrollbarVisibility horz, wxScrollbarVisibility vert);`
-- [ ] [L371](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/scrolwin.h#L371) `void GetScrollPixelsPerUnit(int* xUnit, int* yUnit) const;`
-- [ ] [L397](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/scrolwin.h#L397) `void GetViewStart(int* x, int* y) const;`
+- [~] [L371](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/scrolwin.h#L371) `void GetScrollPixelsPerUnit(int* xUnit, int* yUnit) const;` — **Partial**: `scrolled-panel`, `make-scrolled-panel`, `scroll-rate`, `scroll-position`, `scroll-extent`, `fit-scroll-content`; ABI: `wxl_scrolled_panel`, `wxl_scroll_pair`, `wxl_set_scroll_pair`, `wxl_fit_scroll_content`. Bounded wxScrolled<wxPanel> specialization only (wxScrolledWindow alias), native-backed child container, sizer fit/current virtual extent, rate0..256 and position0..1000000 pairs. Supported pixel extent<=1000000 checked at explicit mutation; inherited/native layout not globally constrained. Protected synchronous native operations and callback-time mutation deferral. Private helper retained; no managed stack APIs, drawing/target/coordinate/scroll events, raw adoption or full class parity. See docs/SCROLLING-PANELS.md.
+- [~] [L397](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/scrolwin.h#L397) `void GetViewStart(int* x, int* y) const;` — **Partial**: `scrolled-panel`, `make-scrolled-panel`, `scroll-rate`, `scroll-position`, `scroll-extent`, `fit-scroll-content`; ABI: `wxl_scrolled_panel`, `wxl_scroll_pair`, `wxl_set_scroll_pair`, `wxl_fit_scroll_content`. Bounded wxScrolled<wxPanel> specialization only (wxScrolledWindow alias), native-backed child container, sizer fit/current virtual extent, rate0..256 and position0..1000000 pairs. Supported pixel extent<=1000000 checked at explicit mutation; inherited/native layout not globally constrained. Protected synchronous native operations and callback-time mutation deferral. Private helper retained; no managed stack APIs, drawing/target/coordinate/scroll events, raw adoption or full class parity. See docs/SCROLLING-PANELS.md.
 - [ ] [L403](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/scrolwin.h#L403) `wxPoint GetViewStart() const;`
-- [ ] [L425](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/scrolwin.h#L425) `void GetVirtualSize(int* x, int* y) const;`
+- [~] [L425](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/scrolwin.h#L425) `void GetVirtualSize(int* x, int* y) const;` — **Partial**: `scrolled-panel`, `make-scrolled-panel`, `scroll-rate`, `scroll-position`, `scroll-extent`, `fit-scroll-content`; ABI: `wxl_scrolled_panel`, `wxl_scroll_pair`, `wxl_set_scroll_pair`, `wxl_fit_scroll_content`. Bounded wxScrolled<wxPanel> specialization only (wxScrolledWindow alias), native-backed child container, sizer fit/current virtual extent, rate0..256 and position0..1000000 pairs. Supported pixel extent<=1000000 checked at explicit mutation; inherited/native layout not globally constrained. Protected synchronous native operations and callback-time mutation deferral. Private helper retained; no managed stack APIs, drawing/target/coordinate/scroll events, raw adoption or full class parity. See docs/SCROLLING-PANELS.md.
 - [ ] [L430](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/scrolwin.h#L430) `bool IsRetained() const;`
 - [ ] [L441](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/scrolwin.h#L441) `virtual void OnDraw(wxDC& dc);`
 - [ ] [L449](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/scrolwin.h#L449) `void PrepareDC(wxDC& dc);`
-- [ ] [L467](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/scrolwin.h#L467) `void Scroll(int x, int y);`
+- [~] [L467](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/scrolwin.h#L467) `void Scroll(int x, int y);` — **Partial**: `scrolled-panel`, `make-scrolled-panel`, `scroll-rate`, `scroll-position`, `scroll-extent`, `fit-scroll-content`; ABI: `wxl_scrolled_panel`, `wxl_scroll_pair`, `wxl_set_scroll_pair`, `wxl_fit_scroll_content`. Bounded wxScrolled<wxPanel> specialization only (wxScrolledWindow alias), native-backed child container, sizer fit/current virtual extent, rate0..256 and position0..1000000 pairs. Supported pixel extent<=1000000 checked at explicit mutation; inherited/native layout not globally constrained. Protected synchronous native operations and callback-time mutation deferral. Private helper retained; no managed stack APIs, drawing/target/coordinate/scroll events, raw adoption or full class parity. See docs/SCROLLING-PANELS.md.
 - [ ] [L472](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/scrolwin.h#L472) `void Scroll(const wxPoint& pt);`
-- [ ] [L478](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/scrolwin.h#L478) `void SetScrollRate(int xstep, int ystep);`
+- [~] [L478](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/scrolwin.h#L478) `void SetScrollRate(int xstep, int ystep);` — **Partial**: `scrolled-panel`, `make-scrolled-panel`, `scroll-rate`, `scroll-position`, `scroll-extent`, `fit-scroll-content`; ABI: `wxl_scrolled_panel`, `wxl_scroll_pair`, `wxl_set_scroll_pair`, `wxl_fit_scroll_content`. Bounded wxScrolled<wxPanel> specialization only (wxScrolledWindow alias), native-backed child container, sizer fit/current virtual extent, rate0..256 and position0..1000000 pairs. Supported pixel extent<=1000000 checked at explicit mutation; inherited/native layout not globally constrained. Protected synchronous native operations and callback-time mutation deferral. Private helper retained; no managed stack APIs, drawing/target/coordinate/scroll events, raw adoption or full class parity. See docs/SCROLLING-PANELS.md.
 - [ ] [L525](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/scrolwin.h#L525) `void SetScrollbars(int pixelsPerUnitX, int pixelsPerUnitY, int noUnitsX, int noUnitsY, int xPos = 0, int yPos = 0, bool noRefresh = false);`
 - [ ] [L547](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/scrolwin.h#L547) `void SetTargetWindow(wxWindow *window);`
 - [ ] [L548](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/scrolwin.h#L548) `wxWindow *GetTargetWindow() const;`
@@ -1703,14 +1703,14 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [ ] [L597](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/scrolwin.h#L597) `virtual bool ShouldScrollToChildOnFocus(wxWindow* child);`
 - [ ] [L611](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/scrolwin.h#L611) `virtual wxSize GetSizeAvailableForScrollTarget(const wxSize& size);`
 - [ ] [L636](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/scrolwin.h#L636) `bool wxCreateScrolled(T* self, wxWindow *parent, wxWindowID winid, const wxPoint& pos, const wxSize& size, long style, const wxString& name);`
-- [ ] [L659](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/scrolwin.h#L659) `typedef wxScrolled<wxPanel> wxScrolledWindow;`
+- [~] [L659](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/scrolwin.h#L659) `typedef wxScrolled<wxPanel> wxScrolledWindow;` — **Partial**: `scrolled-panel`, `make-scrolled-panel`, `scroll-rate`, `scroll-position`, `scroll-extent`, `fit-scroll-content`; ABI: `wxl_scrolled_panel`, `wxl_scroll_pair`, `wxl_set_scroll_pair`, `wxl_fit_scroll_content`. Bounded wxScrolled<wxPanel> specialization only (wxScrolledWindow alias), native-backed child container, sizer fit/current virtual extent, rate0..256 and position0..1000000 pairs. Supported pixel extent<=1000000 checked at explicit mutation; inherited/native layout not globally constrained. Protected synchronous native operations and callback-time mutation deferral. Private helper retained; no managed stack APIs, drawing/target/coordinate/scroll events, raw adoption or full class parity. See docs/SCROLLING-PANELS.md.
 - [ ] [L672](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/scrolwin.h#L672) `typedef wxScrolled<wxWindow> wxScrolledCanvas;`
 
 ## `wx/sizer.h`
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/sizer.h)
 
-0 implemented; 6 partial; 212 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
+0 implemented; 7 partial; 211 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
 
 - [ ] [L120](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/sizer.h#L120) `class wxSizer : public wxObject {`
 - [ ] [L127](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/sizer.h#L127) `wxSizer();`
@@ -1821,7 +1821,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [ ] [L1177](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/sizer.h#L1177) `int GetBorder() const;`
 - [ ] [L1184](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/sizer.h#L1184) `int GetFlag() const;`
 - [ ] [L1190](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/sizer.h#L1190) `int GetId() const;`
-- [ ] [L1195](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/sizer.h#L1195) `wxSize GetMinSize() const;`
+- [~] [L1195](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/sizer.h#L1195) `wxSize GetMinSize() const;` — **Partial**: `scrolled-panel`, `make-scrolled-panel`, `scroll-rate`, `scroll-position`, `scroll-extent`, `fit-scroll-content`; ABI: `wxl_scrolled_panel`, `wxl_scroll_pair`, `wxl_set_scroll_pair`, `wxl_fit_scroll_content`. Internal content/client bound check only; Bounded wxScrolled<wxPanel> specialization only (wxScrolledWindow alias), native-backed child container, sizer fit/current virtual extent, rate0..256 and position0..1000000 pairs. Supported pixel extent<=1000000 checked at explicit mutation; inherited/native layout not globally constrained. Protected synchronous native operations and callback-time mutation deferral. Private helper retained; no managed stack APIs, drawing/target/coordinate/scroll events, raw adoption or full class parity. See docs/SCROLLING-PANELS.md.
 - [ ] [L1203](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/sizer.h#L1203) `void SetMinSize(const wxSize& size);`
 - [ ] [L1208](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/sizer.h#L1208) `void SetMinSize(int x, int y);`
 - [ ] [L1213](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/sizer.h#L1213) `wxPoint GetPosition() const;`
@@ -2995,7 +2995,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h)
 
-10 implemented; 18 partial; 358 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
+10 implemented; 20 partial; 356 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
 
 - [ ] [L12](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L12) `enum wxShowEffect {`
 - [ ] [L19](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L19) `wxSHOW_EFFECT_NONE, wxSHOW_EFFECT_ROLL_TO_LEFT, wxSHOW_EFFECT_ROLL_TO_RIGHT, wxSHOW_EFFECT_ROLL_TO_TOP, wxSHOW_EFFECT_ROLL_TO_BOTTOM, wxSHOW_EFFECT_SLIDE_TO_LEFT, wxSHOW_EFFECT_SLIDE_TO_RIGHT, wxSHOW_EFFECT_SLIDE_TO_TOP, wxSHOW_EFFECT_SLIDE_TO_BOTTOM, wxSHOW_EFFECT_BLEND, wxSHOW_EFFECT_EXPAND, wxSHOW_EFFECT_MAX }`
@@ -3110,7 +3110,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [ ] [L1017](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L1017) `virtual wxSize ClientToWindowSize(const wxSize& size) const;`
 - [ ] [L1033](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L1033) `virtual wxSize WindowToClientSize(const wxSize& size) const;`
 - [ ] [L1046](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L1046) `virtual void Fit();`
-- [ ] [L1056](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L1056) `virtual void FitInside();`
+- [~] [L1056](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L1056) `virtual void FitInside();` — **Partial**: `scrolled-panel`, `make-scrolled-panel`, `scroll-rate`, `scroll-position`, `scroll-extent`, `fit-scroll-content`; ABI: `wxl_scrolled_panel`, `wxl_scroll_pair`, `wxl_set_scroll_pair`, `wxl_fit_scroll_content`. Bounded wxScrolled<wxPanel> specialization only (wxScrolledWindow alias), native-backed child container, sizer fit/current virtual extent, rate0..256 and position0..1000000 pairs. Supported pixel extent<=1000000 checked at explicit mutation; inherited/native layout not globally constrained. Protected synchronous native operations and callback-time mutation deferral. Private helper retained; no managed stack APIs, drawing/target/coordinate/scroll events, raw adoption or full class parity. See docs/SCROLLING-PANELS.md.
 - [ ] [L1090](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L1090) `wxSize FromDIP(const wxSize& sz) const;`
 - [ ] [L1093](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L1093) `wxPoint FromDIP(const wxPoint& pt) const;`
 - [ ] [L1107](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L1107) `int FromDIP(int d) const;`
@@ -3139,7 +3139,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [ ] [L1328](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L1328) `int GetBestHeight(int width) const;`
 - [ ] [L1337](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L1337) `int GetBestWidth(int height) const;`
 - [ ] [L1354](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L1354) `void GetClientSize(int* width, int* height) const;`
-- [ ] [L1359](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L1359) `wxSize GetClientSize() const;`
+- [~] [L1359](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L1359) `wxSize GetClientSize() const;` — **Partial**: `scrolled-panel`, `make-scrolled-panel`, `scroll-rate`, `scroll-position`, `scroll-extent`, `fit-scroll-content`; ABI: `wxl_scrolled_panel`, `wxl_scroll_pair`, `wxl_set_scroll_pair`, `wxl_fit_scroll_content`. Internal content/client bound check only; Bounded wxScrolled<wxPanel> specialization only (wxScrolledWindow alias), native-backed child container, sizer fit/current virtual extent, rate0..256 and position0..1000000 pairs. Supported pixel extent<=1000000 checked at explicit mutation; inherited/native layout not globally constrained. Protected synchronous native operations and callback-time mutation deferral. Private helper retained; no managed stack APIs, drawing/target/coordinate/scroll events, raw adoption or full class parity. See docs/SCROLLING-PANELS.md.
 - [ ] [L1371](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L1371) `virtual wxSize GetEffectiveMinSize() const;`
 - [ ] [L1382](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L1382) `virtual wxSize GetMaxClientSize() const;`
 - [ ] [L1392](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L1392) `virtual wxSize GetMaxSize() const;`
@@ -3327,7 +3327,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [ ] [L3627](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L3627) `void SetSizerAndFit(wxSizer* sizer, bool deleteOld = true);`
 - [ ] [L3632](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L3632) `wxLayoutConstraints* GetConstraints() const;`
 - [ ] [L3650](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L3650) `void SetConstraints(wxLayoutConstraints* constraints);`
-- [~] [L3668](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L3668) `virtual bool Layout();` — **Partial**: `layout-window`; ABI: `wxl_layout`. Relayout exposed; native boolean return is discarded.
+- [~] [L3668](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L3668) `virtual bool Layout();` — **Partial**: `layout-window`, `fit-scroll-content`; ABI: `wxl_layout`, `wxl_fit_scroll_content`. Relayout exposed; native boolean return is discarded. Also Layout/FitInside/Layout for bounded scrolled-panel content; private helper retained.
 - [ ] [L3684](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L3684) `void SetAutoLayout(bool autoLayout);`
 - [ ] [L3693](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L3693) `bool GetAutoLayout() const;`
 - [ ] [L3720](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L3720) `void CaptureMouse();`

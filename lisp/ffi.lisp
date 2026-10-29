@@ -95,7 +95,7 @@
           (if (probe-file local)
               (cffi:load-foreign-library local)
               (cffi:use-foreign-library wxlambda-native))))
-    (unless (= 48 (%abi-version)) (error "Unsupported wxlambda native ABI"))
+    (unless (= 49 (%abi-version)) (error "Unsupported wxlambda native ABI"))
     (setf *native-loaded* t))
   t)
 
@@ -345,3 +345,8 @@
 (cffi:defcfun ("wxl_combo_item" %combo-item) :pointer (control :uint64) (index :int) (length :pointer))
 (cffi:defcfun ("wxl_set_combo_text" %set-combo-text) :int (control :uint64) (value :pointer) (length :size) (notify :int))
 (cffi:defcfun ("wxl_set_combo_selection" %set-combo-selection) :int (control :uint64) (index :int) (notify :int))
+
+(cffi:defcfun ("wxl_scrolled_panel" %scrolled-panel) :uint64 (parent :uint64) (xrate :int) (yrate :int))
+(cffi:defcfun ("wxl_scroll_pair" %scroll-pair) :int (control :uint64) (field :int) (x :pointer) (y :pointer))
+(cffi:defcfun ("wxl_set_scroll_pair" %set-scroll-pair) :int (control :uint64) (field :int) (x :int) (y :int))
+(cffi:defcfun ("wxl_fit_scroll_content" %fit-scroll-content) :int (control :uint64))

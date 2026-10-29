@@ -79,14 +79,14 @@ as if later features or platform checks already passed.
 - Idle batch: :IDLE family/resources, bounded RequestMore, session-restored
   automatic mode, own-window opt-in and native wake scheduling. Independent review
   and final verification pass.
-- Current bridge ABI:48. Public API:250 exports,25 window wrapper classes
-  (23 concrete plus WINDOW/DIALOG abstract),178 named generics and54 generic
+- Current bridge ABI:49. Public API:256 exports,26 window wrapper classes
+  (24 concrete plus WINDOW/DIALOG abstract),183 named generics and56 generic
   SETF writers. Borrowed TREE-ITEM and UI-ACTION/UI-TIMER identities remain
-  separate from window construction. Latest combo-box details/evidence are
+  separate from window construction. Latest scrolling-panel details/evidence are
   recorded in the final session handoff below.
-- Latest implementation verification: all73 GUI scenarios plus native preflight
+- Latest implementation verification: all74 GUI scenarios plus native preflight
   pass on local Apple Silicon macOS SBCL2.6.9 and CCL1.13, reports
-  `evidence/combo-boxes/{sbcl,ccl}-20261028-final/`. The earlier toggle-batch CCL
+  `evidence/scrolling-panels/{sbcl,ccl}-20261028-final/`. The earlier toggle-batch CCL
   tree-process exception and successful reruns remain recorded in its handoff. Native probes report zero
   assertions. Hosted Linux/Windows GUI and graphical Cadre remain unverified;
   wxQt tree construction retains its documented rejection gate.
@@ -2663,3 +2663,67 @@ Session handoff: broad GUI coverage with selective depth remains the objective.
 Next selected slice: bounded scrolling panels for larger forms. Continue workflow
 breadth with explicit native state/lifetime semantics, examples/docs/docset,
 independent review and recorded limitations rather than exhaustive C1-C7 parity.
+
+## Scrolling panels for larger forms (2026-10-28)
+
+ABI49 adds native-backed SCROLLED-PANEL and generic MAKE-SCROLLED-PANEL with
+:parent/:scroll-rate, direct subclass/default initargs/native-ready AFTER hooks
+and managed rollback. Native is wxScrolled<wxPanel> alias wxScrolledWindow; Lisp
+base is WINDOW to retain exactly one native kind. Notebook/splitter PANEL pages
+can contain a scrolling viewport rather than treating it as another native kind.
+
+Generic SCROLL-RATE/SETF is a copied exact pair0..256 pixels/unit; zero disables
+an axis including both zero. SCROLL-POSITION/SETF is native view-start units,
+requested0..1000000 with native clamping/disabled axes; writer returns supplied
+list, not accepted position. SCROLL-EXTENT reads fresh virtual pixel pair. Generic
+FIT-SCROLL-CONTENT requires own sizer, runs Layout/FitInside/Layout and refreshes
+max(client,sizer minimum) without resizing frame. Existing row/column child layout
+works; outer viewport uses proportion1/expand. Native focus/resize can move view
+without bridge writes; rate changes need not preserve pixel origin.
+
+Explicit mutations check supported current virtual/client/sizer-min dimensions
+<=1000000 pixels/axis. Existing inherited/native auto-layout is not globally
+policed; applications must remain within supported content size. No arbitrary
+huge sizer arithmetic claim. Mutations reject event callbacks; owner-bound
+deferred UI actions are the supported callback navigation path. InputOperation
+protects synchronous Scroll/Update/paint work against source/ancestor teardown,
+modal/clipboard/GUI/safe-idle reentry. Painting remains allowed. No new scroll
+events, drawing/DC/target/conversion/focus overrides or native pointer adoption.
+wxUSE_SCROLLBAR required; no fictional wxUSE_SCROLLWIN option.
+
+Independent review found the private native pushed scroll helper integration
+limit: managed window-event-handler/Push/Pop/Remove and stack-aware process APIs
+now explicitly reject for SCROLLED-PANEL, keeping native helper ownership intact.
+All six rejections are tested; ordinary bindings/child command propagation work.
+Final code/test/docs review has no remaining actionable findings. Source audit
+covered generic scrolling/GTK/common window behavior; runtime macOS3.2.12 only.
+Physical wheel/trackpad/keyboard/focus/accessibility, painting fidelity and DPI/
+resize combinations, hosted GUI and graphical Cadre remain unverified. No
+automatic system clipboard contents are read/replaced.
+
+Example examples/scrolling-panels.lisp displays24 fields and deferred Back to top.
+Focused both-Lisp example/tests pass (quiet-run.lmxSNT0a, then stack regression
+checks in quiet-run.knzGavex before its test-harness compile typo). Corrected final
+native harness passes with zero assertions (quiet-run.tYu5JzIv). A test-only
+ScrollWindow override injects a supported callback during actual bridge scrolling
+to verify operation lifetime/reentry independent of normal callback rejection.
+Other checks cover copied/validated pairs, clamp/disable, fit/frame size, deferred
+child callbacks through helper, oversized content, rollback and stale handles.
+Full74 GUI scenarios plus preflight pass on SBCL2.6.9 and CCL1.13
+(quiet-run.yYb6SRYN), evidence/scrolling-panels/{sbcl,ccl}-20261028-final/.
+
+Regenerated pinned inventory/14 checks,16 Python checks and zero-problem docset
+pass (quiet-run.OH87iaVT). Counts:256 exports,183 named generics,56 SETF generics,
+26 window wrappers (24 concrete+2 abstract),48 examples and353 docset entries.
+Both-Lisp actual export/class/SETF coverage and counts, zero-problem isolated
+install/discovery/symbol/guide/example access and five package isolation checks
+pass (quiet-run.6q5hFcay). Install root /private/tmp/wxlambda-scroll-docsets/wxlambda;
+normal Cadre install docs/DOCSET.md. Package dist/wxlambda-form-scrolling-panels
+remains established form binary; new scrolling example is separate repository/
+docset content. Package evidence evidence/packaging/scrolling-panels-20261028/.
+Final docset build/check/install follows these final handoff notes.
+
+Session handoff: broad GUI coverage with selective depth remains the objective.
+Next selected slice: bounded focus navigation for keyboard-driven forms. Preserve
+native operation/lifetime protection, explicit supported scope, independent review
+and aligned examples/docs/docset/coverage rather than exhausting C1-C7 parity.

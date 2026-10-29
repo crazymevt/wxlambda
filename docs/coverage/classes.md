@@ -320,7 +320,7 @@ Class/struct definitions: 0 complete; 11 partial; 291 pending. Partial and pendi
 
 ## C2: Windows, layout, basic controls, and input
 
-Class/struct definitions: 0 complete; 24 partial; 108 pending. Partial and pending classes remain open.
+Class/struct definitions: 0 complete; 25 partial; 107 pending. Partial and pending classes remain open.
 
 [Declaration counts and remaining work](README.md).
 
@@ -397,7 +397,7 @@ Class/struct definitions: 0 complete; 24 partial; 108 pending. Partial and pendi
 - [ ] `wxSashWindow` — [`wx/sashwin.h`](phase-c2.md), upstream line 76.
 - [ ] `wxSashEvent` — [`wx/sashwin.h`](phase-c2.md), upstream line 249.
 - [ ] `wxScrollBar` — [`wx/scrolbar.h`](phase-c2.md), upstream line 111.
-- [ ] `wxScrolled` — [`wx/scrolwin.h`](phase-c2.md), upstream line 166.
+- [~] `wxScrolled` — [`wx/scrolwin.h`](phase-c2.md), upstream line 166. — **Partial**: `scrolled-panel`, `make-scrolled-panel`, `scroll-rate`, `scroll-position`, `scroll-extent`, `fit-scroll-content`; ABI: `wxl_scrolled_panel`, `wxl_scroll_pair`, `wxl_set_scroll_pair`, `wxl_fit_scroll_content`. Bounded wxScrolled<wxPanel> specialization only (wxScrolledWindow alias), native-backed child container, sizer fit/current virtual extent, rate0..256 and position0..1000000 pairs. Supported pixel extent<=1000000 checked at explicit mutation; inherited/native layout not globally constrained. Protected synchronous native operations and callback-time mutation deferral. Private helper retained; no managed stack APIs, drawing/target/coordinate/scroll events, raw adoption or full class parity. See docs/SCROLLING-PANELS.md.
 - [ ] `wxSizer` — [`wx/sizer.h`](phase-c2.md), upstream line 120.
 - [ ] `wxStdDialogButtonSizer` — [`wx/sizer.h`](phase-c2.md), upstream line 1015.
 - [ ] `wxSizerItem` — [`wx/sizer.h`](phase-c2.md), upstream line 1087.

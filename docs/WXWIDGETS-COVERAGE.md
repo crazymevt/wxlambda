@@ -270,7 +270,7 @@ C3 includes bounded managed menus and standard/generic dialogs. Other source
 categories remain selected feature work; internal conversions/types alone are
 not full public class coverage.
 
-The window-facing Lisp API has twenty-five wrapper classes (two abstract) plus the public event-handler base, direct native
+The window-facing Lisp API has twenty-six wrapper classes (two abstract) plus the public event-handler base, direct native
 construction and generic operations/SETF; see [CLOS API](CLOS-API.md). This establishes Lisp dispatch
 and method combination, not native C++ subclass/virtual-callback coverage.
 
@@ -290,8 +290,8 @@ virtual overrides remain on-demand/deferred.
 
 ### C2: Windows, layout, basic controls, and input
 
-[Complete C2 source inventory](coverage/phase-c2.md). Radio groups, list boxes and bounded sliders/spinners are implemented. Toggle buttons are delivered. Editable combo boxes are delivered. Plan useful
-scrolling, layouts, focus/keyboard and
+[Complete C2 source inventory](coverage/phase-c2.md). Radio groups, list boxes and bounded sliders/spinners are implemented. Toggle buttons are delivered. Editable combo boxes are delivered. Scrolling panels are delivered. Plan useful
+layouts, focus/keyboard and
 practical font/colour/DPI support. Deepen the existing window/control families as workflows
 need; not every constructor option or inherited overload must precede the next
 useful control.
@@ -588,4 +588,13 @@ Physical input and hosted platform GUI remain unverified.
 text, explicit text/selection properties and guarded native COMBO/TEXT events.
 Native combo/text-entry classes remain partial; sorted/read-only/style, mutable
 items and full editing APIs stay unbound. Physical input and hosted GUI remain
-unverified. Next selected slice: bounded scrolling panels for larger forms.
+unverified. Bounded scrolling panels are delivered below.
+
+## Scrolling panels for larger forms
+
+[Scrolling panels](SCROLLING-PANELS.md) add a wxScrolled<wxPanel> specialization,
+sizer fit, current pixel extent and rate/view-unit properties. Private helper
+ownership and native synchronous repaint are guarded; managed stack APIs reject.
+Drawing/target/coordinate and scroll-event depth stay unbound. Next selected
+slice: bounded focus navigation for keyboard-driven forms. Physical input,
+painting fidelity and hosted platform GUI remain unverified.

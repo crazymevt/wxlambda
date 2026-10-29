@@ -342,12 +342,14 @@
       "status": "~",
       "symbol": "wxWindow::Layout",
       "lisp": [
-        "layout-window"
+        "layout-window",
+        "fit-scroll-content"
       ],
       "native": [
-        "wxl_layout"
+        "wxl_layout",
+        "wxl_fit_scroll_content"
       ],
-      "scope": "Relayout exposed; native boolean return is discarded."
+      "scope": "Relayout exposed; native boolean return is discarded. Also Layout/FitInside/Layout for bounded scrolled-panel content; private helper retained."
     },
     {
       "header": "wx/sizer.h",
@@ -7588,6 +7590,248 @@
         "wxl_set_combo_selection"
       ],
       "scope": "Bounded editable COMBO-BOX only, fixed0..256 unsorted nonempty native-CmpNoCase-unique single-line choices. Text/selection generic SETF, read-only items, explicit native notifications, COMBO/TEXT lifetime/reentry guards. No readonly/styles/mutation/position APIs, raw adoption or full class parity. New combo selection kind native-only; existing generic TEXT event support retains its scope. See docs/COMBO-BOXES.md."
+    },
+    {
+      "header": "wx/scrolwin.h",
+      "line": 171,
+      "declaration": "wxScrolled();",
+      "status": "~",
+      "symbol": "wxScrolled::wxScrolled",
+      "lisp": [
+        "scrolled-panel",
+        "make-scrolled-panel",
+        "scroll-rate",
+        "scroll-position",
+        "scroll-extent",
+        "fit-scroll-content"
+      ],
+      "native": [
+        "wxl_scrolled_panel",
+        "wxl_scroll_pair",
+        "wxl_set_scroll_pair",
+        "wxl_fit_scroll_content"
+      ],
+      "scope": "Bounded wxScrolled<wxPanel> specialization only (wxScrolledWindow alias), native-backed child container, sizer fit/current virtual extent, rate0..256 and position0..1000000 pairs. Supported pixel extent<=1000000 checked at explicit mutation; inherited/native layout not globally constrained. Protected synchronous native operations and callback-time mutation deferral. Private helper retained; no managed stack APIs, drawing/target/coordinate/scroll events, raw adoption or full class parity. See docs/SCROLLING-PANELS.md."
+    },
+    {
+      "header": "wx/scrolwin.h",
+      "line": 245,
+      "declaration": "bool Create(wxWindow* parent, wxWindowID id = -1, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxHSCROLL | wxVSCROLL, const wxString& name = \"scrolledWindow\");",
+      "status": "~",
+      "symbol": "wxScrolled::Create",
+      "lisp": [
+        "scrolled-panel",
+        "make-scrolled-panel",
+        "scroll-rate",
+        "scroll-position",
+        "scroll-extent",
+        "fit-scroll-content"
+      ],
+      "native": [
+        "wxl_scrolled_panel",
+        "wxl_scroll_pair",
+        "wxl_set_scroll_pair",
+        "wxl_fit_scroll_content"
+      ],
+      "scope": "Bounded wxScrolled<wxPanel> specialization only (wxScrolledWindow alias), native-backed child container, sizer fit/current virtual extent, rate0..256 and position0..1000000 pairs. Supported pixel extent<=1000000 checked at explicit mutation; inherited/native layout not globally constrained. Protected synchronous native operations and callback-time mutation deferral. Private helper retained; no managed stack APIs, drawing/target/coordinate/scroll events, raw adoption or full class parity. See docs/SCROLLING-PANELS.md."
+    },
+    {
+      "header": "wx/scrolwin.h",
+      "line": 371,
+      "declaration": "void GetScrollPixelsPerUnit(int* xUnit, int* yUnit) const;",
+      "status": "~",
+      "symbol": "wxScrolled::GetScrollPixelsPerUnit",
+      "lisp": [
+        "scrolled-panel",
+        "make-scrolled-panel",
+        "scroll-rate",
+        "scroll-position",
+        "scroll-extent",
+        "fit-scroll-content"
+      ],
+      "native": [
+        "wxl_scrolled_panel",
+        "wxl_scroll_pair",
+        "wxl_set_scroll_pair",
+        "wxl_fit_scroll_content"
+      ],
+      "scope": "Bounded wxScrolled<wxPanel> specialization only (wxScrolledWindow alias), native-backed child container, sizer fit/current virtual extent, rate0..256 and position0..1000000 pairs. Supported pixel extent<=1000000 checked at explicit mutation; inherited/native layout not globally constrained. Protected synchronous native operations and callback-time mutation deferral. Private helper retained; no managed stack APIs, drawing/target/coordinate/scroll events, raw adoption or full class parity. See docs/SCROLLING-PANELS.md."
+    },
+    {
+      "header": "wx/scrolwin.h",
+      "line": 397,
+      "declaration": "void GetViewStart(int* x, int* y) const;",
+      "status": "~",
+      "symbol": "wxScrolled::GetViewStart",
+      "lisp": [
+        "scrolled-panel",
+        "make-scrolled-panel",
+        "scroll-rate",
+        "scroll-position",
+        "scroll-extent",
+        "fit-scroll-content"
+      ],
+      "native": [
+        "wxl_scrolled_panel",
+        "wxl_scroll_pair",
+        "wxl_set_scroll_pair",
+        "wxl_fit_scroll_content"
+      ],
+      "scope": "Bounded wxScrolled<wxPanel> specialization only (wxScrolledWindow alias), native-backed child container, sizer fit/current virtual extent, rate0..256 and position0..1000000 pairs. Supported pixel extent<=1000000 checked at explicit mutation; inherited/native layout not globally constrained. Protected synchronous native operations and callback-time mutation deferral. Private helper retained; no managed stack APIs, drawing/target/coordinate/scroll events, raw adoption or full class parity. See docs/SCROLLING-PANELS.md."
+    },
+    {
+      "header": "wx/scrolwin.h",
+      "line": 425,
+      "declaration": "void GetVirtualSize(int* x, int* y) const;",
+      "status": "~",
+      "symbol": "wxScrolled::GetVirtualSize",
+      "lisp": [
+        "scrolled-panel",
+        "make-scrolled-panel",
+        "scroll-rate",
+        "scroll-position",
+        "scroll-extent",
+        "fit-scroll-content"
+      ],
+      "native": [
+        "wxl_scrolled_panel",
+        "wxl_scroll_pair",
+        "wxl_set_scroll_pair",
+        "wxl_fit_scroll_content"
+      ],
+      "scope": "Bounded wxScrolled<wxPanel> specialization only (wxScrolledWindow alias), native-backed child container, sizer fit/current virtual extent, rate0..256 and position0..1000000 pairs. Supported pixel extent<=1000000 checked at explicit mutation; inherited/native layout not globally constrained. Protected synchronous native operations and callback-time mutation deferral. Private helper retained; no managed stack APIs, drawing/target/coordinate/scroll events, raw adoption or full class parity. See docs/SCROLLING-PANELS.md."
+    },
+    {
+      "header": "wx/scrolwin.h",
+      "line": 467,
+      "declaration": "void Scroll(int x, int y);",
+      "status": "~",
+      "symbol": "wxScrolled::Scroll",
+      "lisp": [
+        "scrolled-panel",
+        "make-scrolled-panel",
+        "scroll-rate",
+        "scroll-position",
+        "scroll-extent",
+        "fit-scroll-content"
+      ],
+      "native": [
+        "wxl_scrolled_panel",
+        "wxl_scroll_pair",
+        "wxl_set_scroll_pair",
+        "wxl_fit_scroll_content"
+      ],
+      "scope": "Bounded wxScrolled<wxPanel> specialization only (wxScrolledWindow alias), native-backed child container, sizer fit/current virtual extent, rate0..256 and position0..1000000 pairs. Supported pixel extent<=1000000 checked at explicit mutation; inherited/native layout not globally constrained. Protected synchronous native operations and callback-time mutation deferral. Private helper retained; no managed stack APIs, drawing/target/coordinate/scroll events, raw adoption or full class parity. See docs/SCROLLING-PANELS.md."
+    },
+    {
+      "header": "wx/scrolwin.h",
+      "line": 478,
+      "declaration": "void SetScrollRate(int xstep, int ystep);",
+      "status": "~",
+      "symbol": "wxScrolled::SetScrollRate",
+      "lisp": [
+        "scrolled-panel",
+        "make-scrolled-panel",
+        "scroll-rate",
+        "scroll-position",
+        "scroll-extent",
+        "fit-scroll-content"
+      ],
+      "native": [
+        "wxl_scrolled_panel",
+        "wxl_scroll_pair",
+        "wxl_set_scroll_pair",
+        "wxl_fit_scroll_content"
+      ],
+      "scope": "Bounded wxScrolled<wxPanel> specialization only (wxScrolledWindow alias), native-backed child container, sizer fit/current virtual extent, rate0..256 and position0..1000000 pairs. Supported pixel extent<=1000000 checked at explicit mutation; inherited/native layout not globally constrained. Protected synchronous native operations and callback-time mutation deferral. Private helper retained; no managed stack APIs, drawing/target/coordinate/scroll events, raw adoption or full class parity. See docs/SCROLLING-PANELS.md."
+    },
+    {
+      "header": "wx/scrolwin.h",
+      "line": 659,
+      "declaration": "typedef wxScrolled<wxPanel> wxScrolledWindow;",
+      "status": "~",
+      "symbol": "wxScrolledWindow",
+      "lisp": [
+        "scrolled-panel",
+        "make-scrolled-panel",
+        "scroll-rate",
+        "scroll-position",
+        "scroll-extent",
+        "fit-scroll-content"
+      ],
+      "native": [
+        "wxl_scrolled_panel",
+        "wxl_scroll_pair",
+        "wxl_set_scroll_pair",
+        "wxl_fit_scroll_content"
+      ],
+      "scope": "Bounded wxScrolled<wxPanel> specialization only (wxScrolledWindow alias), native-backed child container, sizer fit/current virtual extent, rate0..256 and position0..1000000 pairs. Supported pixel extent<=1000000 checked at explicit mutation; inherited/native layout not globally constrained. Protected synchronous native operations and callback-time mutation deferral. Private helper retained; no managed stack APIs, drawing/target/coordinate/scroll events, raw adoption or full class parity. See docs/SCROLLING-PANELS.md."
+    },
+    {
+      "header": "wx/window.h",
+      "line": 1056,
+      "declaration": "virtual void FitInside();",
+      "status": "~",
+      "symbol": "wxWindow::FitInside",
+      "lisp": [
+        "scrolled-panel",
+        "make-scrolled-panel",
+        "scroll-rate",
+        "scroll-position",
+        "scroll-extent",
+        "fit-scroll-content"
+      ],
+      "native": [
+        "wxl_scrolled_panel",
+        "wxl_scroll_pair",
+        "wxl_set_scroll_pair",
+        "wxl_fit_scroll_content"
+      ],
+      "scope": "Bounded wxScrolled<wxPanel> specialization only (wxScrolledWindow alias), native-backed child container, sizer fit/current virtual extent, rate0..256 and position0..1000000 pairs. Supported pixel extent<=1000000 checked at explicit mutation; inherited/native layout not globally constrained. Protected synchronous native operations and callback-time mutation deferral. Private helper retained; no managed stack APIs, drawing/target/coordinate/scroll events, raw adoption or full class parity. See docs/SCROLLING-PANELS.md."
+    },
+    {
+      "header": "wx/window.h",
+      "line": 1359,
+      "declaration": "wxSize GetClientSize() const;",
+      "status": "~",
+      "symbol": "wxWindow::GetClientSize",
+      "lisp": [
+        "scrolled-panel",
+        "make-scrolled-panel",
+        "scroll-rate",
+        "scroll-position",
+        "scroll-extent",
+        "fit-scroll-content"
+      ],
+      "native": [
+        "wxl_scrolled_panel",
+        "wxl_scroll_pair",
+        "wxl_set_scroll_pair",
+        "wxl_fit_scroll_content"
+      ],
+      "scope": "Internal content/client bound check only; Bounded wxScrolled<wxPanel> specialization only (wxScrolledWindow alias), native-backed child container, sizer fit/current virtual extent, rate0..256 and position0..1000000 pairs. Supported pixel extent<=1000000 checked at explicit mutation; inherited/native layout not globally constrained. Protected synchronous native operations and callback-time mutation deferral. Private helper retained; no managed stack APIs, drawing/target/coordinate/scroll events, raw adoption or full class parity. See docs/SCROLLING-PANELS.md."
+    },
+    {
+      "header": "wx/sizer.h",
+      "line": 1195,
+      "declaration": "wxSize GetMinSize() const;",
+      "status": "~",
+      "symbol": "wxSizer::GetMinSize",
+      "lisp": [
+        "scrolled-panel",
+        "make-scrolled-panel",
+        "scroll-rate",
+        "scroll-position",
+        "scroll-extent",
+        "fit-scroll-content"
+      ],
+      "native": [
+        "wxl_scrolled_panel",
+        "wxl_scroll_pair",
+        "wxl_set_scroll_pair",
+        "wxl_fit_scroll_content"
+      ],
+      "scope": "Internal content/client bound check only; Bounded wxScrolled<wxPanel> specialization only (wxScrolledWindow alias), native-backed child container, sizer fit/current virtual extent, rate0..256 and position0..1000000 pairs. Supported pixel extent<=1000000 checked at explicit mutation; inherited/native layout not globally constrained. Protected synchronous native operations and callback-time mutation deferral. Private helper retained; no managed stack APIs, drawing/target/coordinate/scroll events, raw adoption or full class parity. See docs/SCROLLING-PANELS.md."
     }
   ],
   "classes": {
@@ -8850,6 +9094,24 @@
         "wxl_set_combo_selection"
       ],
       "scope": "Bounded editable COMBO-BOX only, fixed0..256 unsorted nonempty native-CmpNoCase-unique single-line choices. Text/selection generic SETF, read-only items, explicit native notifications, COMBO/TEXT lifetime/reentry guards. No readonly/styles/mutation/position APIs, raw adoption or full class parity. New combo selection kind native-only; existing generic TEXT event support retains its scope. See docs/COMBO-BOXES.md."
+    },
+    "wxScrolled": {
+      "status": "~",
+      "lisp": [
+        "scrolled-panel",
+        "make-scrolled-panel",
+        "scroll-rate",
+        "scroll-position",
+        "scroll-extent",
+        "fit-scroll-content"
+      ],
+      "native": [
+        "wxl_scrolled_panel",
+        "wxl_scroll_pair",
+        "wxl_set_scroll_pair",
+        "wxl_fit_scroll_content"
+      ],
+      "scope": "Bounded wxScrolled<wxPanel> specialization only (wxScrolledWindow alias), native-backed child container, sizer fit/current virtual extent, rate0..256 and position0..1000000 pairs. Supported pixel extent<=1000000 checked at explicit mutation; inherited/native layout not globally constrained. Protected synchronous native operations and callback-time mutation deferral. Private helper retained; no managed stack APIs, drawing/target/coordinate/scroll events, raw adoption or full class parity. See docs/SCROLLING-PANELS.md."
     }
   }
 }

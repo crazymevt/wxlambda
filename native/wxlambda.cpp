@@ -3,6 +3,7 @@
 #include <wx/thread.h>
 #include <wx/choice.h>
 #include <wx/combobox.h>
+#include <wx/scrolwin.h>
 #include <wx/radiobox.h>
 #include <wx/tglbtn.h>
 #include <wx/gauge.h>
@@ -377,6 +378,7 @@ wxl_handle find_owned_handler(wxEvtHandler* object) noexcept {
     return 0;
 }
 void validate_window_stack(wxWindow* owner) {
+    require(!dynamic_cast<wxScrolledWindow*>(owner), "Scrolled panels retain a private native scroll helper; managed window stacks are unsupported");
     auto* node = owner->GetEventHandler();
     wxEvtHandler* previous = nullptr;
     size_t count = 0;
@@ -1314,7 +1316,7 @@ bool process_deferred_ui_action() {
 
 }
 extern "C" {
-int wxl_abi_version() { return 48; }
+int wxl_abi_version() { return 49; }
 const char* wxl_last_error() { return error.c_str(); }
 int wxl_clipboard_text_available() {
     return boolean_result([&] {
@@ -2890,6 +2892,48 @@ const char* wxl_get_label(wxl_handle id) {
     });
     return result == 0 ? label_result.c_str() : nullptr;
 }
+constexpr int scroll_extent_limit = 1000000;
+void scroll_bounds(wxScrolledWindow* object) {
+    int x=0,y=0; object->GetVirtualSize(&x,&y);
+    const auto client=object->GetClientSize();
+    require(x>=0 && y>=0 && x<=scroll_extent_limit && y<=scroll_extent_limit &&
+            client.x<=scroll_extent_limit && client.y<=scroll_extent_limit,"Scroll extent exceeds supported pixel bounds");
+    if (auto* sizer=object->GetSizer()) {
+        const auto minimum=sizer->GetMinSize();
+        require(minimum.x>=0 && minimum.y>=0 && minimum.x<=scroll_extent_limit && minimum.y<=scroll_extent_limit,"Scroll content exceeds supported pixel bounds");
+    }
+}
+void scroll_mutation_ready(wxScrolledWindow* object) {
+    require(callback_depth==0,"Defer scroll mutation until callbacks return"); scroll_bounds(object);
+}
+wxl_handle wxl_scrolled_panel(wxl_handle parent_id,int xrate,int yrate) {
+    return create([&] {
+        auto* parent=window(parent_id); require(xrate>=0 && xrate<=256 && yrate>=0 && yrate<=256,"Scroll rate requires 0..256 pixels per unit");
+        auto object=std::make_unique<ManagedWindow<wxScrolledWindow>>();
+        { wxEventBlocker blocker(object.get());
+          require(object->Create(parent,wxID_ANY,wxDefaultPosition,wxDefaultSize,wxHSCROLL|wxVSCROLL|wxTAB_TRAVERSAL),"Native scrolled panel creation failed");
+          object->SetScrollRate(xrate,yrate); }
+        const auto id=track(object.get()); object.release(); return id;
+    });
+}
+int wxl_scroll_pair(wxl_handle id,int field,int* x,int* y) { return status([&] {
+    auto* object=as<wxScrolledWindow>(id); require(x && y,"Missing scroll pair output");
+    if (field==0) object->GetScrollPixelsPerUnit(x,y);
+    else if (field==1) object->GetViewStart(x,y);
+    else { require(field==2,"Invalid scroll field"); object->GetVirtualSize(x,y); }
+}); }
+int wxl_set_scroll_pair(wxl_handle id,int field,int x,int y) { return status([&] {
+    auto* object=as<wxScrolledWindow>(id); require(field==0 || field==1,"Invalid scroll property");
+    const int limit=field==0 ? 256 : 1000000;
+    require(x>=0 && y>=0 && x<=limit && y<=limit,"Scroll property outside supported bounds");
+    scroll_mutation_ready(object); InputOperation operation(object);
+    if (field==0) object->SetScrollRate(x,y); else object->Scroll(x,y);
+}); }
+int wxl_fit_scroll_content(wxl_handle id) { return status([&] {
+    auto* object=as<wxScrolledWindow>(id); require(object->GetSizer(),"Attach a layout before fitting scroll content");
+    scroll_mutation_ready(object); InputOperation operation(object);
+    object->Layout(); object->FitInside(); object->Layout();
+}); }
 wxString combo_value(const char* value, size_t length) {
     const auto text=text_value(value,length);
     require(text.find('\r')==wxString::npos && text.find('\n')==wxString::npos, "Combo text must be single-line"); return text;

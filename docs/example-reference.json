@@ -186,5 +186,9 @@
   "combo-boxes.lisp": {
     "description": "Choose a fixed destination preset or type a custom value. EXERCISE checks silent/explicit selection and text notifications, UTF-8 and NIL clearing; no physical input simulation.",
     "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/combo-boxes.lisp --eval '(wxlambda-combo-boxes:start)'"
+  },
+  "scrolling-panels.lisp": {
+    "description": "24-field form in a scrolling viewport with an owner-bound deferred Back to top action. EXERCISE checks extent, native movement and safe return without physical input simulation.",
+    "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/scrolling-panels.lisp --eval '(wxlambda-scrolling-panels:start)'"
   }
 }

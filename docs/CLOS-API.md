@@ -1,8 +1,8 @@
 # CLOS widget API
 
 Widgets are native-backed CLOS instances. The public classes are `window`,
-`frame`, `toolbar`, `status-bar`, `panel`, `notebook`, `list-box`, `tree-control`, `splitter-window`, `button`, `text-control`, `label`, `checkbox`, `choice`,
-`gauge`, `slider`, `spin-control`, abstract `dialog`, and its `text-entry-dialog`, `single-choice-dialog`,
+`frame`, `toolbar`, `status-bar`, `panel`, `scrolled-panel`, `notebook`, `list-box`, `tree-control`, `splitter-window`, `button`, `text-control`, `label`, `checkbox`, `choice`,
+`gauge`, `slider`, `spin-control`, `radio-box`, `toggle-button`, `combo-box`, abstract `dialog`, and its `text-entry-dialog`, `single-choice-dialog`,
 `message-dialog` and `file-dialog` concrete families.
 `window` inherits from `event-handler` and is abstract. Standalone `event-handler`
 instances are native-backed session-owned resources; window instances reuse their
@@ -280,3 +280,5 @@ RADIO-BOX adds fixed mutually exclusive choices via :parent/:items/:label/:selec
 TOGGLE-BUTTON supports :parent/:label/:checked with direct subclass slots/defaults and native-ready AFTER hooks. See [toggle buttons](TOGGLE-BUTTONS.md).
 
 COMBO-BOX adds :parent/:items/:value/:selection with native-backed subclass construction, properties in AFTER hooks and managed rollback. See [combo boxes](COMBO-BOXES.md).
+
+SCROLLED-PANEL is a WINDOW subtype backed by wxScrolled<wxPanel>, with :parent/:scroll-rate and native-ready subclass hooks. Nest it inside ordinary notebook/splitter PANEL content. See [scrolling panels](SCROLLING-PANELS.md).

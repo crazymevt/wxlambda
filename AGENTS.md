@@ -119,7 +119,7 @@ attached nodes. Dedicated managed window Push/Pop/Remove APIs preserve bridge
 session ownership; actual native window destruction pops managed stacks without
 deleting those handlers. Explicit stack-aware processing differs from generic
 window receiver dispatch, which retains native stack bypass. Public window wrapper
-classes are `window` (abstract), `frame`, `panel`, `button`,
+classes are `window` (abstract), `frame`, `panel`, `scrolled-panel`, `button`,
 `text-control`, `label`, `checkbox`, `choice`, `gauge`, `combo-box`, `toggle-button`, `radio-box`, `slider`, `spin-control`, `notebook`, `list-box`, `tree-control`, `splitter-window`, `toolbar` and `status-bar` (plus the
 DIALOG hierarchy described below). Lisp subclassing does not imply
 native C++ subclassing or virtual-method callbacks; those need separate bridge
@@ -240,3 +240,5 @@ cloned radio events or individual creation-order radio grouping. See docs/RADIO-
 ABI47 TOGGLE-BUTTON adds independent pressed state and guarded label/value writes. Preserve generalized boolean SETF, silent defaults, explicit native notify, actual-origin/propagation Input guards and native empty event text (no inferred label). New kind rejects semantic checked SETF and owned/synthetic/clone. See docs/TOGGLE-BUTTONS.md.
 
 ABI48 COMBO-BOX is editable with fixed0..256 unsorted nonempty native-CmpNoCase-unique choices. Programmatic text rejects NUL/CR/LF; selection writes set matching text, NIL clears both. Preserve Input guards for actual COMBO and TEXT events, native text/selection readback semantics, explicit single-kind notifications and native-only combo selection resources. Existing generic TEXT event rules retain scope. See docs/COMBO-BOXES.md.
+
+ABI49 SCROLLED-PANEL uses wxScrolled<wxPanel> but Lisp WINDOW ancestry. Preserve rate/view-unit/pixel extent distinctions, callback mutation rejection and Input operation guards around synchronous native Update. Native scroll helper remains owned; managed handler-stack APIs reject. Fit requires own sizer and supported extent; inherited layout is not globally bound-enforced. See docs/SCROLLING-PANELS.md.
