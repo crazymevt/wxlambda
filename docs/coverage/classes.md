@@ -320,7 +320,7 @@ Class/struct definitions: 0 complete; 11 partial; 291 pending. Partial and pendi
 
 ## C2: Windows, layout, basic controls, and input
 
-Class/struct definitions: 0 complete; 21 partial; 111 pending. Partial and pending classes remain open.
+Class/struct definitions: 0 complete; 22 partial; 110 pending. Partial and pending classes remain open.
 
 [Declaration counts and remaining work](README.md).
 
@@ -389,7 +389,7 @@ Class/struct definitions: 0 complete; 21 partial; 111 pending. Partial and pendi
 - [ ] `wxOwnerDrawnComboBox` — [`wx/odcombo.h`](phase-c2.md), upstream line 83.
 - [~] `wxPanel` — [`wx/panel.h`](phase-c2.md), upstream line 37. — **Partial**: `panel`, `make-panel`; ABI: `wxl_panel`. Native-backed CLOS construction, including subclass initargs/defaults and managed rollback. Parent only; remaining constructor options use defaults. Full class and inherited API coverage remain open.
 - [ ] `wxPickerBase` — [`wx/pickerbase.h`](phase-c2.md), upstream line 37.
-- [ ] `wxRadioBox` — [`wx/radiobox.h`](phase-c2.md), upstream line 35.
+- [~] `wxRadioBox` — [`wx/radiobox.h`](phase-c2.md), upstream line 35. — **Partial**: `radio-box`, `make-radio-box`, `selection`, `item-count`, `item-text`, `event-selection`; ABI: `wxl_radio_box`, `wxl_radio_field`, `wxl_radio_item`, `wxl_set_radio_selection`. Bounded native-backed wxRadioBox only, fixed2..64 items, valid zero-based selection, one row/column; native text getter and native-only command snapshots/current contexts. Same-group mutation/lifetime guards. No standalone radio buttons, item mutation/per-item state, owned/synthetic/clones, arbitrary styles or complete class parity. See docs/RADIO-GROUPS.md.
 - [ ] `wxRadioButton` — [`wx/radiobut.h`](phase-c2.md), upstream line 54.
 - [ ] `wxRearrangeList` — [`wx/rearrangectrl.h`](phase-c2.md), upstream line 56.
 - [ ] `wxRearrangeCtrl` — [`wx/rearrangectrl.h`](phase-c2.md), upstream line 190.

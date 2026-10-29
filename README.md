@@ -820,3 +820,6 @@ do not establish safe queued-native cancellation. Hosted OS timing remains unver
 controls, generic value/range writes and immutable update snapshots. Run
 [numeric-input.lisp](examples/numeric-input.lisp) for silent cross-control
 synchronization. Physical and hosted OS input checks remain separate.
+
+[Bounded radio groups](docs/RADIO-GROUPS.md) provide fixed exclusive choices;
+run `examples/radio-groups.lisp` for export-format selection.

@@ -267,14 +267,14 @@
   {
     "name": "selection",
     "kind": "generic-function",
-    "arguments": "CONTROL is a live CHOICE, LIST-BOX, NOTEBOOK or TREE-CONTROL; NOTIFY is meaningful for the writer only.",
-    "returns": "Index/NIL for choice/listbox/notebook; canonical TREE-ITEM/NIL for tree-control.",
-    "description": "Read current selection: an index for CHOICE/LIST-BOX/NOTEBOOK, or a canonical managed TREE-ITEM view for TREE-CONTROL, with NIL when no selection exists. Reader NOTIFY is ignored. Writes are silent by default; notifying choice/list writes emit synthetic events, while notebook/tree writes use native vetoable selection. Return of a requested assignment does not prove native acceptance. Populated tree writes require a live same-tree item; NIL is empty-tree no-op only. Root creation and structural edits silently normalize valid selection before idle.",
-    "scope": "Requires an active GUI session on the process main thread. Invalid/destroyed handles or unsupported native arguments signal NATIVE-ERROR; Lisp argument/type errors remain Lisp conditions. One GUI session per process. Widget behavior uses CLOS generic dispatch. Wrong receiver types signal Lisp dispatch conditions; native handle/state failures signal NATIVE-ERROR.",
-    "wxwidgets": "wxChoice/wxListBox::GetSelection/SetSelection; wxNotebook::GetSelection/ChangeSelection/SetSelection (wxWidgets 3.2.12). wxTreeCtrl::GetSelection/SelectItem in ABI39.",
+    "arguments": "CONTROL is a live CHOICE, LIST-BOX, RADIO-BOX, NOTEBOOK or TREE-CONTROL; NOTIFY is meaningful for the writer only.",
+    "returns": "Index/NIL for choice/listbox/notebook; non-NIL index for radio-box; canonical TREE-ITEM/NIL for tree-control.",
+    "description": "Read current selection: an index for CHOICE/LIST-BOX/NOTEBOOK, or a canonical managed TREE-ITEM view for TREE-CONTROL, with NIL when no selection exists. Reader NOTIFY is ignored. Writes are silent by default; notifying choice/list writes emit synthetic events, while notebook/tree writes use native vetoable selection. Return of a requested assignment does not prove native acceptance. Populated tree writes require a live same-tree item; NIL is empty-tree no-op only. Root creation and structural edits silently normalize valid selection before idle. RADIO-BOX always has exactly one valid index; its explicit notifying write commits before a native-class command event, without veto or rollback.",
+    "scope": "Requires an active GUI session on the process main thread. Invalid/destroyed handles or unsupported native arguments signal NATIVE-ERROR; Lisp argument/type errors remain Lisp conditions. One GUI session per process. Widget behavior uses CLOS generic dispatch. Wrong receiver types signal Lisp dispatch conditions; native handle/state failures signal NATIVE-ERROR. RADIO-BOX: bounded :radio-selection command events; immutable copied index/native label, current borrowed contexts; no owned/synthetic/clone radio events. Fixed2..64 choices, mandatory valid zero-based selection, one row/column orientation. Active GUI session/native lifetime checks for widget operations; no standalone radio buttons, item mutation or full native parity. See docs/RADIO-GROUPS.md.",
+    "wxwidgets": "wxChoice/wxListBox::GetSelection/SetSelection; wxNotebook::GetSelection/ChangeSelection/SetSelection (wxWidgets 3.2.12). wxTreeCtrl::GetSelection/SelectItem in ABI39. wxRadioBox::GetSelection/SetSelection.",
     "setf": {
       "syntax": "(setf (wxlambda:selection control :notify nil) value)",
-      "description": "For CHOICE: index or NIL for none; silent by default. :NOTIFY T emits one synthetic native choice selection event, including unchanged assignments. For NOTEBOOK: existing integer index only (no NIL); ChangeSelection is silent by default, :NOTIFY T uses native vetoable SetSelection. Same-page notification counts are native/port-dependent. Returns the requested value even when vetoed; read actual selection afterward. LIST-BOX mirrors CHOICE index/NIL behavior, with :LISTBOX-SELECTION text/index/action metadata. Item edits adjust selection silently per LIST-BOX.md. TREE-CONTROL requires a same-tree TREE-ITEM, or NIL only when empty. Native SelectItem is silent by default; :NOTIFY T can be vetoed. Returns the requested view, not proof of acceptance."
+      "description": "For CHOICE: index or NIL for none; silent by default. :NOTIFY T emits one synthetic native choice selection event, including unchanged assignments. For NOTEBOOK: existing integer index only (no NIL); ChangeSelection is silent by default, :NOTIFY T uses native vetoable SetSelection. Same-page notification counts are native/port-dependent. Returns the requested value even when vetoed; read actual selection afterward. LIST-BOX mirrors CHOICE index/NIL behavior, with :LISTBOX-SELECTION text/index/action metadata. Item edits adjust selection silently per LIST-BOX.md. TREE-CONTROL requires a same-tree TREE-ITEM, or NIL only when empty. Native SelectItem is silent by default; :NOTIFY T can be vetoed. Returns the requested view, not proof of acceptance. RADIO-BOX requires a valid non-NIL index; silent by default, :NOTIFY T commits then emits one event even unchanged; same-group callback writes reject, silent other-group writes allowed."
     }
   },
   {
@@ -414,7 +414,7 @@
     "arguments": "EVENT is a snapshot, current context or live OWNED-EVENT. SETF VALUE is a string and requires native command/notify state.",
     "returns": "Snapshot kind-specific copied string/NIL; live command/notify string (possibly empty), or NIL for close/idle-family reads. SETF returns VALUE.",
     "description": "Read or copy native command string payload. Context/owned SETF uses explicit UTF-8 byte lengths, preserving embedded NULs. Saved snapshots stay immutable and retain their prior kind-specific payload interpretation. ABI38 listbox selection/double-click command events carry cached string/index payloads; snapshots are independent of later item edits. Native list callback guards protect receiver/ancestors and defer modal/clipboard entry while allowing item edits.",
-    "scope": "Saved reads need no session. Live access requires active main-thread session and valid owned/innermost-context lifetime. Text writes to close/idle-family events reject; non-string values signal TYPE-ERROR. Native wxEVT_TEXT with a tracked text-entry origin rejects context string SETF; unknown origins reject too. The control is not changed. Detached context clones freeze effective GetString before clearing origin.",
+    "scope": "Saved reads need no session. Live access requires active main-thread session and valid owned/innermost-context lifetime. Text writes to close/idle-family events reject; non-string values signal TYPE-ERROR. Native wxEVT_TEXT with a tracked text-entry origin rejects context string SETF; unknown origins reject too. The control is not changed. Detached context clones freeze effective GetString before clearing origin. RADIO-BOX :radio-selection is a native-only command kind with copied/current index and native label metadata. Snapshot reads survive source/session cleanup; borrowed contexts require the exact innermost current callback. No owned/synthetic/cloned radio events. See docs/RADIO-GROUPS.md.",
     "wxwidgets": "wxCommandEvent::GetString / SetString, including wxNotifyEvent (wxWidgets 3.2.12 baseline).",
     "syntax": "(wxlambda:event-text event)",
     "setf": {
@@ -440,14 +440,14 @@
     "name": "event-selection",
     "kind": "generic-function",
     "arguments": "An immutable EVENT snapshot, live OWNED-EVENT, or current borrowed EVENT-CONTEXT.",
-    "returns": "Zero-based choice/listbox or native notebook event index; NIL for none/non-selection kinds.",
-    "description": "Reads choice/listbox wxCommandEvent selection metadata, or derived wxBookCtrlEvent selection for notebook changing/changed. This is event payload, not a fresh control-model query. Notebook CHANGING semantics are port-dependent (Windows may report the old page); old-selection metadata is not exposed. Snapshots survive later item edits unchanged.",
-    "scope": "Snapshots need no session. Owned/context access requires the active main-thread session and a live resource/exact current context. Notebook selection is read-only; writable payload supports only choice/listbox selection/activation kinds, not arbitrary command tags.",
-    "wxwidgets": "wxCommandEvent::GetSelection/SetInt for wxEVT_CHOICE, wxEVT_LISTBOX and wxEVT_LISTBOX_DCLICK; wxBookCtrlEvent::GetSelection read-only (wxWidgets 3.2.12).",
+    "returns": "Zero-based choice/listbox/radio-box or native notebook event index; NIL for none/non-selection kinds.",
+    "description": "Reads choice/listbox wxCommandEvent selection metadata, or derived wxBookCtrlEvent selection for notebook changing/changed. This is event payload, not a fresh control-model query. Notebook CHANGING semantics are port-dependent (Windows may report the old page); old-selection metadata is not exposed. Snapshots survive later item edits unchanged. Radio-box wxCommandEvent selection is read-only semantic metadata; it does not query current control state.",
+    "scope": "Snapshots need no session. Owned/context access requires the active main-thread session and a live resource/exact current context. Notebook selection is read-only; writable payload supports only choice/listbox selection/activation kinds, not arbitrary command tags. RADIO-BOX :radio-selection is a native-only command kind with copied/current index and native label metadata. Snapshot reads survive source/session cleanup; borrowed contexts require the exact innermost current callback. No owned/synthetic/cloned radio events. See docs/RADIO-GROUPS.md.",
+    "wxwidgets": "wxCommandEvent::GetSelection/SetInt for wxEVT_CHOICE, wxEVT_LISTBOX and wxEVT_LISTBOX_DCLICK; wxBookCtrlEvent::GetSelection read-only (wxWidgets 3.2.12). wxEVT_RADIOBOX/wxCommandEvent::GetSelection (read-only).",
     "syntax": "(wxlambda:event-selection event)",
     "setf": {
       "syntax": "(setf (wxlambda:event-selection event-or-context) value)",
-      "description": "VALUE is NIL or a nonnegative signed-int index. Mutates live choice/listbox command payload only, without changing control selection or raw extra-LONG action metadata. Notebook kinds, other tags, snapshots and stale/suspended contexts reject."
+      "description": "VALUE is NIL or a nonnegative signed-int index. Mutates live choice/listbox command payload only, without changing control selection or raw extra-LONG action metadata. Notebook kinds, other tags, snapshots and stale/suspended contexts reject. Radio-box kinds reject."
     }
   },
   {
@@ -797,7 +797,7 @@
     "arguments": "HANDLER is an EVENT-HANDLER/window; KIND is :CLICK, :TEXT-CHANGE, :TOGGLE, :SELECTION, :CLOSE, :QUERY-END-SESSION, :END-SESSION, :IDLE, :MENU or a registered command/notify name. FUNCTION takes one immutable EVENT. ID defaults NIL (any); LAST-ID defaults NIL (exact ID when ID is given). WITH-CONTEXT defaults NIL; when true FUNCTION takes (EVENT CONTEXT) instead of just EVENT. USER-DATA defaults NIL and associates any EQ-preserved Lisp value with this registration; callback arity is unchanged.",
     "returns": "A new independent EVENT-BINDING.",
     "description": "Register an observer without replacing any existing generic or control-specific registration. Signed 32-bit IDs are supported except -1 (reserved as native wxID_ANY; use NIL). LAST-ID requires ID and an ordered inclusive range. Observer bindings automatically Skip; contextual bindings start unskipped and control native Skip explicitly; relative callback order follows wxWidgets and is not a Lisp API guarantee. Failed registration releases temporary roots. Contextual access is limited to the innermost callback and expires at return, including on errors. A native entry-owned wxObject token adapter represents non-NIL user data without a Lisp/native pointer. EVENT-USER-DATA reads the per-binding value in snapshots/current contexts; there is no public mutation API for an existing association. ABI37 adds :NOTEBOOK-PAGE-CHANGING/:NOTEBOOK-PAGE-CHANGED notify-family observers/contexts. Only CHANGING veto affects navigation. Native page callbacks protect the originating book/ancestors and reject same-book recursive selection, modal and clipboard entry. ABI38 listbox selection/double-click command events carry cached string/index payloads; snapshots are independent of later item edits. Native list callback guards protect receiver/ancestors and defer modal/clipboard entry while allowing item edits. ABI39 tree selection changing/changed are native-only wxTreeEvent notify types. EVENT-TREE-ITEM captures canonical view identity, not frozen text/validity; same-tree writes and nested native loops defer until callback return.",
-    "scope": "Active main-thread GUI session required; otherwise NATIVE-ERROR. Stale/deleting receivers reject registration/queuing. Invalid event kinds, IDs and payload options signal Lisp errors; wrong receiver types use CLOS dispatch errors. Built-ins and registered command/notify types. Contexts support scoped Skip/propagation and checked close/notify veto. Arbitrary native events, native control-specific notify subclasses, arbitrary native userData pointers, external handler adoption and worker-thread dispatch remain unbound. Session bindings accept only the borrowed application view or an isolated owned handler; windows reject. Real OS delivery remains unverified. Skipped application END_SESSION callbacks can reach process-exiting defaults. Session bindings on attached pushed handlers reject so a window tail cannot route them to app defaults. Callback-local roots preserve current user data after self/peer unbind until return. Snapshots preserve the EQ reference after unbind/session end, not a deep copy of mutable contents.",
+    "scope": "Active main-thread GUI session required; otherwise NATIVE-ERROR. Stale/deleting receivers reject registration/queuing. Invalid event kinds, IDs and payload options signal Lisp errors; wrong receiver types use CLOS dispatch errors. Built-ins and registered command/notify types. Contexts support scoped Skip/propagation and checked close/notify veto. Arbitrary native events, native control-specific notify subclasses, arbitrary native userData pointers, external handler adoption and worker-thread dispatch remain unbound. Session bindings accept only the borrowed application view or an isolated owned handler; windows reject. Real OS delivery remains unverified. Skipped application END_SESSION callbacks can reach process-exiting defaults. Session bindings on attached pushed handlers reject so a window tail cannot route them to app defaults. Callback-local roots preserve current user data after self/peer unbind until return. Snapshots preserve the EQ reference after unbind/session end, not a deep copy of mutable contents. RADIO-BOX :radio-selection is a native-only command kind with copied/current index and native label metadata. Snapshot reads survive source/session cleanup; borrowed contexts require the exact innermost current callback. No owned/synthetic/cloned radio events. See docs/RADIO-GROUPS.md.",
     "wxwidgets": "wxEvtHandler::Bind member-method overload with wxEvent receiver and optional entry-owned numeric wxObject userData adapter; built-ins and registered command/notify tags (wxWidgets 3.2.12 baseline).",
     "syntax": "(wxlambda:bind-event handler kind function &key id last-id with-context user-data)"
   },
@@ -931,9 +931,9 @@
     "kind": "function",
     "arguments": "KIND is a built-in event keyword or a name registered in this active session.",
     "returns": "The corresponding process-local native wxEventType integer.",
-    "description": "Look up a process-local native type ID. Fifteen built-in kinds plus registered command/notify names are supported. Registry names are session-scoped; saved snapshot native IDs remain plain data after cleanup. Borrowed application handler access is supported; arbitrary native event-class binding and OS session delivery remains unverified.",
-    "scope": "Active main-thread session required; inactive calls signal NATIVE-ERROR before native-library lookup. Native IDs are process-local and may change between runs.",
-    "wxwidgets": "wxEVT_BUTTON, wxEVT_TEXT, wxEVT_CHECKBOX, wxEVT_CHOICE, wxEVT_CLOSE_WINDOW, wxEVT_QUERY_END_SESSION, wxEVT_END_SESSION, wxEVT_IDLE, wxEVT_MENU, wxEVT_NOTEBOOK_PAGE_CHANGING, wxEVT_NOTEBOOK_PAGE_CHANGED, wxEVT_LISTBOX, wxEVT_LISTBOX_DCLICK; registered wxNewEventType values (wxWidgets 3.2.12). wxEVT_TREE_SEL_CHANGING and wxEVT_TREE_SEL_CHANGED in ABI39."
+    "description": "Look up a process-local native type ID. Twenty built-in kinds plus registered command/notify names are supported. Registry names are session-scoped; saved snapshot native IDs remain plain data after cleanup. Borrowed application handler access is supported; arbitrary native event-class binding and OS session delivery remains unverified.",
+    "scope": "Active main-thread session required; inactive calls signal NATIVE-ERROR before native-library lookup. Native IDs are process-local and may change between runs. RADIO-BOX :radio-selection is a native-only command kind with copied/current index and native label metadata. Snapshot reads survive source/session cleanup; borrowed contexts require the exact innermost current callback. No owned/synthetic/cloned radio events. See docs/RADIO-GROUPS.md.",
+    "wxwidgets": "wxEVT_BUTTON, wxEVT_TEXT, wxEVT_CHECKBOX, wxEVT_CHOICE, wxEVT_CLOSE_WINDOW, wxEVT_QUERY_END_SESSION, wxEVT_END_SESSION, wxEVT_IDLE, wxEVT_MENU, wxEVT_NOTEBOOK_PAGE_CHANGING, wxEVT_NOTEBOOK_PAGE_CHANGED, wxEVT_LISTBOX, wxEVT_LISTBOX_DCLICK; registered wxNewEventType values (wxWidgets 3.2.12). wxEVT_TREE_SEL_CHANGING and wxEVT_TREE_SEL_CHANGED in ABI39. Includes wxEVT_SPLITTER_SASH_POS_CHANGING/CHANGED, wxEVT_SLIDER, wxEVT_SPINCTRL and wxEVT_RADIOBOX (wxWidgets3.2.12)."
   },
   {
     "name": "event-family",
@@ -1993,23 +1993,23 @@
   {
     "name": "item-count",
     "kind": "generic-function",
-    "arguments": "CONTROL list-box.",
+    "arguments": "CONTROL is a live LIST-BOX or RADIO-BOX.",
     "returns": "Nonnegative native item count.",
-    "description": "Read current text item count; currently specialized only on LIST-BOX.",
-    "scope": "Active main-thread session, LIST-BOX receivers only. Unsorted single selection, native-owned text values; no item client data, multi-selection, sorting, arbitrary styles, virtual list/data-view/tree support. Invalid indices/types/handles signal.",
-    "wxwidgets": "wxItemContainerImmutable/wxListBox::GetCount (wxWidgets 3.2.12)."
+    "description": "Read native item count; radio groups retain their fixed constructor count.",
+    "scope": "Active main-thread session and valid native handle. LIST-BOX is unsorted single-selection mutable text items; RADIO-BOX has fixed2..64 choices with native mnemonic-normalized labels. No raw item data, multi-selection or virtual models. Invalid indices/types/handles signal. See docs/LIST-BOX.md and docs/RADIO-GROUPS.md.",
+    "wxwidgets": "wxItemContainerImmutable/wxListBox::GetCount (wxWidgets 3.2.12). wxRadioBox::GetCount."
   },
   {
     "name": "item-text",
     "kind": "generic-function",
-    "arguments": "CONTROL list-box, INDEX existing zero-based signed-int item index.",
+    "arguments": "CONTROL is a live LIST-BOX or RADIO-BOX. INDEX is an existing zero-based signed-int index.",
     "returns": "Independent Lisp string of native item text.",
-    "description": "Read native item text with explicit UTF-8 length. Index is not durable identity.",
-    "scope": "Active main-thread session, LIST-BOX receivers only. Unsorted single selection, native-owned text values; no item client data, multi-selection, sorting, arbitrary styles, virtual list/data-view/tree support. Invalid indices/types/handles signal.",
-    "wxwidgets": "wxItemContainerImmutable/wxListBox::GetString/SetString (wxWidgets 3.2.12).",
+    "description": "Copy native item text into an independent Lisp string. LIST-BOX uses explicit UTF-8 length; RADIO-BOX uses NUL-terminated UTF-8 with NUL-free constructor strings and native mnemonic normalization. Index is not durable identity.",
+    "scope": "Active main-thread session and valid native handle. LIST-BOX is unsorted single-selection mutable text items; RADIO-BOX has fixed2..64 choices with native mnemonic-normalized labels. No raw item data, multi-selection or virtual models. Invalid indices/types/handles signal. See docs/LIST-BOX.md and docs/RADIO-GROUPS.md.",
+    "wxwidgets": "wxItemContainerImmutable/wxListBox::GetString/SetString (wxWidgets 3.2.12). wxRadioBox::GetString (no SetString binding).",
     "setf": {
       "syntax": "(setf (wxlambda:item-text control index) value)",
-      "description": "VALUE is a string without NUL, empty allowed. Silent rename preserves selection index and returns the supplied string. No sorting or item-data adoption."
+      "description": "LIST-BOX only. VALUE is a string without NUL, empty allowed. Silent rename preserves selection index and returns the supplied string. No sorting or item-data adoption. RADIO-BOX has no writer method."
     }
   },
   {
@@ -2637,5 +2637,28 @@
     "description": "Numeric EVENT snapshot or current EVENT-CONTEXT.",
     "scope": "Immutable copied EVENT snapshots remain readable after source destruction and session cleanup. Borrowed EVENT-CONTEXT requires its innermost current callback and native lifetime checks. Payload metadata is not constrained by the control endpoint bounds. Read-only; spin veto/payload edits are observational and do not write or roll back control state. No owned/synthetic/detached-clone numeric events. See docs/NUMERIC-INPUT.md.",
     "wxwidgets": "wxCommandEvent::GetInt / wxSpinEvent integer position payload (wxWidgets3.2.12)."
+  },
+  {
+    "name": "radio-box",
+    "kind": "class",
+    "arguments": "PARENT (or :parent for MAKE-INSTANCE), :items proper list2..64 NUL-free strings, :label string default empty, :selection index default0, :orientation :vertical/:horizontal, subclass initargs.",
+    "returns": "New native-backed RADIO-BOX or validated subclass.",
+    "description": "Explicitly owned mutually exclusive group; generic SELECTION/SETF, ITEM-COUNT and ITEM-TEXT methods.",
+    "scope": "Fixed2..64 choices, mandatory valid zero-based selection, one row/column orientation. Active GUI session/native lifetime checks for widget operations; no standalone radio buttons, item mutation or full native parity. See docs/RADIO-GROUPS.md.",
+    "wxwidgets": "wxRadioBox::Create, wxRA_SPECIFY_COLS/ROWS (wxWidgets3.2.12).",
+    "syntax": "wxlambda:radio-box",
+    "construction": {
+      "syntax": "(make-instance 'wxlambda:radio-box :parent panel :items '(\"First\" \"Second\"))",
+      "description": "Supports slots/default initargs, native-ready AFTER hooks and managed rollback."
+    }
+  },
+  {
+    "name": "make-radio-box",
+    "kind": "generic-function",
+    "arguments": "PARENT (or :parent for MAKE-INSTANCE), :items proper list2..64 NUL-free strings, :label string default empty, :selection index default0, :orientation :vertical/:horizontal, subclass initargs.",
+    "returns": "New native-backed RADIO-BOX or validated subclass.",
+    "description": "Explicitly owned mutually exclusive group; generic SELECTION/SETF, ITEM-COUNT and ITEM-TEXT methods.",
+    "scope": "Fixed2..64 choices, mandatory valid zero-based selection, one row/column orientation. Active GUI session/native lifetime checks for widget operations; no standalone radio buttons, item mutation or full native parity. See docs/RADIO-GROUPS.md.",
+    "wxwidgets": "wxRadioBox::Create, wxRA_SPECIFY_COLS/ROWS (wxWidgets3.2.12)."
   }
 ]

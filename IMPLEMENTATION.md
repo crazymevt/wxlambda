@@ -79,17 +79,16 @@ as if later features or platform checks already passed.
 - Idle batch: :IDLE family/resources, bounded RequestMore, session-restored
   automatic mode, own-window opt-in and native wake scheduling. Independent review
   and final verification pass.
-- Current bridge ABI: 39. Public API: 202 exports, seventeen window wrapper classes
-  (fifteen concrete kinds plus WINDOW/DIALOG abstract bases) plus the event-handler base and frame-owned menu resources, 144 named generics and
-  forty-four generic SETF writers. The application-handler is a borrowed view; no
-  native application construction or arbitrary-event class binding exists yet; built-ins plus registered command/notify names have
-  observer/contextual bindings.
-- Latest implementation verification: all 57 GUI scenarios and native preflight
-  pass on local Apple Silicon macOS SBCL 2.6.9 and CCL 1.13. Reports:
-  `evidence/tree-navigation/{sbcl,ccl}-20261028-final/`. Post-Qt-gate native/focused
-  both-Lisp checks pass; wxQt trees are explicitly unavailable, not runtime-verified.
-  Five package checks pass in `evidence/packaging/tree-navigation-20261028-final/`.
-  Hosted Linux/Windows GUI behavior and the graphical Cadre viewer remain open.
+- Current bridge ABI:46. Public API:246 exports,23 window wrapper classes
+  (21 concrete plus WINDOW/DIALOG abstract),176 named generics and54 generic
+  SETF writers. Borrowed TREE-ITEM and UI-ACTION/UI-TIMER identities remain
+  separate from window construction. Latest radio-group details/evidence are
+  recorded in the final session handoff below.
+- Latest implementation verification: all71 GUI scenarios plus native preflight
+  pass on local Apple Silicon macOS SBCL2.6.9 and CCL1.13, reports
+  `evidence/radio-groups/{sbcl,ccl}-20261028-final/`. Native probes report zero
+  assertions. Hosted Linux/Windows GUI and graphical Cadre remain unverified;
+  wxQt tree construction retains its documented rejection gate.
 
 ### Feature priorities and working order
 
@@ -97,8 +96,8 @@ as if later features or platform checks already passed.
    and required documentation/examples/docset/testing for every delivered feature.
 2. Preserve the working form/editor slice: Lisp-native open/save, menus/dialogs,
    multiline text, clipboard and notebooks. List boxes and checked tree items
-   extend the manager slice. Next add splitter windows for a two-pane tree/list
-   manager; retain native OS dialogs as unbound. Add only necessary timer/value/
+   extend the manager slice. Splitters, toolbars/status, accelerators, safe deferred actions, timers, numeric
+   inputs and radio groups are delivered. Retain native OS dialogs as unbound. Add only necessary timer/value/
    lifetime prerequisites; do not drain native ownership/utilities.
 3. Expand controls/layout, navigation/notebooks, list/tree, clipboard and drawing
    against form/editor, tree/list manager and drawing/monitoring acceptance.
@@ -2481,3 +2480,55 @@ Next selected slice: bounded radio-button groups for mutually exclusive form
 choices. Continue concrete workflow breadth, independent review and aligned
 docs/examples/docset/coverage; do not infer full wxWidgets parity or hosted
 platform validation from inventory partial entries.
+
+## Bounded mutually exclusive choice groups (2026-10-28)
+
+ABI46 adds native-backed RADIO-BOX and generic MAKE-RADIO-BOX. A composite
+wxRadioBox owns fixed2..64 NUL-free string choices, group caption, initial valid
+zero-based selection and one-column/one-row orientation. Generic SELECTION/SETF,
+ITEM-COUNT/ITEM-TEXT extend existing APIs; no NIL selection or item mutation.
+Native mnemonic normalization can change item/event text from supplied labels.
+Writes are silent by default; explicit :NOTIFY T commits then emits one native
+command event even unchanged. Physical repeated-selection behavior is port-specific.
+
+:RADIO-SELECTION exposes copied/current index/native label through existing
+EVENT-SELECTION/EVENT-TEXT; snapshots survive cleanup, contexts expire on return.
+Semantic event-selection writes, owned/synthetic events and clones reject. Shared
+composite input guards (renamed from numeric internals) protect native-origin and
+propagated callback source/ancestor lifetime, same-group writes and unsafe nested
+GUI/modal/clipboard entry; silent other-group updates remain supported.
+Creation/failure/base teardown suppress relevant callbacks. No individual
+wxRadioButton creation-order grouping, per-item state, raw adoption or full parity.
+
+Independent review resolved header extern-C placement, copied label inclusion,
+wxUSE_RADIOBOX/RADIOBTN/STATBOX prerequisites, UTF8 temporary lifetime, shared API
+reference receiver/snapshot scopes and stale built-in event count. No remaining
+actionable code/documentation findings. OSX/GTK/MSW/Qt source audit confirms silent
+SetSelection and native event shape; runtime testing is macOS wxWidgets3.2.12.
+Physical mouse/keyboard/accessibility, hosted platform GUI and graphical Cadre
+remain unverified. No automatic system clipboard content reads/writes.
+
+Example examples/radio-groups.lisp selects export format and displays feedback.
+Focused SBCL/CCL example/tests, main/native builds and native direct event probes
+with parent propagation pass (quiet-run.0tCZWYYW), zero native assertions. All71
+GUI scenarios plus preflight pass on both Lisps (quiet-run.o2CvK2Iu), reports
+evidence/radio-groups/{sbcl,ccl}-20261028-final/. Direct native probes independently
+cover callback guards outside setter operations, cross-group writes, unchanged
+explicit notification, raw argument errors and teardown/clone refusal.
+
+Current counts:246 exports,176 named generics,54 SETF generics,23 window wrappers
+(21 concrete+2 abstract),45 examples and337 docset entries. Regenerated pinned
+inventory,14 inventory/16 Python checks, zero-problem docset build/check/install,
+both-Lisp actual export/class/SETF coverage and counts, discovery/symbol/guide/
+example reading and five package isolation checks pass (quiet-run.077879Q0).
+Package evidence: evidence/packaging/radio-groups-20261028/. Final docset
+regeneration/check/install follows the final handoff notes.
+Install under dedicated /private/tmp/wxlambda-radio-docsets/wxlambda for isolated
+discovery/symbol/guide/example checks; normal Cadre install remains docs/DOCSET.md.
+Package dist/wxlambda-form-radio-groups is still the established form application;
+the radio example is delivered separately in repository/docset.
+
+Session handoff: broad GUI coverage with selective depth remains the objective.
+Next selected slice: bounded toggle buttons for persistent on/off form/tool
+options. Older sequential 'next' statements are historical; use this handoff and
+current feature roadmap rather than exhausting C1-C7 declaration parity.

@@ -164,3 +164,5 @@ slider/spin snapshots and current contexts. Spin updates are notify-derived but
 observational; veto/raw payload changes do not roll back widget state. Numeric
 event owned/synthetic/clone support is unbound; forwarded spin text callbacks
 retain numeric lifetime/reentry guards.
+
+`:radio-selection` command events expose copied/current index and native label; EVENT-SELECTION SETF and owned/synthetic/cloning reject. Shared input guards protect source/ancestors; see [radio groups](RADIO-GROUPS.md).

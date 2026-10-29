@@ -120,7 +120,7 @@ session ownership; actual native window destruction pops managed stacks without
 deleting those handlers. Explicit stack-aware processing differs from generic
 window receiver dispatch, which retains native stack bypass. Public window wrapper
 classes are `window` (abstract), `frame`, `panel`, `button`,
-`text-control`, `label`, `checkbox`, `choice`, `gauge`, `slider`, `spin-control`, `notebook`, `list-box`, `tree-control`, `splitter-window`, `toolbar` and `status-bar` (plus the
+`text-control`, `label`, `checkbox`, `choice`, `gauge`, `radio-box`, `slider`, `spin-control`, `notebook`, `list-box`, `tree-control`, `splitter-window`, `toolbar` and `status-bar` (plus the
 DIALOG hierarchy described below). Lisp subclassing does not imply
 native C++ subclassing or virtual-method callbacks; those need separate bridge
 support. See `docs/CLOS-API.md`.
@@ -231,3 +231,8 @@ rejection with silent cross-control synchronization, origin/child/teardown
 lifetime guards and spin raw-text prevalidation before native GetValue. Spin
 notify veto is observational; both numeric kinds reject owned/synthetic/cloning.
 See docs/NUMERIC-INPUT.md. Required build features: SLIDER/SPINCTRL/SPINBTN.
+
+ABI46 fixed RADIO-BOX groups own2..64 choices with mandatory valid selection.
+Preserve shared composite input guards, silent defaults, explicit notify, native
+label normalization and read-only event-selection metadata. No synthetic/owned/
+cloned radio events or individual creation-order radio grouping. See docs/RADIO-GROUPS.md.

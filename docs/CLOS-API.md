@@ -274,3 +274,5 @@ ABI44 UI-TIMER is an immutable scheduler identity obtained from START-UI-TIMER,
 like UI-ACTION for deferred work; it is not a native event-handler/resource wrapper.
 No public wxTimer subclass/Notify override/adoption protocol is exposed. See
 [UI timers](UI-TIMERS.md).
+
+RADIO-BOX adds fixed mutually exclusive choices via :parent/:items/:label/:selection/:orientation; see [radio groups](RADIO-GROUPS.md).

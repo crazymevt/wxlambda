@@ -1310,7 +1310,7 @@
         "wxl_process_event",
         "wxl_event_field"
       ],
-      "scope": "Snapshots retain copied values. Owned/current command/notify values support generic event-integer reads; snapshots stay immutable. Signed32 integer or counted UTF-8 string transport; close-family reads are zero/NIL and writes reject. Native wxEVT_TEXT text-entry-origin SETF rejects; detached clones freeze effective native text. No client/userData ownership or arbitrary native classes. Also reads native numeric slider/spin event payloads, observational and independent of control state."
+      "scope": "Snapshots retain copied values. Owned/current command/notify values support generic event-integer reads; snapshots stay immutable. Signed32 integer or counted UTF-8 string transport; close-family reads are zero/NIL and writes reject. Native wxEVT_TEXT text-entry-origin SETF rejects; detached clones freeze effective native text. No client/userData ownership or arbitrary native classes. Also reads native numeric slider/spin event payloads, observational and independent of control state. Also reads observational radio-box command metadata; not a control setter."
     },
     {
       "header": "wx/event.h",
@@ -1325,7 +1325,7 @@
         "wxl_bind",
         "wxl_event_text"
       ],
-      "scope": "Snapshots retain copied values. Owned/current command/notify values support generic event-text reads; snapshots stay immutable. Signed32 integer or counted UTF-8 string transport; close-family reads are zero/NIL and writes reject. Native wxEVT_TEXT text-entry-origin SETF rejects; detached clones freeze effective native text. No client/userData ownership or arbitrary native classes."
+      "scope": "Snapshots retain copied values. Owned/current command/notify values support generic event-text reads; snapshots stay immutable. Signed32 integer or counted UTF-8 string transport; close-family reads are zero/NIL and writes reject. Native wxEVT_TEXT text-entry-origin SETF rejects; detached clones freeze effective native text. No client/userData ownership or arbitrary native classes. Also reads observational radio-box command metadata; not a control setter."
     },
     {
       "header": "wx/event.h",
@@ -2004,7 +2004,7 @@
         "wxl_bind",
         "wxl_event_field"
       ],
-      "scope": "Uniform saved/current/owned semantic view only for :SELECTION, otherwise NIL. Maps native -1 to NIL; other negative raw GetInt values remain visible. No item-list validation or control setter."
+      "scope": "Reads zero-based choice/listbox/radio-box command selection metadata for supported kinds; other nonselection command kinds yield NIL through Lisp snapshot readers. Payload metadata is observational, not a control query. Radio events are native-only, with no EVENT-SELECTION SETF. See docs/RADIO-GROUPS.md."
     },
     {
       "header": "wx/event.h",
@@ -7135,6 +7135,160 @@
         "wxl_set_numeric_range"
       ],
       "scope": "Native-backed SLIDER/SPIN-CONTROL slice only: signed endpoints\u00b11000000, strictmin<max, validated values, atomic two-bound property with silent clamp; optional explicit value notification, slider orientation, decimal integer spin/arrows. GetTextValue parse prevalidation before native numeric getter; invalid/intermediate edits reject. Actual numeric/forwarded text lifetime/reentry guards. No raw adoption, other styles, spin doubles, native owned/synthetic/clone numeric events or full class parity. Default native constructor/Create are internal managed initialization, no uncreated Lisp widget. See docs/NUMERIC-INPUT.md."
+    },
+    {
+      "header": "wx/radiobox.h",
+      "line": 44,
+      "declaration": "wxRadioBox();",
+      "status": "~",
+      "symbol": "wxRadioBox::wxRadioBox",
+      "lisp": [
+        "radio-box",
+        "make-radio-box",
+        "selection",
+        "item-count",
+        "item-text",
+        "event-selection"
+      ],
+      "native": [
+        "wxl_radio_box",
+        "wxl_radio_field",
+        "wxl_radio_item",
+        "wxl_set_radio_selection"
+      ],
+      "scope": "Bounded native-backed wxRadioBox only, fixed2..64 items, valid zero-based selection, one row/column; native text getter and native-only command snapshots/current contexts. Same-group mutation/lifetime guards. No standalone radio buttons, item mutation/per-item state, owned/synthetic/clones, arbitrary styles or complete class parity. See docs/RADIO-GROUPS.md."
+    },
+    {
+      "header": "wx/radiobox.h",
+      "line": 164,
+      "declaration": "bool Create(wxWindow* parent, wxWindowID id, const wxString& label, const wxPoint& pos, const wxSize& size, const wxArrayString& choices, int majorDimension = 0, long style = wxRA_SPECIFY_COLS, const wxValidator& validator = wxDefaultValidator, const wxString& name = wxRadioBoxNameStr);",
+      "status": "~",
+      "symbol": "wxRadioBox::Create",
+      "lisp": [
+        "radio-box",
+        "make-radio-box",
+        "selection",
+        "item-count",
+        "item-text",
+        "event-selection"
+      ],
+      "native": [
+        "wxl_radio_box",
+        "wxl_radio_field",
+        "wxl_radio_item",
+        "wxl_set_radio_selection"
+      ],
+      "scope": "Bounded native-backed wxRadioBox only, fixed2..64 items, valid zero-based selection, one row/column; native text getter and native-only command snapshots/current contexts. Same-group mutation/lifetime guards. No standalone radio buttons, item mutation/per-item state, owned/synthetic/clones, arbitrary styles or complete class parity. See docs/RADIO-GROUPS.md."
+    },
+    {
+      "header": "wx/radiobox.h",
+      "line": 295,
+      "declaration": "virtual void SetSelection(int n);",
+      "status": "~",
+      "symbol": "wxRadioBox::SetSelection",
+      "lisp": [
+        "radio-box",
+        "make-radio-box",
+        "selection",
+        "item-count",
+        "item-text",
+        "event-selection"
+      ],
+      "native": [
+        "wxl_radio_box",
+        "wxl_radio_field",
+        "wxl_radio_item",
+        "wxl_set_radio_selection"
+      ],
+      "scope": "Bounded native-backed wxRadioBox only, fixed2..64 items, valid zero-based selection, one row/column; native text getter and native-only command snapshots/current contexts. Same-group mutation/lifetime guards. No standalone radio buttons, item mutation/per-item state, owned/synthetic/clones, arbitrary styles or complete class parity. See docs/RADIO-GROUPS.md."
+    },
+    {
+      "header": "wx/radiobox.h",
+      "line": 317,
+      "declaration": "virtual unsigned int GetCount() const;",
+      "status": "~",
+      "symbol": "wxRadioBox::GetCount",
+      "lisp": [
+        "radio-box",
+        "make-radio-box",
+        "selection",
+        "item-count",
+        "item-text",
+        "event-selection"
+      ],
+      "native": [
+        "wxl_radio_box",
+        "wxl_radio_field",
+        "wxl_radio_item",
+        "wxl_set_radio_selection"
+      ],
+      "scope": "Bounded native-backed wxRadioBox only, fixed2..64 items, valid zero-based selection, one row/column; native text getter and native-only command snapshots/current contexts. Same-group mutation/lifetime guards. No standalone radio buttons, item mutation/per-item state, owned/synthetic/clones, arbitrary styles or complete class parity. See docs/RADIO-GROUPS.md."
+    },
+    {
+      "header": "wx/radiobox.h",
+      "line": 318,
+      "declaration": "virtual wxString GetString(unsigned int n) const;",
+      "status": "~",
+      "symbol": "wxRadioBox::GetString",
+      "lisp": [
+        "radio-box",
+        "make-radio-box",
+        "selection",
+        "item-count",
+        "item-text",
+        "event-selection"
+      ],
+      "native": [
+        "wxl_radio_box",
+        "wxl_radio_field",
+        "wxl_radio_item",
+        "wxl_set_radio_selection"
+      ],
+      "scope": "Bounded native-backed wxRadioBox only, fixed2..64 items, valid zero-based selection, one row/column; native text getter and native-only command snapshots/current contexts. Same-group mutation/lifetime guards. No standalone radio buttons, item mutation/per-item state, owned/synthetic/clones, arbitrary styles or complete class parity. See docs/RADIO-GROUPS.md."
+    },
+    {
+      "header": "wx/radiobox.h",
+      "line": 327,
+      "declaration": "virtual int GetSelection() const;",
+      "status": "~",
+      "symbol": "wxRadioBox::GetSelection",
+      "lisp": [
+        "radio-box",
+        "make-radio-box",
+        "selection",
+        "item-count",
+        "item-text",
+        "event-selection"
+      ],
+      "native": [
+        "wxl_radio_box",
+        "wxl_radio_field",
+        "wxl_radio_item",
+        "wxl_set_radio_selection"
+      ],
+      "scope": "Bounded native-backed wxRadioBox only, fixed2..64 items, valid zero-based selection, one row/column; native text getter and native-only command snapshots/current contexts. Same-group mutation/lifetime guards. No standalone radio buttons, item mutation/per-item state, owned/synthetic/clones, arbitrary styles or complete class parity. See docs/RADIO-GROUPS.md."
+    },
+    {
+      "header": "wx/event.h",
+      "line": 5162,
+      "declaration": "wxEventType wxEVT_RADIOBOX;",
+      "status": "~",
+      "symbol": "wxEVT_RADIOBOX",
+      "lisp": [
+        "radio-box",
+        "make-radio-box",
+        "selection",
+        "item-count",
+        "item-text",
+        "event-selection"
+      ],
+      "native": [
+        "wxl_radio_box",
+        "wxl_radio_field",
+        "wxl_radio_item",
+        "wxl_set_radio_selection"
+      ],
+      "scope": "Bounded native-backed wxRadioBox only, fixed2..64 items, valid zero-based selection, one row/column; native text getter and native-only command snapshots/current contexts. Same-group mutation/lifetime guards. No standalone radio buttons, item mutation/per-item state, owned/synthetic/clones, arbitrary styles or complete class parity. See docs/RADIO-GROUPS.md."
     }
   ],
   "classes": {
@@ -8340,6 +8494,24 @@
         "wxl_set_numeric_range"
       ],
       "scope": "Native-backed SLIDER/SPIN-CONTROL slice only: signed endpoints\u00b11000000, strictmin<max, validated values, atomic two-bound property with silent clamp; optional explicit value notification, slider orientation, decimal integer spin/arrows. GetTextValue parse prevalidation before native numeric getter; invalid/intermediate edits reject. Actual numeric/forwarded text lifetime/reentry guards. No raw adoption, other styles, spin doubles, native owned/synthetic/clone numeric events or full class parity. Default native constructor/Create are internal managed initialization, no uncreated Lisp widget. See docs/NUMERIC-INPUT.md."
+    },
+    "wxRadioBox": {
+      "status": "~",
+      "lisp": [
+        "radio-box",
+        "make-radio-box",
+        "selection",
+        "item-count",
+        "item-text",
+        "event-selection"
+      ],
+      "native": [
+        "wxl_radio_box",
+        "wxl_radio_field",
+        "wxl_radio_item",
+        "wxl_set_radio_selection"
+      ],
+      "scope": "Bounded native-backed wxRadioBox only, fixed2..64 items, valid zero-based selection, one row/column; native text getter and native-only command snapshots/current contexts. Same-group mutation/lifetime guards. No standalone radio buttons, item mutation/per-item state, owned/synthetic/clones, arbitrary styles or complete class parity. See docs/RADIO-GROUPS.md."
     }
   }
 }

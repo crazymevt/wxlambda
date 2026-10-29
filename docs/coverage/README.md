@@ -18,18 +18,18 @@ and verify platforms when selected features or completeness claims require it.
 
 | Category | Headers | Tasks | Implemented | Partial | Pending | Context |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| [C1: Foundation, values, application, events, and base utilities](phase-c1.md) | 119 | 5292 | 7 | 104 | 5181 | 26 |
-| [C2: Windows, layout, basic controls, and input](phase-c2.md) | 82 | 2862 | 23 | 137 | 2702 | 0 |
+| [C1: Foundation, values, application, events, and base utilities](phase-c1.md) | 119 | 5292 | 7 | 105 | 5180 | 26 |
+| [C2: Windows, layout, basic controls, and input](phase-c2.md) | 82 | 2862 | 23 | 144 | 2695 | 0 |
 | [C3: Dialogs, navigation, menus, and application services](phase-c3.md) | 57 | 1875 | 0 | 118 | 1757 | 0 |
 | [C4: Models, complex controls, and document frameworks](phase-c4.md) | 20 | 2328 | 0 | 24 | 2304 | 4 |
 | [C5: Drawing, images, graphics, and printing](phase-c5.md) | 52 | 2245 | 0 | 0 | 2245 | 0 |
 | [C6: Optional libraries, rich content, and integration](phase-c6.md) | 57 | 8912 | 0 | 0 | 8912 | 380 |
 | [C7: Platform extensions and remaining portability APIs](phase-c7.md) | 11 | 279 | 0 | 0 | 279 | 3 |
-| Total | 398 | 23793 | 30 | 383 | 23380 | 413 |
+| Total | 398 | 23793 | 30 | 391 | 23372 | 413 |
 
 ## Classes and widgets
 
-1016 class/struct definitions: 0 complete; 52 partial; 964 pending.
+1016 class/struct definitions: 0 complete; 53 partial; 963 pending.
 
 See the [complete class/widget index](classes.md) for partial scopes and missing
 types. An implemented constructor does not complete a class or its inherited API.
@@ -68,7 +68,7 @@ unreviewed inherited/platform behavior.
 | [wx/dynarray.h](phase-c1.md#wxdynarrayh) | 0 | 0 | 58 | 0 |
 | [wx/dynlib.h](phase-c1.md#wxdynlibh) | 0 | 0 | 34 | 0 |
 | [wx/encconv.h](phase-c1.md#wxencconvh) | 0 | 0 | 13 | 0 |
-| [wx/event.h](phase-c1.md#wxeventh) | 7 | 76 | 577 | 16 |
+| [wx/event.h](phase-c1.md#wxeventh) | 7 | 77 | 576 | 16 |
 | [wx/eventfilter.h](phase-c1.md#wxeventfilterh) | 0 | 0 | 6 | 0 |
 | [wx/evtloop.h](phase-c1.md#wxevtlooph) | 0 | 0 | 26 | 0 |
 | [wx/ffile.h](phase-c1.md#wxffileh) | 0 | 0 | 37 | 0 |
@@ -212,7 +212,7 @@ unreviewed inherited/platform behavior.
 | [wx/odcombo.h](phase-c2.md#wxodcomboh) | 0 | 0 | 24 | 0 |
 | [wx/panel.h](phase-c2.md#wxpanelh) | 0 | 2 | 10 | 0 |
 | [wx/pickerbase.h](phase-c2.md#wxpickerbaseh) | 0 | 0 | 27 | 0 |
-| [wx/radiobox.h](phase-c2.md#wxradioboxh) | 0 | 0 | 27 | 0 |
+| [wx/radiobox.h](phase-c2.md#wxradioboxh) | 0 | 7 | 20 | 0 |
 | [wx/radiobut.h](phase-c2.md#wxradiobuth) | 0 | 0 | 14 | 0 |
 | [wx/rearrangectrl.h](phase-c2.md#wxrearrangectrlh) | 0 | 0 | 21 | 0 |
 | [wx/sashwin.h](phase-c2.md#wxsashwinh) | 0 | 0 | 47 | 0 |

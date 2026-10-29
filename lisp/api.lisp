@@ -70,6 +70,7 @@
 
 (defclass label (window) ())
 (defclass gauge (window) ())
+(defclass radio-box (window) ())
 (defclass slider (window) ())
 (defclass spin-control (window) ())
 (defclass checkbox (window)
@@ -150,7 +151,7 @@
           (when handler
             (when (cffi:null-pointer-p payload) (error "Missing event payload"))
             (cffi:with-foreign-slots ((kind text checked selection id text-length context native-type can-veto vetoed family integer logging-off timestamp command origin-id category extra-long selection-action user-data-token more-requested tree-item sash-position) payload (:struct native-event))
-              (let* ((event-kind (or (case kind (1 :click) (2 :text-change) (3 :toggle) (4 :selection) (5 :close) (6 :query-end-session) (7 :end-session) (8 :idle) (9 :menu) (10 :notebook-page-changing) (11 :notebook-page-changed) (12 :listbox-selection) (13 :listbox-double-click) (14 :tree-selection-changing) (15 :tree-selection-changed) (16 :splitter-sash-changing) (17 :splitter-sash-changed) (18 :slider-change) (19 :spin-change))
+              (let* ((event-kind (or (case kind (1 :click) (2 :text-change) (3 :toggle) (4 :selection) (5 :close) (6 :query-end-session) (7 :end-session) (8 :idle) (9 :menu) (10 :notebook-page-changing) (11 :notebook-page-changed) (12 :listbox-selection) (13 :listbox-double-click) (14 :tree-selection-changing) (15 :tree-selection-changed) (16 :splitter-sash-changing) (17 :splitter-sash-changed) (18 :slider-change) (19 :spin-change) (20 :radio-selection))
                                      (gethash kind *registered-event-kinds*)
                                      (error "Unregistered native event kind ~S" kind)))
                      (user-data (unless (zerop user-data-token)
@@ -167,7 +168,7 @@
                                 (cffi:foreign-string-to-lisp text :count text-length :encoding :utf-8))))
                      (checked-p (and (member kind '(3 9)) (not (zerop checked))))
                      (event (%make-event event-kind (handler-source handler) value checked-p
-                                         (when (member kind '(4 10 11 12 13)) (unless (= selection -1) selection)) id native-type
+                                         (when (member kind '(4 10 11 12 13 20)) (unless (= selection -1) selection)) id native-type
                                          (not (zerop can-veto)) (not (zerop vetoed)) family integer (not (zerop logging-off)) timestamp (not (zerop command)) origin-id category extra-long (not (zerop selection-action)) user-data (not (zerop more-requested)) (canonical-tree-item tree-item) (when (member kind '(16 17)) sash-position))))
                 (if (handler-with-context handler)
                     (funcall (handler-function handler) event (%make-event-context context))
@@ -513,7 +514,7 @@ RETURN-TO-APPLICATION-REPL restart. Setup errors propagate to the caller."
     (error "APPLICATION-HANDLER is borrowed; use CURRENT-APPLICATION-HANDLER"))
   (when (and (typep object 'window)
              (/= 1 (count-if (lambda (kind) (typep object kind))
-                         '(frame toolbar status-bar panel notebook list-box tree-control splitter-window button text-control label checkbox choice gauge slider spin-control text-entry-dialog single-choice-dialog message-dialog file-dialog))))
+                         '(frame toolbar status-bar panel notebook list-box tree-control splitter-window button text-control label checkbox choice gauge slider spin-control radio-box text-entry-dialog single-choice-dialog message-dialog file-dialog))))
     (error "~A must inherit exactly one concrete wxlambda widget class; WINDOW is abstract"
            (class-name (class-of object))))
   (unless *active*
@@ -982,7 +983,7 @@ live checkbox, including when called from inside its handler."
   t)
 
 (defun builtin-event-kind (kind)
-  (case kind (:click 1) (:text-change 2) (:toggle 3) (:selection 4) (:close 5) (:query-end-session 6) (:end-session 7) (:idle 8) (:menu 9) (:notebook-page-changing 10) (:notebook-page-changed 11) (:listbox-selection 12) (:listbox-double-click 13) (:tree-selection-changing 14) (:tree-selection-changed 15) (:splitter-sash-changing 16) (:splitter-sash-changed 17) (:slider-change 18) (:spin-change 19)))
+  (case kind (:click 1) (:text-change 2) (:toggle 3) (:selection 4) (:close 5) (:query-end-session 6) (:end-session 7) (:idle 8) (:menu 9) (:notebook-page-changing 10) (:notebook-page-changed 11) (:listbox-selection 12) (:listbox-double-click 13) (:tree-selection-changing 14) (:tree-selection-changed 15) (:splitter-sash-changing 16) (:splitter-sash-changed 17) (:slider-change 18) (:spin-change 19) (:radio-selection 20)))
 (defun native-event-kind (kind)
   (or (builtin-event-kind kind)
       (and *registered-event-types* (gethash kind *registered-event-types*))
@@ -1333,7 +1334,7 @@ live checkbox, including when called from inside its handler."
     (check-status (%set-event-field id contextual field native-value))) value)
 (defun keyword-event-kind (code)
   (or (case code (1 :click) (2 :text-change) (3 :toggle) (4 :selection) (5 :close)
-                (6 :query-end-session) (7 :end-session) (8 :idle) (9 :menu) (10 :notebook-page-changing) (11 :notebook-page-changed) (12 :listbox-selection) (13 :listbox-double-click) (14 :tree-selection-changing) (15 :tree-selection-changed) (16 :splitter-sash-changing) (17 :splitter-sash-changed) (18 :slider-change) (19 :spin-change))
+                (6 :query-end-session) (7 :end-session) (8 :idle) (9 :menu) (10 :notebook-page-changing) (11 :notebook-page-changed) (12 :listbox-selection) (13 :listbox-double-click) (14 :tree-selection-changing) (15 :tree-selection-changed) (16 :splitter-sash-changing) (17 :splitter-sash-changed) (18 :slider-change) (19 :spin-change) (20 :radio-selection))
       (gethash code *registered-event-kinds*) (error "Unknown native event kind ~S" code)))
 (defgeneric event-kind (event))
 (defmethod event-kind ((event event)) (event-kind-value event))
@@ -1557,7 +1558,7 @@ live checkbox, including when called from inside its handler."
 (defmethod (setf event-checked-p) (value (event event-context))
   (write-event-field event 15 value (if value 1 0)))
 (defgeneric event-selection (event)
-  (:documentation "Read choice/listbox or native notebook selection metadata; NIL means none. Only choice/listbox command payloads support SETF."))
+  (:documentation "Read choice/listbox/radio-box or native notebook selection metadata; NIL means none. Only choice/listbox command payloads support SETF."))
 (defmethod event-selection ((event event)) (event-selection-value event))
 (defun read-event-selection (event)
   (let ((value (read-event-field event 16))) (unless (= value -1) value)))
@@ -2490,3 +2491,35 @@ live checkbox, including when called from inside its handler."
   (unless (member (event-kind event) '(:slider-change :spin-change))
     (error 'native-error :message "Numeric event value requires a slider/spin context"))
   (event-integer event))
+
+;;; Fixed, explicitly owned mutually exclusive choice groups.
+(defmethod initialize-instance :after ((object radio-box) &key parent (label "") items (selection 0) (orientation :vertical))
+  (check-type parent window) (check-text-value label)
+  (let ((count (accelerator-list-length items)))
+    (unless (<= 2 count 64) (error "Radio box requires 2..64 items"))
+    (check-type selection (integer 0 63))
+    (check-type orientation (member :vertical :horizontal))
+    (dolist (item items) (check-text-value item))
+    (let ((strings nil))
+      (unwind-protect
+           (progn
+             (dolist (item items) (push (cffi:foreign-string-alloc item :encoding :utf-8) strings))
+             (setf strings (nreverse strings))
+             (cffi:with-foreign-object (array :pointer count)
+               (loop for pointer in strings for index from 0 do (setf (cffi:mem-aref array :pointer index) pointer))
+               (adopt-native object (%radio-box (handle parent) label array count selection (if (eq orientation :horizontal) 1 0)))))
+        (dolist (pointer strings) (cffi:foreign-string-free pointer))))))
+(defgeneric make-radio-box (parent &rest initargs &key class label items selection orientation &allow-other-keys))
+(defmethod make-radio-box ((parent window) &rest initargs &key (class 'radio-box) &allow-other-keys)
+  (apply #'make-widget class 'radio-box :parent parent initargs))
+(defmethod selection ((control radio-box) &key notify)
+  (declare (ignore notify)) (gauge-integer-result (%radio-field (handle control) 0)))
+(defmethod (setf selection) (value (control radio-box) &key notify)
+  (check-type value (integer 0 63))
+  (call-setter (lambda () (%set-radio-selection (handle control) value (if notify 1 0))) notify) value)
+(defmethod item-count ((control radio-box)) (gauge-integer-result (%radio-field (handle control) 1)))
+(defmethod item-text ((control radio-box) index)
+  (check-item-index index)
+  (let ((pointer (%radio-item (handle control) index)))
+    (when (cffi:null-pointer-p pointer) (error 'native-error :message (%last-error)))
+    (cffi:foreign-string-to-lisp pointer :encoding :utf-8)))

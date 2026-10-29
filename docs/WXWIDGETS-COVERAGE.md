@@ -270,7 +270,7 @@ C3 includes bounded managed menus and standard/generic dialogs. Other source
 categories remain selected feature work; internal conversions/types alone are
 not full public class coverage.
 
-The window-facing Lisp API has fourteen wrapper classes (two abstract) plus the public event-handler base, direct native
+The window-facing Lisp API has twenty-three wrapper classes (two abstract) plus the public event-handler base, direct native
 construction and generic operations/SETF; see [CLOS API](CLOS-API.md). This establishes Lisp dispatch
 and method combination, not native C++ subclass/virtual-callback coverage.
 
@@ -284,15 +284,14 @@ necessary value/lifetime prerequisites without wrapping every utility first.
 ### C1: Foundation, values, application, events, and base utilities
 
 [Complete C1 source inventory](coverage/phase-c1.md). Core event/lifetime/main-thread
-contracts support delivered features. Idle/timers and GUI value adapters are
-planned; filesystem/network/regex/container utilities normally use Lisp-native
+contracts support delivered features. Idle/timers and numeric adapters are implemented within documented bounds; filesystem/network/regex/container utilities normally use Lisp-native
 libraries unless native integration needs a bridge. Broad pointer adoption and
 virtual overrides remain on-demand/deferred.
 
 ### C2: Windows, layout, basic controls, and input
 
-[Complete C2 source inventory](coverage/phase-c2.md). Plan useful radio/toggle/
-combo/list controls, sliders/spinners, scrolling, layouts, focus/keyboard and
+[Complete C2 source inventory](coverage/phase-c2.md). Radio groups, list boxes and bounded sliders/spinners are implemented. Plan useful
+toggle/combo controls, scrolling, layouts, focus/keyboard and
 practical font/colour/DPI support. Deepen the existing window/control families as workflows
 need; not every constructor option or inherited overload must precede the next
 useful control.
@@ -565,5 +564,13 @@ snapshots. Raw spin edits are prevalidated before native getters; text callbacks
 retain numeric lifetime guards. Class/declaration statuses remain partial, with
 styles, double-spin, raw numeric event resources and complete scroll families
 unbound. Physical input and hosted GTK/MSW/Qt GUI remain unverified.
-Next selected slice: bounded radio-button groups for mutually exclusive form
-choices, rather than deeper numeric styles/event parity.
+Bounded radio groups are delivered below.
+
+## Bounded mutually exclusive choices
+
+[Radio groups](RADIO-GROUPS.md) add wxRadioBox ownership, fixed choices, valid
+selection, silent/notifying generic SETF and native command snapshots/contexts.
+Standalone radio-button groups, item mutation/per-item state and broad styles
+remain unbound; inventory records only partial wxRadioBox support. Physical input
+and hosted platform GUI remain unverified. Next selected slice: bounded toggle
+buttons for persistent on/off form and tool options.

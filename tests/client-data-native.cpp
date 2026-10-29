@@ -35,7 +35,7 @@ void inspect_binding(uint64_t token, const wxl_event* event) {
     saved_context = event->context;
     binding_called = true;
 }
-std::function<void(uint64_t, const wxl_event*)> notebook_probe, list_probe, tree_probe, splitter_probe, toolbar_probe, accelerator_probe, deferred_event_probe, numeric_probe;
+std::function<void(uint64_t, const wxl_event*)> notebook_probe, list_probe, tree_probe, splitter_probe, toolbar_probe, accelerator_probe, deferred_event_probe, numeric_probe, radio_probe;
 std::function<void(uint64_t,int)> ui_action_probe;
 void ignore_ui_action(uint64_t token, int execute) { if (ui_action_probe) ui_action_probe(token, execute); }
 void ignore_event(uint64_t token, const wxl_event* event) {
@@ -47,6 +47,7 @@ void ignore_event(uint64_t token, const wxl_event* event) {
     if ((token == 915 || token == 916) && accelerator_probe) accelerator_probe(token, event);
     if (token == 917 && deferred_event_probe) deferred_event_probe(token, event);
     if (token >= 918 && token <= 920 && numeric_probe) numeric_probe(token, event);
+    if ((token == 921 || token == 922) && radio_probe) radio_probe(token, event);
     if (token == 901) inspect_binding(token, event);
     if (token == 903) { ++menu_calls; menu_checked_payload = event->checked; menu_integer_payload = event->integer; menu_origin = event->origin_id; }
 }
@@ -806,6 +807,39 @@ struct SplitterProbe : FixedSplitter {
     using FixedSplitter::FixedSplitter;
     using wxSplitterWindow::SetSashPositionAndNotify;
 };
+void exercise_radio_groups() {
+    const auto frame = wxl_frame("Radio groups", 440, 300), panel = wxl_panel(frame);
+    const char* labels[] = {"First λ", "Second"};
+    const auto group = wxl_radio_box(panel, "Choices", labels, 2, 1, 0);
+    const auto other = wxl_radio_box(panel, "Other", labels, 2, 1, 1);
+    expect(group && other && wxl_radio_field(group,0)==1 && wxl_radio_field(group,1)==2, "Radio construction");
+    expect(std::string(wxl_radio_item(group,0))=="First λ", "Radio UTF8 item copy");
+    expect(!wxl_radio_box(panel,"Bad",labels,1,0,0) && !wxl_radio_box(panel,"Bad",labels,2,2,0) &&
+           !wxl_radio_box(panel,"Bad",nullptr,2,0,0) && !wxl_radio_box(panel,"Bad",labels,2,0,2), "Raw radio bounds");
+    expect(wxl_radio_field(frame,0)==-1 && wxl_radio_field(group,2)==-1 && !wxl_radio_item(group,2) &&
+           wxl_set_radio_selection(group,-1,0)==-1 && wxl_set_radio_selection(group,2,0)==-1 && wxl_set_radio_selection(group,0,2)==-1, "Raw radio operations");
+    unsigned calls=0;
+    radio_probe = [&](uint64_t token, const wxl_event* event) {
+        ++calls;
+        expect(event->selection==0 && event->origin_id==group && event->family==WXL_FAMILY_COMMAND &&
+               std::string(event->text,event->text_length)=="First λ", "Radio native snapshot payload");
+        expect(wxl_set_radio_selection(group,1,0)==-1 && wxl_destroy(group)==-1 && wxl_destroy(panel)==-1 &&
+               wxl_close(frame,1)==-1 && wxl_poll()==-1 && wxl_clipboard_text_available()==-1, "Radio source lifetime/entry guard");
+        expect(wxl_set_radio_selection(other,0,0)==0, "Radio silent cross-group write");
+        expect(!wxl_clone_event(event->context,1), "Radio clone rejects");
+        if (token==921) expect(wxl_context_set_skipped(event->context,1)==0,"Radio propagation");
+    };
+    expect(wxl_bind(group,WXL_EVENT_RADIO_SELECTION,921,wxID_ANY,wxID_ANY,1,0)==0 &&
+           wxl_bind(frame,WXL_EVENT_RADIO_SELECTION,922,wxID_ANY,wxID_ANY,1,0)==0,"Radio native bindings");
+    expect(wxl_set_radio_selection(group,0,0)==0 && calls==0, "Radio silent write");
+    // Direct native-class delivery has no setter operation guard to mask missing origin protection.
+    wxCommandEvent event(wxEVT_RADIOBOX,window(group)->GetId()); event.SetEventObject(window(group));
+    event.SetInt(0); event.SetString("First λ"); window(group)->HandleWindowEvent(event);
+    expect(calls==2 && input_operations.empty(),"Radio native propagation/guard release");
+    expect(wxl_set_radio_selection(group,0,1)==0 && calls==4,"Explicit unchanged radio notification");
+    expect(wxl_unbind(921)==1 && wxl_unbind(922)==1,"Radio unbind"); radio_probe={};
+    expect(wxl_destroy(frame)==0 && wxl_poll()==0 && wxl_radio_field(group,0)==-1,"Radio teardown");
+}
 void exercise_numeric_input() {
     const auto frame=wxl_frame("Numeric",560,360), panel=wxl_panel(frame);
     unsigned calls=0; bool construction=true;
@@ -850,7 +884,7 @@ void exercise_numeric_input() {
     };
     send(WXL_EVENT_SLIDER_CHANGE);
     current=spin; other=slider; send(WXL_EVENT_SPIN_CHANGE); send(WXL_EVENT_TEXT_CHANGE);
-    expect(calls==6 && numeric_operations.empty(),"Native numeric/forwarded text propagation guards");
+    expect(calls==6 && input_operations.empty(),"Native numeric/forwarded text propagation guards");
     numeric_probe={};
     // Raw native edit injection is test-only; public setters accept integers only.
     for (const auto& text : {"-", "NaN", "999999999999999999999999999999999999"}) {
@@ -859,7 +893,7 @@ void exercise_numeric_input() {
         expect(wxl_set_numeric_value(spin,7,0)==0 && wxl_numeric_field(spin,0,&value)==0 && value==7,"Integer setter recovers spin edit");
     }
     expect(wxl_event_type(WXL_EVENT_SLIDER_CHANGE)==wxEVT_SLIDER && wxl_event_type(WXL_EVENT_SPIN_CHANGE)==wxEVT_SPINCTRL,"New native event tags");
-    delete window(frame); expect(numeric_owners.empty() && numeric_operations.empty(),"Numeric native teardown registry cleanup");
+    delete window(frame); expect(input_owners.empty() && input_operations.empty(),"Numeric native teardown registry cleanup");
     expect(wxl_numeric_field(slider,0,&value)==-1,"Stale numeric query rejects");
 }
 
@@ -1226,6 +1260,7 @@ int main() {
         exercise_deferred_actions();
         exercise_ui_timers();
         exercise_numeric_input();
+        exercise_radio_groups();
         bool shutdown_ran=false;
         ui_action_probe=[&](uint64_t,int) { shutdown_ran=true; };
         expect(wxl_defer_ui_action(5000,0)==0 && wxl_start_ui_timer(5001,1,0,0)==0,"Queue shutdown action/timer");
