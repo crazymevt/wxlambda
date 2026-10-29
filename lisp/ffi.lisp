@@ -95,7 +95,7 @@
           (if (probe-file local)
               (cffi:load-foreign-library local)
               (cffi:use-foreign-library wxlambda-native))))
-    (unless (= 50 (%abi-version)) (error "Unsupported wxlambda native ABI"))
+    (unless (= 51 (%abi-version)) (error "Unsupported wxlambda native ABI"))
     (setf *native-loaded* t))
   t)
 
@@ -353,3 +353,6 @@
 
 (cffi:defcfun ("wxl_focus_window" %focus-window) :int (window :uint64) (keyboard :int))
 (cffi:defcfun ("wxl_navigate_focus" %navigate-focus) :int (window :uint64) (forward :int))
+
+(cffi:defcfun ("wxl_tooltip_text" %tooltip-text) :pointer (window :uint64) (length :pointer) (present :pointer))
+(cffi:defcfun ("wxl_set_tooltip_text" %set-tooltip-text) :int (window :uint64) (value :pointer) (length :size) (present :int))

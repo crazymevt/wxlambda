@@ -21,6 +21,11 @@ check_cxx_source_compiles("#include <wx/setup.h>
 #error Numeric input controls are required
 #endif
 int main() { return 0; }" WXLAMBDA_HAS_SCROLLING_CONTROLS)
+check_cxx_source_compiles("#include <wx/setup.h>
+#if !wxUSE_TOOLTIPS
+#error wxUSE_TOOLTIPS is required
+#endif
+int main() { return 0; }" WXLAMBDA_HAS_TOOLTIPS)
 cmake_pop_check_state()
 if(NOT WXLAMBDA_HAS_ACCELERATORS)
   message(FATAL_ERROR "wxlambda requires wxWidgets built with wxUSE_ACCEL=1")
@@ -30,6 +35,9 @@ if(NOT WXLAMBDA_HAS_TIMERS)
 endif()
 if(NOT WXLAMBDA_HAS_SCROLLING_CONTROLS)
   message(FATAL_ERROR "wxlambda requires wxUSE_SCROLLBAR=1, wxUSE_COMBOBOX=1, wxUSE_TOGGLEBTN=1, wxUSE_RADIOBOX=1, wxUSE_RADIOBTN=1, wxUSE_STATBOX=1, wxUSE_SLIDER=1, wxUSE_SPINCTRL=1 and wxUSE_SPINBTN=1")
+endif()
+if(NOT WXLAMBDA_HAS_TOOLTIPS)
+  message(FATAL_ERROR "wxlambda requires wxWidgets built with wxUSE_TOOLTIPS=1")
 endif()
 add_library(wxlambda SHARED native/wxlambda.cpp)
 target_compile_features(wxlambda PRIVATE cxx_std_17)

@@ -194,5 +194,9 @@
   "focus-navigation.lisp": {
     "description": "Keyboard form with a deferred Return to name action. EXERCISE issues focus/traversal requests without simulating physical keys or asserting OS focus identity.",
     "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/focus-navigation.lisp --eval '(wxlambda-focus-navigation:start)'"
+  },
+  "tooltips.lisp": {
+    "description": "Form name guidance with a deferred Toggle guidance action. EXERCISE verifies Unicode text and remove/restore via queued commands without simulating hover or asserting popup presentation.",
+    "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/tooltips.lisp --eval '(wxlambda-tooltips:start)'"
   }
 }

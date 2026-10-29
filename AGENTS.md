@@ -249,3 +249,10 @@ shared Input native-entry protection and recursive focus rejection. Native focus
 requests/traversal results do not guarantee OS activation or a particular child;
 no raw focused-window pointer or focus event resource is exposed. See
 `docs/FOCUS-NAVIGATION.md`.
+
+ABI51 TOOLTIP-TEXT/SETF uses copied native window-owned text: NIL removes,
+empty string retains an attached tooltip, inputs are NUL-free and at most4096
+UTF-8 bytes. Preserve the source wxString through ToUTF8 buffer copying. Reads
+are callback-safe; mutation/removal defers and shares Input operation guards.
+No raw tooltip adoption/global policy or tooltip constructor initarg is exposed.
+Requires wxUSE_TOOLTIPS=1; see `docs/TOOLTIPS.md`.

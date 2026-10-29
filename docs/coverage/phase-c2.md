@@ -17,7 +17,7 @@ class or constructor does not imply full upstream coverage.
 
 ## Current coverage and remaining work
 
-26 implemented; 169 partial; 2667 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
+28 implemented; 171 partial; 2663 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
 
 Counts describe inventory entries, not distinct APIs or percent completion.
 See the [coverage summary](README.md) for phase/header comparisons.
@@ -2995,7 +2995,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h)
 
-12 implemented; 21 partial; 353 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
+14 implemented; 23 partial; 349 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
 
 - [ ] [L12](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L12) `enum wxShowEffect {`
 - [ ] [L19](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L19) `wxSHOW_EFFECT_NONE, wxSHOW_EFFECT_ROLL_TO_LEFT, wxSHOW_EFFECT_ROLL_TO_RIGHT, wxSHOW_EFFECT_ROLL_TO_TOP, wxSHOW_EFFECT_ROLL_TO_BOTTOM, wxSHOW_EFFECT_SLIDE_TO_LEFT, wxSHOW_EFFECT_SLIDE_TO_RIGHT, wxSHOW_EFFECT_SLIDE_TO_TOP, wxSHOW_EFFECT_SLIDE_TO_BOTTOM, wxSHOW_EFFECT_BLEND, wxSHOW_EFFECT_EXPAND, wxSHOW_EFFECT_MAX }`
@@ -3284,11 +3284,11 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [ ] [L3118](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L3118) `wxString GetHelpText() const;`
 - [ ] [L3127](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L3127) `void SetHelpText(const wxString& helpText);`
 - [ ] [L3139](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L3139) `virtual wxString GetHelpTextAtPoint(const wxPoint& point, wxHelpEvent::Origin origin) const;`
-- [ ] [L3145](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L3145) `wxToolTip* GetToolTip() const;`
-- [ ] [L3150](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L3150) `wxString GetToolTipText() const;`
-- [ ] [L3165](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L3165) `void SetToolTip(const wxString& tipString);`
+- [~] [L3145](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L3145) `wxToolTip* GetToolTip() const;` — **Partial**: `tooltip-text`; ABI: `wxl_tooltip_text`. TOOLTIP-TEXT generic on managed WINDOW receivers; copied text/NIL for absent, SETF string0..4096 UTF-8 bytes/NIL removal, NUL rejection, GUI thread and callback deferral, synchronous Input lifetime/reentry guards. Window-owned resource; no raw pointer/tooltip class/global policy. Native text/presentation can vary by port; docs/TOOLTIPS.md. Presence only; pointer remains private.
+- [x] [L3150](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L3150) `wxString GetToolTipText() const;` — **Implemented**: `tooltip-text`; ABI: `wxl_tooltip_text`. TOOLTIP-TEXT generic on managed WINDOW receivers; copied text/NIL for absent, SETF string0..4096 UTF-8 bytes/NIL removal, NUL rejection, GUI thread and callback deferral, synchronous Input lifetime/reentry guards. Window-owned resource; no raw pointer/tooltip class/global policy. Native text/presentation can vary by port; docs/TOOLTIPS.md.
+- [~] [L3165](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L3165) `void SetToolTip(const wxString& tipString);` — **Partial**: `tooltip-text`; ABI: `wxl_set_tooltip_text`. TOOLTIP-TEXT generic on managed WINDOW receivers; copied text/NIL for absent, SETF string0..4096 UTF-8 bytes/NIL removal, NUL rejection, GUI thread and callback deferral, synchronous Input lifetime/reentry guards. Window-owned resource; no raw pointer/tooltip class/global policy. Native text/presentation can vary by port; docs/TOOLTIPS.md.
 - [ ] [L3170](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L3170) `void SetToolTip(wxToolTip* tip);`
-- [ ] [L3179](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L3179) `void UnsetToolTip();`
+- [x] [L3179](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L3179) `void UnsetToolTip();` — **Implemented**: `tooltip-text`; ABI: `wxl_set_tooltip_text`. TOOLTIP-TEXT generic on managed WINDOW receivers; copied text/NIL for absent, SETF string0..4096 UTF-8 bytes/NIL removal, NUL rejection, GUI thread and callback deferral, synchronous Input lifetime/reentry guards. Window-owned resource; no raw pointer/tooltip class/global policy. Native text/presentation can vary by port; docs/TOOLTIPS.md.
 - [ ] [L3217](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L3217) `int GetPopupMenuSelectionFromUser(wxMenu& menu, const wxPoint& pos = wxDefaultPosition);`
 - [ ] [L3223](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L3223) `int GetPopupMenuSelectionFromUser(wxMenu& menu, int x, int y);`
 - [ ] [L3251](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L3251) `bool PopupMenu(wxMenu* menu, const wxPoint& pos = wxDefaultPosition);`

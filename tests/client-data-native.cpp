@@ -35,7 +35,7 @@ void inspect_binding(uint64_t token, const wxl_event* event) {
     saved_context = event->context;
     binding_called = true;
 }
-std::function<void(uint64_t, const wxl_event*)> notebook_probe, list_probe, tree_probe, splitter_probe, toolbar_probe, accelerator_probe, deferred_event_probe, numeric_probe, radio_probe, toggle_probe, combo_probe, scroll_probe;
+std::function<void(uint64_t, const wxl_event*)> notebook_probe, list_probe, tree_probe, splitter_probe, toolbar_probe, accelerator_probe, deferred_event_probe, numeric_probe, radio_probe, toggle_probe, combo_probe, scroll_probe, tooltip_probe;
 std::function<void(uint64_t,int)> ui_action_probe;
 void ignore_ui_action(uint64_t token, int execute) { if (ui_action_probe) ui_action_probe(token, execute); }
 void ignore_event(uint64_t token, const wxl_event* event) {
@@ -51,6 +51,7 @@ void ignore_event(uint64_t token, const wxl_event* event) {
     if ((token == 923 || token == 924) && toggle_probe) toggle_probe(token, event);
     if (token>=925 && token<=927 && combo_probe) combo_probe(token,event);
     if (token==928 && scroll_probe) scroll_probe(token,event);
+    if (token==929 && tooltip_probe) tooltip_probe(token,event);
     if (token == 901) inspect_binding(token, event);
     if (token == 903) { ++menu_calls; menu_checked_payload = event->checked; menu_integer_payload = event->integer; menu_origin = event->origin_id; }
 }
@@ -1419,6 +1420,71 @@ void exercise_focus_navigation() {
     expect(wxl_focus_window(target,0)==-1 && wxl_navigate_focus(target,1)==-1,"Stale focus rejects");
 }
 
+class TooltipProbe : public wxPanel {
+public:
+    using wxPanel::wxPanel;
+    std::function<void()> during_tooltip;
+    void DoSetToolTipText(const wxString& tip) override {
+        if (during_tooltip) during_tooltip();
+        wxPanel::DoSetToolTipText(tip);
+    }
+    void DoSetToolTip(wxToolTip* tip) override {
+        if (during_tooltip) during_tooltip();
+        wxPanel::DoSetToolTip(tip);
+    }
+};
+class CountedToolTip : public wxToolTip {
+public:
+    explicit CountedToolTip(unsigned& count) : wxToolTip("Owned"), destroyed(count) {}
+    ~CountedToolTip() override { ++destroyed; }
+    unsigned& destroyed;
+};
+void exercise_tooltips() {
+    const auto frame=wxl_frame("Tooltips",400,240);
+    auto* probe=new ManagedWindow<TooltipProbe>(window(frame),wxID_ANY);
+    const auto target=track(probe);
+    size_t length=99; int present=-1;
+    const auto initial=wxl_tooltip_text(target,&length,&present);
+    expect(initial && length==0 && present==0,"Absent native tooltip");
+    expect(wxl_set_tooltip_text(target,"Tip \xce\xbb",6,1)==0,"Unicode tooltip setter");
+    const auto text=wxl_tooltip_text(target,&length,&present);
+    expect(text && present==1 && length==6 && std::string(text,length)=="Tip \xce\xbb","Copied native tooltip read");
+    expect(wxl_set_tooltip_text(target,"",0,1)==0 && probe->GetToolTip() &&
+           wxl_tooltip_text(target,&length,&present) && present==1 && length==0,"Empty retains attached tooltip");
+    expect(wxl_set_tooltip_text(target,nullptr,0,0)==0 && !probe->GetToolTip(),"Explicit native removal");
+    expect(wxl_set_tooltip_text(target,"tip",3,2)==-1 && wxl_set_tooltip_text(target,"tip",3,0)==-1 &&
+           wxl_set_tooltip_text(target,nullptr,1,1)==-1 && wxl_set_tooltip_text(target,"a\0b",3,1)==-1 &&
+           wxl_set_tooltip_text(target,"\xff",1,1)==-1 && wxl_set_tooltip_text(target,"",4097,1)==-1 &&
+           !wxl_tooltip_text(target,nullptr,&present) && !wxl_tooltip_text(target,&length,nullptr),"Raw tooltip validation");
+    const std::string limit(4096,'x');
+    expect(wxl_set_tooltip_text(target,limit.data(),limit.size(),1)==0,"Tooltip byte boundary");
+    const auto dialog=wxl_message_dialog(frame,"Tooltip",7,"Probe",5,0,0);
+    unsigned native_calls=0, callback_calls=0;
+    auto check_guards=[&] {
+        expect(wxl_destroy(target)==-1 && wxl_destroy(frame)==-1 && wxl_close(frame,1)==-1,"Tooltip receiver/ancestor guard");
+        expect(wxl_set_tooltip_text(target,"nested",6,1)==-1 && wxl_set_tooltip_text(target,nullptr,0,0)==-1,"Tooltip recursive mutation guard");
+        int result=-1;
+        expect(wxl_poll()==-1 && wxl_run()==-1 && wxl_finish()==-1 && wxl_clipboard_text_available()==-1 &&
+               wxl_dialog_show(dialog,&result)==-1,"Tooltip native-entry guards");
+    };
+    tooltip_probe=[&](uint64_t,const wxl_event*) { ++callback_calls; check_guards(); };
+    expect(wxl_bind(frame,WXL_EVENT_CLICK,929,wxID_ANY,wxID_ANY,1,0)==0,"Tooltip propagated probe binding");
+    probe->during_tooltip=[&] {
+        ++native_calls; check_guards();
+        wxCommandEvent event(wxEVT_BUTTON,probe->GetId()); event.SetEventObject(probe); probe->HandleWindowEvent(event);
+    };
+    expect(wxl_set_tooltip_text(target,"updated",7,1)==0 && wxl_set_tooltip_text(target,nullptr,0,0)==0 &&
+           native_calls>=2 && callback_calls==native_calls && input_operations.empty(),"Protected synchronous tooltip update/removal");
+    probe->during_tooltip={}; tooltip_probe={}; expect(wxl_unbind(929)==1,"Tooltip probe unbind");
+    unsigned destroyed=0;
+    probe->SetToolTip(new CountedToolTip(destroyed));
+    expect(wxl_set_tooltip_text(target,nullptr,0,0)==0 && destroyed==1,"Removal deletes native tooltip exactly once");
+    probe->SetToolTip(new CountedToolTip(destroyed));
+    delete window(frame);
+    expect(destroyed==2 && !wxl_tooltip_text(target,&length,&present) &&
+           wxl_set_tooltip_text(target,"stale",5,1)==-1,"Window teardown owns tooltip and invalidates handles");
+}
+
 int main() {
     std::thread([] { std::this_thread::sleep_for(std::chrono::seconds(10)); std::_Exit(124); }).detach();
     auto old_assert_handler = wxSetAssertHandler(capture_assert);
@@ -1452,6 +1518,7 @@ int main() {
         exercise_combo_boxes();
         exercise_scrolling_panels();
         exercise_focus_navigation();
+        exercise_tooltips();
         bool shutdown_ran=false;
         ui_action_probe=[&](uint64_t,int) { shutdown_ran=true; };
         expect(wxl_defer_ui_action(5000,0)==0 && wxl_start_ui_timer(5001,1,0,0)==0,"Queue shutdown action/timer");

@@ -2781,3 +2781,66 @@ Session handoff: broad GUI coverage with selective depth remains the objective.
 Next selected slice: bounded tooltips for contextual form guidance. Preserve
 native ownership/string semantics, callback/lifetime protection and independent
 review with aligned examples/docs/docset/coverage; no exhaustive C1-C7 parity.
+
+## Window tooltips for contextual form guidance (2026-10-29)
+
+ABI51 adds generic TOOLTIP-TEXT/SETF on public WINDOW wrappers. Reads return NIL
+for no native tooltip and a fresh native text string otherwise, including empty.
+SETF string attaches/updates copied native text; NIL calls UnsetToolTip and
+removes the window-owned resource. Inputs accept0..4096 UTF-8 bytes and reject
+NUL before mutation; byte limits are not Lisp character counts. Native text
+normalization, hover eligibility/timing/wrapping/composite behavior vary by port.
+No raw tooltip pointer/class/adoption, global timing/enable/width policy, rich
+or per-item tooltip API, notification event or common constructor initarg.
+Native-ready subclass AFTER hooks can use SETF and retain managed rollback.
+
+Reads are callback-safe; writes/removal reject callbacks and use owner-bound
+safe-idle actions. Synchronous InputOperation protects receiver/ancestors and
+blocks recursive tooltip writes, same-window operations using that guard, GUI/
+RUN/pumps/finish, modal/clipboard entry and safe-idle delivery. Existing older
+property setters are not all InputOperation users; no broader mutation claim.
+CMake requires wxUSE_TOOLTIPS=1, avoiding native disabled-feature no-op behavior.
+A negative configuration gate probe passes (quiet-run.r6IozjET); an actual
+separately compiled no-tooltip wxWidgets library was not built. Source review
+covered common ownership/text and GTK/MSW native behavior; runtime OSX3.2.12.
+
+Independent code/test/docs review has no remaining actionable findings; narrowed
+an overbroad shared-guard claim in the guide. Initial focused both-Lisp/native
+tests caught invalid UTF-8 from ToUTF8 on a temporary wxString: retain the source
+wxString until copying the buffer. This fixes a real borrowed-buffer lifetime
+bug, not a runtime encoding setting. Preserve initial failure logs under
+evidence/tooltips/initial-utf8-failure/. Corrected focused SBCL/CCL example/tests
+pass (quiet-run.n3e9uJqd/wSIfEzgr), main/native builds pass
+(quiet-run.Ui9OgzUX), native harness passes with zero wx assertions
+(quiet-run.JR2jO7Us). Native probes cover virtual text/pointer update/removal,
+actual supported propagated callbacks, synchronous lifetime/reentry protection,
+raw validation, empty/absent distinction and exact native tooltip deletion
+counts on removal/window teardown. Lisp tests add Unicode byte boundaries,
+copied input/output strings, callback deferral, native-ready subclass defaults,
+managed failure/root rollback and stale handles.
+
+Full76 GUI scenarios plus preflight pass on SBCL2.6.9 and CCL1.13
+(quiet-run.vvTIp5rQ/OuIroKhw), evidence/tooltips/{sbcl,ccl}-20261029/.
+Example examples/tooltips.lisp has an owner-bound deferred Toggle guidance form
+action. Physical hover, native popup presentation/timing, accessibility, hosted
+Windows/Linux/Qt and graphical Cadre remain unverified. No automatic system
+clipboard contents are read/replaced. ASDF cache uses /private/tmp.
+
+Regenerated pinned coverage inventory/14 checks,16 Python checks and zero-problem
+docset pass (quiet-run.sDE3DjoX). Counts:259 exports,186 named generics,57 SETF
+generics,26 window wrappers (24 concrete+2 abstract),50 examples and360 docset
+entries. Both-Lisp actual public-export/class/SETF coverage plus isolated
+install/discovery/symbol/guide/example checks pass (quiet-run.z9aYtyiZ).
+Install root /private/tmp/wxlambda-tooltip-docsets/wxlambda; normal Cadre
+installation under $XDG_DATA_HOME/docsets/wxlambda (default
+~/.local/share/docsets/wxlambda/) is documented in docs/DOCSET.md. Package
+dist/wxlambda-form-tooltips remains established form binary; new example is
+separate repository/docset content. All five package isolation checks pass
+(quiet-run.y8Ihrbft), evidence/packaging/tooltips-20261029/. Final docset
+build/check/install follows these handoff notes.
+
+Session handoff: broad GUI coverage with selective depth remains the objective.
+Next selected slice: bounded date-picker controls for dated form fields, including
+native feature/component selection and a copied Gregorian date adapter as needed
+prerequisites. Preserve explicit date/value semantics, CLOS/SETF and callback/
+lifetime protections, independent review and aligned examples/docs/docset/coverage.

@@ -2791,5 +2791,19 @@
     "description": "Perform native keyboard navigation starting from WINDOW via its parent traversal container. Only forward/backward traversal is exposed; no tab-order mutation, window-change flags or NavigateIn binding.",
     "scope": "Same shown/enabled/live/main-thread and callback deferral/operation guards as FOCUS-WINDOW. Native traversal order, wrapping, eligible controls and focus effects depend on port/container; successful return does not promise a particular widget.",
     "wxwidgets": "wxWindow::Navigate with IsForward/IsBackward, wxWidgets 3.2.12."
+  },
+  {
+    "name": "tooltip-text",
+    "kind": "generic-function",
+    "syntax": "(wxlambda:tooltip-text window)",
+    "arguments": "Live WINDOW receiver; SETF value is NIL or a NUL-free string of0..4096 UTF-8 bytes.",
+    "returns": "NIL for no attached tooltip, otherwise a fresh native tooltip text string (including empty). SETF returns the supplied value.",
+    "description": "Read or replace window-owned tooltip text. NIL removes the tooltip; empty text retains an attached empty tooltip. Native objects/pointers are never exposed or retained by Lisp. Native text normalization and hover presentation vary by port.",
+    "scope": "Active main-thread GUI session, valid window lifetime. Reads may occur in callbacks; mutations reject callbacks and must be deferred via owner-bound UI actions. Synchronous setter protects receiver/ancestors and gates nested GUI/modal/clipboard entry through InputOperation. No tooltip initarg, global delay/enable policy, rich tips or per-item bindings. Requires wxUSE_TOOLTIPS=1. See docs/TOOLTIPS.md.",
+    "wxwidgets": "wxWindow::GetToolTip/GetToolTipText/SetToolTip(const wxString&)/UnsetToolTip; wxWidgets3.2.12.",
+    "setf": {
+      "syntax": "(setf (wxlambda:tooltip-text window) \"Enter your name\")",
+      "description": "NIL calls UnsetToolTip; strings including empty call SetToolTip. Copies the input; rejects NUL and >4096 UTF-8 bytes before mutation. No notify option or synthetic event. Native-ready subclass AFTER hooks can set the property with ordinary construction rollback."
+    }
   }
 ]

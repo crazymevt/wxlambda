@@ -2639,3 +2639,22 @@ live checkbox, including when called from inside its handler."
   (let ((handled (with-native-notifier
                    (boolean-result (%navigate-focus (handle window) (if forward 1 0))))))
     (check-callback-error) handled))
+
+;;; Window-owned tooltip text, with NIL removal and copied string reads.
+(defgeneric tooltip-text (window))
+(defmethod tooltip-text ((window window))
+  (cffi:with-foreign-objects ((length :size) (present :int))
+    (let ((pointer (%tooltip-text (handle window) length present)))
+      (when (cffi:null-pointer-p pointer) (error 'native-error :message (%last-error)))
+      (unless (zerop (cffi:mem-ref present :int))
+        (cffi:foreign-string-to-lisp pointer :count (cffi:mem-ref length :size) :encoding :utf-8)))))
+(defgeneric (setf tooltip-text) (value window))
+(defmethod (setf tooltip-text) (value (window window))
+  (if (null value)
+      (call-setter (lambda () (%set-tooltip-text (handle window) (cffi:null-pointer) 0 0)) t)
+      (progn
+        (check-text-value value)
+        (cffi:with-foreign-string ((pointer bytes) value :encoding :utf-8)
+          (when (> (1- bytes) 4096) (error "Tooltip text supports at most4096 UTF-8 bytes"))
+          (call-setter (lambda () (%set-tooltip-text (handle window) pointer (1- bytes) 1)) t))))
+  value)

@@ -7888,6 +7888,62 @@
         "wxl_navigate_focus"
       ],
       "scope": "Bounded shown/enabled managed WINDOW receivers, GUI thread, callback deferral and synchronous lifetime/native-entry guards. No native virtual override or OS activation guarantee; docs/FOCUS-NAVIGATION.md. Only IsForward/IsBackward; WinChange unbound."
+    },
+    {
+      "header": "wx/window.h",
+      "line": 3145,
+      "declaration": "wxToolTip* GetToolTip() const;",
+      "status": "~",
+      "symbol": "wxWindow::GetToolTip",
+      "lisp": [
+        "tooltip-text"
+      ],
+      "native": [
+        "wxl_tooltip_text"
+      ],
+      "scope": "TOOLTIP-TEXT generic on managed WINDOW receivers; copied text/NIL for absent, SETF string0..4096 UTF-8 bytes/NIL removal, NUL rejection, GUI thread and callback deferral, synchronous Input lifetime/reentry guards. Window-owned resource; no raw pointer/tooltip class/global policy. Native text/presentation can vary by port; docs/TOOLTIPS.md. Presence only; pointer remains private."
+    },
+    {
+      "header": "wx/window.h",
+      "line": 3150,
+      "declaration": "wxString GetToolTipText() const;",
+      "status": "x",
+      "symbol": "wxWindow::GetToolTipText",
+      "lisp": [
+        "tooltip-text"
+      ],
+      "native": [
+        "wxl_tooltip_text"
+      ],
+      "scope": "TOOLTIP-TEXT generic on managed WINDOW receivers; copied text/NIL for absent, SETF string0..4096 UTF-8 bytes/NIL removal, NUL rejection, GUI thread and callback deferral, synchronous Input lifetime/reentry guards. Window-owned resource; no raw pointer/tooltip class/global policy. Native text/presentation can vary by port; docs/TOOLTIPS.md."
+    },
+    {
+      "header": "wx/window.h",
+      "line": 3165,
+      "declaration": "void SetToolTip(const wxString& tipString);",
+      "status": "~",
+      "symbol": "wxWindow::SetToolTip",
+      "lisp": [
+        "tooltip-text"
+      ],
+      "native": [
+        "wxl_set_tooltip_text"
+      ],
+      "scope": "TOOLTIP-TEXT generic on managed WINDOW receivers; copied text/NIL for absent, SETF string0..4096 UTF-8 bytes/NIL removal, NUL rejection, GUI thread and callback deferral, synchronous Input lifetime/reentry guards. Window-owned resource; no raw pointer/tooltip class/global policy. Native text/presentation can vary by port; docs/TOOLTIPS.md."
+    },
+    {
+      "header": "wx/window.h",
+      "line": 3179,
+      "declaration": "void UnsetToolTip();",
+      "status": "x",
+      "symbol": "wxWindow::UnsetToolTip",
+      "lisp": [
+        "tooltip-text"
+      ],
+      "native": [
+        "wxl_set_tooltip_text"
+      ],
+      "scope": "TOOLTIP-TEXT generic on managed WINDOW receivers; copied text/NIL for absent, SETF string0..4096 UTF-8 bytes/NIL removal, NUL rejection, GUI thread and callback deferral, synchronous Input lifetime/reentry guards. Window-owned resource; no raw pointer/tooltip class/global policy. Native text/presentation can vary by port; docs/TOOLTIPS.md."
     }
   ],
   "classes": {

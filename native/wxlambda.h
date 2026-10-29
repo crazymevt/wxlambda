@@ -51,6 +51,11 @@ typedef void (*wxl_callback)(uint64_t token, const wxl_event *event);
    Never unwind across this boundary. No borrowed event context is active. */
 typedef void (*wxl_ui_callback)(uint64_t token, int kind);
 WXL_API int wxl_abi_version(void);
+/* Borrowed UTF-8 until next bridge call; presence distinguishes absent/empty.
+   Setter accepts0..4096 UTF-8 bytes, NUL-free; present=0 removes (length must0).
+   Mutations reject callbacks. No native tooltip resource/pointer is exposed. */
+WXL_API const char* wxl_tooltip_text(wxl_handle id, size_t* length, int* present);
+WXL_API int wxl_set_tooltip_text(wxl_handle id, const char* value, size_t length, int present);
 /* Shown/enabled windows only; defer from callbacks. Focus does not guarantee OS activation. */
 WXL_API int wxl_focus_window(wxl_handle id, int keyboard);
 /* 0/1 native handled result, -1 error. */

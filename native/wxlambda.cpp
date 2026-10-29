@@ -16,6 +16,7 @@
 #include <wx/sysopt.h>
 #include <wx/accel.h>
 #include <wx/timer.h>
+#include <wx/tooltip.h>
 #include <chrono>
 #include <wx/notebook.h>
 #include <wx/listbox.h>
@@ -1318,7 +1319,7 @@ bool process_deferred_ui_action() {
 
 }
 extern "C" {
-int wxl_abi_version() { return 50; }
+int wxl_abi_version() { return 51; }
 const char* wxl_last_error() { return error.c_str(); }
 int wxl_clipboard_text_available() {
     return boolean_result([&] {
@@ -2893,6 +2894,31 @@ const char* wxl_get_label(wxl_handle id) {
         label_result.assign(bytes.data() ? bytes.data() : "", bytes.length());
     });
     return result == 0 ? label_result.c_str() : nullptr;
+}
+// Tooltip storage belongs to wxWindow; only copied UTF-8 text crosses the ABI.
+const char* wxl_tooltip_text(wxl_handle id, size_t* length, int* present) {
+    const int result = status([&] {
+        require(length && present, "Missing tooltip output");
+        auto* object = window(id);
+        *present = object->GetToolTip() ? 1 : 0;
+        const auto text = object->GetToolTipText();
+        const auto bytes = text.ToUTF8();
+        metadata_result.assign(bytes.data() ? bytes.data() : "", bytes.length());
+        *length = metadata_result.size();
+    });
+    return result == 0 ? metadata_result.c_str() : nullptr;
+}
+int wxl_set_tooltip_text(wxl_handle id, const char* value, size_t length, int present) {
+    return status([&] {
+        auto* object = window(id);
+        require(present == 0 || present == 1, "Invalid tooltip presence flag");
+        require(length <= 4096, "Tooltip text supports at most4096 UTF-8 bytes");
+        require(present || length == 0, "Removed tooltip cannot carry text");
+        const auto text = text_value(value, length);
+        require(callback_depth == 0, "Defer tooltip mutation until callbacks return");
+        InputOperation operation(object);
+        if (present) object->SetToolTip(text); else object->UnsetToolTip();
+    });
 }
 // Focus can synchronously deliver native focus/navigation events. Keep the entire
 // session's window graph alive, and share the input native-entry gates.
