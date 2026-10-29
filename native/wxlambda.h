@@ -57,6 +57,7 @@ WXL_API int wxl_abi_version(void);
 #include "drawing-canvas-api.h"
 #include "activity-indicator-api.h"
 #include "grid-api.h"
+#include "grid-extra-api.h"
 #include "webview-api.h"
 #include "stc-api.h"
 #include "input-events-api.h"

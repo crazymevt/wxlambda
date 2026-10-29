@@ -42,7 +42,7 @@ Concrete native initargs are:
 - `frame`: `:title` (default "wxlambda"), `:width` (480), `:height` (240), `:accelerators` (NIL). See [keyboard actions](KEYBOARD-ACCELERATORS.md).
 - `styled-text-control`: required `:parent`, `:value` defaults empty UTF-8 text. Native byte offsets and manual container styling; see [styled text](STYLED-TEXT.md).
 - `aui-notebook`: required `:parent`; dynamic native PANEL pages with removal/deletion distinction. See [AUI tabs](AUI-NOTEBOOK.md).
-- `grid`: required `:parent`; rows10/columns5/editable-pT defaults, fixed bounded shape. See [grid](GRID.md).
+- `grid`: required `:parent`; rows10/columns5/editable-pT defaults; bounded owned string table with native editing/selection events and row/column mutations. See [grid](GRID.md).
 - `web-view`: required `:parent`; initial about:blank, private WKWebView browser and asynchronous JavaScript. See [web development](WEB-VIEW.md).
 - `drawing-canvas`: required `:parent`; `:content` defaults to an empty white retained scene. See [drawing](DRAWING-CANVAS.md).
 - `activity-indicator`: required `:parent`; `:running-p` defaults to NIL. See [activity feedback](ACTIVITY-INDICATORS.md).

@@ -1798,6 +1798,8 @@ void exercise_search_controls() {
 #include "views-native.inc"
 #include "images-native.inc"
 
+#include "grid-extra-native.inc"
+
 int main() {
     std::thread([] { std::this_thread::sleep_for(std::chrono::seconds(10)); std::_Exit(124); }).detach();
     auto old_assert_handler = wxSetAssertHandler(capture_assert);
@@ -1838,6 +1840,7 @@ int main() {
         exercise_activity_indicator();
         exercise_drawing_canvas();
         exercise_grid();
+        exercise_grid_extra();
         exercise_web_view();
         exercise_aui_notebook();
         exercise_input_events();

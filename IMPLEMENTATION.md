@@ -13,9 +13,14 @@ The user has explicitly requested the general-purpose native capabilities in
 WebView and the completed MVP checkpoint. Prioritize STC, native input and dynamic
 tabs/splits before secondary views/tables/images/background delivery. Do not add
 editor models, parsing/language behavior or terminal emulation to wxLambda.
-ABI57 implements the priority STC/input/AUI/splitter batch. Final evidence is
-recorded in the checkpoint below. Worker delivery, scalable views/tree/table depth
-and public graphics resources remain subsequent selected work.
+ABI57–ABI61 complete the selected bounded KryptonEdit binding goal: styled text,
+native input, dynamic tabs/splits, safe worker delivery, scalable report/tree views,
+image/display resources and native grid editing/validation/dynamic dimensions.
+Final local acceptance is recorded in the ABI61 and completion checkpoints below.
+Next work is KryptonEdit application integration and any concrete gaps it reveals;
+there is no required next broad native-binding batch. Docking/HTML/navigation
+surveys and explicit platform/physical-input limits are not full-parity blockers.
+Earlier checkpoints preserve their original sequencing and verification context.
 
 
 ABI56 adds the user's requested wxGrid and interactive JavaScript WebView
@@ -3495,3 +3500,86 @@ actual PNG/alpha roundtrip, native static display GetBitmap/logical sizing,
 independent copied-value disposal and display availability are checked before
 other saved-image workflows. Isolated package and all5 checks pass PW63yF6h,
 output dist/wxlambda-images, report evidence/packaging/images-20261029/.
+
+## ABI61 native grid editing, events and dynamic string-table axes
+
+Completed the selected bounded GRID dependency after independent root/agent
+source review: 26 generic exports /4 SETF writers, native-only notify kinds160..170,
+owned native string-table axes0..256/result<=16384cells (constructor stays1..256),
+per-cell read-only/RGB colours, native cursor/block selection and explicit native
+Save/Hide/Disable/active-editor Reset operations. GetCellEditor returns a locally
+reference-counted default native text editor; Reset restores its current baseline,
+which may change during prior Save/veto. No transaction/cancel guarantee, custom
+model/editor/renderer ownership or spreadsheet behavior is invented.
+
+Snapshots capture immutable kind fields and copy current table text into private
+details23 before user dispatch; native GetString retains proposed CHANGING/old
+CHANGED semantics. Context reads retain current-innermost lifetime. Actual native
+grid source filtering/ancestor guards, early retirement and readonly metadata
+prevent native callback/teardown reentry. Range/hidden veto remains observational.
+
+Verification: main build8oYlyjYw, normal-loader focused SBCL2iqnr3QV/CCLJV5npCGV,
+combined native JUwUMg2x/TGvlMdCZ with zero assertions and actual default editor
+commit/veto/Reset/Hide/dimension fixtures. Full91 GUI scenarios plus preflight
+pass SBCL538jfP5V and CCLpXUIA7PI; reports evidence/grid-editing/{sbcl,ccl}-20261029.
+Python runner/docset tests vaCYz6F6 pass. Actual loaded527exports /435named
+generics /122generic writers verified Vn57CfJ6; all-export/class/SETF docset checks
+pass both Lisps QJAQTQ41/ZAonRKkZ. Final metadata-only inventory/docset gates follow.
+The stage's temporary ABI loader bypass and probe sources were not integrated.
+
+This completes the selected bounded binding slices before KryptonEdit application
+integration; root performs final survey/package/commit and goal report. Native
+classes remain partial, and physical input/IME/accessibility/other-port fidelity
+remain unverified. No exhaustive native parity is claimed.
+
+ABI61 final metadata gates: factual partial wxGridEvent/wxGridRangeSelectEvent
+class/accessor scopes added; inventory regeneration tYd2lZqB and all14inventory
+checks hEsMd2d0 pass. Docset661entries, zero problems/discovery/symbol/guide/example
+reads mVZn5vTs; isolated install ZfOAbYgp under
+/private/tmp/wxlambda-grid-docsets/wxlambda. Public native WXL_EVENT_GRID_* enum
+constants added without behavioral/layout changes; final header rebuild Anc1frM9
+passes. Independent packaged CHECK-GRID-EDITING review found no actionable issue.
+Root is completing package evidence and final reader-facing acceptance status,
+then must regenerate/check/install the docset for that prose before commit.
+
+
+## Selected KryptonEdit binding goal: completed local acceptance
+
+All selected implementation batches ABI57–ABI61 are implemented, independently
+reviewed and verified under the documented bounds. Preserved ABI56 grid/WebView
+and the prior MVP. No editor behavior, language service, project model, third-party
+widget or terminal emulator was added to the library. Native inventories remain
+factual partial/pending records; wxAuiManager/wxHtmlWindow are survey-only outcomes.
+Basic WebView back/forward history is already bound; navigation cancellation/event
+coverage, richer history and other-platform backends remain explicit future scope.
+
+Final91 GUI scenarios plus preflight pass in fresh processes on SBCL2.6.9 and
+CCL1.13 with local macOS wxWidgets3.2.12. Combined native fixtures pass with zero
+wx assertions; actual default grid-editor commit/veto/reset, virtual callbacks,
+worker lifetime/shutdown races and RGBA/resource teardown are exercised. Final
+527 exports,435 named generics,122 generic writers and37 WINDOW wrappers are
+documented. The format1 docset contains661 entries (527 API,65 examples,69 guides),
+with both-Lisp actual-export/class/SETF coverage, zero check-docset problems,
+links, discovery, lookup and guide/example access. This verifies Cadre format/API
+discovery, not graphical Cadre interaction or every native argument combination.
+
+Final package dist/wxlambda-krypton-edit-final builds and all5 isolation checks
+pass (quiet-run.mPwcN76O), report evidence/packaging/krypton-edit-final-20261029/.
+Its self-test exercises native grid editor/selection/dynamic rows, image PNG/alpha/
+DPI, actual million-row virtual text, real worker GUI delivery and the previous
+STC/AUI/WebView/form/renderer workflow outside the checkout. A packaging-only
+accessor typo was corrected to the documented GRID-ROWS before this passing run.
+Final prose/docset regeneration, checker and isolated install follow this record.
+Install instructions are in docs/DOCSET.md; normal location is
+$XDG_DATA_HOME/docsets/wxlambda (default ~/.local/share/docsets/wxlambda/). The
+user's default installation was not modified.
+
+Physical keyboard/IME/mouse/drag/accessibility, display hotplug/color fidelity,
+GTK/MSW/Qt and additional wx versions remain unverified. WebView remains gated
+to the audited macOS3.2.12 WKWebView backend. AUI physical splitting/external page
+transfer remain disabled, multi-group physical rearrangement restricted, PNG file
+formats and resources/scenes bounded, and virtual providers have explicit container
+ancestry/query restrictions. No automatic system clipboard transfer occurred.
+See docs/KRYPTONEDIT-COVERAGE.md for the current capability/limitation report.
+Further bindings should follow a demonstrated application need, not inventory
+checkbox exhaustion; application integration is the next step.

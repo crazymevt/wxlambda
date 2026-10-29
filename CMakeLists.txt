@@ -118,7 +118,7 @@ if(APPLE)
 endif()
 set_target_properties(wxlambda PROPERTIES CXX_VISIBILITY_PRESET hidden VISIBILITY_INLINES_HIDDEN YES)
 install(TARGETS wxlambda LIBRARY DESTINATION lib RUNTIME DESTINATION bin ARCHIVE DESTINATION lib)
-install(FILES native/wxlambda.h native/drawing-canvas-api.h native/activity-indicator-api.h native/grid-api.h native/webview-api.h native/stc-api.h native/input-events-api.h native/aui-api.h native/thread-events-api.h native/views-api.h native/images-api.h DESTINATION include)
+install(FILES native/wxlambda.h native/drawing-canvas-api.h native/activity-indicator-api.h native/grid-api.h native/grid-extra-api.h native/webview-api.h native/stc-api.h native/input-events-api.h native/aui-api.h native/thread-events-api.h native/views-api.h native/images-api.h DESTINATION include)
 
 option(WXLAMBDA_BUILD_NATIVE_TESTS "Build native invariant regressions (GUI session required)" OFF)
 if(WXLAMBDA_BUILD_NATIVE_TESTS)

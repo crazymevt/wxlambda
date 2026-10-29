@@ -254,5 +254,9 @@
   "image-viewer.lisp": {
     "description": "Compose native PNG/RGB/alpha/scaling/bitmap/static display and mouse events; pixel inspection behavior is application code.",
     "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/image-viewer.lisp --eval \"(wxlambda-image-viewer:start)\""
+  },
+  "grid-editing.lisp": {
+    "description": "Owned native grid editor validation/veto, honest Reset/Save/Hide/Disable distinctions, read-only cell attributes and deferred row changes.",
+    "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/grid-editing.lisp --eval \"(wxlambda-grid-editing:start)\""
   }
 }

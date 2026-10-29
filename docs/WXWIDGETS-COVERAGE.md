@@ -20,7 +20,7 @@ the coverage target, regenerate and review the inventory delta explicitly.
 
 The authoritative inventory is upstream's
 [`v3.2.12/interface/wx`](https://github.com/wxWidgets/wxWidgets/tree/v3.2.12/interface/wx),
-not just the `core`, `base` and `adv` components currently linked by this bridge.
+not just the linked `core`, `base`, `adv`, `webview`, `stc` and `aui` components.
 Extracted declarations retain the upstream [wxWindows Library Licence](coverage/UPSTREAM-LICENCE.txt)
 and its [GNU Library GPL terms](coverage/UPSTREAM-LGPL.txt).
 The checked-in [manifest](coverage/manifest.json) records every header's SHA-256,
@@ -299,7 +299,7 @@ may fit better than literal native containers.
 
 [Complete C5 source inventory](coverage/phase-c5.md). The [retained drawing canvas](DRAWING-CANVAS.md) provides bounded geometry, text/font, RGB colour/bitmap and PNG output adapters for the monitoring workflow. Raw resource/DC ownership, other backends, metafiles and printing remain on-demand.
 
-[Grid](GRID.md) now adds a fixed editable string-table scope on explicit application demand.
+[Grid](GRID.md) adds a bounded owned editable string table on explicit application demand; [native editing](GRID-EDITING.md) adds selected native events, attributes and dimension changes.
 
 ### C6: Optional libraries, rich content, and integration
 
@@ -591,8 +591,8 @@ and LC_VIRTUAL text-hook adapters, columns/cell/count/selection/cache/activation
 metadata, checked native tree interactions and simple decorations. Native classes
 remain partial; no DataView parity or editor/file model is implied. Virtual hooks
 are pure synchronous queries with copied replies and audited bounded container
-ancestry. Next selected dependencies are public image/bitmap/canvas resources and
-audited grid editing/dynamic shape. Native pending APIs remain factual backlog.
+ancestry. The subsequent image/bitmap/canvas and audited grid editing/dynamic shape slices
+are delivered below. Native pending APIs remain factual on-demand backlog.
 
 ## Public image resources and native display geometry
 
@@ -602,4 +602,14 @@ displays and read-only native display/window coordinate/scale queries. Retained
 canvas scenes support copied RGBA composition. Bitmap backing/logical/DIP size and
 scale remain distinct; no raw buffer/adoption, arbitrary image format, display
 mode switching or capture coverage is implied. These native classes remain partial.
-The next selected dependency is audited grid editing/validation/dynamic shape.
+The selected grid dependency is implemented by [native grid editing](GRID-EDITING.md): scoped native validation/selection events, explicit editor methods, cell attributes and dynamic owned-string-table dimensions. Custom models/editors remain unbound.
+
+## Native grid editing and dynamic dimensions
+
+ABI61 [grid editing](GRID-EDITING.md) completes the selected bounded grid slice.
+Native CHANGING/CHANGED proposed/old text differs from copied current-cell
+values. Save, Hide, Disable and active-editor Reset retain native behavior;
+range/hidden veto is observational and Hide can later commit. Owned string-table
+axes can become empty and be restored within0..256/16384cells. Native inventory
+classes stay partial; custom models, renderers and editor ownership remain
+on-demand backlog. Independent review and verification are recorded in the handoff.

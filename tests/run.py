@@ -28,6 +28,7 @@ def scenarios():
     yield "images", "images.lisp", {}
     yield "aui-notebook", "aui-notebook.lisp", {}
     yield "grid", "grid.lisp", {}
+    yield "grid-extra", "grid-extra.lisp", {}
     yield "webview", "webview.lisp", {}
     yield "activity-indicator", "activity-indicator.lisp", {}
     yield "drawing-canvas", "drawing-canvas.lisp", {}

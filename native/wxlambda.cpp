@@ -724,6 +724,7 @@ bool input_origin_contains(wxWindow* object, const wxObject* origin) {
 #include "input-events.inc"
 #include "aui-events.inc"
 #include "views-events.inc"
+#include "grid-events.inc"
 struct InputCallbackOperation {
     size_t previous=input_operations.size();
     bool allow=true,unknown=false;
@@ -734,8 +735,9 @@ struct InputCallbackOperation {
     }
     explicit InputCallbackOperation(wxEvent& event) {
         const bool raw=input_kind_for_type(event.GetEventType())!=0 || thread_payload_readonly(event.GetEventType());
+        if (grid_kind_for_type(event.GetEventType()) && !grid_public_event(event)) { allow=false; return; }
         if (aui_kind_for_type(event.GetEventType()) && !aui_public_event(event)) { allow=false; return; }
-        if (!raw && !views_kind_for_type(event.GetEventType()) && !stc_kind_for_type(event.GetEventType()) && !aui_kind_for_type(event.GetEventType()) && !web_event_type(event.GetEventType()) && event.GetEventType()!=wxEVT_BUTTON && event.GetEventType()!=wxEVT_SEARCH && event.GetEventType()!=wxEVT_SEARCH_CANCEL && event.GetEventType()!=wxEVT_TIME_CHANGED && event.GetEventType()!=wxEVT_DATE_CHANGED && event.GetEventType()!=wxEVT_COMBOBOX && event.GetEventType()!=wxEVT_TOGGLEBUTTON && event.GetEventType()!=wxEVT_RADIOBOX && event.GetEventType()!=wxEVT_SLIDER && event.GetEventType()!=wxEVT_SPINCTRL && event.GetEventType()!=wxEVT_TEXT) return;
+        if (!raw && !grid_kind_for_type(event.GetEventType()) && !views_kind_for_type(event.GetEventType()) && !stc_kind_for_type(event.GetEventType()) && !aui_kind_for_type(event.GetEventType()) && !web_event_type(event.GetEventType()) && event.GetEventType()!=wxEVT_BUTTON && event.GetEventType()!=wxEVT_SEARCH && event.GetEventType()!=wxEVT_SEARCH_CANCEL && event.GetEventType()!=wxEVT_TIME_CHANGED && event.GetEventType()!=wxEVT_DATE_CHANGED && event.GetEventType()!=wxEVT_COMBOBOX && event.GetEventType()!=wxEVT_TOGGLEBUTTON && event.GetEventType()!=wxEVT_RADIOBOX && event.GetEventType()!=wxEVT_SLIDER && event.GetEventType()!=wxEVT_SPINCTRL && event.GetEventType()!=wxEVT_TEXT) return;
         if (input_creation_depth) { allow=false; return; }
         // DESTROY can be consumed/disabled. Weak lifetimes still invalidate both maps.
         for (auto state=managed_window_states.begin();state!=managed_window_states.end();) {
@@ -868,6 +870,7 @@ void emit_event(wxl_handle id, const wxl_event& event) {
     }
 }
 wxEventTypeTag<wxEvent> native_event_type(int kind) {
+    if (grid_event_kind(kind)) return wxEventTypeTag<wxEvent>(grid_event_type(kind));
     if (views_event_kind(kind)) return wxEventTypeTag<wxEvent>(views_event_type(kind));
     if (thread_event_kind(kind)) return wxEventTypeTag<wxEvent>(wxEVT_THREAD);
     if (stc_event_kind(kind)) return wxEventTypeTag<wxEvent>(stc_event_type(kind));
@@ -909,6 +912,7 @@ wxEventTypeTag<wxEvent> native_event_type(int kind) {
     }
 }
 int native_event_family(int kind) {
+    if (grid_event_kind(kind)) return WXL_FAMILY_NOTIFY;
     if (views_event_kind(kind)) return WXL_FAMILY_NOTIFY;
     if (thread_event_kind(kind)) return WXL_FAMILY_BASE;
     if (stc_event_kind(kind)) return WXL_FAMILY_COMMAND;
@@ -936,7 +940,7 @@ bool event_vetoed(wxEvent& event) {
 std::unique_ptr<wxEvent> synthetic_event(wxEvtHandler* receiver, int kind, int event_id,
                                        const char* text, size_t length, int value,
                                        int can_veto, int vetoed, int logging_off) {
-    require(!views_event_kind(kind) && !thread_event_kind(kind) && !stc_event_kind(kind) && !input_event_kind(kind) && !aui_event_kind(kind) && !web_event_kind(kind) && kind != WXL_EVENT_SEARCH && kind != WXL_EVENT_SEARCH_CANCEL && kind != WXL_EVENT_TIME_CHANGE && kind != WXL_EVENT_DATE_CHANGE && kind != WXL_EVENT_COMBO_SELECTION && kind != WXL_EVENT_TOGGLE_BUTTON_CHANGE && kind != WXL_EVENT_RADIO_SELECTION && kind != WXL_EVENT_SLIDER_CHANGE && kind != WXL_EVENT_SPIN_CHANGE && kind != WXL_EVENT_NOTEBOOK_CHANGING && kind != WXL_EVENT_NOTEBOOK_CHANGED && kind != WXL_EVENT_TREE_CHANGING && kind != WXL_EVENT_TREE_CHANGED && kind != WXL_EVENT_SPLITTER_CHANGING && kind != WXL_EVENT_SPLITTER_CHANGED,
+    require(!grid_event_kind(kind) && !views_event_kind(kind) && !thread_event_kind(kind) && !stc_event_kind(kind) && !input_event_kind(kind) && !aui_event_kind(kind) && !web_event_kind(kind) && kind != WXL_EVENT_SEARCH && kind != WXL_EVENT_SEARCH_CANCEL && kind != WXL_EVENT_TIME_CHANGE && kind != WXL_EVENT_DATE_CHANGE && kind != WXL_EVENT_COMBO_SELECTION && kind != WXL_EVENT_TOGGLE_BUTTON_CHANGE && kind != WXL_EVENT_RADIO_SELECTION && kind != WXL_EVENT_SLIDER_CHANGE && kind != WXL_EVENT_SPIN_CHANGE && kind != WXL_EVENT_NOTEBOOK_CHANGING && kind != WXL_EVENT_NOTEBOOK_CHANGED && kind != WXL_EVENT_TREE_CHANGING && kind != WXL_EVENT_TREE_CHANGED && kind != WXL_EVENT_SPLITTER_CHANGING && kind != WXL_EVENT_SPLITTER_CHANGED,
             "Derived navigation events require native interaction; synthetic construction is unsupported");
     const auto type = native_event_type(kind);
     const int family = native_event_family(kind);
@@ -974,6 +978,7 @@ std::unique_ptr<wxEvent> synthetic_event(wxEvtHandler* receiver, int kind, int e
     return event;
 }
 int kind_of(wxEvent& event) {
+    if (grid_kind_for_type(event.GetEventType())) return grid_kind_for_type(event.GetEventType());
     if (views_kind_for_type(event.GetEventType())) return views_kind_for_type(event.GetEventType());
     if (thread_payload_readonly(event.GetEventType())) return 120;
     if (const auto kind=stc_kind_for_type(event.GetEventType())) return kind;
@@ -995,7 +1000,7 @@ std::unique_ptr<wxEvent> detached_clone(wxEvent& event) {
     require(typeid(event) == typeid(wxCommandEvent) || typeid(event) == typeid(wxNotifyEvent) ||
             typeid(event) == typeid(wxCloseEvent) || typeid(event) == typeid(wxIdleEvent), "Cloning this native event class is not supported");
     const auto kind = kind_of(event);
-    require(!views_event_kind(kind) && !thread_event_kind(kind) && !stc_event_kind(kind) && !input_event_kind(kind) && !aui_event_kind(kind) && !web_event_kind(kind) && kind != WXL_EVENT_SEARCH && kind != WXL_EVENT_SEARCH_CANCEL && kind != WXL_EVENT_TIME_CHANGE && kind != WXL_EVENT_DATE_CHANGE && kind != WXL_EVENT_COMBO_SELECTION && kind != WXL_EVENT_TOGGLE_BUTTON_CHANGE && kind != WXL_EVENT_RADIO_SELECTION && kind != WXL_EVENT_SLIDER_CHANGE && kind != WXL_EVENT_SPIN_CHANGE, "Bounded input control events cannot be detached/cloned");
+    require(!grid_event_kind(kind) && !views_event_kind(kind) && !thread_event_kind(kind) && !stc_event_kind(kind) && !input_event_kind(kind) && !aui_event_kind(kind) && !web_event_kind(kind) && kind != WXL_EVENT_SEARCH && kind != WXL_EVENT_SEARCH_CANCEL && kind != WXL_EVENT_TIME_CHANGE && kind != WXL_EVENT_DATE_CHANGE && kind != WXL_EVENT_COMBO_SELECTION && kind != WXL_EVENT_TOGGLE_BUTTON_CHANGE && kind != WXL_EVENT_RADIO_SELECTION && kind != WXL_EVENT_SLIDER_CHANGE && kind != WXL_EVENT_SPIN_CHANGE, "Bounded input control events cannot be detached/cloned");
     require(event.GetEventUserData() == nullptr, "Cannot clone borrowed event userData");
     if (auto* command = dynamic_cast<wxCommandEvent*>(&event))
         require(!command->GetClientData() && !command->GetClientObject(), "Cannot clone borrowed command client data");
@@ -1041,7 +1046,7 @@ int64_t read_event_field(wxEvent& event, int field) {
     }
 }
 void write_event_field(wxEvent& event, int field, int64_t value) {
-    require(!views_payload_readonly(event.GetEventType()) && !thread_payload_readonly(event.GetEventType()) && !stc_payload_readonly(event.GetEventType()) && !input_payload_readonly(event.GetEventType()) && !aui_payload_readonly(event.GetEventType()) && !web_event_type(event.GetEventType()), "Web event payload metadata is read-only");
+    require(!grid_payload_readonly(event.GetEventType()) && !views_payload_readonly(event.GetEventType()) && !thread_payload_readonly(event.GetEventType()) && !stc_payload_readonly(event.GetEventType()) && !input_payload_readonly(event.GetEventType()) && !aui_payload_readonly(event.GetEventType()) && !web_event_type(event.GetEventType()), "Web event payload metadata is read-only");
     auto* close = dynamic_cast<wxCloseEvent*>(&event);
     auto* notify = dynamic_cast<wxNotifyEvent*>(&event);
     auto* command = dynamic_cast<wxCommandEvent*>(&event);
@@ -1133,7 +1138,7 @@ struct Binding {
             for (const auto& item : registered_events)
                 if (item.second.type == event.GetEventType()) { snapshot_kind = item.first; break; }
             const int family = native_event_family(snapshot_kind);
-            const bool carries_text = thread_event_kind(snapshot_kind) || stc_event_kind(snapshot_kind) || web_event_kind(snapshot_kind) || snapshot_kind == WXL_EVENT_SEARCH || snapshot_kind == WXL_EVENT_SEARCH_CANCEL || snapshot_kind == WXL_EVENT_COMBO_SELECTION || snapshot_kind == WXL_EVENT_TOGGLE_BUTTON_CHANGE || snapshot_kind == WXL_EVENT_RADIO_SELECTION || snapshot_kind == WXL_EVENT_TEXT_CHANGE || snapshot_kind == WXL_EVENT_LISTBOX_SELECTION || snapshot_kind == WXL_EVENT_LISTBOX_DOUBLE_CLICK || snapshot_kind >= first_registered_event_kind;
+            const bool carries_text = grid_event_kind(snapshot_kind) || thread_event_kind(snapshot_kind) || stc_event_kind(snapshot_kind) || web_event_kind(snapshot_kind) || snapshot_kind == WXL_EVENT_SEARCH || snapshot_kind == WXL_EVENT_SEARCH_CANCEL || snapshot_kind == WXL_EVENT_COMBO_SELECTION || snapshot_kind == WXL_EVENT_TOGGLE_BUTTON_CHANGE || snapshot_kind == WXL_EVENT_RADIO_SELECTION || snapshot_kind == WXL_EVENT_TEXT_CHANGE || snapshot_kind == WXL_EVENT_LISTBOX_SELECTION || snapshot_kind == WXL_EVENT_LISTBOX_DOUBLE_CLICK || snapshot_kind >= first_registered_event_kind;
             const auto text = thread_payload_readonly(event.GetEventType()) ? thread_event_text(event) : command ? command->GetString() : wxString();
             const auto bytes = text.ToUTF8();
             wxl_event snapshot{snapshot_kind, carries_text ? (bytes.data() ? bytes.data() : "") : nullptr,
@@ -1150,7 +1155,7 @@ struct Binding {
                                      event_tree_token(event), event_sash_value(event)};
             snapshot.date_code = event_calendar_code(event);
             snapshot.time_code = event_clock_code(event);
-            fill_stc_detail(event,snapshot); fill_input_detail(event,snapshot); fill_aui_detail(event,snapshot); fill_views_detail(event,snapshot);
+            fill_stc_detail(event,snapshot); fill_input_detail(event,snapshot); fill_aui_detail(event,snapshot); fill_views_detail(event,snapshot); fill_grid_detail(event,snapshot);
             if (with_context) {
                 event.Skip(false);
                 EventScope scope(event, snapshot.user_data);
@@ -1495,7 +1500,7 @@ bool process_deferred_ui_action() {
 
 }
 extern "C" {
-int wxl_abi_version() { return 60; }
+int wxl_abi_version() { return 61; }
 const char* wxl_last_error() { return error.c_str(); }
 int wxl_clipboard_text_available() {
     return boolean_result([&] {
@@ -2355,7 +2360,7 @@ int wxl_context_id(uint64_t token, int* value) {
 }
 int wxl_context_set_id(uint64_t token, int value) {
     return status([&] { auto& event=current_event(token);
-        require(!views_payload_readonly(event.GetEventType()) && !aui_payload_readonly(event.GetEventType()) && !stc_payload_readonly(event.GetEventType()) && !input_payload_readonly(event.GetEventType()), "Native input/styled/AUI event IDs are read-only"); event.SetId(value); });
+        require(!grid_payload_readonly(event.GetEventType()) && !views_payload_readonly(event.GetEventType()) && !aui_payload_readonly(event.GetEventType()) && !stc_payload_readonly(event.GetEventType()) && !input_payload_readonly(event.GetEventType()), "Native input/styled/AUI event IDs are read-only"); event.SetId(value); });
 }
 int wxl_context_timestamp(uint64_t token, int64_t* value) {
     return status([&] {
@@ -2366,7 +2371,7 @@ int wxl_context_timestamp(uint64_t token, int64_t* value) {
 int wxl_context_set_timestamp(uint64_t token, int64_t value) {
     return status([&] {
         auto& event = current_event(token);
-        require(!views_payload_readonly(event.GetEventType()) && !aui_payload_readonly(event.GetEventType()) && !stc_payload_readonly(event.GetEventType()) && !input_payload_readonly(event.GetEventType()), "Native input/styled/AUI event timestamps are read-only");
+        require(!grid_payload_readonly(event.GetEventType()) && !views_payload_readonly(event.GetEventType()) && !aui_payload_readonly(event.GetEventType()) && !stc_payload_readonly(event.GetEventType()) && !input_payload_readonly(event.GetEventType()), "Native input/styled/AUI event timestamps are read-only");
         require(value >= std::numeric_limits<long>::min() && value <= std::numeric_limits<long>::max(),
                 "Timestamp is outside the native long range");
         event.SetTimestamp(static_cast<long>(value));
@@ -2554,7 +2559,7 @@ int wxl_set_event_text(uint64_t source, int contextual, const char* text, size_t
             require(!window || !window->WXGetTextEntry(),
                     "Text-entry-origin text-change payloads are lazy and cannot be mutated");
         }
-        require(!views_payload_readonly(event.GetEventType()) && !thread_payload_readonly(event.GetEventType()) && !stc_payload_readonly(event.GetEventType()) && !input_payload_readonly(event.GetEventType()) && !aui_payload_readonly(event.GetEventType()) && !web_event_type(event.GetEventType()), "Web event text is read-only");
+        require(!grid_payload_readonly(event.GetEventType()) && !views_payload_readonly(event.GetEventType()) && !thread_payload_readonly(event.GetEventType()) && !stc_payload_readonly(event.GetEventType()) && !input_payload_readonly(event.GetEventType()) && !aui_payload_readonly(event.GetEventType()) && !web_event_type(event.GetEventType()), "Web event text is read-only");
         require(text || length == 0, "Null event text");
         command->SetString(wxString::FromUTF8(text ? text : "", length));
     });
@@ -3755,6 +3760,7 @@ extern "C" {
 
 extern "C" {
 #include "grid.inc"
+#include "grid-extra.inc"
 }
 #include "webview.inc"
 

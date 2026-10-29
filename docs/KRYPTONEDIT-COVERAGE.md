@@ -244,7 +244,7 @@ Pinned references: [AUI notebook interface](https://github.com/wxWidgets/wxWidge
 [images](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/image.h),
 [filesystem watcher](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/fswatcher.h).
 
-## Current delivery: ABI57–ABI60 selected native bindings
+## Current delivery: ABI57–ABI61 selected native bindings
 
 Implemented: native-backed styled text with UTF-8 byte ranges, modification
 metadata, multiple/rectangular selection, undo/save points, application styling,
@@ -264,10 +264,11 @@ code mixes local/global indices across groups. Private tab-ID allocation is
 bounded to501 groups per book lifetime. The current guides supersede baseline
 recommendations above. No exhaustive native parity is implied.
 
-Both-Lisp87-scenario GUI suites, native fixtures and isolated package checks pass
-on local macOS wxWidgets3.2.12. Physical keyboard/IME/drag/accessibility behavior
-and other ports remain unverified. The primary KryptonEdit goal is **not yet
-complete**: audited grid editing/events/dynamic shape remain selected work.
+Final91-scenario GUI suites plus preflight pass on both SBCL and CCL, alongside
+native fixtures, isolated package checks and the661-entry docset. Evidence is
+local macOS wxWidgets3.2.12; physical keyboard/IME/drag/accessibility and other
+ports remain unverified. These are binding and automated acceptance results,
+not a claim of every native argument combination or physical input fidelity.
 
 ABI59 adds native report LIST-CONTROL with stored rows or a copied synchronous
 OnGetItemText provider, selection/activation/context/cache notifications, and tree
@@ -294,6 +295,19 @@ callbacks stay on the GUI thread. Focused both-Lisp worker tests and native race
 fixtures pass. See [thread events](THREAD-EVENTS.md) for exact limits and evidence
 in the implementation handoff; this is not a worker scheduler or editor job API.
 
+ABI61 completes the selected GRID depth: native cell/selection/range/editor/click
+events with copied proposed/old/current values, scoped validation veto, per-cell
+read-only/color attributes and dynamic native string-table dimensions (axes0..256
+after deletion, at most16384 cells). Save, Hide, Disable and current-editor Reset
+retain native semantics; Hide can cause a deferred commit and Reset is not a
+transaction rollback. See [grid editing](GRID-EDITING.md) and
+[the pinned editor audit](GRID-EDITOR-AUDIT.md). Custom models/editors remain unbound.
+
+**The primary selected binding goal is complete within this documented scope.**
+KryptonEdit application integration is the next step; no additional broad binding
+batch is required. Add further native capabilities only for a concrete application
+need. The survey-only candidates and verification limits below remain explicit.
+
 ## Docking and lightweight HTML survey
 
 `wxAuiManager` remains unbound. Pinned3.2.12 provides AddPane/InsertPane/DetachPane,
@@ -316,9 +330,22 @@ The installed HTML component is available but not currently linked by this bridg
 Interactive WebView is already implemented within the audited macOS3.2.12
 WKWebView gate. LOADED/error/script-message and copied asynchronous
 script results do not supply complete navigation policy. NAVIGATING cancellation,
-NAVIGATED/title/new-window events, redirects/history and unsupported platforms need separate
-source/lifetime audits; native LOADED is not application readiness. Existing
+NAVIGATED/title/new-window events, redirect/navigation cancellation and unsupported
+platforms need separate source/lifetime audits. Basic CanGoBack/Forward and
+GoBack/Forward are already bound; richer history metadata/policy remain future
+scope; native LOADED is not application readiness. Existing
 platform constraints remain in [WebView](WEB-VIEW.md).
 
 Pinned references: [AUI manager](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/aui/framemanager.h),
 [HTML window](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/html/htmlwin.h).
+
+## Audited grid editing and owned table changes
+
+ABI61 adds [native grid editing](GRID-EDITING.md): selected native notify events,
+scoped validation, cursor/block selection requests, per-cell read-only/colour
+attributes and bounded append/insert/delete of owned string-table axes. Native
+Save/Hide/Disable/Reset semantics remain distinct; no invented cancellation or
+transaction guarantee, custom model/editor ownership or full native parity is
+claimed. Empty axes are supported after dimension edits. This closes the selected
+bounded grid binding dependency; application integration and unverified physical
+interaction/IME/accessibility/other-port behavior remain separate.

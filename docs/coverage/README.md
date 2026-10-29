@@ -21,15 +21,15 @@ and verify platforms when selected features or completeness claims require it.
 | [C1: Foundation, values, application, events, and base utilities](phase-c1.md) | 119 | 5292 | 7 | 144 | 5141 | 26 |
 | [C2: Windows, layout, basic controls, and input](phase-c2.md) | 82 | 2862 | 28 | 234 | 2600 | 0 |
 | [C3: Dialogs, navigation, menus, and application services](phase-c3.md) | 57 | 1875 | 0 | 126 | 1749 | 0 |
-| [C4: Models, complex controls, and document frameworks](phase-c4.md) | 20 | 2328 | 0 | 80 | 2248 | 4 |
+| [C4: Models, complex controls, and document frameworks](phase-c4.md) | 20 | 2328 | 0 | 118 | 2210 | 4 |
 | [C5: Drawing, images, graphics, and printing](phase-c5.md) | 52 | 2245 | 0 | 47 | 2198 | 0 |
 | [C6: Optional libraries, rich content, and integration](phase-c6.md) | 57 | 8912 | 0 | 198 | 8714 | 380 |
 | [C7: Platform extensions and remaining portability APIs](phase-c7.md) | 11 | 279 | 0 | 0 | 279 | 3 |
-| Total | 398 | 23793 | 35 | 829 | 22929 | 413 |
+| Total | 398 | 23793 | 35 | 867 | 22891 | 413 |
 
 ## Classes and widgets
 
-1016 class/struct definitions: 0 complete; 89 partial; 927 pending.
+1016 class/struct definitions: 0 complete; 91 partial; 925 pending.
 
 See the [complete class/widget index](classes.md) for partial scopes and missing
 types. An implemented constructor does not complete a class or its inherited API.
@@ -321,7 +321,7 @@ unreviewed inherited/platform behavior.
 | [wx/dataview.h](phase-c4.md#wxdataviewh) | 0 | 0 | 488 | 0 |
 | [wx/docmdi.h](phase-c4.md#wxdocmdih) | 0 | 0 | 12 | 0 |
 | [wx/docview.h](phase-c4.md#wxdocviewh) | 0 | 0 | 195 | 0 |
-| [wx/grid.h](phase-c4.md#wxgridh) | 0 | 15 | 741 | 3 |
+| [wx/grid.h](phase-c4.md#wxgridh) | 0 | 53 | 703 | 3 |
 | [wx/headercol.h](phase-c4.md#wxheadercolh) | 0 | 0 | 57 | 0 |
 | [wx/headerctrl.h](phase-c4.md#wxheaderctrlh) | 0 | 0 | 76 | 0 |
 | [wx/imaglist.h](phase-c4.md#wximaglisth) | 0 | 0 | 24 | 0 |

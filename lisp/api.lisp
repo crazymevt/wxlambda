@@ -191,6 +191,7 @@
                                          (not (zerop can-veto)) (not (zerop vetoed)) family integer (not (zerop logging-off)) timestamp (not (zerop command)) origin-id category extra-long (not (zerop selection-action)) user-data (not (zerop more-requested)) (canonical-tree-item tree-item) (when (member kind '(16 17)) sash-position) date-code time-code
                                          (let ((pointer (cffi:foreign-slot-pointer payload '(:struct native-event) 'detail)))
                                            (map-into (make-array 24) (let ((i -1)) (lambda () (cffi:mem-aref pointer :int64 (incf i)))))))))
+                (capture-grid-event-value event)
                 (if (handler-with-context handler)
                     (funcall (handler-function handler) event (%make-event-context context))
                     (funcall (handler-function handler) event))))))))

@@ -1,4 +1,4 @@
-# Fixed-shape editable grids
+# Editable native string grids
 
 The native-backed `grid` WINDOW subtype exposes a useful bounded `wxGrid` string
 table. It supports native mouse/keyboard cell selection and editing, copied cell
@@ -20,8 +20,9 @@ attribute ownership API.
 ```
 
 `:parent` requires a live WINDOW. Defaults are10 rows,5 columns and editable T.
-Each dimension is1..256 and the total cannot exceed16384 cells. Shape is fixed;
-there are no row/column insertions/deletions or custom table adoption. Cell indices
+Constructor dimensions are1..256 and the total cannot exceed16384 cells.
+Bounded native row/column insertion/deletion can produce empty axes; custom table
+adoption remains unbound. See [native editing and dimensions](GRID-EDITING.md). Cell indices
 are zero-based and checked against the actual shape. Labels initially use native
 defaults; applications can replace them with strings, including empty strings.
 Programmatic cell/label text is NUL-free and at most65536 UTF-8 bytes per value.
@@ -42,13 +43,14 @@ avoids implicitly committing an unfinished edit or hiding/recreating its editor.
 Finish or cancel the edit with the native keyboard/mouse interaction first.
 `grid-editing-p` reports editor enablement, not focus or unsaved-change state.
 Readers remain callback-safe and report committed table values; an unfinished
-editor buffer can differ. There is no explicit editor commit/cancel command.
+editor buffer can differ. Native Save/Hide/Disable and active-editor Reset are
+exposed with distinct semantics; none is an invented transaction/cancel API.
 
 The wrapper uses the native-owned default `wxGridStringTable`; native editors,
-renderers, selection state and composite child windows remain private. There are
-no public grid event types or immutable grid event snapshots, selection/cursor
-properties, sorting, validation/veto hooks, custom callbacks or spreadsheet
-clipboard operations. Generic child TEXT/BUTTON events retain their existing
+renderers and composite child windows remain private. Selected immutable native
+grid events, scoped native validation/veto, cursor/selection requests and bounded
+dimension changes are documented in [GRID-EDITING](GRID-EDITING.md). Sorting,
+custom native callbacks and spreadsheet clipboard operations remain unbound. Generic child TEXT/BUTTON events retain their existing
 event scope and are not a grid cell-change API. Inherited window operations,
 including layout/geometry/visibility, are available under their normal contracts;
 managed handler stacks remain unavailable for this native scrolled composite.

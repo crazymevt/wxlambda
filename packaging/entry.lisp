@@ -116,6 +116,38 @@
       (wxlambda:destroy-window frame)
       (wxlambda:destroy-bitmap bitmap) (wxlambda:destroy-image image))))
 
+(defun check-grid-editing ()
+  (let* ((frame (wxlambda:make-frame))
+         (grid (wxlambda:make-grid frame :rows 2 :columns 2))
+         (selected nil))
+    (unwind-protect
+         (progn
+           (setf (wxlambda:grid-cell-read-only-p grid 0 1) t
+                 (wxlambda:grid-cell-background grid 0 0) #xe0f0ff
+                 (wxlambda:grid-cell-foreground grid 0 0) #x123456)
+           (assert (wxlambda:grid-cell-read-only-p grid 0 1))
+           (assert (= #xe0f0ff (wxlambda:grid-cell-background grid 0 0)))
+           (wxlambda:append-grid-rows grid)
+           (wxlambda:insert-grid-columns grid 1)
+           (assert (= 3 (wxlambda:grid-rows grid)))
+           (wxlambda:delete-grid-rows grid 0 3)
+           (assert (null (wxlambda:grid-cursor grid)))
+           (wxlambda:append-grid-rows grid 2)
+           (wxlambda:bind-event grid :grid-select-cell
+             (lambda (event)
+               (setf selected (list (wxlambda:event-grid-row event) (wxlambda:event-grid-column event)))))
+           (setf (wxlambda:grid-cursor grid) '(1 1))
+           (assert (equal '(1 1) selected))
+           (setf (wxlambda:grid-cell-text grid 1 1) "Packaged edit λ")
+           (wxlambda:show-window frame) (wxlambda:process-events)
+           (wxlambda:enable-grid-cell-edit-control grid)
+           (assert (wxlambda:grid-editing-p grid))
+           (wxlambda:reset-grid-cell-editor grid)
+           (wxlambda:disable-grid-cell-edit-control grid)
+           (assert (not (wxlambda:grid-editing-p grid)))
+           (assert (string= "Packaged edit λ" (wxlambda:grid-cell-text grid 1 1))))
+      (wxlambda:destroy-window frame))))
+
 (defun self-test ()
   "Exercise real GUI events, Unicode, recreation, and cleanup in the saved image."
   (let ((calls 0))
@@ -131,6 +163,7 @@
                  (wxlambda-form:set-submit-action #'submitted)
                  (wxlambda:queue-click wxlambda-form:*submit*))))
       (wxlambda:with-application ()
+        (check-grid-editing)
         (check-image-resources)
         (check-report-views)
         (check-thread-delivery)

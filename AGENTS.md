@@ -342,8 +342,8 @@ live children, deletion destroys. Preserve private group/global index separation
 cache pruning and readonly event ID/timestamp. Splitter Initialize/Unsplit/Replace/
 Resplit retain explicit pane ownership. See docs/AUI-NOTEBOOK.md and docs/SPLITTER.md.
 The selected KryptonEdit scope is in docs/KRYPTONEDIT-COVERAGE.md. ABI58 worker,
-ABI59 views/tree and ABI60 images complete those bounded slices; grid depth is
-the remaining selected dependency before application integration.
+ABI59 views/tree, ABI60 images and ABI61 grid editing complete the selected
+bounded binding slices before application integration.
 
 ABI58 QUEUE-THREAD-EVENT alone is worker-safe. Preserve endpoint ingress mutex,
 monotonic identities, early Destroy retirement/refusal restoration, shutdown-before-
@@ -367,3 +367,12 @@ resource budgets and bitmap pixel/logical/DIP/scale distinctions. BITMAP-VALUE
 reads create owned managed copies. RGBA canvas kind6 must receive the same native
 extent/aggregate-byte guards as RGB before allocation. No raw resource adoption,
 finalizers, handler registry mutation or worker image calls. See docs/IMAGES-DISPLAYS.md.
+
+ABI61 GRID extends only its owned wxGridStringTable. Preserve result axes0..256/
+16384cells, active-editor write guards, native GetCellEditor RAII Reset baseline
+semantics and distinct Save/Hide/Disable behavior (Hide can later commit). Native
+CHANGING proposed/CHANGED old GetString differs from copied current table value
+in private snapshot details23; capture before user callbacks. Range/hidden veto
+is observational. Protect actual native grid origins/ancestors, immutable metadata
+and current-innermost contexts; no custom model/editor ownership or invented
+transaction/cancel guarantee. See docs/GRID-EDITING.md and GRID-EDITOR-AUDIT.md.
