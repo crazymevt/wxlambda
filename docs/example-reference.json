@@ -270,5 +270,9 @@
   "font-settings.lisp": {
     "description": "Installed fonts, OS GUI/monospace defaults, recursive widget fonts, STC gutter font and tab widths with readback assertions.",
     "command": "sbcl --load ci/setup.lisp --load examples/font-settings.lisp --eval \"(wxlambda-font-settings:start)\""
+  },
+  "folder-tree.lisp": {
+    "description": "Native folder chooser with copied alpha bitmap tree icons, owned readback and CLOS subclass support. Exercise runs without waiting for manual input.",
+    "command": "sbcl --load ci/setup.lisp --load examples/folder-tree.lisp --eval \"(wxlambda-folder-tree:start)\""
   }
 }

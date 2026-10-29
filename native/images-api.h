@@ -36,3 +36,8 @@ WXL_API const char* wxl_font_names(int fixed,size_t* length);
 WXL_API const char* wxl_default_font(int fixed,int* points,int* mono,size_t* length);
 WXL_API const char* wxl_window_font(wxl_handle id,int* points,size_t* length);
 WXL_API int wxl_set_window_font(wxl_handle id,const char* face,size_t length,int points,int recursive);
+
+WXL_API int wxl_tree_icon_count(wxl_handle id);
+WXL_API wxl_handle wxl_tree_icon_get(wxl_handle id,int index);
+WXL_API int wxl_tree_icons(wxl_handle id,const wxl_handle* bitmaps,size_t count);
+WXL_API int wxl_tree_item_icon(wxl_handle id,int write,int* index);

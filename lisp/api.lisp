@@ -60,6 +60,7 @@
 (defclass single-choice-dialog (dialog) ())
 (defclass message-dialog (dialog) ())
 (defclass file-dialog (dialog) ())
+(defclass directory-dialog (dialog) ())
 (defclass button (window)
   ((handler-token :initform nil :accessor handler-token)))
 (defclass text-control (window)
@@ -540,7 +541,7 @@ RETURN-TO-APPLICATION-REPL restart. Setup errors propagate to the caller."
     (error "APPLICATION-HANDLER is borrowed; use CURRENT-APPLICATION-HANDLER"))
   (when (and (typep object 'window)
              (/= 1 (count-if (lambda (kind) (typep object kind))
-                         '(frame toolbar status-bar panel scrolled-panel notebook list-box tree-control splitter-window button text-control label checkbox choice gauge slider spin-control radio-box toggle-button combo-box date-picker time-picker search-control drawing-canvas activity-indicator grid web-view styled-text-control aui-notebook list-control static-bitmap text-entry-dialog single-choice-dialog message-dialog file-dialog))))
+                         '(frame toolbar status-bar panel scrolled-panel notebook list-box tree-control splitter-window button text-control label checkbox choice gauge slider spin-control radio-box toggle-button combo-box date-picker time-picker search-control drawing-canvas activity-indicator grid web-view styled-text-control aui-notebook list-control static-bitmap text-entry-dialog single-choice-dialog message-dialog file-dialog directory-dialog))))
     (error "~A must inherit exactly one concrete wxlambda widget class; WINDOW is abstract"
            (class-name (class-of object))))
   (unless *active*
@@ -2772,3 +2773,13 @@ live checkbox, including when called from inside its handler."
 (defmethod search-hint ((control search-control)) (native-search-field control 1))
 (defgeneric (setf search-hint) (value control))
 (defmethod (setf search-hint) (value (control search-control)) (assign-search-field control 1 value nil))
+
+(defmethod initialize-instance :after ((object directory-dialog) &key parent (title "Open Folder") (path ""))
+  (check-dialog-text title) (check-dialog-text (uiop:native-namestring path))
+  (cffi:with-foreign-string ((caption caption-bytes) title :encoding :utf-8)
+    (cffi:with-foreign-string ((directory directory-bytes) (uiop:native-namestring path) :encoding :utf-8)
+      (adopt-dialog-native object (lambda () (%directory-dialog (dialog-parent-id parent) caption (1- caption-bytes) directory (1- directory-bytes)))))))
+(defun make-directory-dialog (&rest initargs &key (class 'directory-dialog) &allow-other-keys)
+  (apply #'make-widget class 'directory-dialog initargs))
+(defgeneric directory-dialog-path (dialog))
+(defmethod directory-dialog-path ((dialog directory-dialog)) (read-dialog-string dialog #'%directory-dialog-path))

@@ -37,3 +37,8 @@
 (cffi:defcfun ("wxl_default_font" %default-font) :pointer (fixed :int) (points :pointer) (mono :pointer) (length :pointer))
 (cffi:defcfun ("wxl_window_font" %window-font) :pointer (id :uint64) (points :pointer) (length :pointer))
 (cffi:defcfun ("wxl_set_window_font" %set-window-font) :int (id :uint64) (face :pointer) (length :size) (points :int) (recursive :int))
+
+(cffi:defcfun ("wxl_tree_icon_count" %tree-icon-count) :int (id :uint64))
+(cffi:defcfun ("wxl_tree_icon_get" %tree-icon-get) :uint64 (id :uint64) (index :int))
+(cffi:defcfun ("wxl_tree_icons" %tree-icons) :int (id :uint64) (bitmaps :pointer) (count :size))
+(cffi:defcfun ("wxl_tree_item_icon" %tree-item-icon) :int (id :uint64) (write :int) (index :pointer))

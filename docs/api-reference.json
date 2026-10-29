@@ -5102,7 +5102,7 @@
     "name": "make-bitmap",
     "kind": "function",
     "syntax": "(wxlambda:make-bitmap &rest initargs &key class image source)",
-    "arguments": "Exactly one IMAGE or SOURCE; SOURCE is BITMAP, STATIC-BITMAP or BITMAP-TOGGLE-BUTTON. CLASS and subclass initargs.",
+    "arguments": "Exactly one IMAGE or SOURCE; SOURCE is BITMAP, STATIC-BITMAP or BITMAP-TOGGLE-BUTTON. CLASS and subclass initargs. :SOURCE may also be a TREE-CONTROL with :ICON-INDEX0..31 to copy an installed icon.",
     "returns": "A new BITMAP.",
     "description": "Construct a native display bitmap from IMAGE, with validated CLASS and forwarded subclass initargs. SOURCE copies an existing bitmap value or native static display GetBitmap through managed CLOS construction. SOURCE additionally accepts a BITMAP-TOGGLE-BUTTON for an owned copied native bitmap.",
     "scope": "Active GUI/main-thread session and checked native lifetime. Image/bitmap values are session-owned and explicitly disposable; no raw pointers/finalizers. Native reads are callback-safe; writes, file IO, allocation/conversion, disposal and BITMAP-VALUE copying reject callback execution. Copied channels,256 resources/64Mi pixel aggregate,1..4096 pixel axes; PNG24 bytes..64MiB encoded. Native bitmap alpha/DPI conversion can change pixels. Invalid bounds/types/stale handles and native failures signal errors. See docs/IMAGES-DISPLAYS.md.",
@@ -5813,5 +5813,67 @@
       "syntax": "(setf (wxlambda:stc-tab-width window) value)",
       "description": "STYLED-TEXT-CONTROL. SETF VALUE is1..16 columns. Writes must be deferred from callbacks."
     }
+  },
+  {
+    "name": "directory-dialog",
+    "kind": "class",
+    "arguments": "Native-backed DIALOG; :parent, :title (Open Folder), :path (empty or existing directory).",
+    "returns": "A parent-owned directory chooser.",
+    "description": "Uses wxGenericDirDialog with DIR_MUST_EXIST; never changes process working directory. Standard modal OK/Cancel, parent guards and eager native subclass hooks apply. Successful modal return validates existence again. No arbitrary native dialog adoption.",
+    "scope": "Active main-thread GUI session with existing native resource/operation/modal guards. See docs/FOLDER-TREES.md. Windows/Linux rendering remains unverified.",
+    "wxwidgets": "wxDirDialog / wxGenericDirDialog",
+    "construction": {
+      "syntax": "(make-instance 'wxlambda:directory-dialog :parent frame :title \"Open Folder\" :path directory)",
+      "description": "Supports subclass slots/default initargs, eager native properties and normal managed rollback."
+    },
+    "syntax": "wxlambda:directory-dialog"
+  },
+  {
+    "name": "make-directory-dialog",
+    "kind": "function",
+    "arguments": "&REST INITARGS, including :CLASS subclass and :parent/:title/:path.",
+    "returns": "A DIRECTORY-DIALOG instance.",
+    "description": "Thin native-backed CLOS factory; requires an active main-thread GUI session. Invalid inputs/ancestry roll back resources.",
+    "scope": "Active main-thread GUI session with existing native resource/operation/modal guards. See docs/FOLDER-TREES.md. Windows/Linux rendering remains unverified.",
+    "wxwidgets": "wxGenericDirDialog constructor",
+    "syntax": "(wxlambda:make-directory-dialog :parent frame :path directory)"
+  },
+  {
+    "name": "directory-dialog-path",
+    "kind": "generic-function",
+    "arguments": "DIRECTORY-DIALOG.",
+    "returns": "Copied native directory pathname string.",
+    "description": "Read-only selected directory path. Read after :OK; Cancel does not imply a selection change. Invalid/dead handles reject.",
+    "scope": "Active main-thread GUI session with existing native resource/operation/modal guards. See docs/FOLDER-TREES.md. Windows/Linux rendering remains unverified.",
+    "wxwidgets": "wxDirDialog::GetPath",
+    "syntax": "(wxlambda:directory-dialog-path dialog)"
+  },
+  {
+    "name": "tree-icons",
+    "kind": "generic-function",
+    "arguments": "TREE-CONTROL; SETF VALUE is a finite list of0..32 BITMAP instances, each16x16 logical pixels.",
+    "returns": "Reader returns newly owned bitmap copies; SETF returns VALUE.",
+    "description": "SETF stages/copies a native owned image list. Sources can then be disposed. Replacement rejects removal of indices referenced by any normal/selected/expanded item state. Reader copies must be explicitly destroyed. Allocation reads and writes reject callbacks and workers; no raw image-list ownership.",
+    "scope": "Active main-thread GUI session with existing native resource/operation/modal guards. See docs/FOLDER-TREES.md. Windows/Linux rendering remains unverified.",
+    "wxwidgets": "wxTreeCtrl::AssignImageList / GetImageList",
+    "setf": {
+      "syntax": "(setf (wxlambda:tree-icons object) value)",
+      "description": "TREE-CONTROL; SETF VALUE is a finite list of0..32 BITMAP instances, each16x16 logical pixels. Returns supplied VALUE; writes must be deferred from callbacks."
+    },
+    "syntax": "(wxlambda:tree-icons tree)"
+  },
+  {
+    "name": "tree-item-icon",
+    "kind": "generic-function",
+    "arguments": "TREE-ITEM; SETF VALUE is NIL or0..31 within its owning tree icon list.",
+    "returns": "Normal icon index, or NIL.",
+    "description": "SETF sets both normal and selected icons; expanded-state artwork is outside this adapter. Reads are callback-safe; writes defer. Item/parent lifetime and tree operation guards apply.",
+    "scope": "Active main-thread GUI session with existing native resource/operation/modal guards. See docs/FOLDER-TREES.md. Windows/Linux rendering remains unverified.",
+    "wxwidgets": "wxTreeCtrl::GetItemImage / SetItemImage",
+    "setf": {
+      "syntax": "(setf (wxlambda:tree-item-icon object) value)",
+      "description": "TREE-ITEM; SETF VALUE is NIL or0..31 within its owning tree icon list. Returns supplied VALUE; writes must be deferred from callbacks."
+    },
+    "syntax": "(wxlambda:tree-item-icon item)"
   }
 ]

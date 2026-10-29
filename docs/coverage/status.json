@@ -18024,6 +18024,90 @@
         "wxl_stc_get"
       ],
       "scope": "ABI65 copied font settings/enumeration or tab width1..16; no raw resource ownership. See docs/FONT-SETTINGS.md."
+    },
+    {
+      "header": "wx/dirdlg.h",
+      "line": 105,
+      "declaration": "wxDirDialog(wxWindow* parent, const wxString& message = wxDirSelectorPromptStr, const wxString& defaultPath = wxEmptyString, long style = wxDD_DEFAULT_STYLE, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, const wxString& name = wxDirDialogNameStr);",
+      "status": "~",
+      "symbol": "wxDirDialog",
+      "lisp": [
+        "directory-dialog"
+      ],
+      "native": [
+        "wxl_directory_dialog"
+      ],
+      "scope": "Existing-directory generic chooser or copied16px image-list/index adapter; no raw ownership/full class parity. See docs/FOLDER-TREES.md."
+    },
+    {
+      "header": "wx/dirdlg.h",
+      "line": 129,
+      "declaration": "virtual wxString GetPath() const;",
+      "status": "~",
+      "symbol": "GetPath",
+      "lisp": [
+        "directory-dialog-path"
+      ],
+      "native": [
+        "wxl_directory_dialog_path"
+      ],
+      "scope": "Existing-directory generic chooser or copied16px image-list/index adapter; no raw ownership/full class parity. See docs/FOLDER-TREES.md."
+    },
+    {
+      "header": "wx/treectrl.h",
+      "line": 565,
+      "declaration": "virtual int GetItemImage(const wxTreeItemId& item, wxTreeItemIcon which = wxTreeItemIcon_Normal) const;",
+      "status": "~",
+      "symbol": "GetItemImage",
+      "lisp": [
+        "tree-item-icon"
+      ],
+      "native": [
+        "wxl_tree_item_icon"
+      ],
+      "scope": "Existing-directory generic chooser or copied16px image-list/index adapter; no raw ownership/full class parity. See docs/FOLDER-TREES.md."
+    },
+    {
+      "header": "wx/treectrl.h",
+      "line": 929,
+      "declaration": "virtual void SetItemImage(const wxTreeItemId& item, int image, wxTreeItemIcon which = wxTreeItemIcon_Normal);",
+      "status": "~",
+      "symbol": "SetItemImage",
+      "lisp": [
+        "tree-item-icon"
+      ],
+      "native": [
+        "wxl_tree_item_icon"
+      ],
+      "scope": "Existing-directory generic chooser or copied16px image-list/index adapter; no raw ownership/full class parity. See docs/FOLDER-TREES.md."
+    },
+    {
+      "header": "wx/withimages.h",
+      "line": 98,
+      "declaration": "void AssignImageList(wxImageList* imageList);",
+      "status": "~",
+      "symbol": "wxWithImages::AssignImageList",
+      "lisp": [
+        "tree-icons"
+      ],
+      "native": [
+        "wxl_tree_icons"
+      ],
+      "scope": "Tree-only copied bitmap list protocol, fixed16px and at most32 icons; no native image-list handle adoption. See docs/FOLDER-TREES.md."
+    },
+    {
+      "header": "wx/withimages.h",
+      "line": 118,
+      "declaration": "wxImageList* GetImageList() const;",
+      "status": "~",
+      "symbol": "wxWithImages::GetImageList",
+      "lisp": [
+        "tree-icons"
+      ],
+      "native": [
+        "wxl_tree_icon_get"
+      ],
+      "scope": "Tree-only copied bitmap list protocol, fixed16px and at most32 icons; no native image-list handle adoption. See docs/FOLDER-TREES.md."
     }
   ],
   "classes": {

@@ -19,13 +19,13 @@ and verify platforms when selected features or completeness claims require it.
 | Category | Headers | Tasks | Implemented | Partial | Pending | Context |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | [C1: Foundation, values, application, events, and base utilities](phase-c1.md) | 119 | 5292 | 7 | 144 | 5141 | 26 |
-| [C2: Windows, layout, basic controls, and input](phase-c2.md) | 82 | 2862 | 28 | 249 | 2585 | 0 |
-| [C3: Dialogs, navigation, menus, and application services](phase-c3.md) | 57 | 1875 | 0 | 128 | 1747 | 0 |
-| [C4: Models, complex controls, and document frameworks](phase-c4.md) | 20 | 2328 | 0 | 118 | 2210 | 4 |
+| [C2: Windows, layout, basic controls, and input](phase-c2.md) | 82 | 2862 | 28 | 251 | 2583 | 0 |
+| [C3: Dialogs, navigation, menus, and application services](phase-c3.md) | 57 | 1875 | 0 | 130 | 1745 | 0 |
+| [C4: Models, complex controls, and document frameworks](phase-c4.md) | 20 | 2328 | 0 | 120 | 2208 | 4 |
 | [C5: Drawing, images, graphics, and printing](phase-c5.md) | 52 | 2245 | 0 | 48 | 2197 | 0 |
 | [C6: Optional libraries, rich content, and integration](phase-c6.md) | 57 | 8912 | 0 | 206 | 8706 | 380 |
 | [C7: Platform extensions and remaining portability APIs](phase-c7.md) | 11 | 279 | 0 | 0 | 279 | 3 |
-| Total | 398 | 23793 | 35 | 893 | 22865 | 413 |
+| Total | 398 | 23793 | 35 | 899 | 22859 | 413 |
 
 ## Classes and widgets
 
@@ -247,7 +247,7 @@ unreviewed inherited/platform behavior.
 | [wx/window.h](phase-c2.md#wxwindowh) | 14 | 36 | 336 | 0 |
 | [wx/windowid.h](phase-c2.md#wxwindowidh) | 0 | 0 | 4 | 0 |
 | [wx/windowptr.h](phase-c2.md#wxwindowptrh) | 0 | 0 | 8 | 0 |
-| [wx/withimages.h](phase-c2.md#wxwithimagesh) | 0 | 0 | 14 | 0 |
+| [wx/withimages.h](phase-c2.md#wxwithimagesh) | 0 | 2 | 12 | 0 |
 | [wx/wrapsizer.h](phase-c2.md#wxwrapsizerh) | 0 | 0 | 8 | 0 |
 | [wx/wupdlock.h](phase-c2.md#wxwupdlockh) | 0 | 0 | 5 | 0 |
 
@@ -270,7 +270,7 @@ unreviewed inherited/platform behavior.
 | [wx/dataobj.h](phase-c3.md#wxdataobjh) | 0 | 3 | 70 | 0 |
 | [wx/dialog.h](phase-c3.md#wxdialogh) | 0 | 5 | 71 | 0 |
 | [wx/dirctrl.h](phase-c3.md#wxdirctrlh) | 0 | 0 | 48 | 0 |
-| [wx/dirdlg.h](phase-c3.md#wxdirdlgh) | 0 | 0 | 24 | 0 |
+| [wx/dirdlg.h](phase-c3.md#wxdirdlgh) | 0 | 2 | 22 | 0 |
 | [wx/display.h](phase-c3.md#wxdisplayh) | 0 | 7 | 13 | 0 |
 | [wx/dnd.h](phase-c3.md#wxdndh) | 0 | 0 | 38 | 0 |
 | [wx/dragimag.h](phase-c3.md#wxdragimagh) | 0 | 0 | 16 | 0 |
@@ -335,7 +335,7 @@ unreviewed inherited/platform behavior.
 | [wx/persist/window.h](phase-c4.md#wxpersistwindowh) | 0 | 0 | 5 | 1 |
 | [wx/persist.h](phase-c4.md#wxpersisth) | 0 | 0 | 29 | 0 |
 | [wx/treebase.h](phase-c4.md#wxtreebaseh) | 0 | 2 | 42 | 0 |
-| [wx/treectrl.h](phase-c4.md#wxtreectrlh) | 0 | 37 | 139 | 0 |
+| [wx/treectrl.h](phase-c4.md#wxtreectrlh) | 0 | 39 | 137 | 0 |
 | [wx/treelist.h](phase-c4.md#wxtreelisth) | 0 | 0 | 92 | 0 |
 
 ### C5: Drawing, images, graphics, and printing

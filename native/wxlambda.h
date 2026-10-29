@@ -120,6 +120,8 @@ WXL_API int wxl_process_pending_events(void);
 WXL_API int wxl_stop(void);
 WXL_API int wxl_finish(void);
 WXL_API wxl_handle wxl_message_dialog(wxl_handle parent, const char *message, size_t message_length, const char *title, size_t title_length, int buttons, int icon);
+WXL_API wxl_handle wxl_directory_dialog(wxl_handle parent,const char* title,size_t title_length,const char* path,size_t path_length);
+WXL_API const char* wxl_directory_dialog_path(wxl_handle id,size_t* length);
 WXL_API wxl_handle wxl_file_dialog(wxl_handle parent, const char *title, size_t title_length, const char *directory, size_t directory_length, const char *filename, size_t filename_length, const char *wildcard, size_t wildcard_length, int mode, int must_exist, int overwrite_prompt);
 WXL_API const char *wxl_dialog_message(wxl_handle dialog, size_t *length);
 WXL_API int wxl_message_dialog_buttons(wxl_handle dialog);

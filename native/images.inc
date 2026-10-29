@@ -269,3 +269,38 @@ int wxl_set_window_font(wxl_handle id,const char* face,size_t length,int points,
     }
 }); }
 }
+
+extern "C" {
+int wxl_tree_icon_count(wxl_handle id) { int count=-1; status([&] { auto* tree=as<wxTreeCtrl>(id); count=tree->GetImageList() ? tree->GetImageList()->GetImageCount() : 0; }); return count; }
+wxl_handle wxl_tree_icon_get(wxl_handle id,int index) { return create([&] {
+    image_mutation();
+    auto* tree=as<wxTreeCtrl>(id); auto* images=tree->GetImageList();
+    require(images && index>=0 && index<images->GetImageCount(),"Tree icon index out of range");
+    return publish_bitmap(images->GetBitmap(index));
+}); }
+int wxl_tree_icons(wxl_handle id,const wxl_handle* bitmaps,size_t count) { return status([&] {
+    auto* tree=as<wxTreeCtrl>(id); require(callback_depth==0,"Defer tree icon changes until callbacks return");
+    require(count<=32 && (bitmaps || !count),"Tree icons require0..32 bitmaps");
+    TreeOperation operation(tree);
+    for (const auto& entry:tree_nodes) if (entry.second.window==tree)
+        for (int state=0;state<4;++state) require(tree->GetItemImage(entry.second.native,static_cast<wxTreeItemIcon>(state))<static_cast<int>(count),"Replacement removes an icon in use");
+    std::unique_ptr<wxImageList> images;
+    if (count) images=std::make_unique<wxImageList>(16,16,true,static_cast<int>(count));
+    for (size_t i=0;i<count;++i) {
+        const auto& bitmap=bitmap_resource(bitmaps[i]);
+        require(bitmap.GetLogicalSize()==wxSize(16,16),"Tree icons must be16x16 logical pixels");
+        require(images->Add(bitmap)==static_cast<int>(i),"Cannot copy tree icon");
+    }
+    tree->AssignImageList(images.release()); tree->Refresh();
+}); }
+int wxl_tree_item_icon(wxl_handle id,int write,int* index) { return status([&] {
+    require(index && (write==0 || write==1),"Invalid tree icon arguments"); const auto& item=tree_node(id);
+    auto* tree=as<wxTreeCtrl>(item.owner);
+    if (write) {
+        require(callback_depth==0,"Defer item icon changes until callbacks return"); TreeOperation operation(tree);
+        require(*index>=-1 && (*index==-1 || (tree->GetImageList() && *index<tree->GetImageList()->GetImageCount())),"Tree icon index out of range");
+        tree->SetItemImage(item.native,*index,wxTreeItemIcon_Normal); tree->SetItemImage(item.native,*index,wxTreeItemIcon_Selected);
+    }
+    *index=tree->GetItemImage(item.native,wxTreeItemIcon_Normal);
+}); }
+}

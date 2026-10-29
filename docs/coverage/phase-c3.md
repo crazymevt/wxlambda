@@ -17,7 +17,7 @@ class or constructor does not imply full upstream coverage.
 
 ## Current coverage and remaining work
 
-0 implemented; 128 partial; 1747 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
+0 implemented; 130 partial; 1745 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
 
 Counts describe inventory entries, not distinct APIs or percent completion.
 See the [coverage summary](README.md) for phase/header comparisons.
@@ -752,7 +752,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dirdlg.h)
 
-0 implemented; 0 partial; 24 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
+0 implemented; 2 partial; 22 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
 
 - [ ] [L9](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dirdlg.h#L9) `#define wxDD_CHANGE_DIR         0x0100`
 - [ ] [L10](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dirdlg.h#L10) `#define wxDD_DIR_MUST_EXIST     0x0200`
@@ -769,10 +769,10 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [ ] [L51](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dirdlg.h#L51) `documented style: wxDD_MULTIPLE`
 - [ ] [L54](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dirdlg.h#L54) `documented style: wxDD_SHOW_HIDDEN`
 - [ ] [L84](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dirdlg.h#L84) `class wxDirDialog : public wxDialog {`
-- [ ] [L105](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dirdlg.h#L105) `wxDirDialog(wxWindow* parent, const wxString& message = wxDirSelectorPromptStr, const wxString& defaultPath = wxEmptyString, long style = wxDD_DEFAULT_STYLE, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, const wxString& name = wxDirDialogNameStr);`
+- [~] [L105](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dirdlg.h#L105) `wxDirDialog(wxWindow* parent, const wxString& message = wxDirSelectorPromptStr, const wxString& defaultPath = wxEmptyString, long style = wxDD_DEFAULT_STYLE, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, const wxString& name = wxDirDialogNameStr);` — **Partial**: `directory-dialog`; ABI: `wxl_directory_dialog`. Existing-directory generic chooser or copied16px image-list/index adapter; no raw ownership/full class parity. See docs/FOLDER-TREES.md.
 - [ ] [L116](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dirdlg.h#L116) `virtual ~wxDirDialog();`
 - [ ] [L121](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dirdlg.h#L121) `virtual wxString GetMessage() const;`
-- [ ] [L129](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dirdlg.h#L129) `virtual wxString GetPath() const;`
+- [~] [L129](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dirdlg.h#L129) `virtual wxString GetPath() const;` — **Partial**: `directory-dialog-path`; ABI: `wxl_directory_dialog_path`. Existing-directory generic chooser or copied16px image-list/index adapter; no raw ownership/full class parity. See docs/FOLDER-TREES.md.
 - [ ] [L139](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dirdlg.h#L139) `virtual void GetPaths(wxArrayString& paths) const;`
 - [ ] [L144](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dirdlg.h#L144) `virtual void SetMessage(const wxString& message);`
 - [ ] [L149](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dirdlg.h#L149) `virtual void SetPath(const wxString& path);`

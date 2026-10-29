@@ -49,6 +49,9 @@
 #include <wx/choicdlg.h>
 #include <wx/generic/msgdlgg.h>
 #include <wx/generic/filedlgg.h>
+#include <wx/dirdlg.h>
+#include <wx/generic/dirdlgg.h>
+#include <wx/imaglist.h>
 #include <wx/modalhook.h>
 #include <wx/filename.h>
 #include <wx/weakref.h>
@@ -1354,6 +1357,8 @@ protected:
 std::unique_ptr<WorkflowModalHook> workflow_modal_hook;
 void validate_dialog_result(wxDialog* object, int code) {
     require(code >= 0 && code <= 3, "Invalid modal result");
+    if (code==0) if (auto* directory=dynamic_cast<wxGenericDirDialog*>(object))
+        require(wxDirExists(directory->GetPath()),"Selected directory no longer exists");
     if (code == 1) return; // Cancellation always remains available to unwind safely.
     const auto found = dialog_message_buttons.find(object);
     if (found == dialog_message_buttons.end()) { require(code == 0, "This dialog supports only OK or Cancel"); return; }
@@ -1501,7 +1506,7 @@ bool process_deferred_ui_action() {
 
 }
 extern "C" {
-int wxl_abi_version() { return 65; }
+int wxl_abi_version() { return 66; }
 const char* wxl_last_error() { return error.c_str(); }
 int wxl_clipboard_text_available() {
     return boolean_result([&] {
@@ -1721,6 +1726,20 @@ wxl_handle wxl_message_dialog(wxl_handle parent, const char* message, size_t mes
         dialog_message_buttons.emplace(object.get(), buttons);
         const auto id = track(object.get()); object.release(); return id;
     });
+}
+wxl_handle wxl_directory_dialog(wxl_handle parent,const char* title,size_t title_length,const char* path,size_t path_length) {
+    return create([&] {
+        auto* owner=parent ? window(parent) : nullptr;
+        const auto caption=menu_string(title,title_length,false), directory=menu_string(path,path_length,true);
+        require(directory.empty() || wxDirExists(directory),"Directory dialog path must exist");
+        DialogOperationScope operation(owner);
+        auto object=std::make_unique<ManagedWindow<wxGenericDirDialog>>(owner,caption,directory,wxDD_DEFAULT_STYLE|wxDD_DIR_MUST_EXIST);
+        if (object->GetParent()!=owner) require(object->Reparent(owner),"Cannot preserve directory dialog parent");
+        const auto id=track(object.get()); object.release(); return id;
+    });
+}
+const char* wxl_directory_dialog_path(wxl_handle id,size_t* length) {
+    return metadata_string([&] { return as<wxGenericDirDialog>(id)->GetPath(); },length);
 }
 wxl_handle wxl_file_dialog(wxl_handle parent, const char* title, size_t title_length,
                           const char* directory, size_t directory_length, const char* filename, size_t filename_length,

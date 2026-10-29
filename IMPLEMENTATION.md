@@ -3711,3 +3711,22 @@ blocking. Font enumeration/default/style/guard tests pass under SBCL/CCL.
 Native invariant fixture, pinned coverage test and actual SBCL/CCL docset checks
 pass. KryptonEdit settings UI and headless preference tests pass on macOS.
 Windows/Linux execution and physical font rendering remain unverified.
+
+## ABI66 folder chooser and tree icons
+
+Generic existing-directory chooser supports parent-owned CLOS construction,
+shared modal/title guards, copied selected path and unchanged working directory.
+Tree icons copy0..32 managed16px bitmaps into native tree-owned image lists;
+normal/selected item indices are bounded and managed readbacks owned copies.
+Resource-allocating reads and writes reject callbacks. See FOLDER-TREES.md and
+examples/folder-tree.lisp. No filesystem/Git policy enters wxLambda.
+
+ABI66 verification (macOS): native build/invariant fixture pass. Real modal
+folder selection, unchanged working directory, CLOS subclass hooks, transparent
+icon-copy independence, used-index rejection, callback allocation refusal and
+parent lifetime tests pass on SBCL/CCL. KryptonEdit534 GUI checks and781197
+headless checks pass, including nested Git ignores/negation, tracked ignored
+patterns, Unicode paths, lazy expansion, reveal/refresh, failed-switch retry and
+shutdown. Independent review found three issues (copy guard, POSIX case
+containment, abandoned loading rows); all were corrected and verified. Native
+Windows/Linux dialogs/rendering remain unverified.

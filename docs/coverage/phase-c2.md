@@ -17,7 +17,7 @@ class or constructor does not imply full upstream coverage.
 
 ## Current coverage and remaining work
 
-28 implemented; 249 partial; 2585 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
+28 implemented; 251 partial; 2583 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
 
 Counts describe inventory entries, not distinct APIs or percent completion.
 See the [coverage summary](README.md) for phase/header comparisons.
@@ -3414,7 +3414,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/withimages.h)
 
-0 implemented; 0 partial; 14 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
+0 implemented; 2 partial; 12 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
 
 - [ ] [L42](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/withimages.h#L42) `class wxWithImages {`
 - [ ] [L45](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/withimages.h#L45) `enum {`
@@ -3424,9 +3424,9 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [ ] [L63](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/withimages.h#L63) `int GetImageCount() const;`
 - [ ] [L72](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/withimages.h#L72) `bool HasImages() const;`
 - [ ] [L88](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/withimages.h#L88) `void SetImages(const wxVector<wxBitmapBundle>& images);`
-- [ ] [L98](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/withimages.h#L98) `void AssignImageList(wxImageList* imageList);`
+- [~] [L98](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/withimages.h#L98) `void AssignImageList(wxImageList* imageList);` — **Partial**: `tree-icons`; ABI: `wxl_tree_icons`. Tree-only copied bitmap list protocol, fixed16px and at most32 icons; no native image-list handle adoption. See docs/FOLDER-TREES.md.
 - [ ] [L109](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/withimages.h#L109) `virtual void SetImageList(wxImageList* imageList);`
-- [ ] [L118](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/withimages.h#L118) `wxImageList* GetImageList() const;`
+- [~] [L118](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/withimages.h#L118) `wxImageList* GetImageList() const;` — **Partial**: `tree-icons`; ABI: `wxl_tree_icon_get`. Tree-only copied bitmap list protocol, fixed16px and at most32 icons; no native image-list handle adoption. See docs/FOLDER-TREES.md.
 - [ ] [L137](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/withimages.h#L137) `wxImageList* GetUpdatedImageListFor(wxWindow* win);`
 - [ ] [L143](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/withimages.h#L143) `bool HasImageList() const;`
 - [ ] [L151](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/withimages.h#L151) `wxIcon GetImage(int iconIndex) const;`

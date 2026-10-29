@@ -1,0 +1,48 @@
+(load (merge-pathnames "../examples/folder-tree.lisp" *load-truename*))
+(defclass tagged-directory-dialog (wxlambda:directory-dialog) ((tag :initarg :tag :reader directory-tag)))
+(defmethod initialize-instance :after ((dialog tagged-directory-dialog) &key)
+  (assert (uiop:directory-exists-p (wxlambda:directory-dialog-path dialog))))
+(wxlambda:with-application ()
+  (assert (wxlambda-folder-tree:exercise))
+  (let* ((frame (wxlambda:make-frame)) (tree (wxlambda:make-tree-control frame))
+         (button (wxlambda:make-button frame :label "Check"))
+         (bitmap (wxlambda-folder-tree:icon '(150 95 220)))
+         (root (wxlambda:add-tree-root tree "Root")) (refused nil))
+    (unwind-protect
+         (progn
+           (setf (wxlambda:tree-icons tree) (list bitmap) (wxlambda:tree-item-icon root) 0)
+           (wxlambda:destroy-bitmap bitmap)
+           (let ((copies (wxlambda:tree-icons tree)))
+             (unwind-protect
+                  (let ((image (wxlambda:bitmap-image (first copies))))
+                    (unwind-protect
+                         (progn (assert (equal '(150 95 220 255) (wxlambda:image-pixel image 5 5)))
+                                (assert (zerop (fourth (wxlambda:image-pixel image 0 0)))))
+                      (wxlambda:destroy-image image)))
+               (dolist (copy copies) (wxlambda:destroy-bitmap copy))))
+           (assert (handler-case (progn (setf (wxlambda:tree-icons tree) nil) nil) (wxlambda:native-error () t)))
+           (assert (= 0 (wxlambda:tree-item-icon root)))
+           (wxlambda:on-click button
+             (lambda ()
+               (assert (= 0 (wxlambda:tree-item-icon root)))
+               (setf refused (handler-case (progn (wxlambda:tree-icons tree) nil) (wxlambda:native-error () t)))))
+           (wxlambda:queue-click button) (wxlambda:process-events) (assert refused)
+           (let* ((cwd (uiop:getcwd))
+                  (dialog (wxlambda:make-directory-dialog :parent frame :path (uiop:temporary-directory)
+                                                         :class 'tagged-directory-dialog :tag :folder))
+                  (binding nil) (fired nil))
+             (unwind-protect
+                  (progn
+                    (assert (eq :folder (directory-tag dialog)))
+                    (setf binding (wxlambda:bind-event (wxlambda:current-application-handler) :idle
+                                    (lambda (event) (declare (ignore event))
+                                      (when (and (not fired) (wxlambda:dialog-modal-p dialog))
+                                        (setf fired t) (wxlambda:end-modal dialog :ok)))))
+                    (wxlambda:wake-up-idle)
+                    (assert (eq :ok (wxlambda:show-modal dialog))) (assert fired)
+                    (assert (equal cwd (uiop:getcwd))))
+               (when binding (wxlambda:unbind-event binding)) (wxlambda:destroy-window dialog))))
+      (when (wxlambda:bitmap-alive-p bitmap) (wxlambda:destroy-bitmap bitmap))
+      (wxlambda:destroy-window frame) (wxlambda:process-events))
+    (assert (handler-case (progn (wxlambda:tree-item-icon root) nil) (wxlambda:native-error () t)))))
+(format t "Folder chooser and copied tree icon checks passed.~%")
