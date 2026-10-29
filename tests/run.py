@@ -37,6 +37,8 @@ def scenarios():
     yield "notebook", "notebook.lisp", {}
     yield "list-box", "list-box.lisp", {}
     for mode in ("normal", "error-pump", "error-run", "nonlocal"):
+        yield f"ui-timers-{mode}", "ui-timers.lisp", {"WXLAMBDA_UI_TIMER_TEST_MODE": mode}
+    for mode in ("normal", "error-pump", "error-run", "nonlocal"):
         yield f"deferred-actions-{mode}", "deferred-actions.lisp", {"WXLAMBDA_UI_ACTION_TEST_MODE": mode}
     yield "accelerators", "accelerators.lisp", {}
     yield "frame-actions", "frame-actions.lisp", {}

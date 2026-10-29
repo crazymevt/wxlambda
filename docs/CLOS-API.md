@@ -267,3 +267,8 @@ toolbar chrome, dynamic tools and status widths/stacks remain deferred.
 ABI43 [deferred UI actions](DEFERRED-UI-ACTIONS.md) provide safe FIFO work after
 callbacks, including modal/clipboard/destructive requests. Existing nested event
 callback guards still apply; pending-only dispatch does not run the action queue.
+
+ABI44 UI-TIMER is an immutable scheduler identity obtained from START-UI-TIMER,
+like UI-ACTION for deferred work; it is not a native event-handler/resource wrapper.
+No public wxTimer subclass/Notify override/adoption protocol is exposed. See
+[UI timers](UI-TIMERS.md).

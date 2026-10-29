@@ -809,3 +809,9 @@ deferred Open/Save/Save As/Copy/Paste/close requests across menus, toolbar and
 configured keyboard shortcuts, with status feedback and save/discard/cancel close
 replay. Requests coalesce while pending/active; state is read at delivery. This is
 application composition using ABI43, with no new native bindings.
+
+[Bounded UI timers](docs/UI-TIMERS.md) provide periodic/one-shot safe-idle updates
+with owner/session lifetime and cancellation; see
+[periodic-status.lisp](examples/periodic-status.lisp). CMake requires wxUSE_TIMER=1.
+macOS timers currently accept only verified wxWidgets3.2.12; newer version numbers
+do not establish safe queued-native cancellation. Hosted OS timing remains unverified.

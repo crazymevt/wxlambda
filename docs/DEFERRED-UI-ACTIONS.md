@@ -31,7 +31,8 @@ token accessor, raw callback pointer or native resource adoption is exposed.
 
 ## Delivery and cancellation
 
-Actions run in FIFO order, at most one per safe native idle iteration, after
+Actions retain FIFO order and merge with coalesced due [UI timers](UI-TIMERS.md)
+by first due/enqueue sequence, at most one work item per safe native idle iteration, after
 wxApp::ProcessIdle and its callbacks return. A single `process-events` call may
 perform several idle iterations and deliver several actions. `run` and
 `process-events` drive delivery. `process-pending-events` deliberately does not
@@ -125,3 +126,7 @@ The [persistent document form](DOCUMENT-FORM.md) now composes these APIs with
 deferred shared Open/Save/Copy/Paste/close requests, toolbar/keyboard entry points
 and status feedback. Its coalescing and scoped close-replay policy are application
 logic; no extra public binding or native parity claim is introduced.
+
+ABI44 [UI timers](UI-TIMERS.md) share this safe function phase. Their due work is
+separate from action capacity, coalesces missed expirations and honors the same
+modal/error/owner/session gates. Timer errors retire the offending registration.

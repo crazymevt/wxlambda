@@ -18,18 +18,18 @@ and verify platforms when selected features or completeness claims require it.
 
 | Category | Headers | Tasks | Implemented | Partial | Pending | Context |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| [C1: Foundation, values, application, events, and base utilities](phase-c1.md) | 119 | 5292 | 7 | 96 | 5189 | 26 |
+| [C1: Foundation, values, application, events, and base utilities](phase-c1.md) | 119 | 5292 | 7 | 103 | 5182 | 26 |
 | [C2: Windows, layout, basic controls, and input](phase-c2.md) | 82 | 2862 | 23 | 116 | 2723 | 0 |
 | [C3: Dialogs, navigation, menus, and application services](phase-c3.md) | 57 | 1875 | 0 | 118 | 1757 | 0 |
 | [C4: Models, complex controls, and document frameworks](phase-c4.md) | 20 | 2328 | 0 | 24 | 2304 | 4 |
 | [C5: Drawing, images, graphics, and printing](phase-c5.md) | 52 | 2245 | 0 | 0 | 2245 | 0 |
 | [C6: Optional libraries, rich content, and integration](phase-c6.md) | 57 | 8912 | 0 | 0 | 8912 | 380 |
 | [C7: Platform extensions and remaining portability APIs](phase-c7.md) | 11 | 279 | 0 | 0 | 279 | 3 |
-| Total | 398 | 23793 | 30 | 354 | 23409 | 413 |
+| Total | 398 | 23793 | 30 | 361 | 23402 | 413 |
 
 ## Classes and widgets
 
-1016 class/struct definitions: 0 complete; 48 partial; 968 pending.
+1016 class/struct definitions: 0 complete; 49 partial; 967 pending.
 
 See the [complete class/widget index](classes.md) for partial scopes and missing
 types. An implemented constructor does not complete a class or its inherited API.
@@ -139,7 +139,7 @@ unreviewed inherited/platform behavior.
 | [wx/textfile.h](phase-c1.md#wxtextfileh) | 0 | 0 | 34 | 0 |
 | [wx/thread.h](phase-c1.md#wxthreadh) | 0 | 0 | 105 | 0 |
 | [wx/time.h](phase-c1.md#wxtimeh) | 0 | 0 | 6 | 0 |
-| [wx/timer.h](phase-c1.md#wxtimerh) | 0 | 0 | 26 | 0 |
+| [wx/timer.h](phase-c1.md#wxtimerh) | 0 | 7 | 19 | 0 |
 | [wx/tls.h](phase-c1.md#wxtlsh) | 0 | 0 | 3 | 0 |
 | [wx/tokenzr.h](phase-c1.md#wxtokenzrh) | 0 | 0 | 14 | 0 |
 | [wx/tracker.h](phase-c1.md#wxtrackerh) | 0 | 0 | 1 | 0 |

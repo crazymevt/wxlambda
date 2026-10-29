@@ -102,6 +102,10 @@
   "Immutable session-owned deferred-action identity; closures are rooted separately."
   (token 0 :type (unsigned-byte 64) :read-only t))
 (defvar *ui-actions* nil)
+(defstruct (ui-timer (:constructor %make-ui-timer (token)))
+  "Immutable session-owned scheduler timer identity, not a native event receiver."
+  (token 0 :type (unsigned-byte 64) :read-only t))
+(defvar *ui-timers* nil)
 (defstruct (event-binding (:constructor %make-event-binding (source kind token)))
   (source nil :read-only t) (kind nil :read-only t) (token 0 :read-only t))
 (defvar *registered-event-types* nil)
@@ -179,8 +183,11 @@
 (cffi:defcallback dispatch-ui-action :void ((token :uint64) (execute :int))
   ;; Native code removes pending identity before entry. Keep the closure in a
   ;; local root across modal callbacks/GC and release the queue root immediately.
-  (let ((function (gethash token *ui-actions*)))
-    (remhash token *ui-actions*)
+  (let* ((timer-p (member execute '(2 3)))
+         (function (gethash token (if timer-p *ui-timers* *ui-actions*))))
+    (cond ((= execute 3) (remhash token *ui-timers*))
+          ((/= execute 2) (remhash token *ui-actions*)
+           (when (zerop execute) (remhash token *ui-timers*))))
     (when (and function (not (zerop execute)) (not *callback-error*))
       (let ((*callback-user-data* nil) (*in-notifying-setter* nil) (*notifying-modal-depth* 0))
         (handler-case
@@ -190,8 +197,12 @@
                        (progn (funcall function) (setf returned t))
                      (error (condition) (setf failed t) (error condition)))
                 (unless (or returned failed)
-                  (error "Deferred UI actions must return normally; nonlocal exit rejected"))))
+                  (error "Deferred UI work must return normally; nonlocal exit rejected"))))
           (error (condition)
+            ;; A failing periodic timer must not rethrow forever on every recovery pump.
+            (when timer-p
+              (%cancel-ui-timer token)
+              (remhash token *ui-timers*))
             (unless *callback-error* (setf *callback-error* condition))
             (%callback-error-pending 1)
             (unless (plusp (%dialog-abort)) (%stop))))))))
@@ -227,6 +238,38 @@
   (let ((pending (boolean-result (%ui-action-pending (ui-action-token action)))))
     (unless pending (remhash (ui-action-token action) *ui-actions*)) pending))
 
+(defun reap-ui-timers ()
+  (when (and *active* *ui-timers*)
+    (let (expired)
+      (maphash (lambda (token function)
+                 (declare (ignore function))
+                 (unless (boolean-result (%ui-timer-active token)) (push token expired))) *ui-timers*)
+      (dolist (token expired) (remhash token *ui-timers*)))))
+
+(defun start-ui-timer (function milliseconds &key owner one-shot)
+  "Start coalesced periodic UI work; ONE-SHOT retires before its one safe-idle delivery."
+  (require-active-application)
+  (boolean-result (%ui-timer-active 0)) ; Validate GUI thread before touching roots.
+  (check-type function function) (check-type milliseconds (integer 1 86400000))
+  (check-type owner (or null window))
+  (reap-ui-timers)
+  (let* ((token (incf *next-token*)) (ticket (%make-ui-timer token)) (complete nil))
+    (setf (gethash token *ui-timers*) function)
+    (unwind-protect
+         (progn (check-status (%start-ui-timer token milliseconds (if one-shot 1 0) (if owner (handle owner) 0)))
+                (setf complete t) ticket)
+      (unless complete (remhash token *ui-timers*)))))
+(defgeneric cancel-ui-timer (timer))
+(defmethod cancel-ui-timer ((timer ui-timer))
+  (require-active-application)
+  (let ((canceled (boolean-result (%cancel-ui-timer (ui-timer-token timer)))))
+    (remhash (ui-timer-token timer) *ui-timers*) canceled))
+(defgeneric ui-timer-active-p (timer))
+(defmethod ui-timer-active-p ((timer ui-timer))
+  (require-active-application)
+  (let ((active (boolean-result (%ui-timer-active (ui-timer-token timer)))))
+    (unless active (remhash (ui-timer-token timer) *ui-timers*)) active))
+
 (defun reap-client-data-roots ()
   ;; Native destruction can precede Lisp wrapper cleanup (notably child windows).
   ;; Only numeric identities cross the FFI; native storage never holds Lisp data.
@@ -256,7 +299,7 @@
 
 (defun check-callback-error ()
   ;; Preserve an escaping user condition if cleanup itself encounters an error.
-  (flet ((cleanup () (reap-event-bindings) (reap-tree-items) (reap-ui-actions)))
+  (flet ((cleanup () (reap-event-bindings) (reap-tree-items) (reap-ui-actions) (reap-ui-timers)))
     (if *callback-error* (ignore-errors (cleanup)) (cleanup)))
   (when *callback-error*
     (let ((condition *callback-error*))
@@ -271,12 +314,13 @@ Run explicitly with RUN. Only one session per process is currently supported."
   (load-native-library)
   (let ((*tree-item-objects* (make-hash-table)) (*tree-item-revision* 0)
         (*active* t) (*application-handler* nil) (*standalone-handler-objects* (make-hash-table)) (*handlers* (make-hash-table)) (*event-bindings* (make-hash-table)) (*callback-error* nil)
-        (*handler-client-data-roots* (make-hash-table)) (*ui-actions* (make-hash-table))
+        (*handler-client-data-roots* (make-hash-table)) (*ui-actions* (make-hash-table)) (*ui-timers* (make-hash-table))
         (*registered-event-types* (make-hash-table)) (*registered-event-kinds* (make-hash-table))
         (*registered-event-families* (make-hash-table)))
     (check-status (%start (cffi:callback dispatch-event) (cffi:callback dispatch-ui-action)))
     (unwind-protect (funcall function)
       (unwind-protect (check-status (%finish))
+        (clrhash *ui-timers*)
         (clrhash *ui-actions*)
         (clrhash *handler-client-data-roots*)
         (clrhash *tree-item-objects*)))))
@@ -456,7 +500,8 @@ RETURN-TO-APPLICATION-REPL restart. Setup errors propagate to the caller."
       (setf (slot-value object 'handle) nil)))
   (ignore-errors (reap-client-data-roots))
   (ignore-errors (reap-tree-items))
-  (ignore-errors (reap-ui-actions)))
+  (ignore-errors (reap-ui-actions))
+  (ignore-errors (reap-ui-timers)))
 
 (defmethod initialize-instance :around ((object event-handler) &rest initargs)
   (declare (ignore initargs))

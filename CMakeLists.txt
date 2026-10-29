@@ -11,9 +11,17 @@ check_cxx_source_compiles("#include <wx/setup.h>
 #error wxUSE_ACCEL is required
 #endif
 int main() { return 0; }" WXLAMBDA_HAS_ACCELERATORS)
+check_cxx_source_compiles("#include <wx/setup.h>
+#if !wxUSE_TIMER
+#error wxUSE_TIMER is required
+#endif
+int main() { return 0; }" WXLAMBDA_HAS_TIMERS)
 cmake_pop_check_state()
 if(NOT WXLAMBDA_HAS_ACCELERATORS)
   message(FATAL_ERROR "wxlambda requires wxWidgets built with wxUSE_ACCEL=1")
+endif()
+if(NOT WXLAMBDA_HAS_TIMERS)
+  message(FATAL_ERROR "wxlambda requires wxWidgets built with wxUSE_TIMER=1")
 endif()
 add_library(wxlambda SHARED native/wxlambda.cpp)
 target_compile_features(wxlambda PRIVATE cxx_std_17)

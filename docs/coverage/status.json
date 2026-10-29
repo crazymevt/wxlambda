@@ -2248,13 +2248,15 @@
       "symbol": "wxWakeUpIdle",
       "lisp": [
         "wake-up-idle",
-        "defer-ui-action"
+        "defer-ui-action",
+        "start-ui-timer"
       ],
       "native": [
         "wxl_wake_up_idle",
-        "wxl_defer_ui_action"
+        "wxl_defer_ui_action",
+        "wxl_start_ui_timer"
       ],
-      "scope": "Active GUI-thread wake scheduling only, returning T without pumping or inline callback. Native worker-thread wake usage not exposed. Also wakes the session FIFO UI-action queue without inline execution; one action after safe native idle, no delivery from pending-only processing or nested modal/callback/operation stacks."
+      "scope": "Active GUI-thread wake scheduling only, returning T without pumping or inline callback. Native worker-thread wake usage not exposed. Also wakes the session FIFO UI-action queue without inline execution; one action after safe native idle, no delivery from pending-only processing or nested modal/callback/operation stacks. Also wakes coalesced timer due work; timer functions share the safe idle scheduler."
     },
     {
       "header": "wx/window.h",
@@ -6556,6 +6558,126 @@
         "wxl_frame_accelerator_entry"
       ],
       "scope": "Copied explicit FRAME-ACCELERATORS tables only: bounded ASCII/function keys/modifiers, commandIDs1..32767, max256, quiescent replacement/clear. No menu pointers/resource adoption/string parser/arbitrary codes. Native key dispatch :MENU metadata/menu-state semantics vary by port; shared Lisp model needed. All managed MENU callbacks conservatively guard installed frame subtrees/loops. wxUSE_ACCEL required. See docs/KEYBOARD-ACCELERATORS.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
+    },
+    {
+      "header": "wx/timer.h",
+      "line": 56,
+      "declaration": "wxTimer();",
+      "status": "~",
+      "symbol": "wxTimer::wxTimer",
+      "lisp": [
+        "ui-timer",
+        "ui-timer-p",
+        "start-ui-timer",
+        "cancel-ui-timer",
+        "ui-timer-active-p"
+      ],
+      "native": [
+        "wxl_start_ui_timer",
+        "wxl_cancel_ui_timer",
+        "wxl_ui_timer_active"
+      ],
+      "scope": "Private wxTimer adapter for bounded safe-idle UI scheduler tickets only. Continuous native timers, bridge logical one-shots, coalesced due ticks, fair deferred-action ordering, owner/session/cancel/root/error cleanup.1..86400000ms/max256. No native timer event receiver/adoption, restart/interval setter or public Notify hook. OSX start exact verified3.2.12 gate; wxUSE_TIMER required. See docs/UI-TIMERS.md."
+    },
+    {
+      "header": "wx/timer.h",
+      "line": 67,
+      "declaration": "virtual ~wxTimer();",
+      "status": "~",
+      "symbol": "wxTimer::~wxTimer",
+      "lisp": [
+        "ui-timer",
+        "ui-timer-p",
+        "start-ui-timer",
+        "cancel-ui-timer",
+        "ui-timer-active-p"
+      ],
+      "native": [
+        "wxl_start_ui_timer",
+        "wxl_cancel_ui_timer",
+        "wxl_ui_timer_active"
+      ],
+      "scope": "Private wxTimer adapter for bounded safe-idle UI scheduler tickets only. Continuous native timers, bridge logical one-shots, coalesced due ticks, fair deferred-action ordering, owner/session/cancel/root/error cleanup.1..86400000ms/max256. No native timer event receiver/adoption, restart/interval setter or public Notify hook. OSX start exact verified3.2.12 gate; wxUSE_TIMER required. See docs/UI-TIMERS.md."
+    },
+    {
+      "header": "wx/timer.h",
+      "line": 96,
+      "declaration": "bool IsRunning() const;",
+      "status": "~",
+      "symbol": "wxTimer::IsRunning",
+      "lisp": [
+        "ui-timer",
+        "ui-timer-p",
+        "start-ui-timer",
+        "cancel-ui-timer",
+        "ui-timer-active-p"
+      ],
+      "native": [
+        "wxl_start_ui_timer",
+        "wxl_cancel_ui_timer",
+        "wxl_ui_timer_active"
+      ],
+      "scope": "Private wxTimer adapter for bounded safe-idle UI scheduler tickets only. Continuous native timers, bridge logical one-shots, coalesced due ticks, fair deferred-action ordering, owner/session/cancel/root/error cleanup.1..86400000ms/max256. No native timer event receiver/adoption, restart/interval setter or public Notify hook. OSX start exact verified3.2.12 gate; wxUSE_TIMER required. See docs/UI-TIMERS.md."
+    },
+    {
+      "header": "wx/timer.h",
+      "line": 108,
+      "declaration": "virtual void Notify();",
+      "status": "~",
+      "symbol": "wxTimer::Notify",
+      "lisp": [
+        "ui-timer",
+        "ui-timer-p",
+        "start-ui-timer",
+        "cancel-ui-timer",
+        "ui-timer-active-p"
+      ],
+      "native": [
+        "wxl_start_ui_timer",
+        "wxl_cancel_ui_timer",
+        "wxl_ui_timer_active"
+      ],
+      "scope": "Private wxTimer adapter for bounded safe-idle UI scheduler tickets only. Continuous native timers, bridge logical one-shots, coalesced due ticks, fair deferred-action ordering, owner/session/cancel/root/error cleanup.1..86400000ms/max256. No native timer event receiver/adoption, restart/interval setter or public Notify hook. OSX start exact verified3.2.12 gate; wxUSE_TIMER required. See docs/UI-TIMERS.md."
+    },
+    {
+      "header": "wx/timer.h",
+      "line": 135,
+      "declaration": "virtual bool Start(int milliseconds = -1, bool oneShot = wxTIMER_CONTINUOUS);",
+      "status": "~",
+      "symbol": "wxTimer::Start",
+      "lisp": [
+        "ui-timer",
+        "ui-timer-p",
+        "start-ui-timer",
+        "cancel-ui-timer",
+        "ui-timer-active-p"
+      ],
+      "native": [
+        "wxl_start_ui_timer",
+        "wxl_cancel_ui_timer",
+        "wxl_ui_timer_active"
+      ],
+      "scope": "Private wxTimer adapter for bounded safe-idle UI scheduler tickets only. Continuous native timers, bridge logical one-shots, coalesced due ticks, fair deferred-action ordering, owner/session/cancel/root/error cleanup.1..86400000ms/max256. No native timer event receiver/adoption, restart/interval setter or public Notify hook. OSX start exact verified3.2.12 gate; wxUSE_TIMER required. See docs/UI-TIMERS.md."
+    },
+    {
+      "header": "wx/timer.h",
+      "line": 149,
+      "declaration": "virtual void Stop();",
+      "status": "~",
+      "symbol": "wxTimer::Stop",
+      "lisp": [
+        "ui-timer",
+        "ui-timer-p",
+        "start-ui-timer",
+        "cancel-ui-timer",
+        "ui-timer-active-p"
+      ],
+      "native": [
+        "wxl_start_ui_timer",
+        "wxl_cancel_ui_timer",
+        "wxl_ui_timer_active"
+      ],
+      "scope": "Private wxTimer adapter for bounded safe-idle UI scheduler tickets only. Continuous native timers, bridge logical one-shots, coalesced due ticks, fair deferred-action ordering, owner/session/cancel/root/error cleanup.1..86400000ms/max256. No native timer event receiver/adoption, restart/interval setter or public Notify hook. OSX start exact verified3.2.12 gate; wxUSE_TIMER required. See docs/UI-TIMERS.md."
     }
   ],
   "classes": {
@@ -6760,7 +6882,12 @@
         "ui-action-p",
         "defer-ui-action",
         "cancel-ui-action",
-        "ui-action-pending-p"
+        "ui-action-pending-p",
+        "ui-timer",
+        "ui-timer-p",
+        "start-ui-timer",
+        "cancel-ui-timer",
+        "ui-timer-active-p"
       ],
       "native": [
         "wxl_start",
@@ -6768,9 +6895,12 @@
         "wxl_application_handler",
         "wxl_defer_ui_action",
         "wxl_cancel_ui_action",
-        "wxl_ui_action_pending"
+        "wxl_ui_action_pending",
+        "wxl_start_ui_timer",
+        "wxl_cancel_ui_timer",
+        "wxl_ui_timer_active"
       ],
-      "scope": "One managed GUI application per process on its main thread. Native initialization/cleanup only; application subclass hooks, traits, top-window APIs and remaining GUI-application interfaces are unbound. The CLOS APPLICATION-HANDLER is a borrowed event-handler view only. Borrowed managed application handler view supports inherited binding/dispatch/state; construction and explicit deletion reject. OS session delivery and native application subclass hooks remain unverified/unbound. Query/end-session binding is available on the managed app and isolated owned handlers; synthetic app/window session emission rejects; OS delivery remains unverified. Native availability rejects pending/scheduled receiver or ancestor deletion through public wxApp::IsScheduledForDestruction plus bridge markers; no dedicated general deletion-query API. Managed ProcessIdle override provides bridge-specific FIFO deferred UI actions; native-entry/idle-depth, callback/modal/operation/error/shutdown gates, weak owner suppression and closure root cleanup. ProcessIdle is omitted from pinned interface declarations, so no invented completed entry. Public Lisp application subclass hooks remain unbound."
+      "scope": "One managed GUI application per process on its main thread. Native initialization/cleanup only; application subclass hooks, traits, top-window APIs and remaining GUI-application interfaces are unbound. The CLOS APPLICATION-HANDLER is a borrowed event-handler view only. Borrowed managed application handler view supports inherited binding/dispatch/state; construction and explicit deletion reject. OS session delivery and native application subclass hooks remain unverified/unbound. Query/end-session binding is available on the managed app and isolated owned handlers; synthetic app/window session emission rejects; OS delivery remains unverified. Native availability rejects pending/scheduled receiver or ancestor deletion through public wxApp::IsScheduledForDestruction plus bridge markers; no dedicated general deletion-query API. Managed ProcessIdle override provides bridge-specific FIFO deferred UI actions; native-entry/idle-depth, callback/modal/operation/error/shutdown gates, weak owner suppression and closure root cleanup. ProcessIdle is omitted from pinned interface declarations, so no invented completed entry. Public Lisp application subclass hooks remain unbound. Safe idle scheduler also merges due UI timers with actions; native timer events/virtual Lisp subclass hooks remain unbound."
     },
     "wxEvtHandler": {
       "status": "~",
@@ -7677,6 +7807,22 @@
         "wxl_frame_accelerator_entry"
       ],
       "scope": "Copied explicit FRAME-ACCELERATORS tables only: bounded ASCII/function keys/modifiers, commandIDs1..32767, max256, quiescent replacement/clear. No menu pointers/resource adoption/string parser/arbitrary codes. Native key dispatch :MENU metadata/menu-state semantics vary by port; shared Lisp model needed. All managed MENU callbacks conservatively guard installed frame subtrees/loops. wxUSE_ACCEL required. See docs/KEYBOARD-ACCELERATORS.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
+    },
+    "wxTimer": {
+      "status": "~",
+      "lisp": [
+        "ui-timer",
+        "ui-timer-p",
+        "start-ui-timer",
+        "cancel-ui-timer",
+        "ui-timer-active-p"
+      ],
+      "native": [
+        "wxl_start_ui_timer",
+        "wxl_cancel_ui_timer",
+        "wxl_ui_timer_active"
+      ],
+      "scope": "Private wxTimer adapter for bounded safe-idle UI scheduler tickets only. Continuous native timers, bridge logical one-shots, coalesced due ticks, fair deferred-action ordering, owner/session/cancel/root/error cleanup.1..86400000ms/max256. No native timer event receiver/adoption, restart/interval setter or public Notify hook. OSX start exact verified3.2.12 gate; wxUSE_TIMER required. See docs/UI-TIMERS.md."
     }
   }
 }

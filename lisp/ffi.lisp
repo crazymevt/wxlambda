@@ -95,7 +95,7 @@
           (if (probe-file local)
               (cffi:load-foreign-library local)
               (cffi:use-foreign-library wxlambda-native))))
-    (unless (= 43 (%abi-version)) (error "Unsupported wxlambda native ABI"))
+    (unless (= 44 (%abi-version)) (error "Unsupported wxlambda native ABI"))
     (setf *native-loaded* t))
   t)
 
@@ -318,3 +318,7 @@
 (cffi:defcfun ("wxl_defer_ui_action" %defer-ui-action) :int (token :uint64) (owner :uint64))
 (cffi:defcfun ("wxl_cancel_ui_action" %cancel-ui-action) :int (token :uint64))
 (cffi:defcfun ("wxl_ui_action_pending" %ui-action-pending) :int (token :uint64))
+
+(cffi:defcfun ("wxl_start_ui_timer" %start-ui-timer) :int (token :uint64) (milliseconds :int) (one-shot :int) (owner :uint64))
+(cffi:defcfun ("wxl_cancel_ui_timer" %cancel-ui-timer) :int (token :uint64))
+(cffi:defcfun ("wxl_ui_timer_active" %ui-timer-active) :int (token :uint64))

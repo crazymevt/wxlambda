@@ -2496,5 +2496,56 @@
     "description": "Checks native owner liveness including pending ancestor deletion; observed expiry removes queued work and releases the Lisp root.",
     "scope": "Main-thread active session. FIFO safe idle delivery via RUN/full event polling only; no recursive action delivery during modal loops; nested RUN/pumps reject. Optional weak owner drops stale/pending-destruction work. Errors pause retained following work and re-signal at outer RUN/poll. At most1024 pending actions. See docs/DEFERRED-UI-ACTIONS.md for safe structural exception, cancellation, root release and supported scope.",
     "wxwidgets": "Bridge queue / wxWeakRef / pending native destruction checks."
+  },
+  {
+    "name": "ui-timer",
+    "kind": "class",
+    "syntax": "wxlambda:ui-timer",
+    "arguments": "Opaque immutable scheduler timer identity.",
+    "returns": "A ticket, not a native event-handler/wxTimer resource wrapper.",
+    "description": "The session roots its function separately; native weak ownership does not keep widgets alive.",
+    "scope": "Active main-thread session. Interval1..86400000ms, at most256 logical registrations; periodic default/optional one-shot, weak window owner or session lifetime. Coalesced safe-idle delivery under RUN/full polling, excluded from nested modal/native/callback/other safe work. wxUSE_TIMER required; OSX start currently verified only for wxWidgets3.2.12. See docs/UI-TIMERS.md.",
+    "wxwidgets": "Private wxTimer adapter plus safe idle scheduler (wxWidgets3.2.12).",
+    "construction": {
+      "syntax": "(wxlambda:start-ui-timer function milliseconds :owner window :one-shot nil)",
+      "description": "Obtain only through START-UI-TIMER. No public direct ticket/resource constructor, native handle adoption or public Notify override."
+    }
+  },
+  {
+    "name": "ui-timer-p",
+    "kind": "function",
+    "syntax": "(wxlambda:ui-timer-p object)",
+    "arguments": "Any OBJECT.",
+    "returns": "Boolean ticket type predicate, independent of active/retired state.",
+    "description": "Pure Lisp structure predicate; works outside an application session.",
+    "scope": "No native/session requirement.",
+    "wxwidgets": "Lisp-only predicate."
+  },
+  {
+    "name": "start-ui-timer",
+    "kind": "function",
+    "arguments": "FUNCTION of no arguments, MILLISECONDS integer1..86400000, optional :OWNER window/NIL and :ONE-SHOT truth value (default NIL).",
+    "returns": "New immutable UI-TIMER ticket; function values ignored.",
+    "description": "Start periodic or one-delivery safe UI work. Native Notify marks one due tick, not a Lisp callback. Initial lower-bound filtering guards reused native IDs. Due work merges fairly with deferred actions.",
+    "scope": "Active main-thread session. Interval1..86400000ms, at most256 logical registrations; periodic default/optional one-shot, weak window owner or session lifetime. Coalesced safe-idle delivery under RUN/full polling, excluded from nested modal/native/callback/other safe work. wxUSE_TIMER required; OSX start currently verified only for wxWidgets3.2.12. See docs/UI-TIMERS.md. Invalid Lisp arguments signal Lisp errors; native/unavailable/start failures signal NATIVE-ERROR and release the prepared root. No inline function delivery, restart, interval setters or catch-up count.",
+    "wxwidgets": "wxTimer default constructor/Start(continuous)/Notify/Stop plus bridge logical one-shot policy."
+  },
+  {
+    "name": "cancel-ui-timer",
+    "kind": "generic-function",
+    "arguments": "UI-TIMER ticket.",
+    "returns": "T if a registration was removed, NIL if already absent.",
+    "description": "Stop native notifications, remove coalesced due work and release its root. Current periodic function can cancel itself; cannot interrupt an executing function.",
+    "scope": "Active main-thread session. Interval1..86400000ms, at most256 logical registrations; periodic default/optional one-shot, weak window owner or session lifetime. Coalesced safe-idle delivery under RUN/full polling, excluded from nested modal/native/callback/other safe work. wxUSE_TIMER required; OSX start currently verified only for wxWidgets3.2.12. See docs/UI-TIMERS.md.",
+    "wxwidgets": "wxTimer::Stop/destructor at a safe non-Notify point."
+  },
+  {
+    "name": "ui-timer-active-p",
+    "kind": "generic-function",
+    "arguments": "UI-TIMER ticket.",
+    "returns": "Boolean logical activity; includes a stopped one-shot awaiting delivery. A one-shot becomes inactive immediately before its function executes; a periodic timer remains active until canceled/expired.",
+    "description": "Owner/ancestor expiry removes registration/root. Periodic activity persists through a function until cancel/expiry; escaping errors cancel the offending timer.",
+    "scope": "Active main-thread session. Interval1..86400000ms, at most256 logical registrations; periodic default/optional one-shot, weak window owner or session lifetime. Coalesced safe-idle delivery under RUN/full polling, excluded from nested modal/native/callback/other safe work. wxUSE_TIMER required; OSX start currently verified only for wxWidgets3.2.12. See docs/UI-TIMERS.md.",
+    "wxwidgets": "Bridge registry / wxWeakRef / native pending destruction checks; not a direct IsRunning view."
   }
 ]

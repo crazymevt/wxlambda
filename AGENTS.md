@@ -215,3 +215,11 @@ separate pending/action-active/busy flags, cancellation on disposal/forced close
 and initial veto + deferred decision + scoped/consumed approval close replay.
 Observe preceding vetoes without claiming arbitrary handler ordering. Keep form
 action IDs in the portable accelerator range. See docs/DOCUMENT-FORM.md.
+
+ABI44 UI timers use opaque tickets, private native wxTimer notifications and the
+shared safe-idle UI phase. Preserve one due tick/coalescing, due/enqueue sequence
+ordering, one-shot retirement-before-call, periodic self-cancel/error cancellation,
+owner/session/root cleanup, count/interval bounds and no native pointer across
+Lisp delivery. macOS start is gated to verified3.2.12: newer branches can lack the
+queued-native cancellation validity check. Re-audit before widening this gate.
+See docs/UI-TIMERS.md; no public wxTimer event receiver/Notify hook is exposed.

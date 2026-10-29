@@ -805,6 +805,51 @@ struct SplitterProbe : FixedSplitter {
     using FixedSplitter::FixedSplitter;
     using wxSplitterWindow::SetSashPositionAndNotify;
 };
+void exercise_ui_timers() {
+    const auto frame=wxl_frame("UI timers",500,300), child=wxl_panel(frame);
+    expect(wxl_start_ui_timer(0,1,0,0)==-1 && wxl_start_ui_timer(6000,0,0,0)==-1 && wxl_start_ui_timer(6000,86400001,0,0)==-1 && wxl_start_ui_timer(6000,1,2,0)==-1,"Timer raw validation");
+    expect(wxl_start_ui_timer(6000,1000,0,frame)==0 && wxl_start_ui_timer(6000,1,0,0)==-1 && wxl_defer_ui_action(6000,0)==-1,"Timer identity isolation");
+    auto* periodic=ui_timers.at(6000).get();
+    periodic->Notify(); expect(!periodic->due,"Reused native ID cannot trigger early first tick");
+    // Deterministic private notifications exercise coalescing and merged ordering
+    // independently of OS timing. Real delivery is covered on both Lisps.
+    periodic->not_before=std::chrono::steady_clock::time_point::min();
+    expect(wxl_defer_ui_action(6001,frame)==0,"Queue before due timer");
+    periodic->Notify(); const auto sequence=periodic->sequence;
+    for (int tick=0; tick<20; ++tick) periodic->Notify();
+    expect(periodic->due && periodic->sequence==sequence,"Repeated native ticks coalesce to one due item");
+    expect(wxl_defer_ui_action(6002,frame)==0,"Queue after due timer");
+    std::vector<uint64_t> order; bool dropped=false;
+    ui_action_probe=[&](uint64_t token,int kind) {
+        expect(!timer_notify_depth && ui_action_running && !callback_depth,"Timer functions enter safe idle phase");
+        order.push_back(token);
+        if (token==6000) {
+            expect(kind==2 && wxl_ui_timer_active(token)==1,"Periodic timer retains active identity");
+            expect(wxl_cancel_ui_timer(token)==1 && wxl_cancel_ui_timer(token)==0,"Periodic self cancellation");
+        }
+        if (token==6003) expect(kind==3 && wxl_ui_timer_active(token)==0 && wxl_cancel_ui_timer(token)==0,"One-shot retires before invocation");
+        if (token==6004) { expect(kind==0,"Dead timer owner is root cleanup only"); dropped=true; }
+    };
+    expect(wxl_process_pending_events()==0 && order.empty(),"Pending-only does not drain due timers");
+    for (int attempt=0; order.size()<3 && attempt<30; ++attempt) expect(wxl_poll()==0,"Drain merged timer/action queue");
+    expect(order==std::vector<uint64_t>({6001,6000,6002}),"Timer/action due order is fair FIFO");
+    expect(wxl_start_ui_timer(6003,1000,1,frame)==0,"One-shot start");
+    auto* once=ui_timers.at(6003).get(); once->not_before=std::chrono::steady_clock::time_point::min(); once->Notify();
+    expect(!once->IsRunning() && wxl_ui_timer_active(6003)==1,"Stopped one-shot remains active while due");
+    for (int attempt=0; order.size()<4 && attempt<30; ++attempt) expect(wxl_poll()==0,"Deliver one-shot");
+    expect(order.size()==4 && order.back()==6003,"One-shot delivered once");
+    expect(wxl_start_ui_timer(6004,86400000,0,child)==0,"Owner lifetime timer"); delete window(child);
+    auto* expired=ui_timers.at(6004).get(); expired->Notify();
+    expect(expired->retired && !expired->IsRunning(),"Owner expiry stops native timer without self-deletion in Notify");
+    for (int attempt=0; !dropped && attempt<30; ++attempt) expect(wxl_poll()==0,"Retire dead owner before long interval");
+    expect(dropped && wxl_ui_timer_active(6004)==0,"Idle owner expiry releases timers before interval");
+    for (uint64_t token=7000; token<7256; ++token) expect(wxl_start_ui_timer(token,86400000,0,0)==0,"Timer count bound fill");
+    expect(wxl_start_ui_timer(7256,1,0,0)==-1,"Timer capacity bound");
+    for (uint64_t token=7000; token<7256; ++token) expect(wxl_cancel_ui_timer(token)==1,"Timer count cleanup");
+    std::thread([] { expect(wxl_start_ui_timer(8000,1,0,0)==-1 && wxl_cancel_ui_timer(8000)==-1 && wxl_ui_timer_active(8000)==-1,"Timer API rejects worker thread"); }).join();
+    expect(ui_timers.empty(),"No timer records leaked"); ui_action_probe={}; delete window(frame);
+}
+
 void exercise_deferred_actions() {
 #if wxUSE_CLIPBOARD
     MemoryClipboard memory;
@@ -1121,12 +1166,13 @@ int main() {
         exercise_clipboard();
 #endif
         exercise_deferred_actions();
+        exercise_ui_timers();
         bool shutdown_ran=false;
         ui_action_probe=[&](uint64_t,int) { shutdown_ran=true; };
-        expect(wxl_defer_ui_action(5000,0)==0,"Queue shutdown action");
+        expect(wxl_defer_ui_action(5000,0)==0 && wxl_start_ui_timer(5001,1,0,0)==0,"Queue shutdown action/timer");
         expect(wxl_finish() == 0, "Application cleanup failed");
         active = false;
-        expect(!shutdown_ran && ui_actions.empty() && !ui_dispatch,"Shutdown cancels pending actions before cleanup"); ui_action_probe={};
+        expect(!shutdown_ran && ui_actions.empty() && ui_timers.empty() && !ui_dispatch,"Shutdown cancels pending actions before cleanup"); ui_action_probe={};
         expect(wxIdleEvent::GetMode() == wxIDLE_PROCESS_ALL, "Finish did not restore pre-session idle mode");
         expect(wxl_idle_mode() == -1 && wxl_wake_up_idle() == -1, "Inactive idle APIs must reject");
         expect(wxl_clipboard_text_available() == -1 && wxl_flush_clipboard() == -1 &&

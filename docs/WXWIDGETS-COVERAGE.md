@@ -543,5 +543,16 @@ using ABI43; no native declaration is newly implemented or marked complete.
 Generated coverage remains the factual native backlog and is regenerated/checked
 for this batch. Native OS panels/document frameworks/deep editor APIs remain
 deferred. Physical input, hosted OS GUI and clipboard interoperability are unrun.
-Next selected slice: bounded UI timers for periodic updates, with owner/session
-lifetime and cancellation, to broaden monitoring applications.
+Bounded UI timers now provide periodic/one-shot status updates with owner/session
+lifetime and cancellation for monitoring applications.
+
+## Bounded UI timers
+
+[UI timers](UI-TIMERS.md) add coalesced periodic/one-shot safe-idle functions,
+opaque scheduler tickets, fair action ordering, weak owner/session lifetime,
+cancellation and error/root cleanup. Native wxTimer is partial: no public event
+receiver/native pointer adoption, restart/style/interval mutation or timing parity.
+OSX exact verified3.2.12 gate is explicit; hosted Windows/Linux GUI/timing remain
+unrun. Regenerated native checklist records only the actual private adapter scope.
+Next selected slice: bounded numeric input controls (slider/spin) for everyday forms,
+rather than exhaustive timer/event/clock parity.

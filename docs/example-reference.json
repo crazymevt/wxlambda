@@ -166,5 +166,9 @@
   "deferred-actions.lisp": {
     "description": "Queue shared menu/tool/keyboard requests for choosing a path, copying editor text and confirmed close. START interactive; EXERCISE injects deterministic chooser/clipboard/confirmation functions without touching system clipboard text.",
     "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/deferred-actions.lisp --eval '(wxlambda-deferred-actions:start)'"
+  },
+  "periodic-status.lisp": {
+    "description": "Real native periodic UI timer updates label/status text; Pause/Resume cancels/creates tickets. Active-session EXERCISE self-cancels after two real updates, without system clipboard transfers.",
+    "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/periodic-status.lisp --eval '(wxlambda-periodic-status:start)'"
   }
 }

@@ -46,9 +46,10 @@ typedef struct wxl_event {
 /* The record and its text are borrowed only until this callback returns.
    Callbacks must never unwind across this boundary. */
 typedef void (*wxl_callback)(uint64_t token, const wxl_event *event);
-/* Separate safe-idle action callback: execute=0 releases a dead-owner root.
+/* Separate safe-idle callback: kind=0 releases an expired work root,
+   1 invokes/removes an action, 2 invokes a periodic timer, 3 invokes/removes a one-shot.
    Never unwind across this boundary. No borrowed event context is active. */
-typedef void (*wxl_ui_callback)(uint64_t token, int execute);
+typedef void (*wxl_ui_callback)(uint64_t token, int kind);
 WXL_API int wxl_abi_version(void);
 /* Error text is borrowed until the next bridge call on this thread. */
 WXL_API const char *wxl_last_error(void);
@@ -64,6 +65,11 @@ WXL_API int wxl_start(wxl_callback callback, wxl_ui_callback ui_callback);
 WXL_API int wxl_defer_ui_action(uint64_t token, wxl_handle owner);
 WXL_API int wxl_cancel_ui_action(uint64_t token);
 WXL_API int wxl_ui_action_pending(uint64_t token);
+/* Session timers: 1..86400000ms, one_shot=0/1; at most256 live tickets.
+   Native ticks coalesce; functions share the safe idle action phase. */
+WXL_API int wxl_start_ui_timer(uint64_t token, int milliseconds, int one_shot, wxl_handle owner);
+WXL_API int wxl_cancel_ui_timer(uint64_t token);
+WXL_API int wxl_ui_timer_active(uint64_t token);
 WXL_API int wxl_run(void);
 /* GUI dispatch is forbidden inside run, a pump or any Lisp callback. */
 WXL_API int wxl_poll(void);

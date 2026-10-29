@@ -9,6 +9,8 @@
 #include <wx/artprov.h>
 #include <wx/sysopt.h>
 #include <wx/accel.h>
+#include <wx/timer.h>
+#include <chrono>
 #include <wx/notebook.h>
 #include <wx/listbox.h>
 #include <wx/treectrl.h>
@@ -186,9 +188,43 @@ wxl_handle next_handle = 1;
 wxl_handle application_handle = 0;
 wxl_callback dispatch = nullptr;
 wxl_ui_callback ui_dispatch = nullptr;
-struct UiAction { uint64_t token; wxl_handle owner_id; wxWeakRef<wxWindow> owner; };
+uint64_t ui_work_sequence = 0;
+struct UiAction { uint64_t token; wxl_handle owner_id; wxWeakRef<wxWindow> owner; uint64_t sequence; };
+unsigned timer_notify_depth = 0;
+bool finishing = false;
+bool window_destruction_pending(wxWindow* object);
+class UiTimer final : public wxTimer {
+public:
+    uint64_t token, sequence = 0;
+    wxl_handle owner_id;
+    wxWeakRef<wxWindow> owner;
+    bool one_shot, due = false, retired = false;
+    std::chrono::steady_clock::time_point not_before;
+    UiTimer(uint64_t id, wxl_handle owner_handle, wxWindow* window, int milliseconds, bool once)
+        : token(id), owner_id(owner_handle), owner(window), one_shot(once),
+          not_before(std::chrono::steady_clock::now() + std::chrono::milliseconds(milliseconds)) { }
+    ~UiTimer() override { if (IsRunning()) Stop(); }
+    void Notify() override {
+        struct NotifyScope { NotifyScope() { ++timer_notify_depth; } ~NotifyScope() { --timer_notify_depth; } } depth;
+        if (finishing || retired) return;
+        if (owner_id && (!owner.get() || window_destruction_pending(owner.get()))) {
+            retired = true;
+            if (IsRunning()) Stop();
+            if (!due) { due = true; sequence = ++ui_work_sequence; }
+            try { wxWakeUpIdle(); } catch (...) { } // Due cleanup remains visible to the next poll.
+            return;
+        }
+        if (due || std::chrono::steady_clock::now() < not_before) return;
+        // Native IDs can be reused (MSW); the initial steady-clock lower bound
+        // ignores a queued old native notification assigned to a new timer.
+        due = true; sequence = ++ui_work_sequence;
+        if (one_shot && IsRunning()) Stop();
+        try { wxWakeUpIdle(); } catch (...) { } // No exception crosses the native notification boundary.
+    }
+};
+std::unordered_map<uint64_t, std::unique_ptr<UiTimer>> ui_timers;
 std::deque<UiAction> ui_actions;
-bool ui_action_running = false, finishing = false;
+bool ui_action_running = false;
 uint64_t active_ui_action_token = 0;
 thread_local unsigned native_entry_depth = 0;
 unsigned ui_driver_depth = 0;
@@ -1153,27 +1189,53 @@ bool ui_action_owner_live(const UiAction& action) {
 }
 bool ui_action_ready() {
     return started && !finishing && ui_dispatch && !ui_action_running && !pending_callback_error &&
-           callback_depth == 0 && EventScope::stack.empty() &&
+           callback_depth == 0 && timer_notify_depth == 0 && EventScope::stack.empty() &&
            ui_driver_depth != 0 && native_entry_depth == ui_driver_depth && idle_processing_depth == 1 &&
            !active_modal.get() && actual_modals.empty() && dialog_operation_windows.empty() && !clipboard_busy &&
            notebook_operations.empty() && list_callback_operations.empty() && tree_operations.empty() &&
            splitter_operations.empty() && toolbar_operations.empty() && accelerator_action_frames.empty();
 }
+bool ui_timer_owner_live(const UiTimer& timer) {
+    return !timer.retired && (!timer.owner_id || (timer.owner.get() && !window_destruction_pending(timer.owner.get())));
+}
+bool ui_work_pending() {
+    if (!ui_actions.empty()) return true;
+    for (const auto& entry : ui_timers) if (entry.second->due || !ui_timer_owner_live(*entry.second)) return true;
+    return false;
+}
 bool process_deferred_ui_action() {
-    if (ui_actions.empty() || !ui_action_ready()) return false;
-    const auto action = ui_actions.front(); ui_actions.pop_front();
-    const bool execute = ui_action_owner_live(action);
+    if (!ui_action_ready()) return false;
+    uint64_t timer_token = 0;
+    auto sequence = ui_actions.empty() ? std::numeric_limits<uint64_t>::max() : ui_actions.front().sequence;
+    for (const auto& entry : ui_timers) {
+        const auto& timer = *entry.second;
+        if (!ui_timer_owner_live(timer)) { timer_token = entry.first; break; }
+        if (timer.due && timer.sequence < sequence) { sequence = timer.sequence; timer_token = entry.first; }
+    }
+    uint64_t token = 0; int kind = 0;
+    if (timer_token) {
+        // Scope all native references before invoking Lisp. Canceling this or
+        // another timer in its function can delete native timer objects safely.
+        const auto found = ui_timers.find(timer_token);
+        token = timer_token;
+        if (!ui_timer_owner_live(*found->second)) ui_timers.erase(found);
+        else if (found->second->one_shot) { kind = 3; ui_timers.erase(found); }
+        else { kind = 2; found->second->due = false; }
+    } else if (!ui_actions.empty()) {
+        const auto action = ui_actions.front(); ui_actions.pop_front();
+        token = action.token; kind = ui_action_owner_live(action) ? 1 : 0;
+    } else return false;
     struct ActionScope {
         explicit ActionScope(uint64_t token) { ui_action_running = true; active_ui_action_token = token; }
         ~ActionScope() { ui_action_running = false; active_ui_action_token = 0; }
     };
-    { ActionScope scope(action.token); ui_dispatch(action.token, execute ? 1 : 0); }
-    return !ui_actions.empty() && ui_action_ready(); // More idle only when safely deliverable.
+    { ActionScope scope(token); ui_dispatch(token, kind); }
+    return ui_work_pending() && ui_action_ready();
 }
 
 }
 extern "C" {
-int wxl_abi_version() { return 43; }
+int wxl_abi_version() { return 44; }
 const char* wxl_last_error() { return error.c_str(); }
 int wxl_clipboard_text_available() {
     return boolean_result([&] {
@@ -1268,12 +1330,12 @@ int wxl_start(wxl_callback callback, wxl_ui_callback ui_callback) {
 }
 int wxl_defer_ui_action(uint64_t token, wxl_handle owner_id) { return status([&] {
     ready(); require(!finishing && ui_dispatch, "UI action queue is shutting down");
-    require(token && token != active_ui_action_token, "Invalid/active UI action token");
+    require(token && token != active_ui_action_token && !ui_timers.count(token), "Invalid/active UI action token");
     for (const auto& action : ui_actions) require(action.token != token, "Duplicate UI action token");
     require(ui_actions.size() < 1024, "At most 1024 pending UI actions are supported");
     auto* owner = owner_id ? window(owner_id) : nullptr;
     wxWakeUpIdle(); // Wake is non-inline; failed allocation below publishes no queue entry.
-    ui_actions.push_back({token, owner_id, owner});
+    ui_actions.push_back({token, owner_id, owner, ++ui_work_sequence});
 }); }
 int wxl_cancel_ui_action(uint64_t token) { return boolean_result([&] {
     ready(); for (auto it = ui_actions.begin(); it != ui_actions.end(); ++it)
@@ -1287,6 +1349,33 @@ int wxl_ui_action_pending(uint64_t token) { return boolean_result([&] {
             return true;
         }
     return false;
+}); }
+int wxl_start_ui_timer(uint64_t token, int milliseconds, int one_shot, wxl_handle owner_id) { return status([&] {
+    ready(); require(!finishing && ui_dispatch, "UI timers are shutting down");
+#if defined(__WXOSX__) && !(wxMAJOR_VERSION == 3 && wxMINOR_VERSION == 2 && wxRELEASE_NUMBER == 12)
+    // Audited cancellation fix is present in 3.2.12, but absent from some newer
+    // branches (including 3.3.0/3.3.1). Do not infer safety from numeric ordering.
+    require(false, "Safe OSX UI timers are currently verified only with wxWidgets 3.2.12");
+#endif
+    require(token && token != active_ui_action_token && !ui_timers.count(token), "Invalid/duplicate UI timer token");
+    for (const auto& action : ui_actions) require(action.token != token, "UI timer token is already queued");
+    require(milliseconds >= 1 && milliseconds <= 86400000 && (one_shot == 0 || one_shot == 1), "Invalid UI timer interval/mode");
+    require(ui_timers.size() < 256, "At most 256 active UI timers are supported");
+    auto timer = std::make_unique<UiTimer>(token, owner_id, owner_id ? window(owner_id) : nullptr, milliseconds, one_shot != 0);
+    // All native timers are continuous; the bridge stops one-shots only after
+    // their lower-bound interval has elapsed, so an early stale native tick
+    // cannot stop/discard a new one-shot before its valid first notification.
+    require(timer->Start(milliseconds, false), "Native UI timer start failed");
+    ui_timers.emplace(token, std::move(timer));
+}); }
+int wxl_cancel_ui_timer(uint64_t token) { return boolean_result([&] {
+    ready(); return ui_timers.erase(token) != 0;
+}); }
+int wxl_ui_timer_active(uint64_t token) { return boolean_result([&] {
+    ready(); const auto found = ui_timers.find(token);
+    if (found == ui_timers.end()) return false;
+    if (!ui_timer_owner_live(*found->second)) { ui_timers.erase(found); return false; }
+    return true; // Includes a stopped one-shot awaiting safe delivery.
 }); }
 int wxl_run() {
     return status([] {
@@ -1329,7 +1418,7 @@ int wxl_finish() {
     return status([] {
         ready();
         require_dispatch_entry();
-        finishing = true; ui_actions.clear(); ui_dispatch = nullptr;
+        finishing = true; ui_timers.clear(); ui_actions.clear(); ui_dispatch = nullptr;
         struct RestoreIdleMode {
             ~RestoreIdleMode() { wxIdleEvent::SetMode(initial_idle_mode); }
         } restore_idle_mode;

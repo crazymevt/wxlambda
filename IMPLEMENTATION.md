@@ -2361,3 +2361,75 @@ simple form executable as noted above. Rebuild/check/install docset after
 final evidence notes; standard Cadre installation is documented in docs/DOCSET.md.
 No native code changed, so native invariant probes from ABI43 were not repeated
 for this application-only batch. Physical/hosted/manual checks listed above remain unrun.
+
+## Bounded UI timers (2026-10-28, verified bounded scope)
+
+ABI44 adds opaque immutable UI-TIMER tickets/predicate, START-UI-TIMER and generic
+CANCEL-UI-TIMER/UI-TIMER-ACTIVE-P. Functions take no arguments. Supported interval
+1..86400000ms, max256 live registrations; optional weak window owner or session
+lifetime, periodic default/one-shot mode. No public native timer receiver, raw
+adoption, restart/interval SETF or Notify override. Counts:236 exports,169 named
+generics,52 SETF generics,20 window wrappers plus TREE-ITEM/UI-ACTION/UI-TIMER
+identities,43 examples,69 GUI scenarios (four timer modes),323 docset entries.
+
+Private wxTimer::Notify only marks one coalesced due tick/wakes idle; it never
+calls Lisp or erases itself. Repeated native expirations do not create catch-up
+counts. A shared sequence merges first-due timers with deferred action enqueue
+order, one work item per safe idle iteration, separate from action queue capacity.
+Existing native-entry/driver/idle/callback/modal/clipboard/operation/error/shutdown
+gates remain, with an explicit Notify depth guard. Timer functions inherit the
+safe structural phase, cannot recursively RUN/pump/finish and do not run while
+modal/other safe work is active. Periodic functions can cancel themselves or
+others without retaining a native pointer/iterator across Lisp. One-shot active
+identity includes due-but-stopped native work, then retires before invocation.
+
+Native timers run continuously; bridge one-shots stop at their first valid due
+notification. An initial steady-clock lower bound ignores stale early native
+notifications assigned to reused timer IDs (MSW), avoiding premature new one-shot
+retirement without rearming inside Notify. No precision/cadence/deadline claim.
+Observed owner/ancestor expiry stops/retires without user delivery, with native
+object/root cleanup at query/reap/idle. Session finish clears timers before
+window/toolkit teardown. Failed enqueue/start and managed owner initialization
+rollback release roots. Escaping periodic function errors cancel that registration,
+pause remaining work and retain original conditions at outer RUN/poll; one-shots
+were already retired. Nonlocal exits remain contained by shared safe-work boundary.
+
+Independent source review found that simple '3.2.12 or newer' OSX gating was
+unsafe: audited official3.3.0/3.3.1 lack the queued-CF-timer validity check present
+in the3.2.12 cancellation path. OSX timer creation now accepts exact verified
+wxWidgets3.2.12 only; unverified versions reject before allocation. CMake requires
+wxUSE_TIMER. Other backends are source-reviewed but hosted GUI unrun. Review
+confirmed continuous-native/logical-one-shot policy, source lifetime, activity
+semantics, coalescing/fair ordering and no native pointer across Lisp dispatch.
+Documentation review has no remaining findings; activity wording explicitly
+distinguishes periodic functions from one-shot retirement. Re-audit before
+widening the macOS gate; do not infer safety from version numbers.
+
+Example examples/periodic-status.lisp updates label/status text and Pause/Resume
+cancels/creates registrations; EXERCISE uses real native timers, self-stopping
+after two updates. Focused real periodic/one-shot/modal/self-cancel/RUN/owner/
+rollback tests pass on SBCL+CCL (quiet-run.cognRp64). Native probes and error-pump/
+error-RUN/nonlocal modes pass (quiet-run.1Rw64sLy). Final main/native builds,
+zero-assertion native tests and all69 GUI scenarios pass on both Lisps
+(quiet-run.S28GJs56), evidence/ui-timers/{sbcl,ccl}-20261028-final/. Native probes
+independently force coalescing, fair action ordering, stale early first ticks,
+due one-shot state, owner Notify retirement/cleanup, count bounds, worker
+rejection and shutdown. Automatic tests do not read/replace system clipboard text.
+Regenerated inventory+14 checks,16 Python checks and323-entry zero-problem docset
+pass (quiet-run.sKED4wWk).
+
+Session handoff: broad GUI coverage with selective depth remains the objective.
+Next selected slice: bounded numeric input controls (slider/spin) for everyday
+forms, rather than exhaustive timer/event/clock parity. Physical input, timer
+precision/deadline metrics, hosted Windows/Linux GUI, OS clipboard interoperability,
+allocation-race injection and graphical Cadre remain unverified.
+
+Final both-Lisp actual236-export/class/SETF coverage and runtime counts,323-entry
+zero-problem docset, isolated install/discovery/symbol lookup and guide/example
+access pass after reviewed docs (quiet-run.JkFx8ffz). Five package isolation checks
+pass (quiet-run.VBklIE0Q), package dist/wxlambda-form-ui-timers, evidence
+evidence/packaging/ui-timers-20261028/. This remains the existing form binary;
+periodic-status example and guide are repository/docset deliverables. Rebuild/
+check/install docset after final evidence notes; standard Cadre installation
+remains docs/DOCSET.md. No manual/hosted/timing-precision claims beyond the
+explicit verification above.
