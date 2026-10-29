@@ -8,7 +8,7 @@
 
 (defstruct document-form
   frame name greeting style status path baseline busy
-  choose-path confirm-changes report-error items)
+  choose-path confirm-changes report-error items toolbar pending-action action-active close-approved disposed)
 
 (defun form-values (form)
   (list (wxlambda:text (document-form-name form))
@@ -113,7 +113,7 @@
       (write-document path values)
       (setf (document-form-path form) path
             (document-form-baseline form) (copy-tree values)
-            (wxlambda:label-text (document-form-status form)) "Saved")
+            (wxlambda:status-text (document-form-status form)) "Saved")
       (refresh form)
       t)))
 
@@ -132,7 +132,7 @@
              (ecase command
                (:copy-name
                 (setf (wxlambda:clipboard-text) (wxlambda:text (document-form-name form)))
-                (setf (wxlambda:label-text (document-form-status form))
+                (setf (wxlambda:status-text (document-form-status form))
                       (if (wxlambda:flush-clipboard) "Copied name" "Copied name; persistence unavailable"))
                 t)
                (:paste-name
@@ -142,7 +142,7 @@
                       (error "The form name must fit on one line."))
                     (setf (wxlambda:text (document-form-name form)) value)
                     (refresh form)
-                    (setf (wxlambda:label-text (document-form-status form)) "Pasted name")
+                    (setf (wxlambda:status-text (document-form-status form)) "Pasted name")
                     t)))
                (:save (save-document form))
                (:save-as (save-document form t))
@@ -153,7 +153,7 @@
                       (setf path (merge-pathnames path))
                       (let ((values (read-document path)))
                         (install-values form values path)
-                        (setf (wxlambda:label-text (document-form-status form)) "Opened")
+                        (setf (wxlambda:status-text (document-form-status form)) "Opened")
                         t)))))
                (:close (may-discard-p form)))
            (error (condition)
@@ -161,57 +161,137 @@
              nil))
       (setf (document-form-busy form) nil))))
 
+(defparameter +form-commands+
+  '((12101 :open "&Open…" :open "Open document (Ctrl/Command+O)")
+    (12102 :save "&Save" :save "Save (Ctrl/Command+S)")
+    (12103 :save-as "Save &As…" :save "Save As (Ctrl/Command+Shift+S)")
+    (12104 :close "&Close" :quit "Close (Ctrl/Command+W)")
+    (12105 :copy-name "Copy name" :copy "Copy whole name (Ctrl/Command+Shift+C)")
+    (12106 :paste-name "Paste name" :paste "Paste whole name (Ctrl/Command+Shift+V)")))
+
+(defun cancel-request (form)
+  (when (document-form-pending-action form)
+    (wxlambda:cancel-ui-action (document-form-pending-action form))
+    (setf (document-form-pending-action form) nil)))
+
+(defun command-views-enabled (form enabled)
+  (when (wxlambda:handler-alive-p (document-form-frame form))
+    (dolist (item (document-form-items form)) (setf (wxlambda:enabled-p item) enabled))
+    (dolist (entry +form-commands+)
+      (setf (wxlambda:tool-enabled-p (document-form-toolbar form) (first entry)) enabled))))
+
+(defun close-approved-form (form)
+  ;; Approval applies only to this synchronous replay, not future close requests.
+  (unwind-protect
+       (progn (setf (document-form-close-approved form) t)
+              (wxlambda:close-window (document-form-frame form)))
+    (setf (document-form-close-approved form) nil)))
+
+(defun request-command (form command)
+  ;; First request wins until delivery completes. Coalesce even different commands
+  ;; while pending/active, including those arriving from nested modal callbacks.
+  (unless (or (document-form-disposed form) (document-form-busy form)
+              (document-form-action-active form)
+              (not (wxlambda:handler-alive-p (document-form-frame form))))
+    (let ((pending (document-form-pending-action form)))
+      (when (and pending (wxlambda:ui-action-pending-p pending))
+        (return-from request-command nil)))
+    (setf (document-form-pending-action form)
+          (wxlambda:defer-ui-action
+            (lambda ()
+              (setf (document-form-pending-action form) nil
+                    (document-form-action-active form) t)
+              (unwind-protect
+                   (progn
+                     (command-views-enabled form nil)
+                     (when (perform-command form command)
+                       (when (eq command :close) (close-approved-form form))))
+                (setf (document-form-action-active form) nil)
+                (command-views-enabled form t)))
+            :owner (document-form-frame form)))))
+
+(defun drain-form-action (form)
+  ;; Bounded exercise/test helper; interactive delivery is driven by RUN.
+  (loop repeat 40
+        while (and (document-form-pending-action form)
+                   (wxlambda:ui-action-pending-p (document-form-pending-action form)))
+        do (wxlambda:process-events))
+  (let ((pending (document-form-pending-action form)))
+    (assert (or (null pending) (not (wxlambda:ui-action-pending-p pending))))))
+
 (defun open-form (&key (choose-path #'choose-path) (confirm-changes #'confirm-changes)
                        (report-error #'report-error))
-  (let* ((frame (wxlambda:make-frame :title "Untitled — Lisp form" :width 580 :height 320))
+  (let* ((frame (wxlambda:make-frame :title "Untitled — Lisp form" :width 640 :height 360
+                                     :accelerators '((#\o 12101 :ctrl) (#\s 12102 :ctrl)
+                                                     (#\s 12103 :ctrl :shift) (#\w 12104 :ctrl)
+                                                     (#\c 12105 :ctrl :shift) (#\v 12106 :ctrl :shift))))
          (form (make-document-form :frame frame :choose-path choose-path
                                   :confirm-changes confirm-changes :report-error report-error)))
     (handler-case
         (let* ((panel (wxlambda:make-panel frame))
                (bar (wxlambda:make-menu-bar frame))
-               (menu (wxlambda:make-menu bar :label "&File")))
+               (menu (wxlambda:make-menu bar :label "&File"))
+               (edit (wxlambda:make-menu bar :label "&Edit")))
           (setf (document-form-name form) (wxlambda:make-text panel :value "Ada")
                 (document-form-greeting form) (wxlambda:make-checkbox panel :label "Include greeting" :checked t)
                 (document-form-style form) (wxlambda:make-choice panel :items '("Friendly" "Formal") :selection 0)
-                (document-form-status form) (wxlambda:make-label panel :label "Ready")
+                (document-form-status form) (wxlambda:make-status-bar frame)
+                (document-form-toolbar form) (wxlambda:make-toolbar frame)
                 (document-form-items form)
-                (loop for (id label) in '((41001 "&Open…") (41002 "&Save") (41003 "Save &As…") (41004 "&Close"))
-                      collect (wxlambda:make-menu-item menu :id id :label label)))
-          (let ((edit (wxlambda:make-menu bar :label "&Edit")))
-            (wxlambda:make-menu-item edit :id 41005 :label "Copy name")
-            (wxlambda:make-menu-item edit :id 41006 :label "Paste name"))
+                (loop for entry in +form-commands+ for index from 0
+                      collect (wxlambda:make-menu-item (if (< index 4) menu edit)
+                                :id (first entry) :label (third entry))))
+          (let ((toolbar (document-form-toolbar form)))
+            (dolist (index '(0 1 2 :separator 4 5 :separator 3))
+              (if (eq index :separator) (wxlambda:add-toolbar-separator toolbar)
+                  (destructuring-bind (id command label art help) (nth index +form-commands+)
+                    (declare (ignore command))
+                    (wxlambda:add-toolbar-tool toolbar id (remove #\& label) :art art :help help))))
+            (wxlambda:realize-toolbar toolbar))
+          (setf (wxlambda:status-text (document-form-status form)) "Ready")
           (wxlambda:make-column frame)
           (wxlambda:add-child frame panel :proportion 1 :border 0)
           (wxlambda:make-column panel)
           (dolist (child (list (document-form-name form) (document-form-greeting form)
-                              (document-form-style form) (document-form-status form)))
+                              (document-form-style form)))
             (wxlambda:add-child panel child :border 12))
           (setf (document-form-baseline form) (form-values form))
           (wxlambda:on-text-change (document-form-name form) (lambda (event) (declare (ignore event)) (refresh form)))
           (wxlambda:on-toggle (document-form-greeting form) (lambda (event) (declare (ignore event)) (refresh form)))
           (wxlambda:on-selection (document-form-style form) (lambda (event) (declare (ignore event)) (refresh form)))
-          (wxlambda:bind-event frame :menu
-            (lambda (event context)
-              (declare (ignore context))
-              (case (wxlambda:event-id event)
-                (41001 (perform-command form :open)) (41002 (perform-command form :save))
-                (41003 (perform-command form :save-as)) (41004 (wxlambda:close-window frame))
-                (41005 (perform-command form :copy-name)) (41006 (perform-command form :paste-name))))
-            :id 41001 :last-id 41006 :with-context t)
+          (labels ((request (event context)
+                     (declare (ignore context))
+                     (let ((entry (assoc (wxlambda:event-id event) +form-commands+)))
+                       (when entry (request-command form (second entry))))))
+            ;; Consume at the toolbar before propagation; keyboard/menu commands
+            ;; share the frame receiver and portable action IDs.
+            (wxlambda:bind-event (document-form-toolbar form) :menu #'request
+              :id 12101 :last-id 12106 :with-context t)
+            (wxlambda:bind-event frame :menu #'request :id 12101 :last-id 12106 :with-context t))
           (wxlambda:bind-event frame :close
             (lambda (event context)
-              ;; Forced/non-vetoable closure cannot safely promise an interactive
-              ;; save opportunity. Leave its native default policy intact.
-              (if (and (wxlambda:event-can-veto-p event)
-                       (not (perform-command form :close)))
-                  (setf (wxlambda:event-vetoed-p context) t)
-                  (setf (wxlambda:event-skipped-p context) t)))
+              (cond
+                ;; Forced/non-vetoable close cannot promise a save opportunity.
+                ((not (wxlambda:event-can-veto-p event))
+                 (cancel-request form) (setf (wxlambda:event-skipped-p context) t))
+                ((wxlambda:event-vetoed-p context)
+                 ;; A preceding handler may veto and still propagate. Do not
+                 ;; let native default destruction override that decision.
+                 (setf (wxlambda:event-skipped-p context) nil))
+                ((document-form-close-approved form)
+                 (setf (document-form-close-approved form) nil
+                       (wxlambda:event-skipped-p context) t))
+                (t
+                 (setf (wxlambda:event-vetoed-p context) t)
+                 (request-command form :close))))
             :with-context t)
           (wxlambda:show-window frame)
           form)
       (error (condition) (wxlambda:destroy-window frame) (error condition)))))
 
 (defun dispose-form (form)
+  (setf (document-form-disposed form) t)
+  (cancel-request form)
   (when (wxlambda:handler-alive-p (document-form-frame form))
     (wxlambda:destroy-window (document-form-frame form)))
   (wxlambda:process-events))
@@ -223,7 +303,9 @@
            (assert (not (dirty-p form)))
            (setf (wxlambda:text (document-form-name form) :notify t) "Grace λ")
            (assert (dirty-p form))
-           (assert (not (perform-command form :save)))
+           (assert (wxlambda:activate-toolbar-tool (document-form-toolbar form) 12102))
+           (assert (document-form-pending-action form))
+           (drain-form-action form)
            (assert (dirty-p form))
            t)
       (dispose-form form))))

@@ -760,7 +760,7 @@ modeless and custom validation interfaces remain open.
 [Generic message/file dialogs](docs/MESSAGE-FILE-DIALOGS.md) add offered message
 results and single-file current paths/filters with guarded internal prompts.
 Raw END-MODAL does not validate a file choice; native browser actions can change
-the filesystem. Next compose the form/editor open/save workflow.
+the filesystem. The persistent document form composes the open/save workflow.
 
 The [persistent document form](docs/DOCUMENT-FORM.md) combines File menu actions,
 save/discard/cancel prompts, safe modal cancellation and Lisp-native UTF-8 form
@@ -803,3 +803,9 @@ callbacks to request modal, clipboard and destructive work after native stacks
 return. [deferred-actions.lisp](examples/deferred-actions.lisp) demonstrates file
 selection, text copying and confirmed close, with owner-bound cancellation tickets.
 RUN/full polling drives the FIFO idle queue; pending-only dispatch does not.
+
+The [persistent document form](docs/DOCUMENT-FORM.md) now integrates owner-bound
+deferred Open/Save/Save As/Copy/Paste/close requests across menus, toolbar and
+configured keyboard shortcuts, with status feedback and save/discard/cancel close
+replay. Requests coalesce while pending/active; state is read at delivery. This is
+application composition using ABI43, with no new native bindings.

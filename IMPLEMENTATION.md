@@ -2292,3 +2292,72 @@ form executable; the new deferred-action example/guide are separate repository/
 docset deliverables. Rebuild/check/install docset after final evidence notes;
 standard Cadre install instructions remain docs/DOCSET.md. Manual/hosted checks
 listed above were not run and no physical clipboard/interoperability claim is made.
+
+## Deferred document-form shell integration (2026-10-28)
+
+The persistent form now composes existing ABI43 APIs for shared deferred Open,
+Save, Save As, whole-name Copy/Paste and close actions across menus, a six-action
+toolbar and configured keyboard shortcuts, with application-owned status-bar
+feedback. IDs12101..12106 fit the portable accelerator limit; logical Control
+shortcuts are O, S, Shift+S, W, Shift+C and Shift+V. Normal native text-selection
+Copy/Paste shortcuts are not replaced. No public binding, native ABI or native
+inventory status changes: 231 exports, 167 named generics, 52 SETF generics,
+20 window wrappers plus borrowed TREE-ITEM/UI-ACTION ticket; 42 examples and
+316 docset entries. GUI runner grows to65 scenarios plus preflight.
+
+UI requests share one owner-bound pending ticket and a separate action-active
+latch; existing busy protects synchronous command execution. First request wins
+while queued or active, even across different commands. Views disable only during
+the safe action body (same-toolbar callback writers remain guarded), then restore
+if the frame survives. Document values/clipboard/dirty state are read at delivery,
+not at click time. Canceled tickets recover without a stuck latch; disposal and
+forced/non-vetoable close cancel queued work. Real document IO/validation and
+clipboard persistence semantics are unchanged.
+
+Vetoable native close is immediately vetoed and enqueues its decision. Cancel/
+canceled save/failure leaves the form alive. Approval retries native close with
+a scoped flag, consumed in the close handler and cleared in unwind cleanup.
+A new integration test exposed a preceding handler's Veto+Skip reaching native
+default destruction on replay; the form now consumes an already-observed veto
+before the approved branch. The test proves blocked replay does not cache
+authorization for a later dirty close. This does not promise arbitrary handler
+ordering or that native close acceptance guarantees destruction. Initial
+CLOSE-WINDOW returns NIL even for a form later closed by deferred replay.
+
+Existing file/clipboard workflows pass on both Lisps after adaptation
+(quiet-run.5aMwpD3U). New tests/document-form-actions.lisp verifies deferred
+menu/tool/configured-shortcut command paths, exactly-one pending request,
+coalescing, delivery-time values, cancel recovery, active-command rejection/
+disabled views, read/write state, nil/empty/invalid clipboard input, reporter-error
+cleanup, propagated veto/one-use close approval, forced/disposal cancellation
+and delivery under RUN (quiet-run.ZD7F9ZM9). Clipboard fixtures do not access
+system text; actual native default file/message adapters are canceled from idle
+in tests/document-form.lisp. The example EXERCISE now requests toolbar Save and
+pumps a scripted cancellation. Native key translation remains separately tested
+by the accelerator library probes; synthetic form commands are not physical typing.
+
+Independent implementation/tests/documentation review has no remaining findings.
+All65 GUI scenarios pass on SBCL and CCL (quiet-run.ytZiIxlo), fresh evidence
+evidence/document-form-actions/{sbcl,ccl}-20261028-final/. Regenerated unchanged
+native inventory+14 checks, 16 Python checks and 316-entry zero-problem docset
+pass (quiet-run.3c6G4u3H). This application composition does not implement or
+check off native wxDocument/wxDocManager/stream or platform-native dialog APIs.
+
+Session handoff: broad GUI coverage with selective depth remains the objective.
+Next selected slice: bounded UI timers for periodic updates with owner/session
+lifetime and cancellation, broadening monitoring apps rather than deepening
+native document/editor parity. Physical menu/tool/keyboard/chooser interaction,
+hosted Windows/Linux GUI/clipboard interoperability, graphical Cadre and arbitrary
+allocation/IO-race injection remain unverified. The existing packaged form stays
+the simple form app; integrated document-form sources/guides are repository/
+docset deliverables, not a new binary launcher.
+
+Final both-Lisp actual231-export/class/SETF coverage and316-entry zero-problem
+docset, isolated install/discovery/symbol lookup/guide/example access pass
+(quiet-run.UVOBKfYV). Five existing package isolation checks pass
+(quiet-run.nHsjeRvG), package dist/wxlambda-form-document-actions, evidence
+evidence/packaging/document-form-actions-20261028/. The package remains the
+simple form executable as noted above. Rebuild/check/install docset after
+final evidence notes; standard Cadre installation is documented in docs/DOCSET.md.
+No native code changed, so native invariant probes from ABI43 were not repeated
+for this application-only batch. Physical/hosted/manual checks listed above remain unrun.

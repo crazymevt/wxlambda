@@ -37,6 +37,8 @@
            (assert (dirty-p form))
            (setf choices (list path))
            (assert (wxlambda:activate-menu-item (second (document-form-items form))))
+           (assert (not (probe-file path)))
+           (drain-form-action form)
            (assert (equal '("Grace λ" t 0) (read-document path)))
            (assert (not (dirty-p form)))
            ;; Ordinary Save reuses its path; Save As cancellation preserves it.
@@ -96,12 +98,16 @@
            (setf (wxlambda:text (document-form-name form) :notify t) "Close test"
                  answers (list :cancel))
            (assert (not (wxlambda:close-window (document-form-frame form))))
+           (drain-form-action form)
            (assert (wxlambda:handler-alive-p (document-form-frame form)))
            ;; Failed save also vetoes close; No explicitly discards.
            (setf (document-form-path form) nil answers (list :yes) choices (list directory))
            (assert (not (wxlambda:close-window (document-form-frame form))))
+           (drain-form-action form)
+           (assert (dirty-p form))
            (setf answers (list :no))
-           (assert (wxlambda:close-window (document-form-frame form)))
+           (assert (not (wxlambda:close-window (document-form-frame form))))
+           (drain-form-action form)
            (wxlambda:process-events)
            (assert (not (wxlambda:handler-alive-p (document-form-frame form))))
            ;; A successful Yes on close saves before delegating destruction.
@@ -110,7 +116,8 @@
                         :confirm-changes (lambda (form) (declare (ignore form)) :yes)
                         :report-error (lambda (form condition) (declare (ignore form)) (error condition))))
            (setf (wxlambda:text (document-form-name form) :notify t) "Saved before close")
-           (assert (wxlambda:close-window (document-form-frame form)))
+           (assert (not (wxlambda:close-window (document-form-frame form))))
+           (drain-form-action form)
            (wxlambda:process-events)
            (assert (equal '("Saved before close" t 0) (read-document path)))
            (assert (not (wxlambda:handler-alive-p (document-form-frame form))))
@@ -143,9 +150,12 @@
   (let ((form (open-form)))
     (unwind-protect
          (progn
-           (assert (not (perform-command form :save)))
+           (assert (wxlambda:activate-toolbar-tool (document-form-toolbar form) 12102))
+           (drain-form-action form)
+           (assert (null (document-form-path form)))
            (setf (wxlambda:text (document-form-name form) :notify t) "Native Cancel")
            (assert (not (wxlambda:close-window (document-form-frame form))))
+           (drain-form-action form)
            (assert (dirty-p form))
            (assert (wxlambda:handler-alive-p (document-form-frame form)))
            (report-error form (make-condition 'simple-error :format-control "Example failure")))

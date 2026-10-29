@@ -120,3 +120,8 @@ allocation-race injection and graphical Cadre remain unverified. This is not a
 worker/thread scheduler, timer, promise/future API, transaction or shutdown hook.
 See [keyboard actions](KEYBOARD-ACCELERATORS.md), [clipboard](CLIPBOARD.md),
 [dialogs](MESSAGE-FILE-DIALOGS.md) and [Cadre installation](DOCSET.md).
+
+The [persistent document form](DOCUMENT-FORM.md) now composes these APIs with
+deferred shared Open/Save/Copy/Paste/close requests, toolbar/keyboard entry points
+and status feedback. Its coalescing and scoped close-replay policy are application
+logic; no extra public binding or native parity claim is introduced.

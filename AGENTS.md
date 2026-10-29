@@ -208,3 +208,10 @@ modal/operation/action-depth gates. The action body is a safe structural phase;
 nested event callbacks retain guards, and nested RUN/pumps/finish must reject.
 Never read/overwrite the system clipboard in automatic transfer tests; use the
 in-memory native fixture. See docs/DEFERRED-UI-ACTIONS.md.
+
+The document form now composes owner-bound deferred menu/tool/keyboard actions.
+Preserve first-request-wins coalescing, delivery-time document/clipboard values,
+separate pending/action-active/busy flags, cancellation on disposal/forced close,
+and initial veto + deferred decision + scoped/consumed approval close replay.
+Observe preceding vetoes without claiming arbitrary handler ordering. Keep form
+action IDs in the portable accelerator range. See docs/DOCUMENT-FORM.md.

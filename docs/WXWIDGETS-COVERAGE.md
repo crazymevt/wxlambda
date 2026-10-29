@@ -133,8 +133,9 @@ status.json to represent deferral or assume a Lisp equivalent without checking
 its required semantics. A class can stay native-partial while its selected GUI
 feature scope is accepted. Native missing APIs are not automatic release blockers.
 
-**Current vertical slice:** the persistent form composes menus/actions and generic
-modal dialogs with Lisp-native open/save IO. Text clipboard Copy/Paste now extends
+**Current vertical slice:** the persistent form now composes menus, toolbar/status
+feedback, configured keyboard shortcuts and owner-bound deferred actions with
+generic modal dialogs and Lisp-native open/save IO. Text clipboard Copy/Paste now extends
 the form/editor; multiline text primitives now support editor UI construction.
 Notebook navigation now adds fixed editor/settings pages. Single-selection
 list boxes and checked tree navigation now extend the tree/list-manager slice.
@@ -144,8 +145,8 @@ Fixed splitter panes now provide the two-pane manager slice. Toolbar/status-bar 
 
 - **Form/editor:** common controls and validation, flexible layouts, menu/action
   and toolbar/status feedback, standard open/save/message dialogs, clipboard and
-  keyboard/navigation basics. Existing small form examples are a foundation,
-  not a claim that this complete workflow already exists.
+  keyboard/navigation basics. The persistent form verifies a bounded version;
+  a full multiline editor and complete native/platform action semantics remain outside it.
 - **Tree/list manager:** useful tree/list selection and item/model adapters,
   contextual/menu actions, navigation, dialogs and clipboard. Pick model depth
   needed by the application before literal native container/document parity.
@@ -164,8 +165,7 @@ actual reports pass. A milestone may be scoped to verified targets, but must not
 advertise untested platforms or infer native parity from one backend. Record
 unavailable runners and feature gates rather than treating every port as complete.
 
-All entries here are checked only for the behavior stated. None of the eight
-widget classes has complete wxWidgets coverage yet.
+All entries here are checked only for the behavior stated. No wrapped widget class has complete wxWidgets coverage yet.
 
 ### C1: Application and bridge
 
@@ -532,5 +532,16 @@ lifecycle. The managed App::ProcessIdle override is an internal prerequisite
 verified against native headers, omitted by the pinned interface inventory;
 wxWakeUpIdle and the partial wxApp mapping record the implemented scope. No
 CallAfter, timer, worker-thread, transaction or public native virtual-hook parity
-claim. Next selected slice: integrate deferred Open/Save/Copy/Paste/close requests
-into the persistent document form with toolbar/accelerator entry points.
+claim. The persistent form now integrates these requests with toolbar/accelerator entry points.
+
+## Deferred document-form application shell
+
+The [persistent form](DOCUMENT-FORM.md) now routes menus/tools/configured shortcut
+commands through one coalesced owner-bound request, with status feedback and
+deferred save/discard/cancel close replay. This is Lisp application composition
+using ABI43; no native declaration is newly implemented or marked complete.
+Generated coverage remains the factual native backlog and is regenerated/checked
+for this batch. Native OS panels/document frameworks/deep editor APIs remain
+deferred. Physical input, hosted OS GUI and clipboard interoperability are unrun.
+Next selected slice: bounded UI timers for periodic updates, with owner/session
+lifetime and cancellation, to broaden monitoring applications.

@@ -120,3 +120,8 @@ boundary even under RUN/full polling; the quiescent structural operations in
 this guide can run there. Nested event callbacks retain their existing guards,
 and nested RUN/pumps/finish remain forbidden. Optional owner/cancel/error rules
 are documented in that guide.
+
+The [persistent document form](DOCUMENT-FORM.md) now composes these APIs with
+deferred shared Open/Save/Copy/Paste/close requests, toolbar/keyboard entry points
+and status feedback. Its coalescing and scoped close-replay policy are application
+logic; no extra public binding or native parity claim is introduced.

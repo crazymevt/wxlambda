@@ -84,3 +84,8 @@ and [Cadre installation](DOCSET.md).
 ABI43 [deferred UI actions](DEFERRED-UI-ACTIONS.md) provide safe FIFO work after
 callbacks, including modal/clipboard/destructive requests. Existing nested event
 callback guards still apply; pending-only dispatch does not run the action queue.
+
+The [persistent document form](DOCUMENT-FORM.md) now composes these APIs with
+deferred shared Open/Save/Copy/Paste/close requests, toolbar/keyboard entry points
+and status feedback. Its coalescing and scoped close-replay policy are application
+logic; no extra public binding or native parity claim is introduced.
