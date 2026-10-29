@@ -21,16 +21,19 @@ Native OS alerts/panels remain unbound.
 The requested [grid](docs/GRID.md) extension adds editable string cells and labels.
 The [interactive WebView](docs/WEB-VIEW.md) extension adds a macOS WKWebView preview,
 asynchronous JavaScript and JSON messaging for editor-driven development.
+The [thread event](docs/THREAD-EVENTS.md) extension copies worker results to
+existing GUI receivers without running their callbacks on worker threads.
 
 Native pointers never escape the bridge. Construction, callbacks and lifetime
-checks remain on the main GUI thread. There is one GUI session per process;
+checks remain on the main GUI thread. `queue-thread-event` is the explicit
+worker-safe posting exception. There is one GUI session per process;
 restart Lisp for a new native session. Control-specific ON-* registrations should
 be unbound before window destruction; generic binding cleanup follows native
 lifetime/weak invalidation rules.
 
 The [CLOS API](docs/CLOS-API.md) provides subclass initargs/defaults/AFTER hooks,
 thin :CLASS-validating factories and canonical generic SETF. The current public
-API has 447 exports, 365 named generic operations and 106 generic property writers.
+API has 448 exports, 366 named generic operations and 106 generic property writers.
 Styled text, native input, dynamic AUI tabs and splitter operations are documented in
 the [KryptonEdit coverage survey](docs/KRYPTONEDIT-COVERAGE.md).
 Native C++ virtual Lisp callbacks remain separate work. These counts describe

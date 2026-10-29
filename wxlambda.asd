@@ -10,4 +10,5 @@
                (:file "lisp/webview-ffi") (:file "lisp/webview")
                (:file "lisp/stc-ffi") (:file "lisp/stc") (:file "lisp/stc-generated")
                (:file "lisp/input-events-ffi") (:file "lisp/input-events")
-               (:file "lisp/aui-ffi") (:file "lisp/aui") (:file "lisp/splitter-extra")))
+               (:file "lisp/aui-ffi") (:file "lisp/aui") (:file "lisp/splitter-extra")
+               (:file "lisp/thread-events-ffi") (:file "lisp/thread-events")))

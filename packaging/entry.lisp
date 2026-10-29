@@ -63,6 +63,22 @@
            (assert (string= "Styled λ 😀" (wxlambda:stc-text text))))
       (wxlambda:destroy-window frame))))
 
+(defun check-thread-delivery ()
+  (let* ((receiver (make-instance 'wxlambda:event-handler))
+         (gui sb-thread:*current-thread*) (received nil)
+         (payload (concatenate 'string "Packaged worker λ" (string #\Null) "😀")))
+    (unwind-protect
+         (progn
+           (wxlambda:bind-event receiver :thread
+             (lambda (event)
+               (assert (eq gui sb-thread:*current-thread*))
+               (setf received (wxlambda:event-text event))))
+           (sb-thread:join-thread
+            (sb-thread:make-thread (lambda () (wxlambda:queue-thread-event receiver payload))))
+           (loop repeat 100 until received do (wxlambda:process-events) (sleep .005))
+           (assert (equal payload received)))
+      (wxlambda:destroy-event-handler receiver))))
+
 (defun self-test ()
   "Exercise real GUI events, Unicode, recreation, and cleanup in the saved image."
   (let ((calls 0))
@@ -78,6 +94,7 @@
                  (wxlambda-form:set-submit-action #'submitted)
                  (wxlambda:queue-click wxlambda-form:*submit*))))
       (wxlambda:with-application ()
+        (check-thread-delivery)
         (check-styled-workspace)
         (check-web-grid)
         (let* ((frame (wxlambda:make-frame))

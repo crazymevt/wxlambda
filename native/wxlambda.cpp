@@ -51,6 +51,8 @@
 #include <wx/clipbrd.h>
 #include <wx/dataobj.h>
 #include <memory>
+#include <mutex>
+#include <atomic>
 #include <typeinfo>
 #include <type_traits>
 #include <unordered_set>
@@ -67,6 +69,7 @@
 #endif
 
 namespace {
+#include "thread-events.inc"
 // wxEvtHandler exposes no public storage-kind query. Its getters assert when
 // called in the opposite client-data mode, so only our native subclasses expose
 // their own protected discriminator through this private implementation view.
@@ -89,6 +92,8 @@ bool session_type(wxEventType type) {
 }
 // Synthetic session probes must never fall through to wxApp's exit defaults.
 class StandaloneHandler final : public wxEvtHandler, public ClientDataAccess {
+public: ~StandaloneHandler() override { thread_endpoint_invalidate(this); }
+private:
     std::unordered_set<wxEvent*> queued_sessions;
 public:
     wxClientDataType ClientStorageKind() const override { return m_clientDataType; }
@@ -448,6 +453,7 @@ template<class T> class ManagedWindow final : public T, public ClientDataAccess 
 public:
     using T::T;
     bool Destroy() override {
+        const bool previous_thread_retirement=thread_endpoint_retire(this);
         wxWeakRef<wxWindow> weak(this);
         const auto state=managed_window_states.find(this);
         const bool managed=state!=managed_window_states.end(), retired=managed && state->second.retiring;
@@ -457,6 +463,7 @@ public:
         if (tracked) owner->second=true;
         const auto restore=[&] {
             if (!weak.get()) return;
+            thread_endpoint_restore(weak.get(),previous_thread_retirement);
             if (managed) { const auto current=managed_window_states.find(weak.get()); if(current!=managed_window_states.end()) current->second.retiring=retired; }
             if (tracked) { const auto current=input_owners.find(weak.get()); if(current!=input_owners.end()) current->second=previous; }
         };
@@ -464,7 +471,7 @@ public:
         catch (...) { restore(); throw; }
     }
     wxClientDataType ClientStorageKind() const override { return this->m_clientDataType; }
-    ~ManagedWindow() override { if(auto state=managed_window_states.find(this);state!=managed_window_states.end()) state->second.retiring=true; if (auto found = input_owners.find(this); found != input_owners.end()) found->second = true; frame_accelerators.erase(this); toolbar_owners.erase(this); realized_toolbars.erase(this); splitter_owners.erase(this); forget_tree_nodes(this); dialog_choice_counts.erase(this); dialog_message_buttons.erase(this); dialog_file_filters.erase(this); detach_window_stack(this); }
+    ~ManagedWindow() override { thread_endpoint_invalidate(this); if(auto state=managed_window_states.find(this);state!=managed_window_states.end()) state->second.retiring=true; if (auto found = input_owners.find(this); found != input_owners.end()) found->second = true; frame_accelerators.erase(this); toolbar_owners.erase(this); realized_toolbars.erase(this); splitter_owners.erase(this); forget_tree_nodes(this); dialog_choice_counts.erase(this); dialog_message_buttons.erase(this); dialog_file_filters.erase(this); detach_window_stack(this); }
 };
 void set_registered_type(wxEvent& event, int type) {
         const RegisteredEvent* source = nullptr;
@@ -712,7 +719,7 @@ struct InputCallbackOperation {
         input_operations.emplace_back(object);
     }
     explicit InputCallbackOperation(wxEvent& event) {
-        const bool raw=input_kind_for_type(event.GetEventType())!=0;
+        const bool raw=input_kind_for_type(event.GetEventType())!=0 || thread_payload_readonly(event.GetEventType());
         if (aui_kind_for_type(event.GetEventType()) && !aui_public_event(event)) { allow=false; return; }
         if (!raw && !stc_kind_for_type(event.GetEventType()) && !aui_kind_for_type(event.GetEventType()) && !web_event_type(event.GetEventType()) && event.GetEventType()!=wxEVT_BUTTON && event.GetEventType()!=wxEVT_SEARCH && event.GetEventType()!=wxEVT_SEARCH_CANCEL && event.GetEventType()!=wxEVT_TIME_CHANGED && event.GetEventType()!=wxEVT_DATE_CHANGED && event.GetEventType()!=wxEVT_COMBOBOX && event.GetEventType()!=wxEVT_TOGGLEBUTTON && event.GetEventType()!=wxEVT_RADIOBOX && event.GetEventType()!=wxEVT_SLIDER && event.GetEventType()!=wxEVT_SPINCTRL && event.GetEventType()!=wxEVT_TEXT) return;
         if (input_creation_depth) { allow=false; return; }
@@ -846,6 +853,7 @@ void emit_event(wxl_handle id, const wxl_event& event) {
     }
 }
 wxEventTypeTag<wxEvent> native_event_type(int kind) {
+    if (thread_event_kind(kind)) return wxEventTypeTag<wxEvent>(wxEVT_THREAD);
     if (stc_event_kind(kind)) return wxEventTypeTag<wxEvent>(stc_event_type(kind));
     if (input_event_kind(kind)) return wxEventTypeTag<wxEvent>(input_event_type(kind));
     if (aui_event_kind(kind)) return wxEventTypeTag<wxEvent>(aui_event_type(kind));
@@ -885,6 +893,7 @@ wxEventTypeTag<wxEvent> native_event_type(int kind) {
     }
 }
 int native_event_family(int kind) {
+    if (thread_event_kind(kind)) return WXL_FAMILY_BASE;
     if (stc_event_kind(kind)) return WXL_FAMILY_COMMAND;
     if (input_event_kind(kind)) return kind==70 ? WXL_FAMILY_COMMAND : WXL_FAMILY_BASE;
     if (aui_event_kind(kind)) return WXL_FAMILY_NOTIFY;
@@ -910,7 +919,7 @@ bool event_vetoed(wxEvent& event) {
 std::unique_ptr<wxEvent> synthetic_event(wxEvtHandler* receiver, int kind, int event_id,
                                        const char* text, size_t length, int value,
                                        int can_veto, int vetoed, int logging_off) {
-    require(!stc_event_kind(kind) && !input_event_kind(kind) && !aui_event_kind(kind) && !web_event_kind(kind) && kind != WXL_EVENT_SEARCH && kind != WXL_EVENT_SEARCH_CANCEL && kind != WXL_EVENT_TIME_CHANGE && kind != WXL_EVENT_DATE_CHANGE && kind != WXL_EVENT_COMBO_SELECTION && kind != WXL_EVENT_TOGGLE_BUTTON_CHANGE && kind != WXL_EVENT_RADIO_SELECTION && kind != WXL_EVENT_SLIDER_CHANGE && kind != WXL_EVENT_SPIN_CHANGE && kind != WXL_EVENT_NOTEBOOK_CHANGING && kind != WXL_EVENT_NOTEBOOK_CHANGED && kind != WXL_EVENT_TREE_CHANGING && kind != WXL_EVENT_TREE_CHANGED && kind != WXL_EVENT_SPLITTER_CHANGING && kind != WXL_EVENT_SPLITTER_CHANGED,
+    require(!thread_event_kind(kind) && !stc_event_kind(kind) && !input_event_kind(kind) && !aui_event_kind(kind) && !web_event_kind(kind) && kind != WXL_EVENT_SEARCH && kind != WXL_EVENT_SEARCH_CANCEL && kind != WXL_EVENT_TIME_CHANGE && kind != WXL_EVENT_DATE_CHANGE && kind != WXL_EVENT_COMBO_SELECTION && kind != WXL_EVENT_TOGGLE_BUTTON_CHANGE && kind != WXL_EVENT_RADIO_SELECTION && kind != WXL_EVENT_SLIDER_CHANGE && kind != WXL_EVENT_SPIN_CHANGE && kind != WXL_EVENT_NOTEBOOK_CHANGING && kind != WXL_EVENT_NOTEBOOK_CHANGED && kind != WXL_EVENT_TREE_CHANGING && kind != WXL_EVENT_TREE_CHANGED && kind != WXL_EVENT_SPLITTER_CHANGING && kind != WXL_EVENT_SPLITTER_CHANGED,
             "Derived navigation events require native interaction; synthetic construction is unsupported");
     const auto type = native_event_type(kind);
     const int family = native_event_family(kind);
@@ -948,6 +957,7 @@ std::unique_ptr<wxEvent> synthetic_event(wxEvtHandler* receiver, int kind, int e
     return event;
 }
 int kind_of(wxEvent& event) {
+    if (thread_payload_readonly(event.GetEventType())) return 120;
     if (const auto kind=stc_kind_for_type(event.GetEventType())) return kind;
     if (const auto kind=input_kind_for_type(event.GetEventType())) return kind;
     if (const auto kind=aui_kind_for_type(event.GetEventType())) return kind;
@@ -967,7 +977,7 @@ std::unique_ptr<wxEvent> detached_clone(wxEvent& event) {
     require(typeid(event) == typeid(wxCommandEvent) || typeid(event) == typeid(wxNotifyEvent) ||
             typeid(event) == typeid(wxCloseEvent) || typeid(event) == typeid(wxIdleEvent), "Cloning this native event class is not supported");
     const auto kind = kind_of(event);
-    require(!stc_event_kind(kind) && !input_event_kind(kind) && !aui_event_kind(kind) && !web_event_kind(kind) && kind != WXL_EVENT_SEARCH && kind != WXL_EVENT_SEARCH_CANCEL && kind != WXL_EVENT_TIME_CHANGE && kind != WXL_EVENT_DATE_CHANGE && kind != WXL_EVENT_COMBO_SELECTION && kind != WXL_EVENT_TOGGLE_BUTTON_CHANGE && kind != WXL_EVENT_RADIO_SELECTION && kind != WXL_EVENT_SLIDER_CHANGE && kind != WXL_EVENT_SPIN_CHANGE, "Bounded input control events cannot be detached/cloned");
+    require(!thread_event_kind(kind) && !stc_event_kind(kind) && !input_event_kind(kind) && !aui_event_kind(kind) && !web_event_kind(kind) && kind != WXL_EVENT_SEARCH && kind != WXL_EVENT_SEARCH_CANCEL && kind != WXL_EVENT_TIME_CHANGE && kind != WXL_EVENT_DATE_CHANGE && kind != WXL_EVENT_COMBO_SELECTION && kind != WXL_EVENT_TOGGLE_BUTTON_CHANGE && kind != WXL_EVENT_RADIO_SELECTION && kind != WXL_EVENT_SLIDER_CHANGE && kind != WXL_EVENT_SPIN_CHANGE, "Bounded input control events cannot be detached/cloned");
     require(event.GetEventUserData() == nullptr, "Cannot clone borrowed event userData");
     if (auto* command = dynamic_cast<wxCommandEvent*>(&event))
         require(!command->GetClientData() && !command->GetClientObject(), "Cannot clone borrowed command client data");
@@ -1013,7 +1023,7 @@ int64_t read_event_field(wxEvent& event, int field) {
     }
 }
 void write_event_field(wxEvent& event, int field, int64_t value) {
-    require(!stc_payload_readonly(event.GetEventType()) && !input_payload_readonly(event.GetEventType()) && !aui_payload_readonly(event.GetEventType()) && !web_event_type(event.GetEventType()), "Web event payload metadata is read-only");
+    require(!thread_payload_readonly(event.GetEventType()) && !stc_payload_readonly(event.GetEventType()) && !input_payload_readonly(event.GetEventType()) && !aui_payload_readonly(event.GetEventType()) && !web_event_type(event.GetEventType()), "Web event payload metadata is read-only");
     auto* close = dynamic_cast<wxCloseEvent*>(&event);
     auto* notify = dynamic_cast<wxNotifyEvent*>(&event);
     auto* command = dynamic_cast<wxCommandEvent*>(&event);
@@ -1105,8 +1115,8 @@ struct Binding {
             for (const auto& item : registered_events)
                 if (item.second.type == event.GetEventType()) { snapshot_kind = item.first; break; }
             const int family = native_event_family(snapshot_kind);
-            const bool carries_text = stc_event_kind(snapshot_kind) || web_event_kind(snapshot_kind) || snapshot_kind == WXL_EVENT_SEARCH || snapshot_kind == WXL_EVENT_SEARCH_CANCEL || snapshot_kind == WXL_EVENT_COMBO_SELECTION || snapshot_kind == WXL_EVENT_TOGGLE_BUTTON_CHANGE || snapshot_kind == WXL_EVENT_RADIO_SELECTION || snapshot_kind == WXL_EVENT_TEXT_CHANGE || snapshot_kind == WXL_EVENT_LISTBOX_SELECTION || snapshot_kind == WXL_EVENT_LISTBOX_DOUBLE_CLICK || snapshot_kind >= first_registered_event_kind;
-            const auto text = command ? command->GetString() : wxString();
+            const bool carries_text = thread_event_kind(snapshot_kind) || stc_event_kind(snapshot_kind) || web_event_kind(snapshot_kind) || snapshot_kind == WXL_EVENT_SEARCH || snapshot_kind == WXL_EVENT_SEARCH_CANCEL || snapshot_kind == WXL_EVENT_COMBO_SELECTION || snapshot_kind == WXL_EVENT_TOGGLE_BUTTON_CHANGE || snapshot_kind == WXL_EVENT_RADIO_SELECTION || snapshot_kind == WXL_EVENT_TEXT_CHANGE || snapshot_kind == WXL_EVENT_LISTBOX_SELECTION || snapshot_kind == WXL_EVENT_LISTBOX_DOUBLE_CLICK || snapshot_kind >= first_registered_event_kind;
+            const auto text = thread_payload_readonly(event.GetEventType()) ? thread_event_text(event) : command ? command->GetString() : wxString();
             const auto bytes = text.ToUTF8();
             wxl_event snapshot{snapshot_kind, carries_text ? (bytes.data() ? bytes.data() : "") : nullptr,
                                      (snapshot_kind == WXL_EVENT_TOGGLE_BUTTON_CHANGE || snapshot_kind == WXL_EVENT_TOGGLE || snapshot_kind == WXL_EVENT_MENU) && command && command->IsChecked() ? 1 : 0,
@@ -1467,7 +1477,7 @@ bool process_deferred_ui_action() {
 
 }
 extern "C" {
-int wxl_abi_version() { return 57; }
+int wxl_abi_version() { return 58; }
 const char* wxl_last_error() { return error.c_str(); }
 int wxl_clipboard_text_available() {
     return boolean_result([&] {
@@ -1558,6 +1568,7 @@ int wxl_start(wxl_callback callback, wxl_ui_callback ui_callback) {
         started = true;
         workflow_modal_hook = std::make_unique<WorkflowModalHook>();
         workflow_modal_hook->Register();
+        thread_endpoint_start();
     });
 }
 int wxl_defer_ui_action(uint64_t token, wxl_handle owner_id) { return status([&] {
@@ -1650,6 +1661,7 @@ int wxl_finish() {
     return status([] {
         ready();
         require_dispatch_entry();
+        thread_endpoint_shutdown();
         finishing = true; ui_timers.clear(); ui_actions.clear(); ui_dispatch = nullptr;
         struct RestoreIdleMode {
             ~RestoreIdleMode() { wxIdleEvent::SetMode(initial_idle_mode); }
@@ -2407,6 +2419,7 @@ int wxl_bind(wxl_handle id, int kind, uint64_t token, int first, int last, int w
         binding->user_data = adapter.get();
         bindings.emplace(token, binding);
         try {
+            if (kind==120) thread_endpoint_register(id,receiver);
             receiver->Bind(type, &Binding::on_event, binding.get(), first, last, adapter.get());
             adapter.release(); // Native dynamic binding now owns the adapter.
         }
@@ -2502,6 +2515,7 @@ int wxl_set_event_field(uint64_t source, int contextual, int field, int64_t valu
 const char* wxl_event_text(uint64_t source, int contextual, size_t* length) {
     return metadata_string([&] {
         auto& event = contextual ? current_event(source) : owned_event(source);
+        if (thread_payload_readonly(event.GetEventType())) return thread_event_text(event);
         auto* command = dynamic_cast<wxCommandEvent*>(&event);
         require(command != nullptr, "Text payload requires a command/notify event");
         return command->GetString();
@@ -2522,7 +2536,7 @@ int wxl_set_event_text(uint64_t source, int contextual, const char* text, size_t
             require(!window || !window->WXGetTextEntry(),
                     "Text-entry-origin text-change payloads are lazy and cannot be mutated");
         }
-        require(!stc_payload_readonly(event.GetEventType()) && !input_payload_readonly(event.GetEventType()) && !aui_payload_readonly(event.GetEventType()) && !web_event_type(event.GetEventType()), "Web event text is read-only");
+        require(!thread_payload_readonly(event.GetEventType()) && !stc_payload_readonly(event.GetEventType()) && !input_payload_readonly(event.GetEventType()) && !aui_payload_readonly(event.GetEventType()) && !web_event_type(event.GetEventType()), "Web event text is read-only");
         require(text || length == 0, "Null event text");
         command->SetString(wxString::FromUTF8(text ? text : "", length));
     });
@@ -2575,12 +2589,12 @@ int wxl_delete_pending_events(wxl_handle id) {
         require_dispatch_entry(true);
         auto* receiver = event_handler(id);
         require(id != application_handle, "Cannot discard the application handler's deferred cleanup queue");
-        receiver->DeletePendingEvents();
+        thread_endpoint_delete_pending(receiver);
         if (const auto found = owned_handlers.find(id); found != owned_handlers.end())
             static_cast<StandaloneHandler*>(found->second.get())->ClearQueuedSessions();
         // DeletePendingEvents itself leaves the wxApp registration behind.
         // Remove it too, or a later app pump could invoke an empty-queue check.
-        wxTheApp->RemovePendingEventHandler(receiver);
+        // Already unregistered while excluding worker queue calls.
     });
 }
 int wxl_window_handler(wxl_handle window_id, wxl_handle* handler_id) {
@@ -3731,3 +3745,7 @@ extern "C" {
 extern "C" {
 #include "splitter-extra.inc"
 }
+
+#define WXL_THREAD_EVENT_IMPLEMENTATION
+#include "thread-events.inc"
+#undef WXL_THREAD_EVENT_IMPLEMENTATION

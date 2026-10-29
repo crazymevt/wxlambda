@@ -3329,3 +3329,57 @@ drag/accessibility or hosted platforms. Existing WebView remains macOS-gated.
 No system clipboard transfer in automatic tests. Primary KryptonEdit scope is
 not complete: next integrate staged worker delivery, then scalable views/tree/grid
 depth and public graphics/image facilities, keeping focused reviewed commits.
+
+## ABI58: copied worker-to-GUI thread events (2026-10-29)
+
+QUEUE-THREAD-EVENT is the only worker-safe native operation. It targets an
+existing EVENT-HANDLER whose :THREAD binding established an internal endpoint on
+the GUI thread; no new public thread/endpoint/job/editor abstraction is exposed.
+The native wxThreadEvent packet owns copied valid UTF-8 bytes (including NUL),
+at most1MiB, with256 live packets per receiver and4096 per session. GUI dispatch
+copies EVENT-TEXT into the usual base-family snapshot/current context. No Lisp
+worker closure, native pointer adoption or owned/synthetic/cloned thread event.
+
+An independent endpoint mutex serializes worker posts with target lifetime and
+shutdown; posting never calls ready() or reads ordinary GUI/session registries.
+Generic ManagedWindow Destroy retires posting before native work, restoring only
+on refusal/exception while its weak source survives. Earliest managed window/
+standalone destruction invalidates endpoints, and finish closes ingress before
+native cleanup. DeletePendingEvents plus wxApp pending-handler removal is one
+posting-critical section. Atomic packet counters avoid lock inversion on native
+discard/destruction. Pinned appbase.cpp/event.cpp release both native pending
+locks before GUI callbacks; proof/limits are in docs/THREAD-EVENTS.md.
+Native wxUSE_THREADS=1 is required. Root independent source review found no
+actionable lifetime/locking/payload findings.
+
+Main/native builds pass (quiet-run.s5Esv2uy/Kq8M6Dpr). Focused actual SBCL/CCL
+worker tests pass (ulv1QgPF/f6vs36E9); final native combined harness passes with
+zero wx assertions (CaSWRlVi), including copied Unicode/NUL, GUI callback thread,
+readonly contexts, count/byte bounds, refused/throwing Destroy restoration,
+delete/post, destroy/post, shutdown/post races and posts after wxEntryCleanup.
+Full88 GUI scenarios plus preflight pass on SBCL and CCL
+(yfXee5wK/srcCpMvj), reports evidence/thread-delivery/{sbcl,ccl}-final-20261029/.
+All14 pinned inventory tests pass (SnnYCtRQ), runner tests pass (VWFDIe8X), and
+docset-tool tests pass (WXxeM1lN). Actual448 public exports and class/SETF coverage
+pass on both Lisps (HjnZAExY/kZUSPp7y). The575-entry format1 docset builds/checks
+with zero problems (sI6MHFTG/b45H9KkV), including discovery, symbol lookup and
+guide/example access; final handoff regeneration follows this record.
+
+Independent follow-up review required actual native string payload semantics.
+Packets now SetString from a uniquified native wxString, with all worker-side
+temporary aliases destroyed before QueueEvent publication. GetString and inherited
+native Clone preserve Unicode/NUL; clones return base events without duplicating
+queue reservations. Focused both-Lisp tests and final native GetString/Clone/race
+fixtures pass (PC3GsGSE/BgHAG60D/ReRUZJHN). The final relocated package
+dist/wxlambda-thread-native-string and all5 checks pass (FdTr6Xur), report
+evidence/packaging/thread-native-string-20261029/, including actual packaged SBCL
+worker Unicode/NUL delivery on the GUI thread.
+Isolated docset install/discovery/lookup/guide/example access passes
+(quiet-run.SHibPWoP), /private/tmp/wxlambda-thread-docsets/wxlambda. The default
+user docset location was not modified; installation is documented in docs/DOCSET.md.
+Final handoff/native-string documentation regeneration, checking and isolated
+installation follow this record. No system clipboard transfers in
+automatic worker tests. Physical input/IME, graphical Cadre and hosted platforms
+remain unverified. The broader KryptonEdit request still needs selected scalable
+views/grid depth and public graphics/image work. Next bounded grid work is staged
+outside the repository pending a separate native editor/commit/cancel audit.

@@ -94,6 +94,8 @@ against form/editor, manager and drawing/monitoring workflows. See
 [MVP acceptance](MVP-ACCEPTANCE.md) for current evidence and explicit boundaries;
 this is not full native class parity or hosted platform certification.
 The wxQt tree construction gate remains in force.
+ABI58 adds bounded copied [worker thread events](THREAD-EVENTS.md) to existing
+GUI receivers. Other operations retain their GUI-thread and selected-feature scope.
 
 A milestone is accepted against its selected GUI scope and representative
 workflows, not declaration totals or completion of every pending native entry.

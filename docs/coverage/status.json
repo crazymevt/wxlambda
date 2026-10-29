@@ -979,13 +979,15 @@
       "lisp": [
         "queue-event",
         "owned-event",
-        "transfer-event"
+        "transfer-event",
+        "queue-thread-event"
       ],
       "native": [
         "wxl_queue_event",
-        "wxl_dispatch_owned"
+        "wxl_dispatch_owned",
+        "wxl_queue_thread_event"
       ],
-      "scope": "Copied four-command or :CLOSE wxCloseEvent queues on exposed handlers, main-thread only. Kind-specific payloads and synthetic CanVeto option; queued frame close may run defaults. Arbitrary types, session events, native-origin override and worker dispatch remain open. OWNED-EVENT arguments dispatch independent detached clones, with receiver origin; source survives and may be destroyed after copying. Session receiver guards remain. Copied owned wxEVT_TEXT to text-entry receivers rejects before emission; keyword synthetic behavior is unchanged. TRANSFER-EVENT also hands off the actual supported owned native object after validation; the former source handle is consumed, with no post-handoff rollback/delivery guarantee. Managed standalone chains now participate in native traversal, with node-local enabled flags, Skip/consumption and unchanged target queue ownership. Window receivers preserve wxEvtHandler stack-bypass behavior; explicit ProcessWindowEvent/Locally bindings provide synchronous stack-aware copies. Session delivery to attached pushed handlers rejects before emission."
+      "scope": "Copied four-command or :CLOSE wxCloseEvent queues on exposed handlers, main-thread only. Kind-specific payloads and synthetic CanVeto option; queued frame close may run defaults. Arbitrary types, session events, native-origin override and worker dispatch remain open. OWNED-EVENT arguments dispatch independent detached clones, with receiver origin; source survives and may be destroyed after copying. Session receiver guards remain. Copied owned wxEVT_TEXT to text-entry receivers rejects before emission; keyword synthetic behavior is unchanged. TRANSFER-EVENT also hands off the actual supported owned native object after validation; the former source handle is consumed, with no post-handoff rollback/delivery guarantee. Managed standalone chains now participate in native traversal, with node-local enabled flags, Skip/consumption and unchanged target queue ownership. Window receivers preserve wxEvtHandler stack-bypass behavior; explicit ProcessWindowEvent/Locally bindings provide synchronous stack-aware copies. Session delivery to attached pushed handlers rejects before emission. QUEUE-THREAD-EVENT adds bounded worker-safe copied string packets to GUI-registered existing receivers. Posting uses internal endpoint mutex and qualified native QueueEvent; no ready/GUI registry reads from worker, stale/full/shutdown reject. Other queue-event/owned-event operations retain their GUI-thread scopes. No arbitrary foreign event adoption or guaranteed delivery. See docs/THREAD-EVENTS.md."
     },
     {
       "header": "wx/event.h",
@@ -14857,6 +14859,64 @@
         "wxl_stc_style_bytes"
       ],
       "scope": "Bounded UTF-8 byte-oriented styling adapter; GUI lifetime and callback guards. See docs/STYLED-TEXT.md."
+    },
+    {
+      "header": "wx/event.h",
+      "line": 3620,
+      "declaration": "class wxThreadEvent : public wxEvent {",
+      "symbol": "wxThreadEvent",
+      "status": "~",
+      "lisp": [
+        "queue-thread-event",
+        "bind-event",
+        "event-text"
+      ],
+      "native": [
+        "wxl_queue_thread_event"
+      ],
+      "scope": "Bounded copied UTF-8 :THREAD delivery through existing EVENT-HANDLER receivers, native THREAD category/base family. Private accounting subclass with independently owned native wxThreadEvent string; GUI-created internal endpoint mutex protects queue/receiver teardown. At most256 packets/receiver and4096/session,1MiB payload. Only queue-thread-event is worker-safe. No public event constructor/clone, arbitrary wxAny/Lisp/pointer payload, receiver adoption or full class parity. See docs/THREAD-EVENTS.md."
+    },
+    {
+      "header": "wx/event.h",
+      "line": 3626,
+      "declaration": "wxThreadEvent(wxEventType eventType = wxEVT_THREAD, int id = wxID_ANY);",
+      "symbol": "wxThreadEvent::wxThreadEvent",
+      "status": "~",
+      "lisp": [
+        "queue-thread-event"
+      ],
+      "native": [
+        "wxl_queue_thread_event"
+      ],
+      "scope": "Private native packet construction fixed to wxEVT_THREAD/wxID_ANY. Payload bytes are independently copied before queue ownership transfer. No public owned/synthetic wxThreadEvent constructor or clone API. See docs/THREAD-EVENTS.md."
+    },
+    {
+      "header": "wx/event.h",
+      "line": 3687,
+      "declaration": "wxString GetString() const;",
+      "symbol": "wxThreadEvent::GetString",
+      "status": "~",
+      "lisp": [
+        "event-text"
+      ],
+      "native": [
+        "wxl_event_text"
+      ],
+      "scope": "GUI-only copied snapshot/current-context text from actual native wxThreadEvent::GetString, including explicit-length Unicode/NUL. Queued packets use native SetString with all worker-side temporary aliases destroyed before publication. No public mutable payload/wxAny access. See docs/THREAD-EVENTS.md."
+    },
+    {
+      "header": "wx/event.h",
+      "line": 3703,
+      "declaration": "void SetString(const wxString& string);",
+      "symbol": "wxThreadEvent::SetString",
+      "status": "~",
+      "lisp": [
+        "queue-thread-event"
+      ],
+      "native": [
+        "wxl_queue_thread_event"
+      ],
+      "scope": "Private worker packet native SetString from a uniquified native string. Temporary aliases are destroyed before QueueEvent publication; actual GetString/Clone retain native payload semantics. No public mutable thread-event resource, arbitrary wxAny payload or user-owned native string adoption. See docs/THREAD-EVENTS.md."
     }
   ],
   "classes": {
@@ -16883,6 +16943,18 @@
         "wxl_stc_detail"
       ],
       "scope": "Bounded copied native STC events only: modified/updateui/styleneeded/margin/dwell/savepoint/autocomplete/calltip/needshown/read-only-attempt/charadded. Thirteen kind-checked integer readers plus copied EVENT-TEXT where native metadata supplies it; payloads readonly, scoped Skip/propagation, no owned/synthetic/clone or raw document/clientdata retention. Exact innermost same-control STYLENEEDED permits only StartStyling/SetStyling/SetStyleBytes. Active GUI thread/session and checked native STYLED-TEXT-CONTROL lifetime. UTF-8 byte offsets, never Lisp string indices; position arguments must be codepoint boundaries. Initial/replacement UTF-8 text supports embedded NUL and total<=64MiB; font/assist strings are NUL-free<=1MiB. Integer/index domains are bounded by the adapter. Mutations reject callbacks except same-control StartStyling/SetStyling/SetStyleBytes in the exact innermost native STYLENEEDED callback. Native synchronous events and source/ancestor lifetime/native-entry guards apply; use owner-bound deferred actions for other writes. No raw SendMsg, pointer/document adoption, lexer/resource ownership, worker calls or application editor abstractions. Requires wxUSE_STC and stc component. See docs/STYLED-TEXT.md."
+    },
+    "wxThreadEvent": {
+      "status": "~",
+      "lisp": [
+        "queue-thread-event",
+        "bind-event",
+        "event-text"
+      ],
+      "native": [
+        "wxl_queue_thread_event"
+      ],
+      "scope": "Bounded copied UTF-8 :THREAD delivery through existing EVENT-HANDLER receivers, native THREAD category/base family. Private accounting subclass with independently owned native wxThreadEvent string; GUI-created internal endpoint mutex protects queue/receiver teardown. At most256 packets/receiver and4096/session,1MiB payload. Only queue-thread-event is worker-safe. No public event constructor/clone, arbitrary wxAny/Lisp/pointer payload, receiver adoption or full class parity. See docs/THREAD-EVENTS.md."
     }
   }
 }

@@ -148,6 +148,9 @@ construction and a generic writer hook. Lisp subclassing extends the wrapper;
 it does not change the native C++ class or provide native virtual callbacks.
 Native ownership, main-thread restrictions and explicit handler unbinding before
 destruction still apply. Start a fresh Lisp when changing these class definitions.
+The [thread event](THREAD-EVENTS.md) `queue-thread-event` generic is the bounded
+worker-safe exception: it copies payloads to a GUI-registered existing receiver;
+construction, binding, property access and callback dispatch stay on the GUI thread.
 
 ```sh
 sbcl --noinform --no-sysinit --no-userinit --non-interactive \

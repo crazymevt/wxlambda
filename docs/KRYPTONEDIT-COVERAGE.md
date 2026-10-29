@@ -34,8 +34,9 @@ current statuses after each batch.
 
 The installed local3.2.12 configuration has STC/AUI/HTML/THREADS enabled and their
 libraries available. New CMake linkage is required where components are selected.
-ABI57 implements the first three rows in bounded scope; see the current delivery
-record below. Later rows remain pending until separately implemented.
+ABI57 implements the first three rows in bounded scope; ABI58 adds the selected
+worker delivery row. See the current delivery record below. Other rows remain
+pending until separately implemented.
 
 ## Priority input events for KryptonEdit
 
@@ -171,7 +172,7 @@ language servers, persistence and editor policy belong in the application.
 | Split workspace | `splitter-window`: two fixed PANEL panes, immutable orientation, sash position/minimum/gravity and guarded sash notifications. | No single-pane initialization, unsplit/re-split or replacement. Bounded `Initialize`, `Unsplit` and `ReplaceWindow` adapters can retain hidden removed panes without deleting or reparenting them. No docking manager is needed for a two-pane workspace. |
 | Project tree | Single-selection `tree-control`, canonical generation-checked item views, copied labels, append/delete/traversal/expand and native selection snapshots. | No icons/image lists, lazy expansion notifications, activation/context menu, drag/drop, label editing, hidden-root, multiselect or virtual model. Directory traversal can already use Lisp IO/model code; large/lazy trees need expansion and activation events plus bounded item styling/images. wxQt stays unavailable until raw asynchronous item events are generation safe. |
 | Results list/table | Dynamic single-selection unsorted `list-box` with append/rename/delete/clear, selection and double-click. `grid` has a fixed native-owned string table, copied cell/label text, editing policy and committed-value readback. | No multi-column report/virtual list (`wxListCtrl`/`wxListView`), data view/tree list, grid cell/selection events, dynamic grid shape or custom model ownership. A nonvirtual report-list with copied columns/rows and selection/activation would be a smaller reusable first results-table slice than Lisp virtual-model callbacks. |
-| Background activity | Owner-bound deferred UI actions and coalesced timers deliver at the safe main-thread idle boundary; activity indicator supplies feedback. Lisp-native file IO is already used by the document form. | No worker-safe posting/mailbox, process IO/subprocess abstraction, filesystem watcher or worker scheduler. `defer-ui-action`, timers, `wake-up-idle` and all native wrappers require the GUI thread; they are not worker entry points. Lisp threads/processes need a Lisp synchronized queue drained by an existing UI timer, or a separately audited copied worker-to-GUI mailbox. Never pass GUI handles/callback contexts to workers. |
+| Background activity | Owner-bound deferred UI actions/timers deliver at safe main-thread idle; activity indicator supplies feedback. ABI58 `queue-thread-event` copies bounded strings from workers to existing GUI-registered receivers; callbacks run on the GUI thread. | No process IO/subprocess abstraction, filesystem watcher or worker scheduler. Other native operations, including `defer-ui-action`, timers and `wake-up-idle`, retain GUI-thread rules. No arbitrary Lisp object/native pointer transfer; see [thread events](THREAD-EVENTS.md). |
 | Images/icons | Retained canvas supports copied opaque RGB buffers (each bitmap1..256, total2MiB) and private PNG export; native DC/font/bitmap/image resources remain hidden. | No image file decode, alpha, scaling, standalone image/bitmap resource, static-bitmap widget, image lists, toolbar/tree/tab icons or DPI bitmap bundles. Introduce copied RGBA image values and a small native display/icon adapter only when selected; avoid raw resource adoption/global handler mutation. Decode failures, byte/pixel limits, alpha/scale/DPI and disposal need explicit contracts. |
 
 Dependencies and platform boundaries: current CMake links core/base/adv/webview;
@@ -243,7 +244,7 @@ Pinned references: [AUI notebook interface](https://github.com/wxWidgets/wxWidge
 [images](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/image.h),
 [filesystem watcher](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/fswatcher.h).
 
-## Current delivery: ABI57
+## Current delivery: ABI57 priority bindings and ABI58 worker events
 
 Implemented: native-backed styled text with UTF-8 byte ranges, modification
 metadata, multiple/rectangular selection, undo/save points, application styling,
@@ -266,8 +267,15 @@ recommendations above. No exhaustive native parity is implied.
 Both-Lisp87-scenario GUI suites, native fixtures and isolated package checks pass
 on local macOS wxWidgets3.2.12. Physical keyboard/IME/drag/accessibility behavior
 and other ports remain unverified. The primary KryptonEdit goal is **not yet
-complete**: worker delivery, richer views/grid events and public image resources
-remain selected work.
+complete**: richer views/grid events and public image resources remain selected work.
+
+ABI58 adds `queue-thread-event` and native `:thread` delivery through existing
+EVENT-HANDLER receivers. Registration/binding stays on the GUI thread; workers
+copy only bounded UTF-8 payloads through a separately synchronized native endpoint.
+Receiver retirement, pending-event deletion and shutdown serialize against posts;
+callbacks stay on the GUI thread. Focused both-Lisp worker tests and native race
+fixtures pass. See [thread events](THREAD-EVENTS.md) for exact limits and evidence
+in the implementation handoff; this is not a worker scheduler or editor job API.
 
 ## Docking and lightweight HTML survey
 

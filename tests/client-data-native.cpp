@@ -1793,6 +1793,7 @@ void exercise_search_controls() {
 #include "webview-native.inc"
 #include "aui-native.inc"
 #include "input-native.inc"
+#include "thread-native.inc"
 #include "styled-text-native.inc"
 
 int main() {
@@ -1838,12 +1839,15 @@ int main() {
         exercise_web_view();
         exercise_aui_notebook();
         exercise_input_events();
+        exercise_thread_events();
         exercise_styled_text();
         bool shutdown_ran=false;
         ui_action_probe=[&](uint64_t,int) { shutdown_ran=true; };
         expect(wxl_defer_ui_action(5000,0)==0 && wxl_start_ui_timer(5001,1,0,0)==0,"Queue shutdown action/timer");
         expect(wxl_finish() == 0, "Application cleanup failed");
         active = false;
+        int late_thread_post=0; std::thread late_worker([&] { late_thread_post=wxl_queue_thread_event(1,"late",4); }); late_worker.join();
+        expect(late_thread_post==-1,"Worker post after wxEntryCleanup rejects without entering wx");
         expect(!shutdown_ran && ui_actions.empty() && ui_timers.empty() && !ui_dispatch,"Shutdown cancels pending actions before cleanup"); ui_action_probe={};
         expect(wxIdleEvent::GetMode() == wxIDLE_PROCESS_ALL, "Finish did not restore pre-session idle mode");
         expect(wxl_idle_mode() == -1 && wxl_wake_up_idle() == -1, "Inactive idle APIs must reject");

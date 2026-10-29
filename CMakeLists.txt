@@ -56,7 +56,15 @@ check_cxx_source_compiles("#include <wx/setup.h>
 #error Styled text and AUI are required
 #endif
 int main() { return 0; }" WXLAMBDA_HAS_EDITOR_COMPONENTS)
+check_cxx_source_compiles("#include <wx/setup.h>
+#if !wxUSE_THREADS
+#error Native thread locking is required
+#endif
+int main() { return 0; }" WXLAMBDA_HAS_THREADS)
 cmake_pop_check_state()
+if(NOT WXLAMBDA_HAS_THREADS)
+  message(FATAL_ERROR "wxlambda requires wxUSE_THREADS=1 for worker event delivery")
+endif()
 if(NOT WXLAMBDA_HAS_EDITOR_COMPONENTS)
   message(FATAL_ERROR "wxlambda requires wxUSE_STC=1, wxUSE_AUI=1 and stc/aui components")
 endif()
@@ -102,7 +110,7 @@ if(APPLE)
 endif()
 set_target_properties(wxlambda PROPERTIES CXX_VISIBILITY_PRESET hidden VISIBILITY_INLINES_HIDDEN YES)
 install(TARGETS wxlambda LIBRARY DESTINATION lib RUNTIME DESTINATION bin ARCHIVE DESTINATION lib)
-install(FILES native/wxlambda.h native/drawing-canvas-api.h native/activity-indicator-api.h native/grid-api.h native/webview-api.h native/stc-api.h native/input-events-api.h native/aui-api.h DESTINATION include)
+install(FILES native/wxlambda.h native/drawing-canvas-api.h native/activity-indicator-api.h native/grid-api.h native/webview-api.h native/stc-api.h native/input-events-api.h native/aui-api.h native/thread-events-api.h DESTINATION include)
 
 option(WXLAMBDA_BUILD_NATIVE_TESTS "Build native invariant regressions (GUI session required)" OFF)
 if(WXLAMBDA_BUILD_NATIVE_TESTS)

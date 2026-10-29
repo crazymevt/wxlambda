@@ -11,7 +11,7 @@ not a delivery sequence. This native-status index is not a feature-priority or r
 
 ## C1: Foundation, values, application, events, and base utilities
 
-Class/struct definitions: 0 complete; 17 partial; 285 pending. Partial and pending classes remain open.
+Class/struct definitions: 0 complete; 18 partial; 284 pending. Partial and pending classes remain open.
 
 [Declaration counts and remaining work](README.md).
 
@@ -92,7 +92,7 @@ Class/struct definitions: 0 complete; 17 partial; 285 pending. Partial and pendi
 - [ ] `wxPaletteChangedEvent` — [`wx/event.h`](phase-c1.md), upstream line 3531.
 - [ ] `wxQueryNewPaletteEvent` — [`wx/event.h`](phase-c1.md), upstream line 3541.
 - [~] `wxNotifyEvent` — [`wx/event.h`](phase-c1.md), upstream line 3568. — **Partial**: `register-event-type`, `bind-event`, `queue-event`, `process-event`, `event-family`, `event-vetoed-p`, `(setf event-vetoed-p)`, `event-integer`, `owned-event`, `make-event`, `clone-event`, `destroy-event`, `event-alive-p`, `event-text`, `(setf event-text)`, `(setf event-integer)`, `post-event`, `transfer-event`, `process-event-locally`, `event-extra-long`, `(setf event-extra-long)`, `event-selection-p`, `event-checked-p`, `(setf event-checked-p)`, `event-selection`, `(setf event-selection)`, `(setf event-origin-id)`; ABI: `wxl_register_event_type`, `wxl_bind`, `wxl_queue_event`, `wxl_process_event`, `wxl_context_vetoed`, `wxl_context_set_vetoed`, `wxl_owned_event`, `wxl_clone_event`, `wxl_event_destroy`, `wxl_event_alive`, `wxl_dispatch_owned`, `wxl_event_field`, `wxl_set_event_field`, `wxl_event_text`, `wxl_set_event_text`. Registered notify snapshots/current views and exact owned wxNotifyEvent resources provide payload metadata, Veto/Allow and guarded detached clone/copy/post/transfer operations. Shared per-binding EQ Lisp USER-DATA readers retain association lifetimes without adopting native pointers; handler client data remains separate. Native control-specific notify subclasses, broad virtual hooks, retained origins, general native client/item/userData pointer ownership and worker dispatch remain open.
-- [ ] `wxThreadEvent` — [`wx/event.h`](phase-c1.md), upstream line 3620.
+- [~] `wxThreadEvent` — [`wx/event.h`](phase-c1.md), upstream line 3620. — **Partial**: `queue-thread-event`, `bind-event`, `event-text`; ABI: `wxl_queue_thread_event`. Bounded copied UTF-8 :THREAD delivery through existing EVENT-HANDLER receivers, native THREAD category/base family. Private accounting subclass with independently owned native wxThreadEvent string; GUI-created internal endpoint mutex protects queue/receiver teardown. At most256 packets/receiver and4096/session,1MiB payload. Only queue-thread-event is worker-safe. No public event constructor/clone, arbitrary wxAny/Lisp/pointer payload, receiver adoption or full class parity. See docs/THREAD-EVENTS.md.
 - [ ] `wxHelpEvent` — [`wx/event.h`](phase-c1.md), upstream line 3740.
 - [ ] `wxScrollEvent` — [`wx/event.h`](phase-c1.md), upstream line 3880.
 - [ ] `wxGestureEvent` — [`wx/event.h`](phase-c1.md), upstream line 3921.
