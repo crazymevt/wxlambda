@@ -166,3 +166,5 @@ event owned/synthetic/clone support is unbound; forwarded spin text callbacks
 retain numeric lifetime/reentry guards.
 
 `:radio-selection` command events expose copied/current index and native label; EVENT-SELECTION SETF and owned/synthetic/cloning reject. Shared input guards protect source/ancestors; see [radio groups](RADIO-GROUPS.md).
+
+`:toggle-button-change` exposes copied/current checked metadata and native text (normally empty); semantic EVENT-CHECKED-P SETF and owned/synthetic/cloning reject. Source/ancestor Input guards apply to native and propagated callbacks. See [toggle buttons](TOGGLE-BUTTONS.md).

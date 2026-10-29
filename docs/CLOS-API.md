@@ -276,3 +276,5 @@ No public wxTimer subclass/Notify override/adoption protocol is exposed. See
 [UI timers](UI-TIMERS.md).
 
 RADIO-BOX adds fixed mutually exclusive choices via :parent/:items/:label/:selection/:orientation; see [radio groups](RADIO-GROUPS.md).
+
+TOGGLE-BUTTON supports :parent/:label/:checked with direct subclass slots/defaults and native-ready AFTER hooks. See [toggle buttons](TOGGLE-BUTTONS.md).

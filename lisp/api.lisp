@@ -70,6 +70,7 @@
 
 (defclass label (window) ())
 (defclass gauge (window) ())
+(defclass toggle-button (window) ())
 (defclass radio-box (window) ())
 (defclass slider (window) ())
 (defclass spin-control (window) ())
@@ -151,7 +152,7 @@
           (when handler
             (when (cffi:null-pointer-p payload) (error "Missing event payload"))
             (cffi:with-foreign-slots ((kind text checked selection id text-length context native-type can-veto vetoed family integer logging-off timestamp command origin-id category extra-long selection-action user-data-token more-requested tree-item sash-position) payload (:struct native-event))
-              (let* ((event-kind (or (case kind (1 :click) (2 :text-change) (3 :toggle) (4 :selection) (5 :close) (6 :query-end-session) (7 :end-session) (8 :idle) (9 :menu) (10 :notebook-page-changing) (11 :notebook-page-changed) (12 :listbox-selection) (13 :listbox-double-click) (14 :tree-selection-changing) (15 :tree-selection-changed) (16 :splitter-sash-changing) (17 :splitter-sash-changed) (18 :slider-change) (19 :spin-change) (20 :radio-selection))
+              (let* ((event-kind (or (case kind (1 :click) (2 :text-change) (3 :toggle) (4 :selection) (5 :close) (6 :query-end-session) (7 :end-session) (8 :idle) (9 :menu) (10 :notebook-page-changing) (11 :notebook-page-changed) (12 :listbox-selection) (13 :listbox-double-click) (14 :tree-selection-changing) (15 :tree-selection-changed) (16 :splitter-sash-changing) (17 :splitter-sash-changed) (18 :slider-change) (19 :spin-change) (20 :radio-selection) (21 :toggle-button-change))
                                      (gethash kind *registered-event-kinds*)
                                      (error "Unregistered native event kind ~S" kind)))
                      (user-data (unless (zerop user-data-token)
@@ -166,7 +167,7 @@
                                 (error "Missing text-change payload"))
                               (unless (cffi:null-pointer-p text)
                                 (cffi:foreign-string-to-lisp text :count text-length :encoding :utf-8))))
-                     (checked-p (and (member kind '(3 9)) (not (zerop checked))))
+                     (checked-p (and (member kind '(3 9 21)) (not (zerop checked))))
                      (event (%make-event event-kind (handler-source handler) value checked-p
                                          (when (member kind '(4 10 11 12 13 20)) (unless (= selection -1) selection)) id native-type
                                          (not (zerop can-veto)) (not (zerop vetoed)) family integer (not (zerop logging-off)) timestamp (not (zerop command)) origin-id category extra-long (not (zerop selection-action)) user-data (not (zerop more-requested)) (canonical-tree-item tree-item) (when (member kind '(16 17)) sash-position))))
@@ -514,7 +515,7 @@ RETURN-TO-APPLICATION-REPL restart. Setup errors propagate to the caller."
     (error "APPLICATION-HANDLER is borrowed; use CURRENT-APPLICATION-HANDLER"))
   (when (and (typep object 'window)
              (/= 1 (count-if (lambda (kind) (typep object kind))
-                         '(frame toolbar status-bar panel notebook list-box tree-control splitter-window button text-control label checkbox choice gauge slider spin-control radio-box text-entry-dialog single-choice-dialog message-dialog file-dialog))))
+                         '(frame toolbar status-bar panel notebook list-box tree-control splitter-window button text-control label checkbox choice gauge slider spin-control radio-box toggle-button text-entry-dialog single-choice-dialog message-dialog file-dialog))))
     (error "~A must inherit exactly one concrete wxlambda widget class; WINDOW is abstract"
            (class-name (class-of object))))
   (unless *active*
@@ -636,7 +637,7 @@ RETURN-TO-APPLICATION-REPL restart. Setup errors propagate to the caller."
     (cffi:foreign-string-to-lisp pointer :encoding :utf-8)))
 
 (defgeneric checked-p (checkbox &key notify)
-  (:documentation "Read checkbox or check-menu-item state."))
+  (:documentation "Read checkbox, toggle-button or check-menu-item state."))
 
 (defmethod checked-p ((checkbox checkbox) &key notify)
   "Return T or NIL for CHECKBOX's current state."
@@ -983,7 +984,7 @@ live checkbox, including when called from inside its handler."
   t)
 
 (defun builtin-event-kind (kind)
-  (case kind (:click 1) (:text-change 2) (:toggle 3) (:selection 4) (:close 5) (:query-end-session 6) (:end-session 7) (:idle 8) (:menu 9) (:notebook-page-changing 10) (:notebook-page-changed 11) (:listbox-selection 12) (:listbox-double-click 13) (:tree-selection-changing 14) (:tree-selection-changed 15) (:splitter-sash-changing 16) (:splitter-sash-changed 17) (:slider-change 18) (:spin-change 19) (:radio-selection 20)))
+  (case kind (:click 1) (:text-change 2) (:toggle 3) (:selection 4) (:close 5) (:query-end-session 6) (:end-session 7) (:idle 8) (:menu 9) (:notebook-page-changing 10) (:notebook-page-changed 11) (:listbox-selection 12) (:listbox-double-click 13) (:tree-selection-changing 14) (:tree-selection-changed 15) (:splitter-sash-changing 16) (:splitter-sash-changed 17) (:slider-change 18) (:spin-change 19) (:radio-selection 20) (:toggle-button-change 21)))
 (defun native-event-kind (kind)
   (or (builtin-event-kind kind)
       (and *registered-event-types* (gethash kind *registered-event-types*))
@@ -1334,7 +1335,7 @@ live checkbox, including when called from inside its handler."
     (check-status (%set-event-field id contextual field native-value))) value)
 (defun keyword-event-kind (code)
   (or (case code (1 :click) (2 :text-change) (3 :toggle) (4 :selection) (5 :close)
-                (6 :query-end-session) (7 :end-session) (8 :idle) (9 :menu) (10 :notebook-page-changing) (11 :notebook-page-changed) (12 :listbox-selection) (13 :listbox-double-click) (14 :tree-selection-changing) (15 :tree-selection-changed) (16 :splitter-sash-changing) (17 :splitter-sash-changed) (18 :slider-change) (19 :spin-change) (20 :radio-selection))
+                (6 :query-end-session) (7 :end-session) (8 :idle) (9 :menu) (10 :notebook-page-changing) (11 :notebook-page-changed) (12 :listbox-selection) (13 :listbox-double-click) (14 :tree-selection-changing) (15 :tree-selection-changed) (16 :splitter-sash-changing) (17 :splitter-sash-changed) (18 :slider-change) (19 :spin-change) (20 :radio-selection) (21 :toggle-button-change))
       (gethash code *registered-event-kinds*) (error "Unknown native event kind ~S" code)))
 (defgeneric event-kind (event))
 (defmethod event-kind ((event event)) (event-kind-value event))
@@ -2523,3 +2524,21 @@ live checkbox, including when called from inside its handler."
   (let ((pointer (%radio-item (handle control) index)))
     (when (cffi:null-pointer-p pointer) (error 'native-error :message (%last-error)))
     (cffi:foreign-string-to-lisp pointer :encoding :utf-8)))
+
+;;; Persistent two-state push buttons, independent of radio groups and toolbars.
+(defmethod initialize-instance :after ((object toggle-button) &key parent (label "") checked)
+  (check-type parent window) (check-text-value label)
+  (adopt-native object (%toggle-button (handle parent) label (if checked 1 0))))
+(defgeneric make-toggle-button (parent &rest initargs &key class label checked &allow-other-keys))
+(defmethod make-toggle-button ((parent window) &rest initargs &key (class 'toggle-button) &allow-other-keys)
+  (apply #'make-widget class 'toggle-button :parent parent initargs))
+(defmethod checked-p ((control toggle-button) &key notify)
+  (declare (ignore notify)) (boolean-result (%toggle-button-checked (handle control))))
+(defmethod (setf checked-p) (value (control toggle-button) &key notify)
+  (call-setter (lambda () (%set-toggle-button-checked (handle control) (if value 1 0) (if notify 1 0))) notify) value)
+(defmethod label-text ((control toggle-button))
+  (let ((pointer (%toggle-button-label (handle control))))
+    (when (cffi:null-pointer-p pointer) (error 'native-error :message (%last-error)))
+    (cffi:foreign-string-to-lisp pointer :encoding :utf-8)))
+(defmethod (setf label-text) (value (control toggle-button))
+  (check-text-value value) (check-status (%set-toggle-button-label (handle control) value)) value)

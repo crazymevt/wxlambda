@@ -244,12 +244,15 @@
       "status": "~",
       "symbol": "wxControl::GetLabel",
       "lisp": [
-        "label-text"
+        "label-text",
+        "toggle-button"
       ],
       "native": [
-        "wxl_get_label"
+        "wxl_get_label",
+        "wxl_toggle_button_label",
+        "wxl_set_toggle_button_label"
       ],
-      "scope": "Inherited by wxStaticText; exported label-text accepts static text only. Other control receivers remain open."
+      "scope": "Native label reads for public static LABEL and TOGGLE-BUTTON wrappers only. Returns copied native UTF8 text; mnemonic/display normalization remains native. No arbitrary wxControl receiver or raw pointer adoption. See docs/TOGGLE-BUTTONS.md."
     },
     {
       "header": "wx/control.h",
@@ -258,12 +261,16 @@
       "status": "~",
       "symbol": "wxControl::SetLabel",
       "lisp": [
-        "(setf label-text)"
+        "(setf label-text)",
+        "toggle-button",
+        "label-text"
       ],
       "native": [
-        "wxl_set_label"
+        "wxl_set_label",
+        "wxl_toggle_button_label",
+        "wxl_set_toggle_button_label"
       ],
-      "scope": "Canonical SETF writer. Inherited interface exposed through wxStaticText override only; other control receivers remain open."
+      "scope": "Public LABEL static text and TOGGLE-BUTTON native label writes only. Toggle writes validate NUL-free text, are silent, preserve checked state and reject same-button callback mutation. Static-label relayout follows existing implementation; toggle best-size changes may need explicit layout. Not arbitrary control access. See docs/TOGGLE-BUTTONS.md."
     },
     {
       "header": "wx/window.h",
@@ -2019,7 +2026,7 @@
         "wxl_bind",
         "wxl_event_field"
       ],
-      "scope": "Uniform saved/current/owned semantic checked view only for :TOGGLE; other kinds NIL. Native command integer nonzero reads true. Does not cover menu/checklist/other derived semantic classes."
+      "scope": "Saved/current/owned kind-limited semantic reads for checkbox :TOGGLE and :MENU; native-only :TOGGLE-BUTTON-CHANGE snapshots/current contexts also read checked metadata. Other kinds yield NIL. Raw nonzero integer payloads can read true without control/item classification. Semantic SETF only checkbox/menu; toggle-button semantic writes reject. Metadata does not query/write current control state."
     },
     {
       "header": "wx/event.h",
@@ -7289,6 +7296,116 @@
         "wxl_set_radio_selection"
       ],
       "scope": "Bounded native-backed wxRadioBox only, fixed2..64 items, valid zero-based selection, one row/column; native text getter and native-only command snapshots/current contexts. Same-group mutation/lifetime guards. No standalone radio buttons, item mutation/per-item state, owned/synthetic/clones, arbitrary styles or complete class parity. See docs/RADIO-GROUPS.md."
+    },
+    {
+      "header": "wx/tglbtn.h",
+      "line": 9,
+      "declaration": "wxEventType wxEVT_TOGGLEBUTTON;",
+      "status": "~",
+      "symbol": "wxEVT_TOGGLEBUTTON",
+      "lisp": [
+        "toggle-button",
+        "make-toggle-button",
+        "checked-p",
+        "label-text",
+        "event-checked-p"
+      ],
+      "native": [
+        "wxl_toggle_button",
+        "wxl_toggle_button_checked",
+        "wxl_set_toggle_button_checked",
+        "wxl_toggle_button_label",
+        "wxl_set_toggle_button_label"
+      ],
+      "scope": "Bounded independent two-state TOGGLE-BUTTON, default style, native-backed CLOS and checked/label generic SETF; silent defaults and explicit one native-class update. Native checked/text snapshots/current contexts, source lifetime/reentry guards. No bitmap toggle, grouping, raw adoption, owned/synthetic/cloned toggle-button events or full class parity. See docs/TOGGLE-BUTTONS.md."
+    },
+    {
+      "header": "wx/tglbtn.h",
+      "line": 38,
+      "declaration": "wxToggleButton();",
+      "status": "~",
+      "symbol": "wxToggleButton::wxToggleButton",
+      "lisp": [
+        "toggle-button",
+        "make-toggle-button",
+        "checked-p",
+        "label-text",
+        "event-checked-p"
+      ],
+      "native": [
+        "wxl_toggle_button",
+        "wxl_toggle_button_checked",
+        "wxl_set_toggle_button_checked",
+        "wxl_toggle_button_label",
+        "wxl_set_toggle_button_label"
+      ],
+      "scope": "Bounded independent two-state TOGGLE-BUTTON, default style, native-backed CLOS and checked/label generic SETF; silent defaults and explicit one native-class update. Native checked/text snapshots/current contexts, source lifetime/reentry guards. No bitmap toggle, grouping, raw adoption, owned/synthetic/cloned toggle-button events or full class parity. See docs/TOGGLE-BUTTONS.md."
+    },
+    {
+      "header": "wx/tglbtn.h",
+      "line": 81,
+      "declaration": "bool Create(wxWindow* parent, wxWindowID id, const wxString& label, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = 0, const wxValidator& val = wxDefaultValidator, const wxString& name = wxCheckBoxNameStr);",
+      "status": "~",
+      "symbol": "wxToggleButton::Create",
+      "lisp": [
+        "toggle-button",
+        "make-toggle-button",
+        "checked-p",
+        "label-text",
+        "event-checked-p"
+      ],
+      "native": [
+        "wxl_toggle_button",
+        "wxl_toggle_button_checked",
+        "wxl_set_toggle_button_checked",
+        "wxl_toggle_button_label",
+        "wxl_set_toggle_button_label"
+      ],
+      "scope": "Bounded independent two-state TOGGLE-BUTTON, default style, native-backed CLOS and checked/label generic SETF; silent defaults and explicit one native-class update. Native checked/text snapshots/current contexts, source lifetime/reentry guards. No bitmap toggle, grouping, raw adoption, owned/synthetic/cloned toggle-button events or full class parity. See docs/TOGGLE-BUTTONS.md."
+    },
+    {
+      "header": "wx/tglbtn.h",
+      "line": 94,
+      "declaration": "virtual bool GetValue() const;",
+      "status": "~",
+      "symbol": "wxToggleButton::GetValue",
+      "lisp": [
+        "toggle-button",
+        "make-toggle-button",
+        "checked-p",
+        "label-text",
+        "event-checked-p"
+      ],
+      "native": [
+        "wxl_toggle_button",
+        "wxl_toggle_button_checked",
+        "wxl_set_toggle_button_checked",
+        "wxl_toggle_button_label",
+        "wxl_set_toggle_button_label"
+      ],
+      "scope": "Bounded independent two-state TOGGLE-BUTTON, default style, native-backed CLOS and checked/label generic SETF; silent defaults and explicit one native-class update. Native checked/text snapshots/current contexts, source lifetime/reentry guards. No bitmap toggle, grouping, raw adoption, owned/synthetic/cloned toggle-button events or full class parity. See docs/TOGGLE-BUTTONS.md."
+    },
+    {
+      "header": "wx/tglbtn.h",
+      "line": 103,
+      "declaration": "virtual void SetValue(bool state);",
+      "status": "~",
+      "symbol": "wxToggleButton::SetValue",
+      "lisp": [
+        "toggle-button",
+        "make-toggle-button",
+        "checked-p",
+        "label-text",
+        "event-checked-p"
+      ],
+      "native": [
+        "wxl_toggle_button",
+        "wxl_toggle_button_checked",
+        "wxl_set_toggle_button_checked",
+        "wxl_toggle_button_label",
+        "wxl_set_toggle_button_label"
+      ],
+      "scope": "Bounded independent two-state TOGGLE-BUTTON, default style, native-backed CLOS and checked/label generic SETF; silent defaults and explicit one native-class update. Native checked/text snapshots/current contexts, source lifetime/reentry guards. No bitmap toggle, grouping, raw adoption, owned/synthetic/cloned toggle-button events or full class parity. See docs/TOGGLE-BUTTONS.md."
     }
   ],
   "classes": {
@@ -8512,6 +8629,24 @@
         "wxl_set_radio_selection"
       ],
       "scope": "Bounded native-backed wxRadioBox only, fixed2..64 items, valid zero-based selection, one row/column; native text getter and native-only command snapshots/current contexts. Same-group mutation/lifetime guards. No standalone radio buttons, item mutation/per-item state, owned/synthetic/clones, arbitrary styles or complete class parity. See docs/RADIO-GROUPS.md."
+    },
+    "wxToggleButton": {
+      "status": "~",
+      "lisp": [
+        "toggle-button",
+        "make-toggle-button",
+        "checked-p",
+        "label-text",
+        "event-checked-p"
+      ],
+      "native": [
+        "wxl_toggle_button",
+        "wxl_toggle_button_checked",
+        "wxl_set_toggle_button_checked",
+        "wxl_toggle_button_label",
+        "wxl_set_toggle_button_label"
+      ],
+      "scope": "Bounded independent two-state TOGGLE-BUTTON, default style, native-backed CLOS and checked/label generic SETF; silent defaults and explicit one native-class update. Native checked/text snapshots/current contexts, source lifetime/reentry guards. No bitmap toggle, grouping, raw adoption, owned/synthetic/cloned toggle-button events or full class parity. See docs/TOGGLE-BUTTONS.md."
     }
   }
 }

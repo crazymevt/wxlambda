@@ -270,7 +270,7 @@ C3 includes bounded managed menus and standard/generic dialogs. Other source
 categories remain selected feature work; internal conversions/types alone are
 not full public class coverage.
 
-The window-facing Lisp API has twenty-three wrapper classes (two abstract) plus the public event-handler base, direct native
+The window-facing Lisp API has twenty-four wrapper classes (two abstract) plus the public event-handler base, direct native
 construction and generic operations/SETF; see [CLOS API](CLOS-API.md). This establishes Lisp dispatch
 and method combination, not native C++ subclass/virtual-callback coverage.
 
@@ -290,8 +290,8 @@ virtual overrides remain on-demand/deferred.
 
 ### C2: Windows, layout, basic controls, and input
 
-[Complete C2 source inventory](coverage/phase-c2.md). Radio groups, list boxes and bounded sliders/spinners are implemented. Plan useful
-toggle/combo controls, scrolling, layouts, focus/keyboard and
+[Complete C2 source inventory](coverage/phase-c2.md). Radio groups, list boxes and bounded sliders/spinners are implemented. Toggle buttons are delivered. Plan useful
+combo controls, scrolling, layouts, focus/keyboard and
 practical font/colour/DPI support. Deepen the existing window/control families as workflows
 need; not every constructor option or inherited overload must precede the next
 useful control.
@@ -572,5 +572,12 @@ Bounded radio groups are delivered below.
 selection, silent/notifying generic SETF and native command snapshots/contexts.
 Standalone radio-button groups, item mutation/per-item state and broad styles
 remain unbound; inventory records only partial wxRadioBox support. Physical input
-and hosted platform GUI remain unverified. Next selected slice: bounded toggle
-buttons for persistent on/off form and tool options.
+and hosted platform GUI remain unverified. Bounded toggle buttons are delivered below.
+
+## Persistent toggle buttons
+
+[Toggle buttons](TOGGLE-BUTTONS.md) add native-backed independent pressed state,
+generic checked/label properties and guarded native command observation. Native
+wxToggleButton remains partial; bitmap toggles, styles and grouping stay unbound.
+Next selected slice: bounded combo boxes for editable/selectable form choices.
+Physical input and hosted platform GUI remain unverified.

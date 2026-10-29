@@ -823,3 +823,5 @@ synchronization. Physical and hosted OS input checks remain separate.
 
 [Bounded radio groups](docs/RADIO-GROUPS.md) provide fixed exclusive choices;
 run `examples/radio-groups.lisp` for export-format selection.
+
+[Toggle buttons](docs/TOGGLE-BUTTONS.md) provide persistent on/off options; run `examples/toggle-buttons.lisp` for preview feedback.

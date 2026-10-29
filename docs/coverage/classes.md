@@ -320,7 +320,7 @@ Class/struct definitions: 0 complete; 11 partial; 291 pending. Partial and pendi
 
 ## C2: Windows, layout, basic controls, and input
 
-Class/struct definitions: 0 complete; 22 partial; 110 pending. Partial and pending classes remain open.
+Class/struct definitions: 0 complete; 23 partial; 109 pending. Partial and pending classes remain open.
 
 [Declaration counts and remaining work](README.md).
 
@@ -429,7 +429,7 @@ Class/struct definitions: 0 complete; 22 partial; 110 pending. Partial and pendi
 - [ ] `wxStreamToTextRedirector` — [`wx/textctrl.h`](phase-c2.md), upstream line 2027.
 - [ ] `wxTextEntry` — [`wx/textentry.h`](phase-c2.md), upstream line 33.
 - [ ] `wxTextWrapper` — [`wx/textwrapper.h`](phase-c2.md), upstream line 59.
-- [ ] `wxToggleButton` — [`wx/tglbtn.h`](phase-c2.md), upstream line 32.
+- [~] `wxToggleButton` — [`wx/tglbtn.h`](phase-c2.md), upstream line 32. — **Partial**: `toggle-button`, `make-toggle-button`, `checked-p`, `label-text`, `event-checked-p`; ABI: `wxl_toggle_button`, `wxl_toggle_button_checked`, `wxl_set_toggle_button_checked`, `wxl_toggle_button_label`, `wxl_set_toggle_button_label`. Bounded independent two-state TOGGLE-BUTTON, default style, native-backed CLOS and checked/label generic SETF; silent defaults and explicit one native-class update. Native checked/text snapshots/current contexts, source lifetime/reentry guards. No bitmap toggle, grouping, raw adoption, owned/synthetic/cloned toggle-button events or full class parity. See docs/TOGGLE-BUTTONS.md.
 - [ ] `wxBitmapToggleButton` — [`wx/tglbtn.h`](phase-c2.md), upstream line 129.
 - [ ] `wxTimePickerCtrl` — [`wx/timectrl.h`](phase-c2.md), upstream line 53.
 - [ ] `wxTipWindow` — [`wx/tipwin.h`](phase-c2.md), upstream line 24.

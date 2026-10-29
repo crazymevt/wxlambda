@@ -120,7 +120,7 @@ session ownership; actual native window destruction pops managed stacks without
 deleting those handlers. Explicit stack-aware processing differs from generic
 window receiver dispatch, which retains native stack bypass. Public window wrapper
 classes are `window` (abstract), `frame`, `panel`, `button`,
-`text-control`, `label`, `checkbox`, `choice`, `gauge`, `radio-box`, `slider`, `spin-control`, `notebook`, `list-box`, `tree-control`, `splitter-window`, `toolbar` and `status-bar` (plus the
+`text-control`, `label`, `checkbox`, `choice`, `gauge`, `toggle-button`, `radio-box`, `slider`, `spin-control`, `notebook`, `list-box`, `tree-control`, `splitter-window`, `toolbar` and `status-bar` (plus the
 DIALOG hierarchy described below). Lisp subclassing does not imply
 native C++ subclassing or virtual-method callbacks; those need separate bridge
 support. See `docs/CLOS-API.md`.
@@ -236,3 +236,5 @@ ABI46 fixed RADIO-BOX groups own2..64 choices with mandatory valid selection.
 Preserve shared composite input guards, silent defaults, explicit notify, native
 label normalization and read-only event-selection metadata. No synthetic/owned/
 cloned radio events or individual creation-order radio grouping. See docs/RADIO-GROUPS.md.
+
+ABI47 TOGGLE-BUTTON adds independent pressed state and guarded label/value writes. Preserve generalized boolean SETF, silent defaults, explicit native notify, actual-origin/propagation Input guards and native empty event text (no inferred label). New kind rejects semantic checked SETF and owned/synthetic/clone. See docs/TOGGLE-BUTTONS.md.

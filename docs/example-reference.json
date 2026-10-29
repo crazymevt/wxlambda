@@ -178,5 +178,9 @@
   "radio-groups.lisp": {
     "description": "Explicitly owned fixed radio choices select export format and update feedback. EXERCISE verifies silent and explicit notifying updates; no physical input simulation.",
     "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/radio-groups.lisp --eval '(wxlambda-radio-groups:start)'"
+  },
+  "toggle-buttons.lisp": {
+    "description": "Persistent preview option with native toggle-button checked snapshots and feedback; EXERCISE verifies silent/explicit notify behavior without hardware input.",
+    "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/toggle-buttons.lisp --eval '(wxlambda-toggle-buttons:start)'"
   }
 }

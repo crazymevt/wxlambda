@@ -79,14 +79,16 @@ as if later features or platform checks already passed.
 - Idle batch: :IDLE family/resources, bounded RequestMore, session-restored
   automatic mode, own-window opt-in and native wake scheduling. Independent review
   and final verification pass.
-- Current bridge ABI:46. Public API:246 exports,23 window wrapper classes
-  (21 concrete plus WINDOW/DIALOG abstract),176 named generics and54 generic
+- Current bridge ABI:47. Public API:248 exports,24 window wrapper classes
+  (22 concrete plus WINDOW/DIALOG abstract),177 named generics and54 generic
   SETF writers. Borrowed TREE-ITEM and UI-ACTION/UI-TIMER identities remain
-  separate from window construction. Latest radio-group details/evidence are
+  separate from window construction. Latest toggle-button details/evidence are
   recorded in the final session handoff below.
-- Latest implementation verification: all71 GUI scenarios plus native preflight
+- Latest implementation verification: all72 GUI scenarios plus native preflight
   pass on local Apple Silicon macOS SBCL2.6.9 and CCL1.13, reports
-  `evidence/radio-groups/{sbcl,ccl}-20261028-final/`. Native probes report zero
+  `evidence/toggle-buttons/sbcl-20261028-final/` and
+  `evidence/toggle-buttons/ccl-20261028-recheck/`. Initial CCL tree-process
+  exception and successful standalone/full reruns are recorded below. Native probes report zero
   assertions. Hosted Linux/Windows GUI and graphical Cadre remain unverified;
   wxQt tree construction retains its documented rejection gate.
 
@@ -2532,3 +2534,67 @@ Session handoff: broad GUI coverage with selective depth remains the objective.
 Next selected slice: bounded toggle buttons for persistent on/off form/tool
 options. Older sequential 'next' statements are historical; use this handoff and
 current feature roadmap rather than exhausting C1-C7 declaration parity.
+
+## Persistent toggle buttons (2026-10-28)
+
+ABI47 adds native-backed TOGGLE-BUTTON and generic MAKE-TOGGLE-BUTTON with
+:parent/:label/:checked, subclass slots/default initargs, native-ready AFTER hooks
+and managed rollback. Generic CHECKED-P/SETF uses generalized booleans (normalized
+T/NIL reader, supplied-value writer). LABEL-TEXT/SETF supports NUL-free native
+labels. Default writes are silent; :NOTIFY T commits and sends exactly one native
+command update even unchanged. Escaping callback conditions preserve original
+identity and committed state. No bitmap toggles, grouping, three-state or styles.
+
+Distinct :TOGGLE-BUTTON-CHANGE kind exposes copied/current EVENT-CHECKED-P and
+raw integer/native text (normally empty, explicit notify also empty; no inferred
+label). Snapshots survive session cleanup; contexts require innermost callback.
+Semantic checked SETF, owned/synthetic events and detached clones reject. Shared
+Input guards protect actual/propagated source callbacks, same-button state/label
+writes, ancestor lifetime and modal/clipboard/RUN/pump/safe-idle reentry. Silent
+other-button updates remain supported. Native create/base teardown suppress
+relevant callbacks. wxUSE_TOGGLEBTN is required; existing checkbox convenience
+methods retain their receiver scope without fallbacks.
+
+Independent code/docs review found no remaining actionable findings. Audited
+OSX/GTK/MSW/Qt setters are silent, native events carry checked integer and empty
+text. Rewritten inherited coverage scopes accurately include static-text/toggle
+label receivers and checkbox/menu/toggle checked reads, preserving restricted
+semantic writers. Exact tglbtn declarations/class remain partial; bitmap sibling
+methods are deliberately unbound.
+
+Example examples/toggle-buttons.lisp demonstrates a persistent preview option
+and feedback. Focused SBCL/CCL tests/example, final main/native builds and zero-
+assertion native harness pass (quiet-run.82UxVWWG). Native direct wxEVT_TOGGLEBUTTON
+probes run outside setter guards, include parent propagation, both checked states,
+source/ancestor/write/transfer protection, cross-button sync and clone refusal.
+Lisp tests add Unicode labels, constructor rollback, callback condition identity/
+committed state, context expiry and post-session snapshots. Physical input and
+accessibility, hosted Windows/Linux/Qt GUI and graphical Cadre remain unverified.
+No automatic system clipboard contents are read/replaced.
+
+SBCL full72 GUI scenarios plus preflight pass; initial CCL run passed toggle tests
+and41 scenarios, then tree-navigation printed PASS before exit255 with 'Mach
+exception / nested deep-stack exception frame: scratch buffer in use'. Preserve
+evidence/toggle-buttons/ccl-20261028-final/ and quiet-run.MjgkJykD; no cause is
+established, and no toggle construction occurs in that isolated tree process.
+All three standalone tree reruns and a fresh full72-scenario CCL suite pass
+(quiet-run.tqwfiSFd), evidence/toggle-buttons/ccl-20261028-recheck/. Cause of the
+initial exit remains unknown; do not erase its evidence or attribute it to a
+particular runtime/native defect without reproduction. SBCL evidence is
+evidence/toggle-buttons/sbcl-20261028-final/.
+
+Current counts:248 exports,177 named generics,54 SETF generics,24 window wrappers
+(22 concrete+2 abstract),46 examples and341 docset entries. Pinned inventory plus
+14 checks,16 Python checks and zero-problem docset pass (quiet-run.HPh3GSQP).
+Both-Lisp actual export/class/SETF checks, counts,341-entry isolated install/
+discovery/symbol/guide/example checks and five package isolation checks pass
+(quiet-run.089XpkBV); install root /private/tmp/wxlambda-toggle-docsets/wxlambda,
+standard Cadre instructions docs/DOCSET.md. Package dist/wxlambda-form-toggle-buttons
+is the established form binary; toggle example is separate repository/docset
+content. Package evidence evidence/packaging/toggle-buttons-20261028/. Regenerate/
+check/install docset after final handoff notes.
+
+Session handoff: broad GUI coverage with selective depth remains the objective.
+Next selected slice: bounded combo boxes for editable/selectable form choices;
+keep CLOS, callback/lifetime and explicit native-text/value semantics. No native
+category-wide parity requirement follows from pending C1-C7 inventory entries.

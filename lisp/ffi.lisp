@@ -95,7 +95,7 @@
           (if (probe-file local)
               (cffi:load-foreign-library local)
               (cffi:use-foreign-library wxlambda-native))))
-    (unless (= 46 (%abi-version)) (error "Unsupported wxlambda native ABI"))
+    (unless (= 47 (%abi-version)) (error "Unsupported wxlambda native ABI"))
     (setf *native-loaded* t))
   t)
 
@@ -332,3 +332,9 @@
 (cffi:defcfun ("wxl_radio_field" %radio-field) :int (control :uint64) (field :int))
 (cffi:defcfun ("wxl_radio_item" %radio-item) :pointer (control :uint64) (index :int))
 (cffi:defcfun ("wxl_set_radio_selection" %set-radio-selection) :int (control :uint64) (index :int) (notify :int))
+
+(cffi:defcfun ("wxl_toggle_button" %toggle-button) :uint64 (parent :uint64) (label :string) (checked :int))
+(cffi:defcfun ("wxl_toggle_button_checked" %toggle-button-checked) :int (control :uint64))
+(cffi:defcfun ("wxl_set_toggle_button_checked" %set-toggle-button-checked) :int (control :uint64) (checked :int) (notify :int))
+(cffi:defcfun ("wxl_toggle_button_label" %toggle-button-label) :pointer (control :uint64))
+(cffi:defcfun ("wxl_set_toggle_button_label" %set-toggle-button-label) :int (control :uint64) (label :string))

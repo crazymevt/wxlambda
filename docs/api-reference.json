@@ -241,27 +241,27 @@
   {
     "name": "label-text",
     "kind": "generic-function",
-    "arguments": "RECEIVER is live static text or MENU-ITEM; separator reads return the empty string, but all separator writes reject.",
+    "arguments": "RECEIVER is live static text, TOGGLE-BUTTON or MENU-ITEM; separator reads are empty, separator writes reject.",
     "returns": "An independent Lisp string.",
     "description": "Read raw label text including mnemonic/accelerator syntax. Menu item reads preserve the raw label, not stripped display text.",
     "scope": "Requires an active GUI session on the process main thread. Invalid/destroyed handles or unsupported native arguments signal NATIVE-ERROR; Lisp argument/type errors remain Lisp conditions. One GUI session per process. Widget behavior uses CLOS generic dispatch. Wrong receiver types signal Lisp dispatch conditions; native handle/state failures signal NATIVE-ERROR.",
-    "wxwidgets": "wxControl::GetLabel (wxStaticText only); wxMenuItem::GetItemLabel / SetItemLabel",
+    "wxwidgets": "wxControl::GetLabel/SetLabel (wxStaticText and wxToggleButton); wxMenuItem::GetItemLabel/SetItemLabel (wxWidgets3.2.12).",
     "setf": {
       "syntax": "(setf (wxlambda:label-text label) new-value)",
-      "description": "Assign static text and relayout its parent if necessary. Writers are generic functions with VALUE first, followed by the receiver. Menu item labels must be nonempty Unicode strings without NUL; separators reject. Scalar changes are allowed in callbacks and do not synthesize menu commands."
+      "description": "Assign static text and relayout its parent if necessary. Writers are generic functions with VALUE first, followed by the receiver. Menu item labels must be nonempty Unicode strings without NUL; separators reject. Scalar changes are allowed in callbacks and do not synthesize menu commands. TOGGLE-BUTTON requires a NUL-free string, silently preserves checked state, rejects same-button callback writes and may need explicit relayout for native best-size changes. See docs/TOGGLE-BUTTONS.md."
     }
   },
   {
     "name": "checked-p",
     "kind": "generic-function",
-    "arguments": "RECEIVER is a live two-state checkbox or check MENU-ITEM. Optional NOTIFY affects writes and is ignored by reads.",
+    "arguments": "RECEIVER is a live two-state CHECKBOX, TOGGLE-BUTTON or check MENU-ITEM. Optional NOTIFY affects writes; reads ignore it.",
     "returns": "T or NIL.",
     "description": "Read boolean control/resource state. Menu normal/separator items reject.",
     "scope": "Requires an active GUI session on the process main thread. Invalid/destroyed handles or unsupported native arguments signal NATIVE-ERROR; Lisp argument/type errors remain Lisp conditions. One GUI session per process. Widget behavior uses CLOS generic dispatch. Wrong receiver types signal Lisp dispatch conditions; native handle/state failures signal NATIVE-ERROR.",
-    "wxwidgets": "wxCheckBox::GetValue; wxMenuItem::IsChecked / Check",
+    "wxwidgets": "wxCheckBox::GetValue; wxMenuItem::IsChecked / Check; wxToggleButton::GetValue/SetValue (wxWidgets3.2.12).",
     "setf": {
       "syntax": "(setf (wxlambda:checked-p checkbox :notify notify) new-value)",
-      "description": "Store generalized boolean state; reads normalize it to T/NIL, while SETF returns the supplied value. :NOTIFY T emits a synchronous toggle event. Writers are generic functions with VALUE first, followed by the receiver. For menu items :NOTIFY T rejects before mutation; silent resource changes are allowed during callbacks."
+      "description": "Store generalized boolean state; reads normalize it to T/NIL, while SETF returns the supplied value. :NOTIFY T emits a synchronous toggle event. Writers are generic functions with VALUE first, followed by the receiver. For menu items :NOTIFY T rejects before mutation; silent resource changes are allowed during callbacks. TOGGLE-BUTTON is silent by default; :NOTIFY T commits then emits exactly one :TOGGLE-BUTTON-CHANGE event even unchanged. Same-button callback writes reject; escaping callback errors do not roll state back. See docs/TOGGLE-BUTTONS.md."
     }
   },
   {
@@ -414,7 +414,7 @@
     "arguments": "EVENT is a snapshot, current context or live OWNED-EVENT. SETF VALUE is a string and requires native command/notify state.",
     "returns": "Snapshot kind-specific copied string/NIL; live command/notify string (possibly empty), or NIL for close/idle-family reads. SETF returns VALUE.",
     "description": "Read or copy native command string payload. Context/owned SETF uses explicit UTF-8 byte lengths, preserving embedded NULs. Saved snapshots stay immutable and retain their prior kind-specific payload interpretation. ABI38 listbox selection/double-click command events carry cached string/index payloads; snapshots are independent of later item edits. Native list callback guards protect receiver/ancestors and defer modal/clipboard entry while allowing item edits.",
-    "scope": "Saved reads need no session. Live access requires active main-thread session and valid owned/innermost-context lifetime. Text writes to close/idle-family events reject; non-string values signal TYPE-ERROR. Native wxEVT_TEXT with a tracked text-entry origin rejects context string SETF; unknown origins reject too. The control is not changed. Detached context clones freeze effective GetString before clearing origin. RADIO-BOX :radio-selection is a native-only command kind with copied/current index and native label metadata. Snapshot reads survive source/session cleanup; borrowed contexts require the exact innermost current callback. No owned/synthetic/cloned radio events. See docs/RADIO-GROUPS.md.",
+    "scope": "Saved reads need no session. Live access requires active main-thread session and valid owned/innermost-context lifetime. Text writes to close/idle-family events reject; non-string values signal TYPE-ERROR. Native wxEVT_TEXT with a tracked text-entry origin rejects context string SETF; unknown origins reject too. The control is not changed. Detached context clones freeze effective GetString before clearing origin. RADIO-BOX :radio-selection is a native-only command kind with copied/current index and native label metadata. Snapshot reads survive source/session cleanup; borrowed contexts require the exact innermost current callback. No owned/synthetic/cloned radio events. See docs/RADIO-GROUPS.md. :TOGGLE-BUTTON-CHANGE copies native checked/text metadata (text normally empty, including explicit notify; no inferred label); no owned/synthetic/clone. Snapshots survive cleanup, contexts expire. See docs/TOGGLE-BUTTONS.md.",
     "wxwidgets": "wxCommandEvent::GetString / SetString, including wxNotifyEvent (wxWidgets 3.2.12 baseline).",
     "syntax": "(wxlambda:event-text event)",
     "setf": {
@@ -425,15 +425,15 @@
   {
     "name": "event-checked-p",
     "kind": "generic-function",
-    "arguments": "EVENT is an immutable snapshot, current context or live OWNED-EVENT. SETF requires native :TOGGLE or :MENU kind and accepts a generalized boolean.",
-    "returns": "T/NIL for :TOGGLE/:MENU checked state; NIL for other kinds. SETF returns VALUE.",
-    "description": "Read the kind-limited checked interpretation of native command integer. Live SETF writes SetInt(0/1) only for :TOGGLE/:MENU without calling a control setter. Raw EVENT-INTEGER can supply other nonzero checked values; earlier snapshots stay unchanged. Later native/user handlers can react to changed metadata; the entire dispatch is not guaranteed to leave controls unchanged. Native normal-menu commands may carry integer -1 and thus read checked true; this raw view does not classify a check item.",
+    "arguments": "Immutable snapshot, current context or live OWNED-EVENT. Reads interpret :TOGGLE/:MENU/:TOGGLE-BUTTON-CHANGE; SETF only :TOGGLE/:MENU.",
+    "returns": "T/NIL for checkbox/toggle-button/menu checked metadata; NIL for other kinds. SETF returns VALUE.",
+    "description": "Read the kind-limited checked interpretation of native command integer. Live SETF writes SetInt(0/1) only for :TOGGLE/:MENU without calling a control setter. Raw EVENT-INTEGER can supply other nonzero checked values; earlier snapshots stay unchanged. Later native/user handlers can react to changed metadata; the entire dispatch is not guaranteed to leave controls unchanged. Native normal-menu commands may carry integer -1 and thus read checked true; this raw view does not classify a check item. :TOGGLE-BUTTON-CHANGE exposes read-only semantic checked metadata; raw integer edits remain observational, not control state changes.",
     "scope": "Saved snapshot reads need no session. Live operations require active main-thread session and valid owned/innermost-context lifetime. Wrong-kind live writes reject; no snapshot writer or direct checkbox-control setter.",
-    "wxwidgets": "Bounded wxCommandEvent::IsChecked view and SetInt(0/1), :TOGGLE/:MENU only (wxWidgets 3.2.12 baseline).",
+    "wxwidgets": "wxCommandEvent::IsChecked for wxEVT_CHECKBOX/wxEVT_MENU/wxEVT_TOGGLEBUTTON; semantic SetInt writer only checkbox/menu kinds (wxWidgets3.2.12).",
     "syntax": "(wxlambda:event-checked-p event)",
     "setf": {
       "syntax": "(setf (wxlambda:event-checked-p event-or-context) value)",
-      "description": "Assign native :TOGGLE/:MENU command integer as 0/1, returning the supplied generalized boolean. No snapshot writer or menu-resource synchronization; no item-kind check is implied by raw event metadata."
+      "description": "Assign native :TOGGLE/:MENU command integer as 0/1, returning the supplied generalized boolean. No snapshot writer or menu-resource synchronization; no item-kind check is implied by raw event metadata. Toggle-button kinds reject; no owned/synthetic/cloned toggle-button events."
     }
   },
   {
@@ -797,7 +797,7 @@
     "arguments": "HANDLER is an EVENT-HANDLER/window; KIND is :CLICK, :TEXT-CHANGE, :TOGGLE, :SELECTION, :CLOSE, :QUERY-END-SESSION, :END-SESSION, :IDLE, :MENU or a registered command/notify name. FUNCTION takes one immutable EVENT. ID defaults NIL (any); LAST-ID defaults NIL (exact ID when ID is given). WITH-CONTEXT defaults NIL; when true FUNCTION takes (EVENT CONTEXT) instead of just EVENT. USER-DATA defaults NIL and associates any EQ-preserved Lisp value with this registration; callback arity is unchanged.",
     "returns": "A new independent EVENT-BINDING.",
     "description": "Register an observer without replacing any existing generic or control-specific registration. Signed 32-bit IDs are supported except -1 (reserved as native wxID_ANY; use NIL). LAST-ID requires ID and an ordered inclusive range. Observer bindings automatically Skip; contextual bindings start unskipped and control native Skip explicitly; relative callback order follows wxWidgets and is not a Lisp API guarantee. Failed registration releases temporary roots. Contextual access is limited to the innermost callback and expires at return, including on errors. A native entry-owned wxObject token adapter represents non-NIL user data without a Lisp/native pointer. EVENT-USER-DATA reads the per-binding value in snapshots/current contexts; there is no public mutation API for an existing association. ABI37 adds :NOTEBOOK-PAGE-CHANGING/:NOTEBOOK-PAGE-CHANGED notify-family observers/contexts. Only CHANGING veto affects navigation. Native page callbacks protect the originating book/ancestors and reject same-book recursive selection, modal and clipboard entry. ABI38 listbox selection/double-click command events carry cached string/index payloads; snapshots are independent of later item edits. Native list callback guards protect receiver/ancestors and defer modal/clipboard entry while allowing item edits. ABI39 tree selection changing/changed are native-only wxTreeEvent notify types. EVENT-TREE-ITEM captures canonical view identity, not frozen text/validity; same-tree writes and nested native loops defer until callback return.",
-    "scope": "Active main-thread GUI session required; otherwise NATIVE-ERROR. Stale/deleting receivers reject registration/queuing. Invalid event kinds, IDs and payload options signal Lisp errors; wrong receiver types use CLOS dispatch errors. Built-ins and registered command/notify types. Contexts support scoped Skip/propagation and checked close/notify veto. Arbitrary native events, native control-specific notify subclasses, arbitrary native userData pointers, external handler adoption and worker-thread dispatch remain unbound. Session bindings accept only the borrowed application view or an isolated owned handler; windows reject. Real OS delivery remains unverified. Skipped application END_SESSION callbacks can reach process-exiting defaults. Session bindings on attached pushed handlers reject so a window tail cannot route them to app defaults. Callback-local roots preserve current user data after self/peer unbind until return. Snapshots preserve the EQ reference after unbind/session end, not a deep copy of mutable contents. RADIO-BOX :radio-selection is a native-only command kind with copied/current index and native label metadata. Snapshot reads survive source/session cleanup; borrowed contexts require the exact innermost current callback. No owned/synthetic/cloned radio events. See docs/RADIO-GROUPS.md.",
+    "scope": "Active main-thread GUI session required; otherwise NATIVE-ERROR. Stale/deleting receivers reject registration/queuing. Invalid event kinds, IDs and payload options signal Lisp errors; wrong receiver types use CLOS dispatch errors. Built-ins and registered command/notify types. Contexts support scoped Skip/propagation and checked close/notify veto. Arbitrary native events, native control-specific notify subclasses, arbitrary native userData pointers, external handler adoption and worker-thread dispatch remain unbound. Session bindings accept only the borrowed application view or an isolated owned handler; windows reject. Real OS delivery remains unverified. Skipped application END_SESSION callbacks can reach process-exiting defaults. Session bindings on attached pushed handlers reject so a window tail cannot route them to app defaults. Callback-local roots preserve current user data after self/peer unbind until return. Snapshots preserve the EQ reference after unbind/session end, not a deep copy of mutable contents. RADIO-BOX :radio-selection is a native-only command kind with copied/current index and native label metadata. Snapshot reads survive source/session cleanup; borrowed contexts require the exact innermost current callback. No owned/synthetic/cloned radio events. See docs/RADIO-GROUPS.md. :TOGGLE-BUTTON-CHANGE copies native checked/text metadata (text normally empty, including explicit notify; no inferred label); no owned/synthetic/clone. Snapshots survive cleanup, contexts expire. See docs/TOGGLE-BUTTONS.md.",
     "wxwidgets": "wxEvtHandler::Bind member-method overload with wxEvent receiver and optional entry-owned numeric wxObject userData adapter; built-ins and registered command/notify tags (wxWidgets 3.2.12 baseline).",
     "syntax": "(wxlambda:bind-event handler kind function &key id last-id with-context user-data)"
   },
@@ -931,9 +931,9 @@
     "kind": "function",
     "arguments": "KIND is a built-in event keyword or a name registered in this active session.",
     "returns": "The corresponding process-local native wxEventType integer.",
-    "description": "Look up a process-local native type ID. Twenty built-in kinds plus registered command/notify names are supported. Registry names are session-scoped; saved snapshot native IDs remain plain data after cleanup. Borrowed application handler access is supported; arbitrary native event-class binding and OS session delivery remains unverified.",
+    "description": "Look up a process-local native type ID. Twenty-one built-in kinds plus registered command/notify names are supported. Registry names are session-scoped; saved snapshot native IDs remain plain data after cleanup. Borrowed application handler access is supported; arbitrary native event-class binding and OS session delivery remains unverified.",
     "scope": "Active main-thread session required; inactive calls signal NATIVE-ERROR before native-library lookup. Native IDs are process-local and may change between runs. RADIO-BOX :radio-selection is a native-only command kind with copied/current index and native label metadata. Snapshot reads survive source/session cleanup; borrowed contexts require the exact innermost current callback. No owned/synthetic/cloned radio events. See docs/RADIO-GROUPS.md.",
-    "wxwidgets": "wxEVT_BUTTON, wxEVT_TEXT, wxEVT_CHECKBOX, wxEVT_CHOICE, wxEVT_CLOSE_WINDOW, wxEVT_QUERY_END_SESSION, wxEVT_END_SESSION, wxEVT_IDLE, wxEVT_MENU, wxEVT_NOTEBOOK_PAGE_CHANGING, wxEVT_NOTEBOOK_PAGE_CHANGED, wxEVT_LISTBOX, wxEVT_LISTBOX_DCLICK; registered wxNewEventType values (wxWidgets 3.2.12). wxEVT_TREE_SEL_CHANGING and wxEVT_TREE_SEL_CHANGED in ABI39. Includes wxEVT_SPLITTER_SASH_POS_CHANGING/CHANGED, wxEVT_SLIDER, wxEVT_SPINCTRL and wxEVT_RADIOBOX (wxWidgets3.2.12)."
+    "wxwidgets": "wxEVT_BUTTON, wxEVT_TEXT, wxEVT_CHECKBOX, wxEVT_CHOICE, wxEVT_CLOSE_WINDOW, wxEVT_QUERY_END_SESSION, wxEVT_END_SESSION, wxEVT_IDLE, wxEVT_MENU, wxEVT_NOTEBOOK_PAGE_CHANGING, wxEVT_NOTEBOOK_PAGE_CHANGED, wxEVT_LISTBOX, wxEVT_LISTBOX_DCLICK; registered wxNewEventType values (wxWidgets 3.2.12). wxEVT_TREE_SEL_CHANGING and wxEVT_TREE_SEL_CHANGED in ABI39. Includes wxEVT_SPLITTER_SASH_POS_CHANGING/CHANGED, wxEVT_SLIDER, wxEVT_SPINCTRL and wxEVT_RADIOBOX (wxWidgets3.2.12). wxEVT_TOGGLEBUTTON."
   },
   {
     "name": "event-family",
@@ -2660,5 +2660,28 @@
     "description": "Explicitly owned mutually exclusive group; generic SELECTION/SETF, ITEM-COUNT and ITEM-TEXT methods.",
     "scope": "Fixed2..64 choices, mandatory valid zero-based selection, one row/column orientation. Active GUI session/native lifetime checks for widget operations; no standalone radio buttons, item mutation or full native parity. See docs/RADIO-GROUPS.md.",
     "wxwidgets": "wxRadioBox::Create, wxRA_SPECIFY_COLS/ROWS (wxWidgets3.2.12)."
+  },
+  {
+    "name": "toggle-button",
+    "kind": "class",
+    "arguments": "PARENT (or :parent for MAKE-INSTANCE), :label NUL-free string default empty, :checked generalized boolean default NIL; :class and subclass initargs for factory.",
+    "returns": "New native-backed TOGGLE-BUTTON or validated subclass.",
+    "description": "Persistent independent two-state push button. Generic CHECKED-P/SETF and LABEL-TEXT/SETF properties; BIND-EVENT :TOGGLE-BUTTON-CHANGE.",
+    "scope": "Active main-thread GUI session, native handle/type/lifetime guards. No bitmap toggle, grouping, arbitrary styles or full class parity. Same-source value/label callback writes reject; silent other-source updates allowed. See docs/TOGGLE-BUTTONS.md.",
+    "wxwidgets": "wxToggleButton::Create/GetValue/SetValue, inherited wxControl::GetLabel/SetLabel; wxWidgets3.2.12.",
+    "syntax": "wxlambda:toggle-button",
+    "construction": {
+      "syntax": "(make-instance 'wxlambda:toggle-button :parent panel :label \"Preview\" :checked t)",
+      "description": "Direct subclass slots/default initargs, native-ready AFTER hooks and managed rollback supported."
+    }
+  },
+  {
+    "name": "make-toggle-button",
+    "kind": "generic-function",
+    "arguments": "PARENT (or :parent for MAKE-INSTANCE), :label NUL-free string default empty, :checked generalized boolean default NIL; :class and subclass initargs for factory.",
+    "returns": "New native-backed TOGGLE-BUTTON or validated subclass.",
+    "description": "Persistent independent two-state push button. Generic CHECKED-P/SETF and LABEL-TEXT/SETF properties; BIND-EVENT :TOGGLE-BUTTON-CHANGE.",
+    "scope": "Active main-thread GUI session, native handle/type/lifetime guards. No bitmap toggle, grouping, arbitrary styles or full class parity. Same-source value/label callback writes reject; silent other-source updates allowed. See docs/TOGGLE-BUTTONS.md.",
+    "wxwidgets": "wxToggleButton::Create/GetValue/SetValue, inherited wxControl::GetLabel/SetLabel; wxWidgets3.2.12."
   }
 ]

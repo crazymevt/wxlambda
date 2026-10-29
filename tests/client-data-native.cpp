@@ -35,7 +35,7 @@ void inspect_binding(uint64_t token, const wxl_event* event) {
     saved_context = event->context;
     binding_called = true;
 }
-std::function<void(uint64_t, const wxl_event*)> notebook_probe, list_probe, tree_probe, splitter_probe, toolbar_probe, accelerator_probe, deferred_event_probe, numeric_probe, radio_probe;
+std::function<void(uint64_t, const wxl_event*)> notebook_probe, list_probe, tree_probe, splitter_probe, toolbar_probe, accelerator_probe, deferred_event_probe, numeric_probe, radio_probe, toggle_probe;
 std::function<void(uint64_t,int)> ui_action_probe;
 void ignore_ui_action(uint64_t token, int execute) { if (ui_action_probe) ui_action_probe(token, execute); }
 void ignore_event(uint64_t token, const wxl_event* event) {
@@ -48,6 +48,7 @@ void ignore_event(uint64_t token, const wxl_event* event) {
     if (token == 917 && deferred_event_probe) deferred_event_probe(token, event);
     if (token >= 918 && token <= 920 && numeric_probe) numeric_probe(token, event);
     if ((token == 921 || token == 922) && radio_probe) radio_probe(token, event);
+    if ((token == 923 || token == 924) && toggle_probe) toggle_probe(token, event);
     if (token == 901) inspect_binding(token, event);
     if (token == 903) { ++menu_calls; menu_checked_payload = event->checked; menu_integer_payload = event->integer; menu_origin = event->origin_id; }
 }
@@ -807,6 +808,43 @@ struct SplitterProbe : FixedSplitter {
     using FixedSplitter::FixedSplitter;
     using wxSplitterWindow::SetSashPositionAndNotify;
 };
+void exercise_toggle_buttons() {
+    const auto frame=wxl_frame("Toggle",400,240), panel=wxl_panel(frame);
+    const auto toggle=wxl_toggle_button(panel,"Preview λ",1), other=wxl_toggle_button(panel,"Other",0);
+    expect(toggle && other && wxl_toggle_button_checked(toggle)==1 && wxl_toggle_button_checked(other)==0,"Toggle construction/state");
+    expect(std::string(wxl_toggle_button_label(toggle))=="Preview λ" &&
+           wxl_set_toggle_button_label(toggle,"Paused λ")==0 && std::string(wxl_toggle_button_label(toggle))=="Paused λ","Toggle UTF8 labels");
+    expect(!wxl_toggle_button(panel,"Bad",2) && wxl_toggle_button_checked(frame)==-1 &&
+           wxl_set_toggle_button_checked(toggle,2,0)==-1 && wxl_set_toggle_button_checked(toggle,1,2)==-1 &&
+           !wxl_toggle_button_label(panel) && wxl_set_toggle_button_label(panel,"Bad")==-1,"Raw toggle validation");
+    const auto dialog=wxl_message_dialog(frame,"Toggle",6,"Probe",5,0,0);
+    unsigned calls=0; bool expected=false;
+    toggle_probe=[&](uint64_t token,const wxl_event* event) {
+        ++calls;
+        expect(event->checked==expected && event->integer==expected && event->origin_id==toggle &&
+               event->family==WXL_FAMILY_COMMAND && event->selection==-1,"Toggle native payload");
+        int64_t value=-1;
+        expect(wxl_event_field(event->context,1,15,&value)==0 && value==expected,"Toggle current checked metadata");
+        expect(wxl_set_toggle_button_checked(toggle,1,0)==-1 && wxl_set_toggle_button_label(toggle,"Nested")==-1 &&
+               wxl_destroy(toggle)==-1 && wxl_destroy(panel)==-1 && wxl_close(frame,1)==-1,"Toggle source/ancestor mutation protection");
+        int result=-1;
+        expect(wxl_poll()==-1 && wxl_clipboard_text_available()==-1 && wxl_dialog_show(dialog,&result)==-1,"Toggle entry/transfer gates");
+        expect(wxl_set_toggle_button_checked(other,expected,0)==0 && wxl_set_toggle_button_label(other,"Synced")==0,"Silent other-toggle updates");
+        expect(!wxl_clone_event(event->context,1) && wxl_set_event_field(event->context,1,15,1)==-1,"Toggle clone/semantic setter refuse");
+        if (token==923) expect(wxl_context_set_skipped(event->context,1)==0,"Toggle native propagation");
+    };
+    expect(wxl_bind(toggle,WXL_EVENT_TOGGLE_BUTTON_CHANGE,923,wxID_ANY,wxID_ANY,1,0)==0 &&
+           wxl_bind(frame,WXL_EVENT_TOGGLE_BUTTON_CHANGE,924,wxID_ANY,wxID_ANY,1,0)==0,"Toggle bindings");
+    expect(wxl_set_toggle_button_checked(toggle,0,0)==0 && calls==0,"Silent toggle write");
+    wxCommandEvent event(wxEVT_TOGGLEBUTTON,window(toggle)->GetId()); event.SetEventObject(window(toggle)); event.SetInt(0);
+    window(toggle)->HandleWindowEvent(event);
+    expect(calls==2 && input_operations.empty(),"Actual toggle callback guards independent of setter");
+    expect(wxl_set_toggle_button_checked(toggle,0,1)==0 && calls==4,"Unchanged toggle notify");
+    expected=true;
+    expect(wxl_set_toggle_button_checked(toggle,1,1)==0 && calls==6,"Pressed toggle payload");
+    expect(wxl_unbind(923)==1 && wxl_unbind(924)==1,"Toggle unbind"); toggle_probe={};
+    expect(wxl_destroy(frame)==0 && wxl_poll()==0 && wxl_toggle_button_checked(toggle)==-1,"Toggle cleanup");
+}
 void exercise_radio_groups() {
     const auto frame = wxl_frame("Radio groups", 440, 300), panel = wxl_panel(frame);
     const char* labels[] = {"First λ", "Second"};
@@ -1261,6 +1299,7 @@ int main() {
         exercise_ui_timers();
         exercise_numeric_input();
         exercise_radio_groups();
+        exercise_toggle_buttons();
         bool shutdown_ran=false;
         ui_action_probe=[&](uint64_t,int) { shutdown_ran=true; };
         expect(wxl_defer_ui_action(5000,0)==0 && wxl_start_ui_timer(5001,1,0,0)==0,"Queue shutdown action/timer");
