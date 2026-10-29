@@ -2456,7 +2456,7 @@
       "native": [
         "wxl_menu_bar"
       ],
-      "scope": "Default style only; attached immediately to a managed frame. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
+      "scope": "Default style only; attached immediately to a managed frame. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting/radio scope; ABI67 adds owned submenus and temporary popup choices. Structural changes reject during callbacks/pumps/RUN. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/menu.h",
@@ -2471,7 +2471,7 @@
       "native": [
         "wxl_menu_destroy"
       ],
-      "scope": "Native destructor invalidates bar/menu/item identities; frame ownership retained. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
+      "scope": "Native destructor invalidates bar/menu/item identities; frame ownership retained. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting/radio scope; ABI67 adds owned submenus and temporary popup choices. Structural changes reject during callbacks/pumps/RUN. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/menu.h",
@@ -2486,7 +2486,7 @@
       "native": [
         "wxl_menu"
       ],
-      "scope": "Append a newly created managed menu with validated raw label; no existing-menu adoption. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
+      "scope": "Append a newly created managed menu with validated raw label; no existing-menu adoption. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting/radio scope; ABI67 adds owned submenus and temporary popup choices. Structural changes reject during callbacks/pumps/RUN. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/menu.h",
@@ -2500,7 +2500,7 @@
       "native": [
         "wxl_menu_count"
       ],
-      "scope": "Native count of managed bar menus. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN."
+      "scope": "Native count of managed bar menus. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting/radio scope; ABI67 adds owned submenus and temporary popup choices. Structural changes reject during callbacks/pumps/RUN."
     },
     {
       "header": "wx/menu.h",
@@ -2514,7 +2514,7 @@
       "native": [
         "wxl_menu_label"
       ],
-      "scope": "Read raw tab label by managed MENU identity, not arbitrary bar index. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN."
+      "scope": "Read raw tab label by managed MENU identity, not arbitrary bar index. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting/radio scope; ABI67 adds owned submenus and temporary popup choices. Structural changes reject during callbacks/pumps/RUN."
     },
     {
       "header": "wx/menu.h",
@@ -2528,7 +2528,7 @@
       "native": [
         "wxl_set_menu_label"
       ],
-      "scope": "Set validated nonempty raw tab label; scalar callback writes allowed. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN."
+      "scope": "Set validated nonempty raw tab label; scalar callback writes allowed. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting/radio scope; ABI67 adds owned submenus and temporary popup choices. Structural changes reject during callbacks/pumps/RUN."
     },
     {
       "header": "wx/menu.h",
@@ -2542,7 +2542,7 @@
       "native": [
         "wxl_menu_destroy"
       ],
-      "scope": "Internal delete path removes then immediately destroys menu; no public detached native ownership. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
+      "scope": "Internal delete path removes then immediately destroys menu; no public detached native ownership. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting/radio scope; ABI67 adds owned submenus and temporary popup choices. Structural changes reject during callbacks/pumps/RUN. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/menu.h",
@@ -2557,7 +2557,7 @@
       "native": [
         "wxl_menu"
       ],
-      "scope": "Default menu constructor attached immediately to managed menu bar. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
+      "scope": "Default menu constructor attached immediately to managed menu bar. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting/radio scope; ABI67 adds owned submenus and temporary popup choices. Structural changes reject during callbacks/pumps/RUN. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/menu.h",
@@ -2572,7 +2572,7 @@
       "native": [
         "wxl_menu_destroy"
       ],
-      "scope": "Native-owned descendants invalidated on explicit/parent destruction. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
+      "scope": "Native-owned descendants invalidated on explicit/parent destruction. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting/radio scope; ABI67 adds owned submenus and temporary popup choices. Structural changes reject during callbacks/pumps/RUN. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/menu.h",
@@ -2587,7 +2587,7 @@
       "native": [
         "wxl_menu_item"
       ],
-      "scope": "Append newly created managed normal/check/separator item only; no native item adoption. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
+      "scope": "Append newly created managed normal/check/separator item only; no native item adoption. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting/radio scope; ABI67 adds owned submenus and temporary popup choices. Structural changes reject during callbacks/pumps/RUN. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/menu.h",
@@ -2601,7 +2601,7 @@
       "native": [
         "wxl_menu_destroy"
       ],
-      "scope": "Delete managed item through owner; submenu behavior not exposed. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
+      "scope": "Delete managed item through owner; submenu behavior not exposed. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting/radio scope; ABI67 adds owned submenus and temporary popup choices. Structural changes reject during callbacks/pumps/RUN. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/menu.h",
@@ -2615,7 +2615,7 @@
       "native": [
         "wxl_menu_count"
       ],
-      "scope": "Native count including separators. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN."
+      "scope": "Native count including separators. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting/radio scope; ABI67 adds owned submenus and temporary popup choices. Structural changes reject during callbacks/pumps/RUN."
     },
     {
       "header": "wx/menuitem.h",
@@ -2630,7 +2630,7 @@
       "native": [
         "wxl_menu_item"
       ],
-      "scope": "Managed parent, positive unique-per-bar signed32 IDs, normal/check/separator only, validated label/help; no submenu. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
+      "scope": "Managed parent, positive unique-per-bar signed32 IDs, normal/check/separator only, validated label/help; no submenu. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting/radio scope; ABI67 adds owned submenus and temporary popup choices. Structural changes reject during callbacks/pumps/RUN. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/menuitem.h",
@@ -2645,7 +2645,7 @@
       "native": [
         "wxl_menu_destroy"
       ],
-      "scope": "Managed native identity invalidates on native destructor. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
+      "scope": "Managed native identity invalidates on native destructor. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting/radio scope; ABI67 adds owned submenus and temporary popup choices. Structural changes reject during callbacks/pumps/RUN. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/menuitem.h",
@@ -2659,7 +2659,7 @@
       "native": [
         "wxl_menu_item_id"
       ],
-      "scope": "Positive ID or NIL for managed separator. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN."
+      "scope": "Positive ID or NIL for managed separator. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting/radio scope; ABI67 adds owned submenus and temporary popup choices. Structural changes reject during callbacks/pumps/RUN."
     },
     {
       "header": "wx/menuitem.h",
@@ -2687,7 +2687,7 @@
       "native": [
         "wxl_menu_label"
       ],
-      "scope": "Raw label including mnemonic/accelerator syntax. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN."
+      "scope": "Raw label including mnemonic/accelerator syntax. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting/radio scope; ABI67 adds owned submenus and temporary popup choices. Structural changes reject during callbacks/pumps/RUN."
     },
     {
       "header": "wx/menuitem.h",
@@ -2701,7 +2701,7 @@
       "native": [
         "wxl_set_menu_label"
       ],
-      "scope": "Validated nonempty raw label, nonseparator only; scalar callback writes allowed. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN."
+      "scope": "Validated nonempty raw label, nonseparator only; scalar callback writes allowed. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting/radio scope; ABI67 adds owned submenus and temporary popup choices. Structural changes reject during callbacks/pumps/RUN."
     },
     {
       "header": "wx/menuitem.h",
@@ -2715,7 +2715,7 @@
       "native": [
         "wxl_menu_checked"
       ],
-      "scope": "Check item only; raw command checked metadata is separate. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN."
+      "scope": "Check item only; raw command checked metadata is separate. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting/radio scope; ABI67 adds owned submenus and temporary popup choices. Structural changes reject during callbacks/pumps/RUN."
     },
     {
       "header": "wx/menuitem.h",
@@ -2729,7 +2729,7 @@
       "native": [
         "wxl_set_menu_checked"
       ],
-      "scope": "Silent check-item generalized boolean update; NOTIFY T rejects. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN."
+      "scope": "Silent check-item generalized boolean update; NOTIFY T rejects. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting/radio scope; ABI67 adds owned submenus and temporary popup choices. Structural changes reject during callbacks/pumps/RUN."
     },
     {
       "header": "wx/menuitem.h",
@@ -2743,7 +2743,7 @@
       "native": [
         "wxl_menu_enabled"
       ],
-      "scope": "Own item enabled flag; separators reject. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN."
+      "scope": "Own item enabled flag; separators reject. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting/radio scope; ABI67 adds owned submenus and temporary popup choices. Structural changes reject during callbacks/pumps/RUN."
     },
     {
       "header": "wx/menuitem.h",
@@ -2757,7 +2757,7 @@
       "native": [
         "wxl_set_menu_enabled"
       ],
-      "scope": "Silent native item flag update, reports change; separators reject. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN."
+      "scope": "Silent native item flag update, reports change; separators reject. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting/radio scope; ABI67 adds owned submenus and temporary popup choices. Structural changes reject during callbacks/pumps/RUN."
     },
     {
       "header": "wx/frame.h",
@@ -2771,7 +2771,7 @@
       "native": [
         "wxl_menu_bar"
       ],
-      "scope": "Internal guard prevents replacing/adopting a preexisting bar; no public frame-bar getter. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
+      "scope": "Internal guard prevents replacing/adopting a preexisting bar; no public frame-bar getter. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting/radio scope; ABI67 adds owned submenus and temporary popup choices. Structural changes reject during callbacks/pumps/RUN. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/frame.h",
@@ -2787,7 +2787,7 @@
         "wxl_menu_bar",
         "wxl_menu_destroy"
       ],
-      "scope": "Attach/detach only managed ownership lifecycle; no public arbitrary bar replacement. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
+      "scope": "Attach/detach only managed ownership lifecycle; no public arbitrary bar replacement. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting/radio scope; ABI67 adds owned submenus and temporary popup choices. Structural changes reject during callbacks/pumps/RUN. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/frame.h",
@@ -2801,7 +2801,7 @@
       "native": [
         "wxl_activate_menu"
       ],
-      "scope": "Managed normal/check item activation; disabled returns NIL, separator rejects. Native handled result, no OS-menu-interaction guarantee. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN."
+      "scope": "Managed normal/check item activation; disabled returns NIL, separator rejects. Native handled result, no OS-menu-interaction guarantee. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting/radio scope; ABI67 adds owned submenus and temporary popup choices. Structural changes reject during callbacks/pumps/RUN."
     },
     {
       "header": "wx/event.h",
@@ -2822,7 +2822,7 @@
         "wxl_queue_event",
         "wxl_process_event"
       ],
-      "scope": "Built-in :MENU command routing with ID/ranges and bounded command payload; no menu-open/close/highlight event family. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN."
+      "scope": "Built-in :MENU command routing with ID/ranges and bounded command payload; no menu-open/close/highlight event family. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting/radio scope; ABI67 adds owned submenus and temporary popup choices. Structural changes reject during callbacks/pumps/RUN."
     },
     {
       "header": "wx/menuitem.h",
@@ -18108,6 +18108,48 @@
         "wxl_tree_icon_get"
       ],
       "scope": "Tree-only copied bitmap list protocol, fixed16px and at most32 icons; no native image-list handle adoption. See docs/FOLDER-TREES.md."
+    },
+    {
+      "header": "wx/menu.h",
+      "line": 662,
+      "declaration": "wxMenuItem* AppendSubMenu(wxMenu* submenu, const wxString& text, const wxString& help = wxEmptyString);",
+      "status": "~",
+      "symbol": "wxMenu::AppendSubMenu",
+      "lisp": [
+        "make-menu"
+      ],
+      "native": [
+        "wxl_menu"
+      ],
+      "scope": "ABI67: append owned managed submenus or show a bounded temporary choice popup. No arbitrary adoption/radio items. See docs/MENUS.md."
+    },
+    {
+      "header": "wx/window.h",
+      "line": 3217,
+      "declaration": "int GetPopupMenuSelectionFromUser(wxMenu& menu, const wxPoint& pos = wxDefaultPosition);",
+      "status": "~",
+      "symbol": "wxWindow::GetPopupMenuSelectionFromUser",
+      "lisp": [
+        "popup-choice"
+      ],
+      "native": [
+        "wxl_popup_choice"
+      ],
+      "scope": "ABI67: append owned managed submenus or show a bounded temporary choice popup. No arbitrary adoption/radio items. See docs/MENUS.md."
+    },
+    {
+      "header": "wx/window.h",
+      "line": 3223,
+      "declaration": "int GetPopupMenuSelectionFromUser(wxMenu& menu, int x, int y);",
+      "status": "~",
+      "symbol": "wxWindow::GetPopupMenuSelectionFromUser",
+      "lisp": [
+        "popup-choice"
+      ],
+      "native": [
+        "wxl_popup_choice"
+      ],
+      "scope": "ABI67: append owned managed submenus or show a bounded temporary choice popup. No arbitrary adoption/radio items. See docs/MENUS.md."
     }
   ],
   "classes": {

@@ -274,5 +274,9 @@
   "folder-tree.lisp": {
     "description": "Native folder chooser with copied alpha bitmap tree icons, owned readback and CLOS subclass support. Exercise runs without waiting for manual input.",
     "command": "sbcl --load ci/setup.lisp --load examples/folder-tree.lisp --eval \"(wxlambda-folder-tree:start)\""
+  },
+  "context-menus.lisp": {
+    "description": "Owned recent submenu exercise and native right-click choices. EXERCISE runs ownership checks; START shows an interactive tree.",
+    "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/context-menus.lisp --eval '(wxlambda-context-menus:start)'"
   }
 }

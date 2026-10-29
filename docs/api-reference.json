@@ -1434,7 +1434,7 @@
     "kind": "class",
     "arguments": "MENU-BAR via :PARENT and nonempty :LABEL.",
     "returns": "New native-backed instance.",
-    "description": "Create a menu and append its raw tab label to the managed bar. Concrete subclass initargs and DEFAULT-INITARGS are supported; native properties exist in subclass AFTER hooks. Failed initialization cleans newly allocated resources and descendants; it does not undo arbitrary external mutations.",
+    "description": "Create a menu and append its raw label to the managed bar or parent menu. Concrete subclass initargs and DEFAULT-INITARGS are supported; native properties exist in subclass AFTER hooks. Failed initialization cleans newly allocated resources and descendants; it does not undo arbitrary external mutations.",
     "scope": "Requires an active main-thread GUI session and a live managed resource. Native resource/type/state failures signal NATIVE-ERROR; invalid Lisp types and CLOS receivers signal Lisp conditions. Structural operations reject during callbacks, pumps and RUN. Ownership stays in the frame/bar/menu native hierarchy; no raw pointer adoption or GC finalizer.",
     "wxwidgets": "wxMenu and wxMenuBar::Append",
     "syntax": "menu",
@@ -1469,11 +1469,12 @@
   {
     "name": "make-menu",
     "kind": "generic-function",
-    "arguments": "MENU-BAR is live; :CLASS defaults to MENU. Remaining constructor and subclass initargs are forwarded.",
+    "arguments": "Managed MENU-BAR or MENU parent, :LABEL nonempty Unicode label, optional :CLASS.",
     "returns": "New instance of the selected concrete subclass.",
-    "description": "Thin MAKE-INSTANCE factory with validated subclass support; same ownership, defaults and validation as MENU.",
+    "description": "Create an owned native menu attached to a bar, or a submenu attached to a menu. Parent destruction recursively retires children. IDs remain unique across the whole frame menu bar.",
     "scope": "Requires an active main-thread GUI session and a live managed resource. Native resource/type/state failures signal NATIVE-ERROR; invalid Lisp types and CLOS receivers signal Lisp conditions. Structural operations reject during callbacks, pumps and RUN. Ownership stays in the frame/bar/menu native hierarchy; no raw pointer adoption or GC finalizer. ABI43 safe deferred UI actions are explicit structural boundaries even under RUN/poll; nested RUN/pumps remain rejected. See docs/DEFERRED-UI-ACTIONS.md.",
-    "wxwidgets": "wxMenu and wxMenuBar::Append"
+    "wxwidgets": "wxMenu, wxMenuBar::Append and wxMenu::AppendSubMenu",
+    "syntax": "(wxlambda:make-menu parent :label label &key class)"
   },
   {
     "name": "make-menu-item",
@@ -5875,5 +5876,15 @@
       "description": "TREE-ITEM; SETF VALUE is NIL or0..31 within its owning tree icon list. Returns supplied VALUE; writes must be deferred from callbacks."
     },
     "syntax": "(wxlambda:tree-item-icon item)"
+  },
+  {
+    "name": "popup-choice",
+    "kind": "function",
+    "syntax": "(wxlambda:popup-choice window labels &key enabled (x -1) (y -1))",
+    "arguments": "Managed shown/enabled WINDOW; finite list of 1..16 label strings. Optional ENABLED is a matching list of generalized booleans. X/Y are client coordinates, or -1 for the native default.",
+    "returns": "Zero-based selected index, or NIL on cancellation.",
+    "description": "Synchronously display a temporary native context menu. Labels and flags are copied; the native menu is destroyed before returning. No menu resource escapes.",
+    "scope": "GUI main thread, outside callbacks and pumps, or in a deferred UI action. Native input-operation guards protect the receiver and pause deferred work/timers until selection returns. No arbitrary popup resources, separators or radio items.",
+    "wxwidgets": "wxWindow::GetPopupMenuSelectionFromUser, wxWidgets 3.2.12."
   }
 ]

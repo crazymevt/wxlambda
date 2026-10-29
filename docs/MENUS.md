@@ -87,7 +87,7 @@ MENU-ITEM-ID and MENU-ITEM-KIND are immutable. Normal/check IDs are integers fro
 MAKE-MENU-ITEM with :KIND :SEPARATOR. Explicit :ENABLED-P or :CHECKED-P
 on a separator rejects even NIL. Normal items permit NIL checked state but reject
 a non-NIL initial check. These are not arbitrary native stock-ID,
-radio, submenu or menu-item adoption interfaces.
+radio or existing menu-item adoption interfaces.
 
 CHECKED-P is supported only for check menu items. Its SETF writer normalizes a
 generalized boolean and returns the supplied value; reads return T/NIL.
@@ -126,3 +126,23 @@ boundary even under RUN/full polling; the quiescent structural operations in
 this guide can run there. Nested event callbacks retain their existing guards,
 and nested RUN/pumps/finish remain forbidden. Optional owner/cancel/error rules
 are documented in that guide.
+
+## Submenus and context choices (ABI67)
+
+`(make-menu parent-menu :label "Recent Files")` appends an owned submenu.
+`menu-label`, `menu-item-count`, item commands and recursive destruction work
+at every level. IDs are unique across the entire bar. There is no detached-menu
+adoption or reparenting. Structural operations use the existing deferred-action
+boundaries; scalar menu state remains subject to the existing menu guards.
+
+`(popup-choice tree '("New File…" "Rename…" "Delete…") :enabled '(t t nil))`
+returns a zero-based choice or NIL on cancellation. It builds and releases a
+temporary native menu, with copied labels and matching optional enable flags.
+Labels are limited to1..16 choices; positions default to the native pointer
+location or use client X/Y. Invoke it from a deferred action after a tree-item
+menu event, never directly inside the callback. Input-operation lifetime guards
+prevent receiver/ancestor destruction and suppress nested deferred work while
+the popup is active. Native keyboard/mouse selection and appearance require
+interactive platform verification; programmatic submenu ownership is tested.
+
+See `examples/context-menus.lisp` for a runnable submenu and right-click example.

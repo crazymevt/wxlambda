@@ -98,7 +98,7 @@
           (if (probe-file local)
               (cffi:load-foreign-library local)
               (cffi:use-foreign-library wxlambda-native))))
-    (unless (= 66 (%abi-version)) (error "Unsupported wxlambda native ABI"))
+    (unless (= 67 (%abi-version)) (error "Unsupported wxlambda native ABI"))
     (setf *native-loaded* t))
   t)
 
@@ -374,3 +374,5 @@
 
 (cffi:defcfun ("wxl_directory_dialog" %directory-dialog) :uint64 (parent :uint64) (title :pointer) (title-length :size) (path :pointer) (path-length :size))
 (cffi:defcfun ("wxl_directory_dialog_path" %directory-dialog-path) :pointer (id :uint64) (length :pointer))
+
+(cffi:defcfun ("wxl_popup_choice" %popup-choice) :int (id :uint64) (labels :pointer) (enabled :pointer) (count :size) (x :int) (y :int) (selected :pointer))

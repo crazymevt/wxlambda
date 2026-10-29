@@ -3730,3 +3730,19 @@ patterns, Unicode paths, lazy expansion, reveal/refresh, failed-switch retry and
 shutdown. Independent review found three issues (copy guard, POSIX case
 containment, abandoned loading rows); all were corrected and verified. Native
 Windows/Linux dialogs/rendering remain unverified.
+
+ABI67 adds owned submenus via MAKE-MENU on MENU and bounded POPUP-CHOICE.
+Input-operation guards protect context receiver lifetimes; no wxEVT_MENU_OPEN
+tracking is used because Cocoa sends it for shortcuts without paired CLOSE.
+Independent review caught that tracking issue; it was removed before delivery.
+See MENUS.md, context-menus example/tests. Native popup interaction remains
+an interactive platform check; automated ownership/validation checks cover
+submenus. Linux/Windows runtime verification remains outstanding.
+
+ABI67 verified on macOS: native build and lifetime fixture; SBCL/CCL context-menu
+validation/submenu example exercise; pinned coverage regeneration and regression;
+docset build/check plus actual SBCL/CCL export/SETF lookup checks pass. KryptonEdit
+541 UI checks pass, including recent menu creation and launch-path precedence.
+Interactive popup keyboard/mouse selection and Windows/Linux rendering were not
+run. No outstanding independent-review findings remain after removing the
+unbalanced menu-open tracking.

@@ -168,6 +168,7 @@ WXL_API int wxl_set_status_text(wxl_handle bar, int field, const char* text, siz
 WXL_API wxl_handle wxl_menu_bar(wxl_handle frame);
 WXL_API wxl_handle wxl_menu(wxl_handle bar, const char *label, size_t length);
 WXL_API wxl_handle wxl_menu_item(wxl_handle menu, int id, const char *label, size_t length, const char *help, size_t help_length, int kind);
+WXL_API int wxl_popup_choice(wxl_handle id,const char** labels,const int* enabled,size_t count,int x,int y,int* selected);
 WXL_API int wxl_menu_alive(wxl_handle resource);
 WXL_API int wxl_menu_destroy(wxl_handle resource);
 WXL_API int wxl_menu_count(wxl_handle resource);

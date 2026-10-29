@@ -624,3 +624,11 @@ complete class coverage remain pending. See [bitmap toggles](BITMAP-TOGGLES.md).
 ABI63 extends bitmap-toggle construction with default/no-border styling and
 WINDOW-COLOURS copied foreground/background RGB query. Native style and lifecycle
 checks pass locally; this adds no theme manager, setters or full-style coverage.
+
+ABI67 adds owned submenus via MAKE-MENU on MENU and bounded POPUP-CHOICE.
+Input-operation guards protect context receiver lifetimes; no wxEVT_MENU_OPEN
+tracking is used because Cocoa sends it for shortcuts without paired CLOSE.
+Independent review caught that tracking issue; it was removed before delivery.
+See MENUS.md, context-menus example/tests. Native popup interaction remains
+an interactive platform check; automated ownership/validation checks cover
+submenus. Linux/Windows runtime verification remains outstanding.

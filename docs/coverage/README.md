@@ -19,13 +19,13 @@ and verify platforms when selected features or completeness claims require it.
 | Category | Headers | Tasks | Implemented | Partial | Pending | Context |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | [C1: Foundation, values, application, events, and base utilities](phase-c1.md) | 119 | 5292 | 7 | 144 | 5141 | 26 |
-| [C2: Windows, layout, basic controls, and input](phase-c2.md) | 82 | 2862 | 28 | 251 | 2583 | 0 |
-| [C3: Dialogs, navigation, menus, and application services](phase-c3.md) | 57 | 1875 | 0 | 130 | 1745 | 0 |
+| [C2: Windows, layout, basic controls, and input](phase-c2.md) | 82 | 2862 | 28 | 253 | 2581 | 0 |
+| [C3: Dialogs, navigation, menus, and application services](phase-c3.md) | 57 | 1875 | 0 | 131 | 1744 | 0 |
 | [C4: Models, complex controls, and document frameworks](phase-c4.md) | 20 | 2328 | 0 | 120 | 2208 | 4 |
 | [C5: Drawing, images, graphics, and printing](phase-c5.md) | 52 | 2245 | 0 | 48 | 2197 | 0 |
 | [C6: Optional libraries, rich content, and integration](phase-c6.md) | 57 | 8912 | 0 | 206 | 8706 | 380 |
 | [C7: Platform extensions and remaining portability APIs](phase-c7.md) | 11 | 279 | 0 | 0 | 279 | 3 |
-| Total | 398 | 23793 | 35 | 899 | 22859 | 413 |
+| Total | 398 | 23793 | 35 | 902 | 22856 | 413 |
 
 ## Classes and widgets
 
@@ -244,7 +244,7 @@ unreviewed inherited/platform behavior.
 | [wx/valtext.h](phase-c2.md#wxvaltexth) | 0 | 0 | 31 | 0 |
 | [wx/vlbox.h](phase-c2.md#wxvlboxh) | 0 | 0 | 31 | 0 |
 | [wx/vscroll.h](phase-c2.md#wxvscrollh) | 0 | 0 | 79 | 0 |
-| [wx/window.h](phase-c2.md#wxwindowh) | 14 | 36 | 336 | 0 |
+| [wx/window.h](phase-c2.md#wxwindowh) | 14 | 38 | 334 | 0 |
 | [wx/windowid.h](phase-c2.md#wxwindowidh) | 0 | 0 | 4 | 0 |
 | [wx/windowptr.h](phase-c2.md#wxwindowptrh) | 0 | 0 | 8 | 0 |
 | [wx/withimages.h](phase-c2.md#wxwithimagesh) | 0 | 2 | 12 | 0 |
@@ -284,7 +284,7 @@ unreviewed inherited/platform behavior.
 | [wx/help.h](phase-c3.md#wxhelph) | 0 | 0 | 24 | 0 |
 | [wx/listbook.h](phase-c3.md#wxlistbookh) | 0 | 0 | 20 | 0 |
 | [wx/mdi.h](phase-c3.md#wxmdih) | 0 | 0 | 29 | 0 |
-| [wx/menu.h](phase-c3.md#wxmenuh) | 0 | 14 | 82 | 0 |
+| [wx/menu.h](phase-c3.md#wxmenuh) | 0 | 15 | 81 | 0 |
 | [wx/menuitem.h](phase-c3.md#wxmenuitemh) | 0 | 13 | 43 | 0 |
 | [wx/minifram.h](phase-c3.md#wxminiframh) | 0 | 0 | 15 | 0 |
 | [wx/modalhook.h](phase-c3.md#wxmodalhookh) | 0 | 6 | 1 | 0 |

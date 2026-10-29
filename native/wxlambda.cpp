@@ -1506,7 +1506,7 @@ bool process_deferred_ui_action() {
 
 }
 extern "C" {
-int wxl_abi_version() { return 66; }
+int wxl_abi_version() { return 67; }
 const char* wxl_last_error() { return error.c_str(); }
 int wxl_clipboard_text_available() {
     return boolean_result([&] {
@@ -2029,17 +2029,28 @@ wxl_handle wxl_menu_bar(wxl_handle frame_id) {
 }
 wxl_handle wxl_menu(wxl_handle bar_id, const char* label, size_t length) {
     return create([&] {
-        require_dispatch_entry(true); const auto parent = menu_resource(bar_id, 0);
+        require_dispatch_entry(true); const auto parent = menu_resource(bar_id);
+        require(parent.kind==0 || parent.kind==1,"Menu parent must be a bar or menu");
         const auto title = menu_string(label, length, false);
         auto object = std::make_unique<ManagedMenu>();
         const auto id = next_handle++; object->identity = id;
         menu_resources.emplace(id, MenuResource{object.get(), parent.frame, bar_id, 1});
-        auto* bar = static_cast<wxMenuBar*>(parent.object);
-        try { require(bar->Append(object.get(), title), "Native menu append failed"); }
-        catch (...) {
-            for (size_t index = 0; index < bar->GetMenuCount(); ++index)
-                if (bar->GetMenu(index) == object.get()) { bar->Remove(index); break; }
-            throw;
+        if (parent.kind==0) {
+            auto* bar=static_cast<wxMenuBar*>(parent.object);
+            try { require(bar->Append(object.get(),title),"Native menu append failed"); }
+            catch (...) {
+                for (size_t i=0;i<bar->GetMenuCount();++i) if (bar->GetMenu(i)==object.get()) { bar->Remove(i); break; }
+                throw;
+            }
+        } else {
+            auto* menu=static_cast<wxMenu*>(parent.object);
+            try { require(menu->AppendSubMenu(object.get(),title),"Native submenu append failed"); }
+            catch (...) {
+                wxMenuItem* holder=nullptr;
+                for (auto* item:menu->GetMenuItems()) if (item->GetSubMenu()==object.get()) { holder=item; break; }
+                if (holder) { menu->Remove(holder); holder->SetSubMenu(nullptr); delete holder; }
+                throw;
+            }
         }
         object.release(); return id;
     });
@@ -2053,8 +2064,8 @@ wxl_handle wxl_menu_item(wxl_handle menu_id, int item_id, const char* label, siz
         require(kind == 2 ? item_id == 0 && !length && !help_length : item_id > 0,
                 "Menu item requires a positive ID; separator requires zero and empty text");
         require(kind == 2 || length != 0, "Menu item label must be nonempty");
-        const auto menu_record = menu_resource(parent.parent, 0);
-        auto* bar = static_cast<wxMenuBar*>(menu_record.object);
+        auto* bar=as<wxFrame>(parent.frame)->GetMenuBar();
+        require(bar,"Menu is not attached to its frame");
         require(kind == 2 || !bar->FindItem(item_id), "Duplicate menu item ID in menu bar");
         const auto item_label = menu_string(label, length, kind == 2);
         const auto item_help = menu_string(help, help_length, true);
@@ -2073,6 +2084,25 @@ wxl_handle wxl_menu_item(wxl_handle menu_id, int item_id, const char* label, siz
         object.release(); return id;
     });
 }
+int wxl_popup_choice(wxl_handle id,const char** labels,const int* enabled,size_t count,int x,int y,int* selected) {
+    return status([&] {
+        require_dispatch_entry(true); auto* owner=window(id);
+        require(labels && enabled && selected && count>=1 && count<=16,"Popup requires1..16 entries");
+        require(x>=-1 && y>=-1 && x<=1000000 && y<=1000000,"Popup position out of bounds");
+        require(owner->IsShown() && owner->IsEnabled(),"Popup owner must be shown and enabled");
+        wxMenu menu;
+        for (size_t i=0;i<count;++i) {
+            require(labels[i] && (enabled[i]==0 || enabled[i]==1),"Invalid popup item");
+            auto label=menu_string(labels[i],std::strlen(labels[i]),false);
+            require(label.length()<=256,"Popup label too long");
+            menu.Append(6000+static_cast<int>(i),label)->Enable(enabled[i]!=0);
+        }
+        InputOperation operation(owner);
+        const int result=owner->GetPopupMenuSelectionFromUser(menu,wxPoint(x,y));
+        *selected=result==wxID_NONE ? -1 : result-6000;
+        require(*selected==-1 || (*selected>=0 && *selected<static_cast<int>(count) && enabled[*selected]),"Invalid popup selection");
+    });
+}
 int wxl_menu_alive(wxl_handle id) {
     return boolean_result([&] {
         ready(); const auto found = menu_resources.find(id); if (found == menu_resources.end()) return false;
@@ -2085,8 +2115,15 @@ int wxl_menu_destroy(wxl_handle id) {
         ready(); require_dispatch_entry(true); const auto resource = menu_resource(id);
         if (resource.kind == 0) { as<wxFrame>(resource.frame)->SetMenuBar(nullptr); delete static_cast<wxMenuBar*>(resource.object); }
         else if (resource.kind == 1) {
-            auto* bar = static_cast<wxMenuBar*>(menu_resource(resource.parent, 0).object);
-            delete bar->Remove(menu_position(bar, static_cast<wxMenu*>(resource.object)));
+            const auto parent=menu_resource(resource.parent);
+            if (parent.kind==0) {
+                auto* bar=static_cast<wxMenuBar*>(parent.object);
+                delete bar->Remove(menu_position(bar,static_cast<wxMenu*>(resource.object)));
+            } else {
+                auto* menu=static_cast<wxMenu*>(parent.object); wxMenuItem* holder=nullptr;
+                for (auto* item:menu->GetMenuItems()) if (item->GetSubMenu()==resource.object) { holder=item; break; }
+                require(holder && menu->Destroy(holder),"Submenu is not attached to parent");
+            }
         } else require(static_cast<wxMenu*>(menu_resource(resource.parent, 1).object)->Destroy(static_cast<wxMenuItem*>(resource.object)), "Native item destruction failed");
     });
 }
@@ -2103,14 +2140,21 @@ const char* wxl_menu_label(wxl_handle id, size_t* length) {
     return metadata_string([&] {
         const auto r = menu_resource(id);
         require(r.kind != 0, "Bar has no label");
-        return r.kind == 2 ? static_cast<wxMenuItem*>(r.object)->GetItemLabel() :
-            static_cast<wxMenuBar*>(menu_resource(r.parent, 0).object)->GetMenuLabel(menu_position(static_cast<wxMenuBar*>(menu_resource(r.parent, 0).object), static_cast<wxMenu*>(r.object)));
+        if (r.kind==2) return static_cast<wxMenuItem*>(r.object)->GetItemLabel();
+        const auto parent=menu_resource(r.parent);
+        if (parent.kind==0) { auto* bar=static_cast<wxMenuBar*>(parent.object); return bar->GetMenuLabel(menu_position(bar,static_cast<wxMenu*>(r.object))); }
+        for (auto* item:static_cast<wxMenu*>(parent.object)->GetMenuItems()) if (item->GetSubMenu()==r.object) return item->GetItemLabel();
+        throw std::runtime_error("Submenu is not attached");
     }, length);
 }
 int wxl_set_menu_label(wxl_handle id, const char* text, size_t length) { return status([&] {
     const auto r = menu_resource(id); require(r.kind != 0, "Bar has no label"); const auto value = menu_string(text, length, false);
     if (r.kind == 2) { auto* item = static_cast<wxMenuItem*>(r.object); require(!item->IsSeparator(), "Separator has no label"); item->SetItemLabel(value); }
-    else { auto* bar = static_cast<wxMenuBar*>(menu_resource(r.parent, 0).object); bar->SetMenuLabel(menu_position(bar, static_cast<wxMenu*>(r.object)), value); }
+    else {
+        const auto parent=menu_resource(r.parent);
+        if (parent.kind==0) { auto* bar=static_cast<wxMenuBar*>(parent.object); bar->SetMenuLabel(menu_position(bar,static_cast<wxMenu*>(r.object)),value); }
+        else { for (auto* item:static_cast<wxMenu*>(parent.object)->GetMenuItems()) if (item->GetSubMenu()==r.object) { item->SetItemLabel(value); return; } throw std::runtime_error("Submenu is not attached"); }
+    }
 }); }
 int wxl_menu_enabled(wxl_handle id) { return boolean_result([&] { auto* item = static_cast<wxMenuItem*>(menu_resource(id, 2).object); require(!item->IsSeparator(), "Separator cannot be enabled"); return item->IsEnabled(); }); }
 int wxl_set_menu_enabled(wxl_handle id, int value) { return boolean_result([&] { auto* item = static_cast<wxMenuItem*>(menu_resource(id, 2).object); require(!item->IsSeparator(), "Separator cannot be enabled"); const bool changed = item->IsEnabled() != (value != 0); item->Enable(value != 0); return changed; }); }
