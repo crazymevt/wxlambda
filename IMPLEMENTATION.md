@@ -3623,3 +3623,26 @@ class/SETF coverage under SBCL and CCL, and isolated install all pass
 KryptonEdit's native menu/panel/bitmap-icon integration passes319UI checks
 (iBivWn1m); its781141headless checks also pass (FdOfrlyD). No platform beyond
 macOS or physical-input/appearance/DPI validation is claimed.
+
+## ABI63 flat toggles and native colour query (2026-10-29)
+
+Requested by KryptonEdit to remove raised activity-button chrome and maintain
+transparent, contrasting icons across native themes. Adds :border :default/:none
+on bitmap-toggle construction and WINDOW-COLOURS returning copied native RGB
+foreground/background, with current system fallbacks for invalid values. No
+macOS-specific application code or library theme policy. ABI bumped to63.
+Independent review found no actionable issue; pinned wxOSX source confirms that
+wxBORDER_NONE removes native bordering. Native fixture checks actual style bits,
+invalid-border rejection and colour reads, and passes with zero wx assertions
+(quiet-run.D4d5ftGc). SBCL bitmap-toggle tests pass (WDXIaPuL); CCL example/regressions also pass
+(nY5LruPc). All14 pinned coverage checks pass (8k6xxYOj). The docset has667entries
+and531 public API exports, zero checker problems, actual class/SETF coverage on
+SBCL/CCL, guide/example discovery and isolated installation (EWyi2mo2, sFQk9w4t,
+lOhtBhlc). Final docset regeneration includes this record.
+KryptonEdit398native UI checks pass (jb7mSXJu), including transparent corners,
+selected markers, light/dark low-contrast palette correction, pixel updates,
+cache reuse and timer cancellation. Its781141headless checks pass (Zj826d9Y).
+The live native colour query reports foreground255/255/255 and background23/23/23
+in the local dark appearance. Dark/light icon contact-sheet rendering was
+inspected without changing the user's OS theme. Other ports and physical appearance/theme changes
+remain unverified.

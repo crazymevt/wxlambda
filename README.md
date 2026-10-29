@@ -856,3 +856,6 @@ run `examples/radio-groups.lisp` for export-format selection.
 
 ABI62 adds native [bitmap toggle buttons](docs/BITMAP-TOGGLES.md), with copied
 bitmap artwork and the existing toggle event/state protocol.
+
+ABI63 adds `:border :none` for flat bitmap toggles and `window-colours` for
+reading native container colours without forcing an application theme.

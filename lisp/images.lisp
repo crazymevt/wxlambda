@@ -183,11 +183,11 @@
 (defun bitmap-toggle-button-supported-p ()
   "Report native bitmap-toggle availability in the current main-thread session."
   (boolean-result (%bitmap-toggle-supported)))
-(defmethod initialize-instance :after ((object bitmap-toggle-button) &key parent bitmap checked (label ""))
+(defmethod initialize-instance :after ((object bitmap-toggle-button) &key parent bitmap checked (label "") (border :default))
   (check-type parent window) (check-type bitmap bitmap)
   (unless (string= label "") (error "Bitmap toggle construction takes :BITMAP, not a text label"))
-  (adopt-native object (%bitmap-toggle (handle parent) (handle bitmap) (if checked 1 0))))
-(defgeneric make-bitmap-toggle-button (parent bitmap &rest initargs &key class checked &allow-other-keys))
+  (adopt-native object (%bitmap-toggle (handle parent) (handle bitmap) (if checked 1 0) (ecase border (:default 0) (:none 1)))))
+(defgeneric make-bitmap-toggle-button (parent bitmap &rest initargs &key class checked border &allow-other-keys))
 (defmethod make-bitmap-toggle-button ((parent window) (bitmap bitmap) &rest initargs
                                     &key (class 'bitmap-toggle-button) &allow-other-keys)
   (apply #'make-widget class 'bitmap-toggle-button :parent parent :bitmap bitmap initargs))
@@ -196,3 +196,11 @@
   (make-bitmap :source control))
 (defmethod (setf bitmap-value) ((value bitmap) (control bitmap-toggle-button))
   (call-setter (lambda () (%bitmap-toggle-set (handle control) (handle value))) t) value)
+
+(defgeneric window-colours (window)
+  (:documentation "Return fresh native foreground and background RGB lists as two values."))
+(defmethod window-colours ((object window))
+  (cffi:with-foreign-objects ((fg :uint8 3) (bg :uint8 3))
+    (check-status (%window-colours (handle object) fg bg))
+    (values (loop for i below 3 collect (cffi:mem-aref fg :uint8 i))
+            (loop for i below 3 collect (cffi:mem-aref bg :uint8 i)))))

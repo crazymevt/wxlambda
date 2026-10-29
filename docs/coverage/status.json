@@ -17647,7 +17647,7 @@
         "wxl_toggle_button_checked",
         "wxl_set_toggle_button_checked"
       ],
-      "scope": "Native-backed BITMAP-TOGGLE-BUTTON inherits TOGGLE-BUTTON; required copied BITMAP, :checked state, bitmap-value/SETF owned readback, inherited native toggle events/guards. Availability is gated by wxHAS_BITMAPTOGGLEBUTTON. Fixed default IDs/styles/size; no raw ownership, arbitrary state artwork/bundles, grouping or full class parity. See docs/BITMAP-TOGGLES.md."
+      "scope": "Native-backed BITMAP-TOGGLE-BUTTON inherits TOGGLE-BUTTON; required copied BITMAP, :checked state, bitmap-value/SETF owned readback, inherited native toggle events/guards. Availability is gated by wxHAS_BITMAPTOGGLEBUTTON. Fixed IDs/size; :border :default or :none maps native default or wxBORDER_NONE; no raw ownership, arbitrary state artwork/bundles, grouping or full class parity. See docs/BITMAP-TOGGLES.md."
     },
     {
       "header": "wx/tglbtn.h",
@@ -17670,7 +17670,7 @@
         "wxl_toggle_button_checked",
         "wxl_set_toggle_button_checked"
       ],
-      "scope": "Native-backed BITMAP-TOGGLE-BUTTON inherits TOGGLE-BUTTON; required copied BITMAP, :checked state, bitmap-value/SETF owned readback, inherited native toggle events/guards. Availability is gated by wxHAS_BITMAPTOGGLEBUTTON. Fixed default IDs/styles/size; no raw ownership, arbitrary state artwork/bundles, grouping or full class parity. See docs/BITMAP-TOGGLES.md."
+      "scope": "Native-backed BITMAP-TOGGLE-BUTTON inherits TOGGLE-BUTTON; required copied BITMAP, :checked state, bitmap-value/SETF owned readback, inherited native toggle events/guards. Availability is gated by wxHAS_BITMAPTOGGLEBUTTON. Fixed IDs/size; :border :default or :none maps native default or wxBORDER_NONE; no raw ownership, arbitrary state artwork/bundles, grouping or full class parity. See docs/BITMAP-TOGGLES.md."
     },
     {
       "header": "wx/tglbtn.h",
@@ -17693,7 +17693,7 @@
         "wxl_toggle_button_checked",
         "wxl_set_toggle_button_checked"
       ],
-      "scope": "Native-backed BITMAP-TOGGLE-BUTTON inherits TOGGLE-BUTTON; required copied BITMAP, :checked state, bitmap-value/SETF owned readback, inherited native toggle events/guards. Availability is gated by wxHAS_BITMAPTOGGLEBUTTON. Fixed default IDs/styles/size; no raw ownership, arbitrary state artwork/bundles, grouping or full class parity. See docs/BITMAP-TOGGLES.md."
+      "scope": "Native-backed BITMAP-TOGGLE-BUTTON inherits TOGGLE-BUTTON; required copied BITMAP, :checked state, bitmap-value/SETF owned readback, inherited native toggle events/guards. Availability is gated by wxHAS_BITMAPTOGGLEBUTTON. Fixed IDs/size; :border :default or :none maps native default or wxBORDER_NONE; no raw ownership, arbitrary state artwork/bundles, grouping or full class parity. See docs/BITMAP-TOGGLES.md."
     },
     {
       "header": "wx/tglbtn.h",
@@ -17716,7 +17716,7 @@
         "wxl_toggle_button_checked",
         "wxl_set_toggle_button_checked"
       ],
-      "scope": "Native-backed BITMAP-TOGGLE-BUTTON inherits TOGGLE-BUTTON; required copied BITMAP, :checked state, bitmap-value/SETF owned readback, inherited native toggle events/guards. Availability is gated by wxHAS_BITMAPTOGGLEBUTTON. Fixed default IDs/styles/size; no raw ownership, arbitrary state artwork/bundles, grouping or full class parity. See docs/BITMAP-TOGGLES.md."
+      "scope": "Native-backed BITMAP-TOGGLE-BUTTON inherits TOGGLE-BUTTON; required copied BITMAP, :checked state, bitmap-value/SETF owned readback, inherited native toggle events/guards. Availability is gated by wxHAS_BITMAPTOGGLEBUTTON. Fixed IDs/size; :border :default or :none maps native default or wxBORDER_NONE; no raw ownership, arbitrary state artwork/bundles, grouping or full class parity. See docs/BITMAP-TOGGLES.md."
     },
     {
       "header": "wx/tglbtn.h",
@@ -17739,7 +17739,7 @@
         "wxl_toggle_button_checked",
         "wxl_set_toggle_button_checked"
       ],
-      "scope": "Native-backed BITMAP-TOGGLE-BUTTON inherits TOGGLE-BUTTON; required copied BITMAP, :checked state, bitmap-value/SETF owned readback, inherited native toggle events/guards. Availability is gated by wxHAS_BITMAPTOGGLEBUTTON. Fixed default IDs/styles/size; no raw ownership, arbitrary state artwork/bundles, grouping or full class parity. See docs/BITMAP-TOGGLES.md."
+      "scope": "Native-backed BITMAP-TOGGLE-BUTTON inherits TOGGLE-BUTTON; required copied BITMAP, :checked state, bitmap-value/SETF owned readback, inherited native toggle events/guards. Availability is gated by wxHAS_BITMAPTOGGLEBUTTON. Fixed IDs/size; :border :default or :none maps native default or wxBORDER_NONE; no raw ownership, arbitrary state artwork/bundles, grouping or full class parity. See docs/BITMAP-TOGGLES.md."
     },
     {
       "header": "wx/anybutton.h",
@@ -17762,7 +17762,7 @@
         "wxl_toggle_button_checked",
         "wxl_set_toggle_button_checked"
       ],
-      "scope": "Native-backed BITMAP-TOGGLE-BUTTON inherits TOGGLE-BUTTON; required copied BITMAP, :checked state, bitmap-value/SETF owned readback, inherited native toggle events/guards. Availability is gated by wxHAS_BITMAPTOGGLEBUTTON. Fixed default IDs/styles/size; no raw ownership, arbitrary state artwork/bundles, grouping or full class parity. See docs/BITMAP-TOGGLES.md."
+      "scope": "Native-backed BITMAP-TOGGLE-BUTTON inherits TOGGLE-BUTTON; required copied BITMAP, :checked state, bitmap-value/SETF owned readback, inherited native toggle events/guards. Availability is gated by wxHAS_BITMAPTOGGLEBUTTON. Fixed IDs/size; :border :default or :none maps native default or wxBORDER_NONE; no raw ownership, arbitrary state artwork/bundles, grouping or full class parity. See docs/BITMAP-TOGGLES.md."
     },
     {
       "header": "wx/anybutton.h",
@@ -17785,7 +17785,35 @@
         "wxl_toggle_button_checked",
         "wxl_set_toggle_button_checked"
       ],
-      "scope": "Native-backed BITMAP-TOGGLE-BUTTON inherits TOGGLE-BUTTON; required copied BITMAP, :checked state, bitmap-value/SETF owned readback, inherited native toggle events/guards. Availability is gated by wxHAS_BITMAPTOGGLEBUTTON. Fixed default IDs/styles/size; no raw ownership, arbitrary state artwork/bundles, grouping or full class parity. See docs/BITMAP-TOGGLES.md."
+      "scope": "Native-backed BITMAP-TOGGLE-BUTTON inherits TOGGLE-BUTTON; required copied BITMAP, :checked state, bitmap-value/SETF owned readback, inherited native toggle events/guards. Availability is gated by wxHAS_BITMAPTOGGLEBUTTON. Fixed IDs/size; :border :default or :none maps native default or wxBORDER_NONE; no raw ownership, arbitrary state artwork/bundles, grouping or full class parity. See docs/BITMAP-TOGGLES.md."
+    },
+    {
+      "header": "wx/window.h",
+      "line": 2171,
+      "declaration": "wxColour GetBackgroundColour() const;",
+      "status": "~",
+      "symbol": "wxWindow::GetBackgroundColour",
+      "lisp": [
+        "window-colours"
+      ],
+      "native": [
+        "wxl_window_colours"
+      ],
+      "scope": "Read current native foreground/background as two copied RGB triples; invalid colours fall back to current system window text/button face. GUI/main-thread and checked window lifetime; no wxColour wrapper, alpha, setters, theme forcing or raw handles. See docs/BITMAP-TOGGLES.md."
+    },
+    {
+      "header": "wx/window.h",
+      "line": 2238,
+      "declaration": "wxColour GetForegroundColour() const;",
+      "status": "~",
+      "symbol": "wxWindow::GetForegroundColour",
+      "lisp": [
+        "window-colours"
+      ],
+      "native": [
+        "wxl_window_colours"
+      ],
+      "scope": "Read current native foreground/background as two copied RGB triples; invalid colours fall back to current system window text/button face. GUI/main-thread and checked window lifetime; no wxColour wrapper, alpha, setters, theme forcing or raw handles. See docs/BITMAP-TOGGLES.md."
     }
   ],
   "classes": {
@@ -17921,7 +17949,8 @@
         "grid",
         "web-view",
         "aui-notebook",
-        "styled-text-control"
+        "styled-text-control",
+        "window-colours"
       ],
       "native": [
         "wxl_show_state",
@@ -17938,7 +17967,8 @@
         "wxl_grid",
         "wxl_web_view",
         "wxl_aui_notebook",
-        "wxl_stc"
+        "wxl_stc",
+        "wxl_window_colours"
       ],
       "scope": "Logical names, visibility and effective enabled state, layout, geometry and destruction are exposed; the remaining wxWindow API stays open. Managed handler stacks and explicit stack-aware copied routing are now supported. Push preserves bridge ownership; default pop/remove detach alive, deleting pop consumes native resource. All supported concrete native window destructors (including supported generic dialogs) pop(false) before base teardown, independent of destroy observers/enabled flags. No external adoption/SetEventHandler or retained origins. Modal-only dialog show writers reject; active modal/ancestor close/destroy guards preserve native modal lifetime. Native availability rejects pending/scheduled receiver or ancestor deletion through public wxApp::IsScheduledForDestruction plus bridge markers; no dedicated general deletion-query API. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md. DRAWING-CANVAS and ACTIVITY-INDICATOR are WINDOW receivers for implemented generic layout/geometry/state/lifetime/handler protocols; this is not arbitrary wxPanel/wxControl parity. Canvas writes/export and activity writes retain their callback/native-operation guards. GRID and WEB-VIEW are concrete WINDOW receivers for the implemented generic layout, geometry, visibility, enabled state and lifetime operations. Their private composite scroll/browser event handling forbids managed handler-stack access/edits; their own mutation and callback guards remain in force. AUI-NOTEBOOK inherits supported generic WINDOW geometry/state/lifetime behavior; private manager handler stacks and own page layouts reject. Active main-thread GUI session and checked native lifetimes. All AUI writes reject callbacks; structural edits require quiescence or owner-bound deferred action. Canonical PANEL roots precede publication; remove retains hidden same-parent child, delete invalidates by native destruction. Full native tab-event spans protect book/pages/ancestors and block nested GUI/modal/clipboard entry. Top tabs with native programmatic Split, one-group mouse movement and active close; external transfer, mouse drag splitting, icons/art providers and managed handler-stack access remain unbound. Requires wxUSE_AUI and aui component. See docs/AUI-NOTEBOOK.md. STYLED-TEXT-CONTROL and AUI-NOTEBOOK inherit supported generic WINDOW geometry/state/lifetime operations. AUI manager handler stacks/page layout remain private; raw input and STC/AUI callbacks retain actual-source/composite/ancestor native-entry guards."
     },
@@ -19997,7 +20027,7 @@
         "wxl_toggle_button_checked",
         "wxl_set_toggle_button_checked"
       ],
-      "scope": "Native-backed BITMAP-TOGGLE-BUTTON inherits TOGGLE-BUTTON; required copied BITMAP, :checked state, bitmap-value/SETF owned readback, inherited native toggle events/guards. Availability is gated by wxHAS_BITMAPTOGGLEBUTTON. Fixed default IDs/styles/size; no raw ownership, arbitrary state artwork/bundles, grouping or full class parity. See docs/BITMAP-TOGGLES.md."
+      "scope": "Native-backed BITMAP-TOGGLE-BUTTON inherits TOGGLE-BUTTON; required copied BITMAP, :checked state, bitmap-value/SETF owned readback, inherited native toggle events/guards. Availability is gated by wxHAS_BITMAPTOGGLEBUTTON. Fixed IDs/size; :border :default or :none maps native default or wxBORDER_NONE; no raw ownership, arbitrary state artwork/bundles, grouping or full class parity. See docs/BITMAP-TOGGLES.md."
     },
     "wxAnyButton": {
       "status": "~",

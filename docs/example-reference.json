@@ -260,7 +260,7 @@
     "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/grid-editing.lisp --eval \"(wxlambda-grid-editing:start)\""
   },
   "bitmap-toggles.lisp": {
-    "description": "Font-independent native bitmap toggle with alpha artwork, copied bitmap ownership, checked events and EXERCISE coverage.",
+    "description": "Font-independent native borderless bitmap toggle with alpha artwork, native window-colour query, copied ownership, checked events and EXERCISE coverage.",
     "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/bitmap-toggles.lisp --eval '(wxlambda-bitmap-toggles:start)'"
   }
 }

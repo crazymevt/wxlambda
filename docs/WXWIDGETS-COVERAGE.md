@@ -620,3 +620,7 @@ Native wxBitmapToggleButton construction and copied normal bitmap read/write,
 inherited checked events/state and availability query are bound. Source ports
 are macro-gated; local runtime scope is macOS. State artwork/bundles, margins and
 complete class coverage remain pending. See [bitmap toggles](BITMAP-TOGGLES.md).
+
+ABI63 extends bitmap-toggle construction with default/no-border styling and
+WINDOW-COLOURS copied foreground/background RGB query. Native style and lifecycle
+checks pass locally; this adds no theme manager, setters or full-style coverage.

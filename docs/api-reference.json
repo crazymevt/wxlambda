@@ -5677,10 +5677,10 @@
   {
     "name": "bitmap-toggle-button",
     "kind": "class",
-    "arguments": "PARENT window, BITMAP resource; :checked generalized boolean, :class and forwarded subclass initargs for factory.",
+    "arguments": "PARENT window, BITMAP resource; :checked generalized boolean, :class and forwarded subclass initargs for factory. :border is :default (default) or :none for native borderless styling.",
     "returns": "New native-backed BITMAP-TOGGLE-BUTTON or validated subclass.",
     "description": "Native wxBitmapToggleButton, not a text glyph. Inherits CHECKED-P/SETF and :TOGGLE-BUTTON-CHANGE. BITMAP-VALUE/SETF uses copied native values.",
-    "scope": "Native-backed BITMAP-TOGGLE-BUTTON inherits TOGGLE-BUTTON; required copied BITMAP, :checked state, bitmap-value/SETF owned readback, inherited native toggle events/guards. Availability is gated by wxHAS_BITMAPTOGGLEBUTTON. Fixed default IDs/styles/size; no raw ownership, arbitrary state artwork/bundles, grouping or full class parity. See docs/BITMAP-TOGGLES.md.",
+    "scope": "Native-backed BITMAP-TOGGLE-BUTTON inherits TOGGLE-BUTTON; required copied BITMAP, :checked state, bitmap-value/SETF owned readback, inherited native toggle events/guards. Availability is gated by wxHAS_BITMAPTOGGLEBUTTON. Fixed IDs/size; :border :default or :none maps native default or wxBORDER_NONE; no raw ownership, arbitrary state artwork/bundles, grouping or full class parity. See docs/BITMAP-TOGGLES.md.",
     "wxwidgets": "wxBitmapToggleButton::Create and inherited wxAnyButton::GetBitmap/SetBitmap, wxToggleButton::GetValue/SetValue; pinned wxWidgets3.2.12.",
     "syntax": "wxlambda:bitmap-toggle-button",
     "construction": {
@@ -5691,12 +5691,12 @@
   {
     "name": "make-bitmap-toggle-button",
     "kind": "generic-function",
-    "arguments": "PARENT window, BITMAP resource; :checked generalized boolean, :class and forwarded subclass initargs for factory.",
+    "arguments": "PARENT window, BITMAP resource; :checked generalized boolean, :class and forwarded subclass initargs for factory. :border is :default (default) or :none for native borderless styling.",
     "returns": "New native-backed BITMAP-TOGGLE-BUTTON or validated subclass.",
     "description": "Native wxBitmapToggleButton, not a text glyph. Inherits CHECKED-P/SETF and :TOGGLE-BUTTON-CHANGE. BITMAP-VALUE/SETF uses copied native values.",
-    "scope": "Native-backed BITMAP-TOGGLE-BUTTON inherits TOGGLE-BUTTON; required copied BITMAP, :checked state, bitmap-value/SETF owned readback, inherited native toggle events/guards. Availability is gated by wxHAS_BITMAPTOGGLEBUTTON. Fixed default IDs/styles/size; no raw ownership, arbitrary state artwork/bundles, grouping or full class parity. See docs/BITMAP-TOGGLES.md.",
+    "scope": "Native-backed BITMAP-TOGGLE-BUTTON inherits TOGGLE-BUTTON; required copied BITMAP, :checked state, bitmap-value/SETF owned readback, inherited native toggle events/guards. Availability is gated by wxHAS_BITMAPTOGGLEBUTTON. Fixed IDs/size; :border :default or :none maps native default or wxBORDER_NONE; no raw ownership, arbitrary state artwork/bundles, grouping or full class parity. See docs/BITMAP-TOGGLES.md.",
     "wxwidgets": "wxBitmapToggleButton::Create and inherited wxAnyButton::GetBitmap/SetBitmap, wxToggleButton::GetValue/SetValue; pinned wxWidgets3.2.12.",
-    "syntax": "(wxlambda:make-bitmap-toggle-button parent bitmap &key checked class &allow-other-keys)"
+    "syntax": "(wxlambda:make-bitmap-toggle-button parent bitmap &key checked (border :default) class &allow-other-keys)"
   },
   {
     "name": "bitmap-toggle-button-supported-p",
@@ -5704,8 +5704,18 @@
     "arguments": "None; active main-thread GUI session.",
     "returns": "T when this native build defines wxHAS_BITMAPTOGGLEBUTTON, otherwise NIL.",
     "description": "Report build/port availability; unavailable construction signals NATIVE-ERROR. Does not create a control or imply runtime verification on every port.",
-    "scope": "Native-backed BITMAP-TOGGLE-BUTTON inherits TOGGLE-BUTTON; required copied BITMAP, :checked state, bitmap-value/SETF owned readback, inherited native toggle events/guards. Availability is gated by wxHAS_BITMAPTOGGLEBUTTON. Fixed default IDs/styles/size; no raw ownership, arbitrary state artwork/bundles, grouping or full class parity. See docs/BITMAP-TOGGLES.md.",
+    "scope": "Native-backed BITMAP-TOGGLE-BUTTON inherits TOGGLE-BUTTON; required copied BITMAP, :checked state, bitmap-value/SETF owned readback, inherited native toggle events/guards. Availability is gated by wxHAS_BITMAPTOGGLEBUTTON. Fixed IDs/size; :border :default or :none maps native default or wxBORDER_NONE; no raw ownership, arbitrary state artwork/bundles, grouping or full class parity. See docs/BITMAP-TOGGLES.md.",
     "wxwidgets": "wxBitmapToggleButton::Create and inherited wxAnyButton::GetBitmap/SetBitmap, wxToggleButton::GetValue/SetValue; pinned wxWidgets3.2.12.",
     "syntax": "(wxlambda:bitmap-toggle-button-supported-p)"
+  },
+  {
+    "name": "window-colours",
+    "kind": "generic-function",
+    "syntax": "(wxlambda:window-colours window)",
+    "arguments": "A live WINDOW in the current main-thread GUI session.",
+    "returns": "Two fresh lists (red green blue): native foreground, then background; channel integers0..255.",
+    "description": "Read wxWindow GetForegroundColour/GetBackgroundColour. Invalid native values use current system WINDOWTEXT/BTNFACE fallbacks. Suitable for sampling a native container palette; does not change or retain the theme.",
+    "scope": "Checked WINDOW lifetime and GUI thread; callback-safe read. No mutable wxColour resources, alpha, setters, screen pixel sampling or exact native paint/theme interpretation guarantee. See docs/BITMAP-TOGGLES.md.",
+    "wxwidgets": "wxWindow::GetForegroundColour/GetBackgroundColour and wxSystemSettings::GetColour fallbacks; wxWidgets3.2.12."
   }
 ]

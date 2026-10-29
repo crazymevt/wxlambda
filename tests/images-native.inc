@@ -10,6 +10,14 @@ void exercise_images() {
  const char* path="/private/tmp/wxlambda-images-stage.png"; expect(wxl_save_image(image,path,std::strlen(path))==0,"Save PNG");
  auto loaded=wxl_load_image(path,std::strlen(path)); expect(loaded&&wxl_image_pixel(loaded,0,0,pixel,0)==0&&pixel[0]==4&&pixel[3]==200,"PNG round trip");
  auto frame=wxl_frame("Images",400,300),control=wxl_static_bitmap(frame,bitmap); expect(frame&&control,"Display");
+#ifdef wxHAS_BITMAPTOGGLEBUTTON
+ auto flat=wxl_bitmap_toggle(frame,bitmap,1,1); expect(flat,"Flat bitmap toggle creation");
+ expect((as<wxBitmapToggleButton>(flat)->GetWindowStyleFlag()&wxBORDER_MASK)==wxBORDER_NONE,"Actual native borderless style");
+ expect(wxl_toggle_button_checked(flat)==1,"Flat selected state");
+ expect(wxl_bitmap_toggle(frame,bitmap,0,2)==0,"Invalid native border rejects");
+ unsigned char fg[3],bg[3]; expect(wxl_window_colours(frame,fg,bg)==0,"Window colours query");
+#endif
+
  int rectangle[4],ppi[2],point[2]; double scale=0;
  expect(wxl_display_count()>0&&wxl_display_info(0,0,rectangle,ppi,&scale)==0&&rectangle[2]>0&&scale>0,"Display geometry/scale");
  expect(wxl_window_point(control,1,3,4,point)==0&&wxl_window_point(control,2,point[0],point[1],point)==0&&point[0]==3&&point[1]==4,"Client/screen round trip");

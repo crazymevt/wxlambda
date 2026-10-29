@@ -16,13 +16,17 @@
   (assert (wxlambda:bitmap-toggle-button-supported-p))
   (assert (wxlambda-bitmap-toggles:exercise))
   (let* ((frame (wxlambda:make-frame)) (icon (wxlambda-bitmap-toggles:make-icon))
-         (button (wxlambda:make-bitmap-toggle-button frame icon :class 'tagged-bitmap-toggle :tag :factory))
+         (button (wxlambda:make-bitmap-toggle-button frame icon :class 'tagged-bitmap-toggle :tag :factory :border :none))
          (other (make-instance 'tagged-bitmap-toggle :parent frame :bitmap icon))
          (calls 0))
     (unwind-protect
          (progn
            (assert (eq :factory (bitmap-toggle-tag button)))
            (assert (eq :default (bitmap-toggle-tag other)))
+           (multiple-value-bind (fg bg) (wxlambda:window-colours frame)
+             (assert (and (= 3 (length fg)) (= 3 (length bg))))
+             (assert (every (lambda (value) (typep value '(unsigned-byte 8))) (append fg bg))))
+
            (assert (typep button 'wxlambda:toggle-button))
            (wxlambda:destroy-bitmap icon)
            (let ((copy (wxlambda:bitmap-value button)))
@@ -46,6 +50,7 @@
                   (progn
                     (bitmap-toggle-error (lambda () (wxlambda:make-bitmap-toggle-button frame valid :class 'wxlambda:button)))
                     (bitmap-toggle-error (lambda () (wxlambda:make-bitmap-toggle-button frame valid :label "text")))
+                    (bitmap-toggle-error (lambda () (wxlambda:make-bitmap-toggle-button frame valid :border :raised)))
                     (let ((roots (hash-table-count wxlambda::*event-bindings*)))
                       (bitmap-toggle-error (lambda () (make-instance 'failed-bitmap-toggle :parent frame :bitmap valid)))
                       (assert (= roots (hash-table-count wxlambda::*event-bindings*))))

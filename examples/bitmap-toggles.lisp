@@ -16,7 +16,7 @@
 (defun exercise ()
   (unless (wxlambda:bitmap-toggle-button-supported-p) (error "Bitmap toggles unavailable on this port"))
   (let* ((frame (wxlambda:make-frame :title "Bitmap toggle"))
-         (icon (make-icon)) (button (wxlambda:make-bitmap-toggle-button frame icon :checked t))
+         (icon (make-icon (nth-value 0 (wxlambda:window-colours frame)))) (button (wxlambda:make-bitmap-toggle-button frame icon :checked t :border :none))
          (changes 0))
     (wxlambda:destroy-bitmap icon)
     (unwind-protect
@@ -35,7 +35,7 @@
 (defun start ()
   (wxlambda:with-application ()
     (let* ((frame (wxlambda:make-frame :title "Bitmap toggle buttons" :width 360 :height 180))
-           (icon (make-icon)) (button (wxlambda:make-bitmap-toggle-button frame icon)))
+           (icon (make-icon (nth-value 0 (wxlambda:window-colours frame)))) (button (wxlambda:make-bitmap-toggle-button frame icon :border :none)))
       (wxlambda:destroy-bitmap icon)
       (setf (wxlambda:tooltip-text button) "Toggle bitmap option")
       (wxlambda:make-column frame) (wxlambda:add-child frame button)

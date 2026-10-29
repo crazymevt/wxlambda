@@ -132,20 +132,20 @@ int wxl_bitmap_toggle_supported() { return boolean_result([&] {
     return false;
 #endif
 }); }
-wxl_handle wxl_bitmap_toggle(wxl_handle parent_id,wxl_handle bitmap_id,int checked) { return create([&]() -> wxl_handle {
+wxl_handle wxl_bitmap_toggle(wxl_handle parent_id,wxl_handle bitmap_id,int checked,int border) { return create([&]() -> wxl_handle {
     image_mutation();
 #ifdef wxHAS_BITMAPTOGGLEBUTTON
     auto* parent=window(parent_id);
-    require(checked==0 || checked==1,"Invalid toggle state");
+    require((checked==0 || checked==1) && (border==0 || border==1),"Invalid toggle state or border");
     const wxBitmap value=bitmap_resource(bitmap_id);
     struct CreationScope { CreationScope() { ++input_creation_depth; } ~CreationScope() { --input_creation_depth; } } creation;
     auto object=std::make_unique<ManagedWindow<wxBitmapToggleButton>>();
     { wxEventBlocker blocker(object.get());
-      require(object->Create(parent,wxID_ANY,wxBitmapBundle::FromBitmap(value)),"Native bitmap toggle creation failed");
+      require(object->Create(parent,wxID_ANY,wxBitmapBundle::FromBitmap(value),wxDefaultPosition,wxDefaultSize,border ? wxBORDER_NONE : 0),"Native bitmap toggle creation failed");
       object->SetValue(checked!=0); }
     const auto id=track(object.get()); input_owners.emplace(object.get(),false); object.release(); return id;
 #else
-    (void)parent_id; (void)bitmap_id; (void)checked;
+    (void)parent_id; (void)bitmap_id; (void)checked; (void)border;
     throw std::runtime_error("Bitmap toggle buttons are unavailable on this wxWidgets port");
 #endif
 }); }
@@ -167,5 +167,16 @@ int wxl_bitmap_toggle_set(wxl_handle id,wxl_handle bitmap_id) { return status([&
 #else
     (void)id; (void)bitmap_id; throw std::runtime_error("Bitmap toggle buttons are unavailable on this wxWidgets port");
 #endif
+}); }
+}
+
+extern "C" {
+int wxl_window_colours(wxl_handle id,unsigned char* foreground,unsigned char* background) { return status([&] {
+    auto* object=window(id); require(foreground && background,"Missing window colour outputs");
+    wxColour fg=object->GetForegroundColour(),bg=object->GetBackgroundColour();
+    if (!fg.IsOk()) fg=wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT);
+    if (!bg.IsOk()) bg=wxSystemSettings::GetColour(wxSYS_COLOUR_BTNFACE);
+    foreground[0]=fg.Red(); foreground[1]=fg.Green(); foreground[2]=fg.Blue();
+    background[0]=bg.Red(); background[1]=bg.Green(); background[2]=bg.Blue();
 }); }
 }

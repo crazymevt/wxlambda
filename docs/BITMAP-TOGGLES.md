@@ -11,13 +11,15 @@ substitute a label. Windows/Linux runtime tests have not run locally.
 
 ```lisp
 (wxlambda:bitmap-toggle-button-supported-p) ; active GUI/main-thread session
-(wxlambda:make-bitmap-toggle-button parent bitmap :checked t)
+(wxlambda:make-bitmap-toggle-button parent bitmap :checked t :border :none)
 (make-instance 'wxlambda:bitmap-toggle-button :parent parent :bitmap bitmap)
 ```
 
 The factory accepts `:class` and forwarded subclass initargs. Required `:bitmap`
 is a live session-owned `bitmap`; `:checked` defaults NIL. Bitmap controls use
-native default ID/style/geometry, with an initially empty label. Direct CLOS
+native default ID/geometry, with an initially empty label. `:border :default`
+keeps native styling; `:border :none` requests `wxBORDER_NONE` for flat controls.
+Other border/style options reject. Selected/hover/focus appearance remains native. Direct CLOS
 subclasses support slots, default initargs, native-ready AFTER hooks and managed
 failure rollback. No raw native pointer/adoption is exposed. Unsupported-port
 construction signals `native-error`. Checked state, generic label/window metadata,
@@ -63,3 +65,23 @@ regressions are also rerun. Local runtime verification uses macOS/SBCL and CCL;
 GTK/MSW/Qt, physical mouse/keyboard, theme appearance and display/DPI transitions
 remain unverified. See [text toggles](TOGGLE-BUTTONS.md) and
 [image resources](IMAGES-DISPLAYS.md).
+
+## Native palette and transparent artwork (ABI63)
+
+`(window-colours window)` returns foreground and background as two fresh RGB
+lists. It reads the native window palette, with current system-colour fallbacks
+for invalid values; it does not force a light/dark theme or sample screen pixels.
+Calls require a live window on the GUI thread; reads are callback-safe. Alpha,
+colour resource wrappers and colour/theme setters are outside this query.
+
+Use transparent image alpha and contrast-aware stroke colours for icon artwork,
+then update the bitmap at a safe GUI boundary when the palette changes. An
+owner-bound UI timer can observe colour changes even when document state is idle;
+state/palette caching avoids unnecessary bitmap allocations. Theme/font rendering
+policy remains application code, not a new automatic library theme manager.
+
+The native invariant fixture checks the actual wxBORDER_NONE style bits, invalid
+border rejection and colour query. Focused Lisp tests check the flat constructor,
+query output and inherited lifecycle behavior. Pinned wxOSX3.2.12 maps the flag to
+an unbordered native control; other ports honor their own wxWidgets rendering.
+Physical theme switching and Windows/Linux appearance remain unverified.
