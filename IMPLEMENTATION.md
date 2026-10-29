@@ -79,16 +79,15 @@ as if later features or platform checks already passed.
 - Idle batch: :IDLE family/resources, bounded RequestMore, session-restored
   automatic mode, own-window opt-in and native wake scheduling. Independent review
   and final verification pass.
-- Current bridge ABI:47. Public API:248 exports,24 window wrapper classes
-  (22 concrete plus WINDOW/DIALOG abstract),177 named generics and54 generic
+- Current bridge ABI:48. Public API:250 exports,25 window wrapper classes
+  (23 concrete plus WINDOW/DIALOG abstract),178 named generics and54 generic
   SETF writers. Borrowed TREE-ITEM and UI-ACTION/UI-TIMER identities remain
-  separate from window construction. Latest toggle-button details/evidence are
+  separate from window construction. Latest combo-box details/evidence are
   recorded in the final session handoff below.
-- Latest implementation verification: all72 GUI scenarios plus native preflight
+- Latest implementation verification: all73 GUI scenarios plus native preflight
   pass on local Apple Silicon macOS SBCL2.6.9 and CCL1.13, reports
-  `evidence/toggle-buttons/sbcl-20261028-final/` and
-  `evidence/toggle-buttons/ccl-20261028-recheck/`. Initial CCL tree-process
-  exception and successful standalone/full reruns are recorded below. Native probes report zero
+  `evidence/combo-boxes/{sbcl,ccl}-20261028-final/`. The earlier toggle-batch CCL
+  tree-process exception and successful reruns remain recorded in its handoff. Native probes report zero
   assertions. Hosted Linux/Windows GUI and graphical Cadre remain unverified;
   wxQt tree construction retains its documented rejection gate.
 
@@ -2598,3 +2597,69 @@ Session handoff: broad GUI coverage with selective depth remains the objective.
 Next selected slice: bounded combo boxes for editable/selectable form choices;
 keep CLOS, callback/lifetime and explicit native-text/value semantics. No native
 category-wide parity requirement follows from pending C1-C7 inventory entries.
+
+## Editable combo boxes with fixed choices (2026-10-28)
+
+ABI48 adds native-backed COMBO-BOX and generic MAKE-COMBO-BOX. Fixed0..256
+unsorted nonempty choices must be unique under native CmpNoCase, avoiding known
+MSW duplicate/case-only ambiguity (not Unicode normalization). Text/value/items
+reject NUL/CR/LF. Required parent; optional :value or valid :selection index,
+nonempty initial value+index rejects. Native-backed subclasses/default initargs/
+AFTER and managed failure rollback retain the construction contract. No readonly/
+sort/style, mutable items, raw adoption or full wxTextEntry/wxComboBox parity.
+
+Existing generic TEXT/SETF, SELECTION/SETF, ITEM-COUNT/ITEM-TEXT specialize on
+COMBO-BOX. Text write clears old native selection then silent ChangeValue; native
+matching/selection readback remains port-specific. Selection index writes set
+matching text before SetSelection (Cocoa peer doesn't itself promise editor text);
+NIL clears both text/index. GetSelection is native committed, not open-popup
+highlighted state. Default writes silent; explicit notify emits exactly1 requested
+kind even unchanged: :text-change for text, :combo-selection for selection, no
+additional bridge text update on selection. Original callback conditions re-signal
+without rolling committed state back. Fixed item getters only, no position/edit
+or convenience ON-SELECTION/ON-TEXT-CHANGE methods for this receiver.
+
+New :COMBO-SELECTION exposes copied/current read-only semantic index/native text;
+owned/synthetic/clones reject for this kind. Existing shared TEXT generic command
+resources retain their scope. Physical selection can send COMBO then TEXT, with
+native order/count; no exact notification count is promised for physical input.
+Shared Input guards cover both actual origins/composite children and propagated
+callbacks, same-combo mutations, ancestor lifetime, modal/clipboard/GUI/safe-idle
+entry. Silent other-combo synchronization allowed; constructor/teardown silence
+and current-context vs copied-snapshot lifetime retained. wxUSE_COMBOBOX required.
+
+Independent source/code/test/docs review: no remaining actionable findings.
+Review corrected shared API/inherited receiver scopes and documented lazy
+source-bound TEXT text-write rejection versus COMBO event metadata writes.
+Additional native probes for both pass (quiet-run.3tG8pSHt). Source
+audits OSX/GTK/MSW/Qt confirmed native differences; runtime macOS wxWidgets3.2.12.
+Physical popup/mouse/typing/IME/key/accessibility and hosted GUI remain unverified,
+as do graphical Cadre and arbitrary allocation failures. No automatic system
+clipboard content reads/writes. Example examples/combo-boxes.lisp selects preset
+destinations or accepts custom text, with separate command/text feedback.
+
+Focused both-Lisp tests/example, main/native builds and zero-assertion native
+harness pass (quiet-run.8Sm9bbXW). Direct native COMBO then TEXT probes outside
+setter operations verify constructor silence, propagated callbacks, guards,
+NIL clearing and cross-control updates. Lisp tests include fixed item/error
+validation, matched text without inferred selection claims, CLOS rollback,
+original callback condition/committed state and post-session snapshots. Full73
+GUI scenarios plus preflight pass on SBCL2.6.9/CCL1.13 (quiet-run.BUAAgnTO), fresh reports
+evidence/combo-boxes/{sbcl,ccl}-20261028-final/. Preserve earlier CCL failure
+evidence under toggle-buttons; this batch does not establish its cause.
+
+Current counts:250 exports,178 named generics,54 SETF generics,25 window wrappers
+(23 concrete+2 abstract),47 examples and345 docset entries. Regenerated pinned
+coverage inventory/14 checks,16 Python checks, zero-problem docset, both-Lisp actual
+public export/class/SETF coverage and counts, isolated install/discovery/symbol/
+guide/example access and five package isolation checks pass (quiet-run.2oc19wTv).
+Isolated install root /private/tmp/wxlambda-combo-docsets/wxlambda; normal Cadre
+install docs/DOCSET.md. Package dist/wxlambda-form-combo-boxes remains the
+established form binary; combo example is separate repository/docset content.
+Package evidence evidence/packaging/combo-boxes-20261028/. Final docset
+build/check/install follows these handoff notes.
+
+Session handoff: broad GUI coverage with selective depth remains the objective.
+Next selected slice: bounded scrolling panels for larger forms. Continue workflow
+breadth with explicit native state/lifetime semantics, examples/docs/docset,
+independent review and recorded limitations rather than exhaustive C1-C7 parity.

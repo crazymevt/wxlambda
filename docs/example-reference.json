@@ -182,5 +182,9 @@
   "toggle-buttons.lisp": {
     "description": "Persistent preview option with native toggle-button checked snapshots and feedback; EXERCISE verifies silent/explicit notify behavior without hardware input.",
     "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/toggle-buttons.lisp --eval '(wxlambda-toggle-buttons:start)'"
+  },
+  "combo-boxes.lisp": {
+    "description": "Choose a fixed destination preset or type a custom value. EXERCISE checks silent/explicit selection and text notifications, UTF-8 and NIL clearing; no physical input simulation.",
+    "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/combo-boxes.lisp --eval '(wxlambda-combo-boxes:start)'"
   }
 }

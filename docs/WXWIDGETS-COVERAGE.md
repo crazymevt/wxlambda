@@ -270,7 +270,7 @@ C3 includes bounded managed menus and standard/generic dialogs. Other source
 categories remain selected feature work; internal conversions/types alone are
 not full public class coverage.
 
-The window-facing Lisp API has twenty-four wrapper classes (two abstract) plus the public event-handler base, direct native
+The window-facing Lisp API has twenty-five wrapper classes (two abstract) plus the public event-handler base, direct native
 construction and generic operations/SETF; see [CLOS API](CLOS-API.md). This establishes Lisp dispatch
 and method combination, not native C++ subclass/virtual-callback coverage.
 
@@ -290,8 +290,8 @@ virtual overrides remain on-demand/deferred.
 
 ### C2: Windows, layout, basic controls, and input
 
-[Complete C2 source inventory](coverage/phase-c2.md). Radio groups, list boxes and bounded sliders/spinners are implemented. Toggle buttons are delivered. Plan useful
-combo controls, scrolling, layouts, focus/keyboard and
+[Complete C2 source inventory](coverage/phase-c2.md). Radio groups, list boxes and bounded sliders/spinners are implemented. Toggle buttons are delivered. Editable combo boxes are delivered. Plan useful
+scrolling, layouts, focus/keyboard and
 practical font/colour/DPI support. Deepen the existing window/control families as workflows
 need; not every constructor option or inherited overload must precede the next
 useful control.
@@ -579,5 +579,13 @@ and hosted platform GUI remain unverified. Bounded toggle buttons are delivered 
 [Toggle buttons](TOGGLE-BUTTONS.md) add native-backed independent pressed state,
 generic checked/label properties and guarded native command observation. Native
 wxToggleButton remains partial; bitmap toggles, styles and grouping stay unbound.
-Next selected slice: bounded combo boxes for editable/selectable form choices.
+Editable combo boxes are delivered below.
 Physical input and hosted platform GUI remain unverified.
+
+## Editable combo boxes
+
+[Combo boxes](COMBO-BOXES.md) add fixed preset choices plus single-line custom
+text, explicit text/selection properties and guarded native COMBO/TEXT events.
+Native combo/text-entry classes remain partial; sorted/read-only/style, mutable
+items and full editing APIs stay unbound. Physical input and hosted GUI remain
+unverified. Next selected slice: bounded scrolling panels for larger forms.

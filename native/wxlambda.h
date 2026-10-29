@@ -17,12 +17,12 @@ extern "C" {
 typedef uint64_t wxl_handle;
 enum wxl_alignment { WXL_ALIGN_START = 0, WXL_ALIGN_CENTER = 1, WXL_ALIGN_END = 2 };
 enum wxl_event_family { WXL_FAMILY_COMMAND = 0, WXL_FAMILY_CLOSE = 1, WXL_FAMILY_NOTIFY = 2, WXL_FAMILY_IDLE = 3 };
-enum wxl_event_kind { WXL_EVENT_CLICK = 1, WXL_EVENT_TEXT_CHANGE = 2, WXL_EVENT_TOGGLE = 3, WXL_EVENT_SELECTION = 4, WXL_EVENT_CLOSE = 5, WXL_EVENT_QUERY_END_SESSION = 6, WXL_EVENT_END_SESSION = 7, WXL_EVENT_IDLE = 8, WXL_EVENT_MENU = 9, WXL_EVENT_NOTEBOOK_CHANGING = 10, WXL_EVENT_NOTEBOOK_CHANGED = 11, WXL_EVENT_LISTBOX_SELECTION = 12, WXL_EVENT_LISTBOX_DOUBLE_CLICK = 13, WXL_EVENT_TREE_CHANGING = 14, WXL_EVENT_TREE_CHANGED = 15, WXL_EVENT_SPLITTER_CHANGING = 16, WXL_EVENT_SPLITTER_CHANGED = 17, WXL_EVENT_SLIDER_CHANGE = 18, WXL_EVENT_SPIN_CHANGE = 19, WXL_EVENT_RADIO_SELECTION = 20, WXL_EVENT_TOGGLE_BUTTON_CHANGE = 21 };
+enum wxl_event_kind { WXL_EVENT_CLICK = 1, WXL_EVENT_TEXT_CHANGE = 2, WXL_EVENT_TOGGLE = 3, WXL_EVENT_SELECTION = 4, WXL_EVENT_CLOSE = 5, WXL_EVENT_QUERY_END_SESSION = 6, WXL_EVENT_END_SESSION = 7, WXL_EVENT_IDLE = 8, WXL_EVENT_MENU = 9, WXL_EVENT_NOTEBOOK_CHANGING = 10, WXL_EVENT_NOTEBOOK_CHANGED = 11, WXL_EVENT_LISTBOX_SELECTION = 12, WXL_EVENT_LISTBOX_DOUBLE_CLICK = 13, WXL_EVENT_TREE_CHANGING = 14, WXL_EVENT_TREE_CHANGED = 15, WXL_EVENT_SPLITTER_CHANGING = 16, WXL_EVENT_SPLITTER_CHANGED = 17, WXL_EVENT_SLIDER_CHANGE = 18, WXL_EVENT_SPIN_CHANGE = 19, WXL_EVENT_RADIO_SELECTION = 20, WXL_EVENT_TOGGLE_BUTTON_CHANGE = 21, WXL_EVENT_COMBO_SELECTION = 22 };
 typedef struct wxl_event {
     int kind;
-    const char *text; /* UTF-8 for text changes, toggle-button/radio-box/listbox events and registered command/notify tags. */
+    const char *text; /* UTF-8 for text changes, combo-box/toggle-button/radio-box/listbox events and registered command/notify tags. */
     int checked;      /* Raw IsChecked for checkbox/toggle-button/menu payloads; zero otherwise. */
-    int selection;    /* Zero-based choice/listbox/radio-box or native notebook event selection; -1 for none/other kinds. */
+    int selection;    /* Zero-based choice/listbox/radio-box/combo-box or native notebook event selection; -1 for none/other kinds. */
     int id;
     size_t text_length; /* Explicit UTF-8 byte count when text is supplied. */
     uint64_t context; /* Scoped opaque token, zero for observers. */
@@ -361,6 +361,13 @@ WXL_API int wxl_on_click(wxl_handle button, uint64_t token);
 /* Queue a normal button event; useful for lifecycle smoke tests. */
 WXL_API int wxl_click(wxl_handle button);
 
+WXL_API wxl_handle wxl_combo_box(wxl_handle parent, const char** items, const size_t* lengths, size_t count, const char* value, size_t value_length, int selection);
+/* field0 selection (-1 none), field1 count; -2 error. */
+WXL_API int wxl_combo_field(wxl_handle control, int field);
+WXL_API const char* wxl_combo_text(wxl_handle control, size_t* length);
+WXL_API const char* wxl_combo_item(wxl_handle control, int index, size_t* length);
+WXL_API int wxl_set_combo_text(wxl_handle control, const char* value, size_t length, int notify);
+WXL_API int wxl_set_combo_selection(wxl_handle control, int index, int notify);
 WXL_API wxl_handle wxl_toggle_button(wxl_handle parent, const char* label, int checked);
 WXL_API int wxl_toggle_button_checked(wxl_handle control);
 WXL_API int wxl_set_toggle_button_checked(wxl_handle control, int checked, int notify);

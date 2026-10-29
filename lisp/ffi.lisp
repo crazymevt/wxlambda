@@ -95,7 +95,7 @@
           (if (probe-file local)
               (cffi:load-foreign-library local)
               (cffi:use-foreign-library wxlambda-native))))
-    (unless (= 47 (%abi-version)) (error "Unsupported wxlambda native ABI"))
+    (unless (= 48 (%abi-version)) (error "Unsupported wxlambda native ABI"))
     (setf *native-loaded* t))
   t)
 
@@ -338,3 +338,10 @@
 (cffi:defcfun ("wxl_set_toggle_button_checked" %set-toggle-button-checked) :int (control :uint64) (checked :int) (notify :int))
 (cffi:defcfun ("wxl_toggle_button_label" %toggle-button-label) :pointer (control :uint64))
 (cffi:defcfun ("wxl_set_toggle_button_label" %set-toggle-button-label) :int (control :uint64) (label :string))
+
+(cffi:defcfun ("wxl_combo_box" %combo-box) :uint64 (parent :uint64) (items :pointer) (lengths :pointer) (count :size) (value :pointer) (value-length :size) (selection :int))
+(cffi:defcfun ("wxl_combo_field" %combo-field) :int (control :uint64) (field :int))
+(cffi:defcfun ("wxl_combo_text" %combo-text) :pointer (control :uint64) (length :pointer))
+(cffi:defcfun ("wxl_combo_item" %combo-item) :pointer (control :uint64) (index :int) (length :pointer))
+(cffi:defcfun ("wxl_set_combo_text" %set-combo-text) :int (control :uint64) (value :pointer) (length :size) (notify :int))
+(cffi:defcfun ("wxl_set_combo_selection" %set-combo-selection) :int (control :uint64) (index :int) (notify :int))

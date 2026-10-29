@@ -188,12 +188,16 @@
       "status": "~",
       "symbol": "wxTextEntry::ChangeValue",
       "lisp": [
-        "(setf text)"
+        "(setf text)",
+        "combo-box",
+        "text"
       ],
       "native": [
-        "wxl_set_text"
+        "wxl_set_text",
+        "wxl_combo_text",
+        "wxl_set_combo_text"
       ],
-      "scope": "Canonical SETF writer. Silent value replacement for wxTextCtrl only; other wxTextEntry receivers remain open. ABI36 explicit UTF-8 byte lengths/NUL write rejection; multiline LF-separated values. Programmatic writes allowed on user-read-only controls."
+      "scope": "TEXT-CONTROL UTF8/multiline behavior and editable COMBO-BOX single-line text only. Explicit-length NUL rejection; combo additionally rejects CR/LF, clears prior native selection before silent ChangeValue, then optional explicit TEXT notify. Other wxTextEntry receiver families remain unbound. See docs/TEXT-EDITING.md and docs/COMBO-BOXES.md."
     },
     {
       "header": "wx/textentry.h",
@@ -202,12 +206,15 @@
       "status": "~",
       "symbol": "wxTextEntry::GetValue",
       "lisp": [
-        "text"
+        "text",
+        "combo-box"
       ],
       "native": [
-        "wxl_get_text"
+        "wxl_get_text",
+        "wxl_combo_text",
+        "wxl_set_combo_text"
       ],
-      "scope": "Independent UTF-8 Lisp string for wxTextCtrl only; other wxTextEntry receivers remain open. ABI36 explicit UTF-8 byte lengths/NUL write rejection; multiline LF-separated values. Programmatic writes allowed on user-read-only controls."
+      "scope": "TEXT-CONTROL UTF8/multiline behavior and editable COMBO-BOX single-line text only. Explicit-length NUL rejection; combo additionally rejects CR/LF, clears prior native selection before silent ChangeValue, then optional explicit TEXT notify. Other wxTextEntry receiver families remain unbound. See docs/TEXT-EDITING.md and docs/COMBO-BOXES.md."
     },
     {
       "header": "wx/textentry.h",
@@ -429,7 +436,7 @@
         "wxl_list_selection",
         "wxl_set_list_selection"
       ],
-      "scope": "Canonical SETF writer. Inherited interface exposed for wxChoice only; other item-container receivers remain open. ABI38 additionally: LIST-BOX only, unsorted single selection/text items. Finite UTF-8/NUL-checked construction; silent item edits preserve/adjust selection deterministically. Native list callback lifetime/pump guards; owned/simple command selection+activation events. Other item containers, multiselect/sort/client data/virtual models remain unbound."
+      "scope": "Inherited item-container adapter scope: LIST-BOX text item getters/selection plus CHOICE selection where separately mapped. Radio/combo overrides are separately recorded in their own headers. LIST-BOX-only mutation APIs preserve their scope; no arbitrary item-container receiver, sort/multiselect/client data or virtual model adoption."
     },
     {
       "header": "wx/ctrlsub.h",
@@ -461,7 +468,7 @@
         "wxl_list_selection",
         "wxl_set_list_selection"
       ],
-      "scope": "Inherited interface exposed for wxChoice only; other item-container receivers remain open. ABI38 additionally: LIST-BOX only, unsorted single selection/text items. Finite UTF-8/NUL-checked construction; silent item edits preserve/adjust selection deterministically. Native list callback lifetime/pump guards; owned/simple command selection+activation events. Other item containers, multiselect/sort/client data/virtual models remain unbound."
+      "scope": "Inherited item-container adapter scope: LIST-BOX text item getters/selection plus CHOICE selection where separately mapped. Radio/combo overrides are separately recorded in their own headers. LIST-BOX-only mutation APIs preserve their scope; no arbitrary item-container receiver, sort/multiselect/client data or virtual model adoption."
     },
     {
       "header": "wx/app.h",
@@ -1317,7 +1324,7 @@
         "wxl_process_event",
         "wxl_event_field"
       ],
-      "scope": "Snapshots retain copied values. Owned/current command/notify values support generic event-integer reads; snapshots stay immutable. Signed32 integer or counted UTF-8 string transport; close-family reads are zero/NIL and writes reject. Native wxEVT_TEXT text-entry-origin SETF rejects; detached clones freeze effective native text. No client/userData ownership or arbitrary native classes. Also reads native numeric slider/spin event payloads, observational and independent of control state. Also reads observational radio-box command metadata; not a control setter."
+      "scope": "Snapshots retain copied values. Owned/current command/notify values support generic event-integer reads; snapshots stay immutable. Signed32 integer or counted UTF-8 string transport; close-family reads are zero/NIL and writes reject. Native wxEVT_TEXT text-entry-origin SETF rejects; detached clones freeze effective native text. No client/userData ownership or arbitrary native classes. Also reads native numeric slider/spin event payloads, observational and independent of control state. Also reads observational radio-box command metadata; not a control setter. Also observes COMBO-BOX native command/text payloads, not a control setter."
     },
     {
       "header": "wx/event.h",
@@ -1332,7 +1339,7 @@
         "wxl_bind",
         "wxl_event_text"
       ],
-      "scope": "Snapshots retain copied values. Owned/current command/notify values support generic event-text reads; snapshots stay immutable. Signed32 integer or counted UTF-8 string transport; close-family reads are zero/NIL and writes reject. Native wxEVT_TEXT text-entry-origin SETF rejects; detached clones freeze effective native text. No client/userData ownership or arbitrary native classes. Also reads observational radio-box command metadata; not a control setter."
+      "scope": "Snapshots retain copied values. Owned/current command/notify values support generic event-text reads; snapshots stay immutable. Signed32 integer or counted UTF-8 string transport; close-family reads are zero/NIL and writes reject. Native wxEVT_TEXT text-entry-origin SETF rejects; detached clones freeze effective native text. No client/userData ownership or arbitrary native classes. Also reads observational radio-box command metadata; not a control setter. Also observes COMBO-BOX native command/text payloads, not a control setter."
     },
     {
       "header": "wx/event.h",
@@ -2011,7 +2018,7 @@
         "wxl_bind",
         "wxl_event_field"
       ],
-      "scope": "Reads zero-based choice/listbox/radio-box command selection metadata for supported kinds; other nonselection command kinds yield NIL through Lisp snapshot readers. Payload metadata is observational, not a control query. Radio events are native-only, with no EVENT-SELECTION SETF. See docs/RADIO-GROUPS.md."
+      "scope": "Reads choice/listbox/radio/combo selection metadata for supported command kinds; other snapshots yield NIL. Payload not control state query. Radio/combo semantic writes reject; their selection kinds are native-only. See docs/COMBO-BOXES.md."
     },
     {
       "header": "wx/event.h",
@@ -4370,7 +4377,7 @@
         "wxl_list_selection",
         "wxl_set_list_selection"
       ],
-      "scope": "LIST-BOX only, unsorted single selection/text items. Finite UTF-8/NUL-checked construction; silent item edits preserve/adjust selection deterministically. Native list callback lifetime/pump guards; owned/simple command selection+activation events. Other item containers, multiselect/sort/client data/virtual models remain unbound."
+      "scope": "Inherited item-container adapter scope: LIST-BOX text item getters/selection plus CHOICE selection where separately mapped. Radio/combo overrides are separately recorded in their own headers. LIST-BOX-only mutation APIs preserve their scope; no arbitrary item-container receiver, sort/multiselect/client data or virtual model adoption."
     },
     {
       "header": "wx/ctrlsub.h",
@@ -4401,7 +4408,7 @@
         "wxl_list_selection",
         "wxl_set_list_selection"
       ],
-      "scope": "LIST-BOX only, unsorted single selection/text items. Finite UTF-8/NUL-checked construction; silent item edits preserve/adjust selection deterministically. Native list callback lifetime/pump guards; owned/simple command selection+activation events. Other item containers, multiselect/sort/client data/virtual models remain unbound."
+      "scope": "Inherited item-container adapter scope: LIST-BOX text item getters/selection plus CHOICE selection where separately mapped. Radio/combo overrides are separately recorded in their own headers. LIST-BOX-only mutation APIs preserve their scope; no arbitrary item-container receiver, sort/multiselect/client data or virtual model adoption."
     },
     {
       "header": "wx/ctrlsub.h",
@@ -7406,6 +7413,181 @@
         "wxl_set_toggle_button_label"
       ],
       "scope": "Bounded independent two-state TOGGLE-BUTTON, default style, native-backed CLOS and checked/label generic SETF; silent defaults and explicit one native-class update. Native checked/text snapshots/current contexts, source lifetime/reentry guards. No bitmap toggle, grouping, raw adoption, owned/synthetic/cloned toggle-button events or full class parity. See docs/TOGGLE-BUTTONS.md."
+    },
+    {
+      "header": "wx/combobox.h",
+      "line": 90,
+      "declaration": "wxComboBox();",
+      "status": "~",
+      "symbol": "wxComboBox::wxComboBox",
+      "lisp": [
+        "combo-box",
+        "make-combo-box",
+        "text",
+        "selection",
+        "item-count",
+        "item-text",
+        "event-selection"
+      ],
+      "native": [
+        "wxl_combo_box",
+        "wxl_combo_field",
+        "wxl_combo_text",
+        "wxl_combo_item",
+        "wxl_set_combo_text",
+        "wxl_set_combo_selection"
+      ],
+      "scope": "Bounded editable COMBO-BOX only, fixed0..256 unsorted nonempty native-CmpNoCase-unique single-line choices. Text/selection generic SETF, read-only items, explicit native notifications, COMBO/TEXT lifetime/reentry guards. No readonly/styles/mutation/position APIs, raw adoption or full class parity. New combo selection kind native-only; existing generic TEXT event support retains its scope. See docs/COMBO-BOXES.md."
+    },
+    {
+      "header": "wx/combobox.h",
+      "line": 191,
+      "declaration": "bool Create(wxWindow *parent, wxWindowID id, const wxString& value, const wxPoint& pos, const wxSize& size, const wxArrayString& choices, long style = 0, const wxValidator& validator = wxDefaultValidator, const wxString& name = wxComboBoxNameStr);",
+      "status": "~",
+      "symbol": "wxComboBox::Create",
+      "lisp": [
+        "combo-box",
+        "make-combo-box",
+        "text",
+        "selection",
+        "item-count",
+        "item-text",
+        "event-selection"
+      ],
+      "native": [
+        "wxl_combo_box",
+        "wxl_combo_field",
+        "wxl_combo_text",
+        "wxl_combo_item",
+        "wxl_set_combo_text",
+        "wxl_set_combo_selection"
+      ],
+      "scope": "Bounded editable COMBO-BOX only, fixed0..256 unsorted nonempty native-CmpNoCase-unique single-line choices. Text/selection generic SETF, read-only items, explicit native notifications, COMBO/TEXT lifetime/reentry guards. No readonly/styles/mutation/position APIs, raw adoption or full class parity. New combo selection kind native-only; existing generic TEXT event support retains its scope. See docs/COMBO-BOXES.md."
+    },
+    {
+      "header": "wx/combobox.h",
+      "line": 300,
+      "declaration": "virtual int GetSelection() const;",
+      "status": "~",
+      "symbol": "wxComboBox::GetSelection",
+      "lisp": [
+        "combo-box",
+        "make-combo-box",
+        "text",
+        "selection",
+        "item-count",
+        "item-text",
+        "event-selection"
+      ],
+      "native": [
+        "wxl_combo_box",
+        "wxl_combo_field",
+        "wxl_combo_text",
+        "wxl_combo_item",
+        "wxl_set_combo_text",
+        "wxl_set_combo_selection"
+      ],
+      "scope": "Bounded editable COMBO-BOX only, fixed0..256 unsorted nonempty native-CmpNoCase-unique single-line choices. Text/selection generic SETF, read-only items, explicit native notifications, COMBO/TEXT lifetime/reentry guards. No readonly/styles/mutation/position APIs, raw adoption or full class parity. New combo selection kind native-only; existing generic TEXT event support retains its scope. See docs/COMBO-BOXES.md."
+    },
+    {
+      "header": "wx/combobox.h",
+      "line": 302,
+      "declaration": "virtual void SetSelection(int n);",
+      "status": "~",
+      "symbol": "wxComboBox::SetSelection",
+      "lisp": [
+        "combo-box",
+        "make-combo-box",
+        "text",
+        "selection",
+        "item-count",
+        "item-text",
+        "event-selection"
+      ],
+      "native": [
+        "wxl_combo_box",
+        "wxl_combo_field",
+        "wxl_combo_text",
+        "wxl_combo_item",
+        "wxl_set_combo_text",
+        "wxl_set_combo_selection"
+      ],
+      "scope": "Bounded editable COMBO-BOX only, fixed0..256 unsorted nonempty native-CmpNoCase-unique single-line choices. Text/selection generic SETF, read-only items, explicit native notifications, COMBO/TEXT lifetime/reentry guards. No readonly/styles/mutation/position APIs, raw adoption or full class parity. New combo selection kind native-only; existing generic TEXT event support retains its scope. See docs/COMBO-BOXES.md."
+    },
+    {
+      "header": "wx/combobox.h",
+      "line": 304,
+      "declaration": "virtual wxString GetString(unsigned int n) const;",
+      "status": "~",
+      "symbol": "wxComboBox::GetString",
+      "lisp": [
+        "combo-box",
+        "make-combo-box",
+        "text",
+        "selection",
+        "item-count",
+        "item-text",
+        "event-selection"
+      ],
+      "native": [
+        "wxl_combo_box",
+        "wxl_combo_field",
+        "wxl_combo_text",
+        "wxl_combo_item",
+        "wxl_set_combo_text",
+        "wxl_set_combo_selection"
+      ],
+      "scope": "Bounded editable COMBO-BOX only, fixed0..256 unsorted nonempty native-CmpNoCase-unique single-line choices. Text/selection generic SETF, read-only items, explicit native notifications, COMBO/TEXT lifetime/reentry guards. No readonly/styles/mutation/position APIs, raw adoption or full class parity. New combo selection kind native-only; existing generic TEXT event support retains its scope. See docs/COMBO-BOXES.md."
+    },
+    {
+      "header": "wx/combobox.h",
+      "line": 316,
+      "declaration": "virtual unsigned int GetCount() const;",
+      "status": "~",
+      "symbol": "wxComboBox::GetCount",
+      "lisp": [
+        "combo-box",
+        "make-combo-box",
+        "text",
+        "selection",
+        "item-count",
+        "item-text",
+        "event-selection"
+      ],
+      "native": [
+        "wxl_combo_box",
+        "wxl_combo_field",
+        "wxl_combo_text",
+        "wxl_combo_item",
+        "wxl_set_combo_text",
+        "wxl_set_combo_selection"
+      ],
+      "scope": "Bounded editable COMBO-BOX only, fixed0..256 unsorted nonempty native-CmpNoCase-unique single-line choices. Text/selection generic SETF, read-only items, explicit native notifications, COMBO/TEXT lifetime/reentry guards. No readonly/styles/mutation/position APIs, raw adoption or full class parity. New combo selection kind native-only; existing generic TEXT event support retains its scope. See docs/COMBO-BOXES.md."
+    },
+    {
+      "header": "wx/event.h",
+      "line": 5166,
+      "declaration": "wxEventType wxEVT_COMBOBOX;",
+      "status": "~",
+      "symbol": "wxEVT_COMBOBOX",
+      "lisp": [
+        "combo-box",
+        "make-combo-box",
+        "text",
+        "selection",
+        "item-count",
+        "item-text",
+        "event-selection"
+      ],
+      "native": [
+        "wxl_combo_box",
+        "wxl_combo_field",
+        "wxl_combo_text",
+        "wxl_combo_item",
+        "wxl_set_combo_text",
+        "wxl_set_combo_selection"
+      ],
+      "scope": "Bounded editable COMBO-BOX only, fixed0..256 unsorted nonempty native-CmpNoCase-unique single-line choices. Text/selection generic SETF, read-only items, explicit native notifications, COMBO/TEXT lifetime/reentry guards. No readonly/styles/mutation/position APIs, raw adoption or full class parity. New combo selection kind native-only; existing generic TEXT event support retains its scope. See docs/COMBO-BOXES.md."
     }
   ],
   "classes": {
@@ -8284,7 +8466,7 @@
         "wxl_list_selection",
         "wxl_set_list_selection"
       ],
-      "scope": "LIST-BOX only, unsorted single selection/text items. Finite UTF-8/NUL-checked construction; silent item edits preserve/adjust selection deterministically. Native list callback lifetime/pump guards; owned/simple command selection+activation events. Other item containers, multiselect/sort/client data/virtual models remain unbound."
+      "scope": "Partial inherited text-item/selection adapter for explicitly mapped wrapper receivers. Radio/combo overrides are separately mapped; no arbitrary item-container construction/adoption or full interface parity."
     },
     "wxTreeCtrl": {
       "status": "~",
@@ -8647,6 +8829,27 @@
         "wxl_set_toggle_button_label"
       ],
       "scope": "Bounded independent two-state TOGGLE-BUTTON, default style, native-backed CLOS and checked/label generic SETF; silent defaults and explicit one native-class update. Native checked/text snapshots/current contexts, source lifetime/reentry guards. No bitmap toggle, grouping, raw adoption, owned/synthetic/cloned toggle-button events or full class parity. See docs/TOGGLE-BUTTONS.md."
+    },
+    "wxComboBox": {
+      "status": "~",
+      "lisp": [
+        "combo-box",
+        "make-combo-box",
+        "text",
+        "selection",
+        "item-count",
+        "item-text",
+        "event-selection"
+      ],
+      "native": [
+        "wxl_combo_box",
+        "wxl_combo_field",
+        "wxl_combo_text",
+        "wxl_combo_item",
+        "wxl_set_combo_text",
+        "wxl_set_combo_selection"
+      ],
+      "scope": "Bounded editable COMBO-BOX only, fixed0..256 unsorted nonempty native-CmpNoCase-unique single-line choices. Text/selection generic SETF, read-only items, explicit native notifications, COMBO/TEXT lifetime/reentry guards. No readonly/styles/mutation/position APIs, raw adoption or full class parity. New combo selection kind native-only; existing generic TEXT event support retains its scope. See docs/COMBO-BOXES.md."
     }
   }
 }

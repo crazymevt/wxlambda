@@ -35,7 +35,7 @@ void inspect_binding(uint64_t token, const wxl_event* event) {
     saved_context = event->context;
     binding_called = true;
 }
-std::function<void(uint64_t, const wxl_event*)> notebook_probe, list_probe, tree_probe, splitter_probe, toolbar_probe, accelerator_probe, deferred_event_probe, numeric_probe, radio_probe, toggle_probe;
+std::function<void(uint64_t, const wxl_event*)> notebook_probe, list_probe, tree_probe, splitter_probe, toolbar_probe, accelerator_probe, deferred_event_probe, numeric_probe, radio_probe, toggle_probe, combo_probe;
 std::function<void(uint64_t,int)> ui_action_probe;
 void ignore_ui_action(uint64_t token, int execute) { if (ui_action_probe) ui_action_probe(token, execute); }
 void ignore_event(uint64_t token, const wxl_event* event) {
@@ -49,6 +49,7 @@ void ignore_event(uint64_t token, const wxl_event* event) {
     if (token >= 918 && token <= 920 && numeric_probe) numeric_probe(token, event);
     if ((token == 921 || token == 922) && radio_probe) radio_probe(token, event);
     if ((token == 923 || token == 924) && toggle_probe) toggle_probe(token, event);
+    if (token>=925 && token<=927 && combo_probe) combo_probe(token,event);
     if (token == 901) inspect_binding(token, event);
     if (token == 903) { ++menu_calls; menu_checked_payload = event->checked; menu_integer_payload = event->integer; menu_origin = event->origin_id; }
 }
@@ -808,6 +809,62 @@ struct SplitterProbe : FixedSplitter {
     using FixedSplitter::FixedSplitter;
     using wxSplitterWindow::SetSashPositionAndNotify;
 };
+void exercise_combo_boxes() {
+    const auto frame=wxl_frame("Combo",460,250), panel=wxl_panel(frame);
+    const char* labels[]={"First λ","Second"}; const size_t lengths[]={8,6};
+    unsigned calls=0; bool constructing=true;
+    combo_probe=[&](uint64_t,const wxl_event*) { ++calls; expect(!constructing,"Combo constructor callbacks suppressed"); };
+    expect(wxl_bind(frame,WXL_EVENT_TEXT_CHANGE,927,wxID_ANY,wxID_ANY,1,0)==0,"Observe combo constructor");
+    const auto combo=wxl_combo_box(panel,labels,lengths,2,"",0,1), other=wxl_combo_box(panel,nullptr,nullptr,0,"Custom",6,-1);
+    expect(combo && other && !calls,"Combo construction"); constructing=false; expect(wxl_unbind(927)==1,"Constructor unbind");
+    size_t size=0;
+    expect(wxl_combo_field(combo,0)==1 && wxl_combo_field(combo,1)==2 && std::string(wxl_combo_text(combo,&size))=="Second","Initial combo state");
+    const char* first=wxl_combo_item(combo,0,&size); expect(first && std::string(first,size)=="First λ","Combo UTF8 item");
+    const char* duplicates[]={"a","A"}; const size_t ones[]={1,1};
+    expect(!wxl_combo_box(panel,duplicates,ones,2,"",0,-1) && !wxl_combo_box(panel,labels,lengths,257,"",0,-1) &&
+           !wxl_combo_box(panel,nullptr,nullptr,1,"",0,-1) && !wxl_combo_box(panel,labels,lengths,2,"bad",3,0),"Raw combo construction validation");
+    expect(!wxl_combo_box(panel,labels,lengths,2,"a\nb",3,-1) && wxl_set_combo_text(combo,"a\rb",3,0)==-1 &&
+           wxl_set_combo_text(combo,"a\0b",3,0)==-1 && wxl_set_combo_text(combo,"",0,2)==-1 &&
+           wxl_set_combo_selection(combo,2,0)==-1 && wxl_set_combo_selection(combo,0,2)==-1 &&
+           wxl_combo_field(frame,0)==-2 && wxl_combo_field(combo,2)==-2 && !wxl_combo_item(combo,2,&size),"Raw combo operations");
+    const auto dialog=wxl_message_dialog(frame,"Combo",5,"Probe",5,0,0);
+    combo_probe=[&](uint64_t token,const wxl_event* event) {
+        ++calls;
+        expect(event->origin_id==combo && event->family==WXL_FAMILY_COMMAND,"Combo native origin/family");
+        expect(wxl_set_combo_selection(combo,1,0)==-1 && wxl_set_combo_text(combo,"Nested",6,0)==-1 &&
+               wxl_destroy(combo)==-1 && wxl_destroy(panel)==-1 && wxl_close(frame,1)==-1,"Combo source/ancestor mutations");
+        int result=-1;
+        expect(wxl_poll()==-1 && wxl_clipboard_text_available()==-1 && wxl_dialog_show(dialog,&result)==-1,"Combo modal/clipboard/loop gate");
+        expect(wxl_set_combo_text(other,"Sync",4,0)==0,"Combo silent cross-control write");
+        if (event->kind==WXL_EVENT_COMBO_SELECTION) {
+            expect(event->selection==0 && std::string(event->text,event->text_length)=="First λ","Combo selection snapshot");
+            int64_t selected=-1;
+            expect(wxl_event_field(event->context,1,16,&selected)==0 && selected==0 && !wxl_clone_event(event->context,1) &&
+                   wxl_set_event_field(event->context,1,16,1)==-1,"Combo native selection read-only/no clone");
+        }
+        if (event->kind==WXL_EVENT_TEXT_CHANGE) {
+            expect(wxl_set_event_text(event->context,1,"Metadata",8)==-1,"Combo source-bound TEXT metadata cannot be set");
+        } else {
+            expect(wxl_set_event_text(event->context,1,"Metadata",8)==0,"Combo selection text is metadata");
+            size_t length=0; expect(std::string(wxl_combo_text(combo,&length))=="First λ","Metadata must not edit combo");
+            expect(wxl_set_event_text(event->context,1,"First λ",8)==0,"Restore metadata before parent probe");
+        }
+        if (token==925) expect(wxl_context_set_skipped(event->context,1)==0,"Combo propagation");
+    };
+    auto send=[&](int kind) {
+        expect(wxl_bind(combo,kind,925,wxID_ANY,wxID_ANY,1,0)==0 && wxl_bind(frame,kind,926,wxID_ANY,wxID_ANY,1,0)==0,"Combo native bindings");
+        wxCommandEvent event(kind==WXL_EVENT_COMBO_SELECTION ? wxEVT_COMBOBOX : wxEVT_TEXT,window(combo)->GetId());
+        event.SetEventObject(window(combo)); event.SetInt(0); event.SetString("First λ"); window(combo)->HandleWindowEvent(event);
+        expect(wxl_unbind(925)==1 && wxl_unbind(926)==1,"Combo unbind");
+    };
+    expect(wxl_set_combo_selection(combo,0,0)==0 && !calls,"Silent combo select");
+    send(WXL_EVENT_COMBO_SELECTION); send(WXL_EVENT_TEXT_CHANGE);
+    expect(calls==4 && input_operations.empty(),"Direct combo/text native propagation independent of setter guards");
+    combo_probe={};
+    expect(wxl_set_combo_selection(combo,-1,0)==0 && wxl_combo_field(combo,0)==-1 && std::string(wxl_combo_text(combo,&size)).empty(),"Combo clear selection and text");
+    expect(wxl_set_combo_text(combo,"Custom λ",9,0)==0 && std::string(wxl_combo_text(combo,&size))=="Custom λ","Combo arbitrary Unicode text");
+    expect(wxl_destroy(frame)==0 && wxl_poll()==0 && wxl_combo_field(combo,0)==-2 && !wxl_combo_text(combo,&size),"Combo teardown");
+}
 void exercise_toggle_buttons() {
     const auto frame=wxl_frame("Toggle",400,240), panel=wxl_panel(frame);
     const auto toggle=wxl_toggle_button(panel,"Preview λ",1), other=wxl_toggle_button(panel,"Other",0);
@@ -1300,6 +1357,7 @@ int main() {
         exercise_numeric_input();
         exercise_radio_groups();
         exercise_toggle_buttons();
+        exercise_combo_boxes();
         bool shutdown_ran=false;
         ui_action_probe=[&](uint64_t,int) { shutdown_ran=true; };
         expect(wxl_defer_ui_action(5000,0)==0 && wxl_start_ui_timer(5001,1,0,0)==0,"Queue shutdown action/timer");

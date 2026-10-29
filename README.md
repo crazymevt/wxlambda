@@ -825,3 +825,5 @@ synchronization. Physical and hosted OS input checks remain separate.
 run `examples/radio-groups.lisp` for export-format selection.
 
 [Toggle buttons](docs/TOGGLE-BUTTONS.md) provide persistent on/off options; run `examples/toggle-buttons.lisp` for preview feedback.
+
+[Combo boxes](docs/COMBO-BOXES.md) combine fixed presets and custom single-line text; run `examples/combo-boxes.lisp`.

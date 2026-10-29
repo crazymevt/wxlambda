@@ -320,7 +320,7 @@ Class/struct definitions: 0 complete; 11 partial; 291 pending. Partial and pendi
 
 ## C2: Windows, layout, basic controls, and input
 
-Class/struct definitions: 0 complete; 23 partial; 109 pending. Partial and pending classes remain open.
+Class/struct definitions: 0 complete; 24 partial; 108 pending. Partial and pending classes remain open.
 
 [Declaration counts and remaining work](README.md).
 
@@ -349,11 +349,11 @@ Class/struct definitions: 0 complete; 23 partial; 109 pending. Partial and pendi
 - [ ] `wxComboPopup` — [`wx/combo.h`](phase-c2.md), upstream line 35.
 - [ ] `wxComboCtrlFeatures` — [`wx/combo.h`](phase-c2.md), upstream line 198.
 - [ ] `wxComboCtrl` — [`wx/combo.h`](phase-c2.md), upstream line 367.
-- [ ] `wxComboBox` — [`wx/combobox.h`](phase-c2.md), upstream line 82.
+- [~] `wxComboBox` — [`wx/combobox.h`](phase-c2.md), upstream line 82. — **Partial**: `combo-box`, `make-combo-box`, `text`, `selection`, `item-count`, `item-text`, `event-selection`; ABI: `wxl_combo_box`, `wxl_combo_field`, `wxl_combo_text`, `wxl_combo_item`, `wxl_set_combo_text`, `wxl_set_combo_selection`. Bounded editable COMBO-BOX only, fixed0..256 unsorted nonempty native-CmpNoCase-unique single-line choices. Text/selection generic SETF, read-only items, explicit native notifications, COMBO/TEXT lifetime/reentry guards. No readonly/styles/mutation/position APIs, raw adoption or full class parity. New combo selection kind native-only; existing generic TEXT event support retains its scope. See docs/COMBO-BOXES.md.
 - [ ] `wxCommandLinkButton` — [`wx/commandlinkbutton.h`](phase-c2.md), upstream line 46.
 - [ ] `wxNavigationEnabled` — [`wx/containr.h`](phase-c2.md), upstream line 45.
 - [ ] `wxControl` — [`wx/control.h`](phase-c2.md), upstream line 31.
-- [~] `wxItemContainerImmutable` — [`wx/ctrlsub.h`](phase-c2.md), upstream line 29. — **Partial**: `list-box`, `make-list-box`, `item-count`, `item-text`, `append-item`, `delete-item`, `clear-items`, `selection`, `on-selection`, `off-selection`; ABI: `wxl_list_box`, `wxl_list_count`, `wxl_list_item`, `wxl_set_list_item`, `wxl_list_append`, `wxl_list_delete`, `wxl_list_clear`, `wxl_list_selection`, `wxl_set_list_selection`. LIST-BOX only, unsorted single selection/text items. Finite UTF-8/NUL-checked construction; silent item edits preserve/adjust selection deterministically. Native list callback lifetime/pump guards; owned/simple command selection+activation events. Other item containers, multiselect/sort/client data/virtual models remain unbound.
+- [~] `wxItemContainerImmutable` — [`wx/ctrlsub.h`](phase-c2.md), upstream line 29. — **Partial**: `list-box`, `make-list-box`, `item-count`, `item-text`, `append-item`, `delete-item`, `clear-items`, `selection`, `on-selection`, `off-selection`; ABI: `wxl_list_box`, `wxl_list_count`, `wxl_list_item`, `wxl_set_list_item`, `wxl_list_append`, `wxl_list_delete`, `wxl_list_clear`, `wxl_list_selection`, `wxl_set_list_selection`. Partial inherited text-item/selection adapter for explicitly mapped wrapper receivers. Radio/combo overrides are separately mapped; no arbitrary item-container construction/adoption or full interface parity.
 - [~] `wxItemContainer` — [`wx/ctrlsub.h`](phase-c2.md), upstream line 196. — **Partial**: `list-box`, `make-list-box`, `item-count`, `item-text`, `append-item`, `delete-item`, `clear-items`, `selection`, `on-selection`, `off-selection`; ABI: `wxl_list_box`, `wxl_list_count`, `wxl_list_item`, `wxl_set_list_item`, `wxl_list_append`, `wxl_list_delete`, `wxl_list_clear`, `wxl_list_selection`, `wxl_set_list_selection`. LIST-BOX only, unsorted single selection/text items. Finite UTF-8/NUL-checked construction; silent item edits preserve/adjust selection deterministically. Native list callback lifetime/pump guards; owned/simple command selection+activation events. Other item containers, multiselect/sort/client data/virtual models remain unbound.
 - [ ] `wxControlWithItems` — [`wx/ctrlsub.h`](phase-c2.md), upstream line 759.
 - [ ] `wxCursor` — [`wx/cursor.h`](phase-c2.md), upstream line 82.

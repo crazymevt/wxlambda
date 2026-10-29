@@ -168,3 +168,5 @@ retain numeric lifetime/reentry guards.
 `:radio-selection` command events expose copied/current index and native label; EVENT-SELECTION SETF and owned/synthetic/cloning reject. Shared input guards protect source/ancestors; see [radio groups](RADIO-GROUPS.md).
 
 `:toggle-button-change` exposes copied/current checked metadata and native text (normally empty); semantic EVENT-CHECKED-P SETF and owned/synthetic/cloning reject. Source/ancestor Input guards apply to native and propagated callbacks. See [toggle buttons](TOGGLE-BUTTONS.md).
+
+`:combo-selection` observes a native list index/text; semantic selection SETF and owned/synthetic/cloning reject for this kind. Existing :text-change remains shared command support. Both combo-origin families retain Input guards; physical selection may send COMBO then TEXT. See [combo boxes](COMBO-BOXES.md).

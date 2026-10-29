@@ -2,6 +2,7 @@
 #include <wx/wx.h>
 #include <wx/thread.h>
 #include <wx/choice.h>
+#include <wx/combobox.h>
 #include <wx/radiobox.h>
 #include <wx/tglbtn.h>
 #include <wx/gauge.h>
@@ -178,7 +179,7 @@ public: using wxMenuItem::wxMenuItem; wxl_handle identity = 0;
 };
 struct RegisteredEvent { wxEventType type; int family; };
 std::unordered_map<int, RegisteredEvent> registered_events;
-constexpr int first_registered_event_kind = WXL_EVENT_TOGGLE_BUTTON_CHANGE + 1;
+constexpr int first_registered_event_kind = WXL_EVENT_COMBO_SELECTION + 1;
 int next_event_kind = first_registered_event_kind;
 wxWeakRef<wxDialog> active_modal;
 std::unordered_map<wxWindow*, size_t> dialog_choice_counts;
@@ -650,7 +651,7 @@ bool input_origin_contains(wxWindow* object, const wxObject* origin) {
 struct InputCallbackOperation {
     bool added = false, allow = true;
     explicit InputCallbackOperation(wxEvent& event) {
-        if (event.GetEventType() != wxEVT_TOGGLEBUTTON && event.GetEventType() != wxEVT_RADIOBOX && event.GetEventType() != wxEVT_SLIDER && event.GetEventType() != wxEVT_SPINCTRL && event.GetEventType() != wxEVT_TEXT) return;
+        if (event.GetEventType() != wxEVT_COMBOBOX && event.GetEventType() != wxEVT_TOGGLEBUTTON && event.GetEventType() != wxEVT_RADIOBOX && event.GetEventType() != wxEVT_SLIDER && event.GetEventType() != wxEVT_SPINCTRL && event.GetEventType() != wxEVT_TEXT) return;
         if (input_creation_depth) { allow = false; return; }
         // Composite input base destruction can emit composite-child text callbacks.
         for (const auto& entry : input_owners) if (entry.second) { allow = false; return; }
@@ -696,7 +697,7 @@ int numeric_read(wxWindow* object) {
 int selected_event_index(wxEvent& event) {
     if (auto* book = dynamic_cast<wxBookCtrlEvent*>(&event)) return book->GetSelection();
     auto* command = dynamic_cast<wxCommandEvent*>(&event);
-    return command && (event.GetEventType() == wxEVT_RADIOBOX || event.GetEventType() == wxEVT_CHOICE || event.GetEventType() == wxEVT_LISTBOX || event.GetEventType() == wxEVT_LISTBOX_DCLICK) ? command->GetSelection() : -1;
+    return command && (event.GetEventType() == wxEVT_COMBOBOX || event.GetEventType() == wxEVT_RADIOBOX || event.GetEventType() == wxEVT_CHOICE || event.GetEventType() == wxEVT_LISTBOX || event.GetEventType() == wxEVT_LISTBOX_DCLICK) ? command->GetSelection() : -1;
 }
 void make_box(wxl_handle id, int orientation) {
     auto* parent = window(id);
@@ -742,6 +743,7 @@ wxEventTypeTag<wxEvent> native_event_type(int kind) {
         case WXL_EVENT_TREE_CHANGED: return wxEventTypeTag<wxEvent>(wxEVT_TREE_SEL_CHANGED);
         case WXL_EVENT_SPLITTER_CHANGING: return wxEventTypeTag<wxEvent>(wxEVT_SPLITTER_SASH_POS_CHANGING);
         case WXL_EVENT_SLIDER_CHANGE: return wxEventTypeTag<wxEvent>(wxEVT_SLIDER);
+        case WXL_EVENT_COMBO_SELECTION: return wxEventTypeTag<wxEvent>(wxEVT_COMBOBOX);
         case WXL_EVENT_TOGGLE_BUTTON_CHANGE: return wxEventTypeTag<wxEvent>(wxEVT_TOGGLEBUTTON);
         case WXL_EVENT_RADIO_SELECTION: return wxEventTypeTag<wxEvent>(wxEVT_RADIOBOX);
         case WXL_EVENT_SPIN_CHANGE: return wxEventTypeTag<wxEvent>(wxEVT_SPINCTRL);
@@ -757,7 +759,7 @@ int native_event_family(int kind) {
     if (kind >= WXL_EVENT_CLICK && kind <= WXL_EVENT_SELECTION) return WXL_FAMILY_COMMAND;
     if (kind >= WXL_EVENT_CLOSE && kind <= WXL_EVENT_END_SESSION) return WXL_FAMILY_CLOSE;
     if (kind == WXL_EVENT_IDLE) return WXL_FAMILY_IDLE;
-    if (kind == WXL_EVENT_TOGGLE_BUTTON_CHANGE || kind == WXL_EVENT_RADIO_SELECTION || kind == WXL_EVENT_SLIDER_CHANGE || kind == WXL_EVENT_MENU || kind == WXL_EVENT_LISTBOX_SELECTION || kind == WXL_EVENT_LISTBOX_DOUBLE_CLICK) return WXL_FAMILY_COMMAND;
+    if (kind == WXL_EVENT_COMBO_SELECTION || kind == WXL_EVENT_TOGGLE_BUTTON_CHANGE || kind == WXL_EVENT_RADIO_SELECTION || kind == WXL_EVENT_SLIDER_CHANGE || kind == WXL_EVENT_MENU || kind == WXL_EVENT_LISTBOX_SELECTION || kind == WXL_EVENT_LISTBOX_DOUBLE_CLICK) return WXL_FAMILY_COMMAND;
     if (kind == WXL_EVENT_SPIN_CHANGE || kind == WXL_EVENT_NOTEBOOK_CHANGING || kind == WXL_EVENT_NOTEBOOK_CHANGED || kind == WXL_EVENT_TREE_CHANGING || kind == WXL_EVENT_TREE_CHANGED || kind == WXL_EVENT_SPLITTER_CHANGING || kind == WXL_EVENT_SPLITTER_CHANGED) return WXL_FAMILY_NOTIFY;
     const auto it = registered_events.find(kind);
     require(it != registered_events.end(), "Unsupported event kind");
@@ -775,7 +777,7 @@ bool event_vetoed(wxEvent& event) {
 std::unique_ptr<wxEvent> synthetic_event(wxEvtHandler* receiver, int kind, int event_id,
                                        const char* text, size_t length, int value,
                                        int can_veto, int vetoed, int logging_off) {
-    require(kind != WXL_EVENT_TOGGLE_BUTTON_CHANGE && kind != WXL_EVENT_RADIO_SELECTION && kind != WXL_EVENT_SLIDER_CHANGE && kind != WXL_EVENT_SPIN_CHANGE && kind != WXL_EVENT_NOTEBOOK_CHANGING && kind != WXL_EVENT_NOTEBOOK_CHANGED && kind != WXL_EVENT_TREE_CHANGING && kind != WXL_EVENT_TREE_CHANGED && kind != WXL_EVENT_SPLITTER_CHANGING && kind != WXL_EVENT_SPLITTER_CHANGED,
+    require(kind != WXL_EVENT_COMBO_SELECTION && kind != WXL_EVENT_TOGGLE_BUTTON_CHANGE && kind != WXL_EVENT_RADIO_SELECTION && kind != WXL_EVENT_SLIDER_CHANGE && kind != WXL_EVENT_SPIN_CHANGE && kind != WXL_EVENT_NOTEBOOK_CHANGING && kind != WXL_EVENT_NOTEBOOK_CHANGED && kind != WXL_EVENT_TREE_CHANGING && kind != WXL_EVENT_TREE_CHANGED && kind != WXL_EVENT_SPLITTER_CHANGING && kind != WXL_EVENT_SPLITTER_CHANGED,
             "Derived navigation events require native interaction; synthetic construction is unsupported");
     const auto type = native_event_type(kind);
     const int family = native_event_family(kind);
@@ -813,7 +815,7 @@ std::unique_ptr<wxEvent> synthetic_event(wxEvtHandler* receiver, int kind, int e
     return event;
 }
 int kind_of(wxEvent& event) {
-    for (int kind = WXL_EVENT_CLICK; kind <= WXL_EVENT_TOGGLE_BUTTON_CHANGE; ++kind)
+    for (int kind = WXL_EVENT_CLICK; kind <= WXL_EVENT_COMBO_SELECTION; ++kind)
         if (native_event_type(kind) == event.GetEventType()) return kind;
     for (const auto& item : registered_events)
         if (item.second.type == event.GetEventType()) return item.first;
@@ -829,7 +831,7 @@ std::unique_ptr<wxEvent> detached_clone(wxEvent& event) {
     require(typeid(event) == typeid(wxCommandEvent) || typeid(event) == typeid(wxNotifyEvent) ||
             typeid(event) == typeid(wxCloseEvent) || typeid(event) == typeid(wxIdleEvent), "Cloning this native event class is not supported");
     const auto kind = kind_of(event);
-    require(kind != WXL_EVENT_TOGGLE_BUTTON_CHANGE && kind != WXL_EVENT_RADIO_SELECTION && kind != WXL_EVENT_SLIDER_CHANGE && kind != WXL_EVENT_SPIN_CHANGE, "Bounded input control events cannot be detached/cloned");
+    require(kind != WXL_EVENT_COMBO_SELECTION && kind != WXL_EVENT_TOGGLE_BUTTON_CHANGE && kind != WXL_EVENT_RADIO_SELECTION && kind != WXL_EVENT_SLIDER_CHANGE && kind != WXL_EVENT_SPIN_CHANGE, "Bounded input control events cannot be detached/cloned");
     require(event.GetEventUserData() == nullptr, "Cannot clone borrowed event userData");
     if (auto* command = dynamic_cast<wxCommandEvent*>(&event))
         require(!command->GetClientData() && !command->GetClientObject(), "Cannot clone borrowed command client data");
@@ -959,7 +961,7 @@ struct Binding {
             for (const auto& item : registered_events)
                 if (item.second.type == event.GetEventType()) { snapshot_kind = item.first; break; }
             const int family = native_event_family(snapshot_kind);
-            const bool carries_text = snapshot_kind == WXL_EVENT_TOGGLE_BUTTON_CHANGE || snapshot_kind == WXL_EVENT_RADIO_SELECTION || snapshot_kind == WXL_EVENT_TEXT_CHANGE || snapshot_kind == WXL_EVENT_LISTBOX_SELECTION || snapshot_kind == WXL_EVENT_LISTBOX_DOUBLE_CLICK || snapshot_kind >= first_registered_event_kind;
+            const bool carries_text = snapshot_kind == WXL_EVENT_COMBO_SELECTION || snapshot_kind == WXL_EVENT_TOGGLE_BUTTON_CHANGE || snapshot_kind == WXL_EVENT_RADIO_SELECTION || snapshot_kind == WXL_EVENT_TEXT_CHANGE || snapshot_kind == WXL_EVENT_LISTBOX_SELECTION || snapshot_kind == WXL_EVENT_LISTBOX_DOUBLE_CLICK || snapshot_kind >= first_registered_event_kind;
             const auto text = command ? command->GetString() : wxString();
             const auto bytes = text.ToUTF8();
             wxl_event snapshot{snapshot_kind, carries_text ? (bytes.data() ? bytes.data() : "") : nullptr,
@@ -1312,7 +1314,7 @@ bool process_deferred_ui_action() {
 
 }
 extern "C" {
-int wxl_abi_version() { return 47; }
+int wxl_abi_version() { return 48; }
 const char* wxl_last_error() { return error.c_str(); }
 int wxl_clipboard_text_available() {
     return boolean_result([&] {
@@ -2888,6 +2890,62 @@ const char* wxl_get_label(wxl_handle id) {
     });
     return result == 0 ? label_result.c_str() : nullptr;
 }
+wxString combo_value(const char* value, size_t length) {
+    const auto text=text_value(value,length);
+    require(text.find('\r')==wxString::npos && text.find('\n')==wxString::npos, "Combo text must be single-line"); return text;
+}
+wxl_handle wxl_combo_box(wxl_handle parent_id, const char** items, const size_t* lengths, size_t count,
+                         const char* value, size_t value_length, int selection) {
+    return create([&] {
+        auto* parent = window(parent_id);
+        require(count <= 256 && (!count || (items && lengths)), "Combo box supports 0..256 choices");
+        require(selection >= -1 && (selection == -1 || static_cast<size_t>(selection) < count), "Combo selection out of bounds");
+        const auto initial = combo_value(value, value_length);
+        require(selection == -1 || initial.empty(), "Use initial text or selection, not both");
+        wxArrayString strings;
+        for (size_t i=0; i<count; ++i) {
+            const auto item = combo_value(items[i], lengths[i]); require(!item.empty(), "Combo choices must be nonempty");
+            for (const auto& old : strings) require(old.CmpNoCase(item) != 0, "Combo choices must be case-insensitively unique");
+            strings.Add(item);
+        }
+        struct CreationScope { CreationScope() { ++input_creation_depth; } ~CreationScope() { --input_creation_depth; } } creation;
+        auto object = std::make_unique<ManagedWindow<wxComboBox>>();
+        { wxEventBlocker blocker(object.get());
+          require(object->Create(parent,wxID_ANY,wxEmptyString,wxDefaultPosition,wxDefaultSize,strings,wxCB_DROPDOWN), "Native combo creation failed");
+          object->SetSelection(wxNOT_FOUND);
+          object->ChangeValue(initial);
+          if (selection >= 0) { object->ChangeValue(strings[selection]); object->SetSelection(selection); } }
+        const auto id=track(object.get()); input_owners.emplace(object.get(),false); object.release(); return id;
+    });
+}
+int wxl_combo_field(wxl_handle id, int field) {
+    int result=-2; status([&] { auto* object=as<wxComboBox>(id); require(field==0 || field==1,"Invalid combo field");
+        result=field==0 ? object->GetSelection() : static_cast<int>(object->GetCount()); }); return result;
+}
+const char* wxl_combo_text(wxl_handle id, size_t* length) {
+    return metadata_string([&] { return as<wxComboBox>(id)->GetValue(); },length);
+}
+const char* wxl_combo_item(wxl_handle id, int index, size_t* length) {
+    return metadata_string([&] { auto* object=as<wxComboBox>(id);
+        require(index>=0 && static_cast<unsigned>(index)<object->GetCount(),"Combo item index out of bounds");
+        return object->GetString(index); },length);
+}
+int wxl_set_combo_text(wxl_handle id, const char* value, size_t length, int notify) { return status([&] {
+    auto* object=as<wxComboBox>(id); const auto text=combo_value(value,length); require(notify==0 || notify==1,"Invalid combo notification");
+    InputOperation operation(object);
+    { wxEventBlocker blocker(object); object->SetSelection(wxNOT_FOUND); object->ChangeValue(text); }
+    if (notify) { wxCommandEvent event(wxEVT_TEXT,object->GetId()); event.SetEventObject(object); event.SetString(object->GetValue()); object->HandleWindowEvent(event); }
+}); }
+int wxl_set_combo_selection(wxl_handle id, int index, int notify) { return status([&] {
+    auto* object=as<wxComboBox>(id);
+    require(index>=-1 && (index==-1 || static_cast<unsigned>(index)<object->GetCount()) && (notify==0 || notify==1),"Invalid combo selection/notification");
+    InputOperation operation(object);
+    { wxEventBlocker blocker(object);
+      if (index>=0) object->ChangeValue(object->GetString(index));
+      object->SetSelection(index); if (index==-1) object->ChangeValue(wxEmptyString); }
+    if (notify) { wxCommandEvent event(wxEVT_COMBOBOX,object->GetId()); event.SetEventObject(object); event.SetInt(index);
+        event.SetString(object->GetValue()); object->HandleWindowEvent(event); }
+}); }
 wxl_handle wxl_toggle_button(wxl_handle parent_id, const char* label, int checked) {
     return create([&] {
         auto* parent = window(parent_id); require(checked == 0 || checked == 1, "Invalid toggle state");
