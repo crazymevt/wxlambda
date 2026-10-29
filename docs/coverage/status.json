@@ -7809,15 +7809,17 @@
         "scroll-rate",
         "scroll-position",
         "scroll-extent",
-        "fit-scroll-content"
+        "fit-scroll-content",
+        "window-client-size"
       ],
       "native": [
         "wxl_scrolled_panel",
         "wxl_scroll_pair",
         "wxl_set_scroll_pair",
-        "wxl_fit_scroll_content"
+        "wxl_fit_scroll_content",
+        "wxl_window_point"
       ],
-      "scope": "Internal content/client bound check only; Bounded wxScrolled<wxPanel> specialization only (wxScrolledWindow alias), native-backed child container, sizer fit/current virtual extent, rate0..256 and position0..1000000 pairs. Supported pixel extent<=1000000 checked at explicit mutation; inherited/native layout not globally constrained. Protected synchronous native operations and callback-time mutation deferral. Private helper retained; no managed stack APIs, drawing/target/coordinate/scroll events, raw adoption or full class parity. See docs/SCROLLING-PANELS.md."
+      "scope": "Internal content/client bound check only; Bounded wxScrolled<wxPanel> specialization only (wxScrolledWindow alias), native-backed child container, sizer fit/current virtual extent, rate0..256 and position0..1000000 pairs. Supported pixel extent<=1000000 checked at explicit mutation; inherited/native layout not globally constrained. Protected synchronous native operations and callback-time mutation deferral. Private helper retained; no managed stack APIs, drawing/target/coordinate/scroll events, raw adoption or full class parity. See docs/SCROLLING-PANELS.md. Native WINDOW read-only size/point/scale adapter; copied tuples, signed input coordinates bounded\u00b11000000. Client/screen native units, backing pixels, logical size and DIP remain distinct. Receiver inherits existing checked WINDOW lifetime/main-thread policy."
     },
     {
       "header": "wx/sizer.h",
@@ -8778,7 +8780,7 @@
         "wxl_canvas_client_size",
         "wxl_save_canvas_image"
       ],
-      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md. ABI60 adds copied RGBA scene pixels with native alpha composition; same1..256 extent and2MiB aggregate cap."
     },
     {
       "header": "wx/colour.h",
@@ -8799,7 +8801,7 @@
         "wxl_canvas_client_size",
         "wxl_save_canvas_image"
       ],
-      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md. ABI60 adds copied RGBA scene pixels with native alpha composition; same1..256 extent and2MiB aggregate cap."
     },
     {
       "header": "wx/font.h",
@@ -8820,7 +8822,7 @@
         "wxl_canvas_client_size",
         "wxl_save_canvas_image"
       ],
-      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md. ABI60 adds copied RGBA scene pixels with native alpha composition; same1..256 extent and2MiB aggregate cap."
     },
     {
       "header": "wx/font.h",
@@ -8841,7 +8843,7 @@
         "wxl_canvas_client_size",
         "wxl_save_canvas_image"
       ],
-      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md. ABI60 adds copied RGBA scene pixels with native alpha composition; same1..256 extent and2MiB aggregate cap."
     },
     {
       "header": "wx/bitmap.h",
@@ -8854,15 +8856,24 @@
         "make-drawing-canvas",
         "canvas-content",
         "canvas-client-size",
-        "save-canvas-image"
+        "save-canvas-image",
+        "bitmap",
+        "make-bitmap",
+        "bitmap-image",
+        "bitmap-logical-size",
+        "bitmap-dip-size",
+        "bitmap-scale-factor"
       ],
       "native": [
         "wxl_drawing_canvas",
         "wxl_set_canvas_content",
         "wxl_canvas_client_size",
-        "wxl_save_canvas_image"
+        "wxl_save_canvas_image",
+        "wxl_bitmap",
+        "wxl_bitmap_image",
+        "wxl_bitmap_geometry"
       ],
-      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md. Session-owned copied image/bitmap values, at most256 resources and64Mi total pixels,1..4096 pixel axes, GUI/main-thread checked. No raw buffers/adoption; writes/allocations/disposal defer during callbacks. See docs/IMAGES-DISPLAYS.md. Native conversion and independent value copies; immutable bitmap sizing, no raw adoption. ABI60 adds copied RGBA scene pixels with native alpha composition; same1..256 extent and2MiB aggregate cap."
     },
     {
       "header": "wx/image.h",
@@ -8875,15 +8886,25 @@
         "make-drawing-canvas",
         "canvas-content",
         "canvas-client-size",
-        "save-canvas-image"
+        "save-canvas-image",
+        "image",
+        "make-image",
+        "image-rgb",
+        "image-alpha",
+        "image-pixel",
+        "scale-image"
       ],
       "native": [
         "wxl_drawing_canvas",
         "wxl_set_canvas_content",
         "wxl_canvas_client_size",
-        "wxl_save_canvas_image"
+        "wxl_save_canvas_image",
+        "wxl_image",
+        "wxl_image_set_bytes",
+        "wxl_image_pixel",
+        "wxl_scale_image"
       ],
-      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md. Session-owned copied image/bitmap values, at most256 resources and64Mi total pixels,1..4096 pixel axes, GUI/main-thread checked. No raw buffers/adoption; writes/allocations/disposal defer during callbacks. See docs/IMAGES-DISPLAYS.md. Explicit PNG operations use wxPNGHandler, not general image loading APIs. ABI60 adds copied RGBA scene pixels with native alpha composition; same1..256 extent and2MiB aggregate cap."
     },
     {
       "header": "wx/dcmemory.h",
@@ -8904,7 +8925,7 @@
         "wxl_canvas_client_size",
         "wxl_save_canvas_image"
       ],
-      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md. ABI60 adds copied RGBA scene pixels with native alpha composition; same1..256 extent and2MiB aggregate cap."
     },
     {
       "header": "wx/dcbuffer.h",
@@ -8925,7 +8946,7 @@
         "wxl_canvas_client_size",
         "wxl_save_canvas_image"
       ],
-      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md. ABI60 adds copied RGBA scene pixels with native alpha composition; same1..256 extent and2MiB aggregate cap."
     },
     {
       "header": "wx/imagpng.h",
@@ -8938,15 +8959,19 @@
         "make-drawing-canvas",
         "canvas-content",
         "canvas-client-size",
-        "save-canvas-image"
+        "save-canvas-image",
+        "make-image",
+        "save-image"
       ],
       "native": [
         "wxl_drawing_canvas",
         "wxl_set_canvas_content",
         "wxl_canvas_client_size",
-        "wxl_save_canvas_image"
+        "wxl_save_canvas_image",
+        "wxl_load_image",
+        "wxl_save_image"
       ],
-      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md. Explicit checked PNG stream loading/saving only, no public handler registration or general image format support. ABI60 adds copied RGBA scene pixels with native alpha composition; same1..256 extent and2MiB aggregate cap."
     },
     {
       "header": "wx/panel.h",
@@ -8967,7 +8992,7 @@
         "wxl_canvas_client_size",
         "wxl_save_canvas_image"
       ],
-      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md. ABI60 adds copied RGBA scene pixels with native alpha composition; same1..256 extent and2MiB aggregate cap."
     },
     {
       "header": "wx/dc.h",
@@ -8988,7 +9013,7 @@
         "wxl_canvas_client_size",
         "wxl_save_canvas_image"
       ],
-      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md. ABI60 adds copied RGBA scene pixels with native alpha composition; same1..256 extent and2MiB aggregate cap."
     },
     {
       "header": "wx/dc.h",
@@ -9009,7 +9034,7 @@
         "wxl_canvas_client_size",
         "wxl_save_canvas_image"
       ],
-      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md. ABI60 adds copied RGBA scene pixels with native alpha composition; same1..256 extent and2MiB aggregate cap."
     },
     {
       "header": "wx/dc.h",
@@ -9030,7 +9055,7 @@
         "wxl_canvas_client_size",
         "wxl_save_canvas_image"
       ],
-      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md. ABI60 adds copied RGBA scene pixels with native alpha composition; same1..256 extent and2MiB aggregate cap."
     },
     {
       "header": "wx/dc.h",
@@ -9051,7 +9076,7 @@
         "wxl_canvas_client_size",
         "wxl_save_canvas_image"
       ],
-      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md. ABI60 adds copied RGBA scene pixels with native alpha composition; same1..256 extent and2MiB aggregate cap."
     },
     {
       "header": "wx/dc.h",
@@ -9072,7 +9097,7 @@
         "wxl_canvas_client_size",
         "wxl_save_canvas_image"
       ],
-      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md. ABI60 adds copied RGBA scene pixels with native alpha composition; same1..256 extent and2MiB aggregate cap."
     },
     {
       "header": "wx/colour.h",
@@ -9093,7 +9118,7 @@
         "wxl_canvas_client_size",
         "wxl_save_canvas_image"
       ],
-      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md. ABI60 adds copied RGBA scene pixels with native alpha composition; same1..256 extent and2MiB aggregate cap."
     },
     {
       "header": "wx/font.h",
@@ -9114,7 +9139,7 @@
         "wxl_canvas_client_size",
         "wxl_save_canvas_image"
       ],
-      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md. ABI60 adds copied RGBA scene pixels with native alpha composition; same1..256 extent and2MiB aggregate cap."
     },
     {
       "header": "wx/font.h",
@@ -9135,7 +9160,7 @@
         "wxl_canvas_client_size",
         "wxl_save_canvas_image"
       ],
-      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md. ABI60 adds copied RGBA scene pixels with native alpha composition; same1..256 extent and2MiB aggregate cap."
     },
     {
       "header": "wx/font.h",
@@ -9156,7 +9181,7 @@
         "wxl_canvas_client_size",
         "wxl_save_canvas_image"
       ],
-      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md. ABI60 adds copied RGBA scene pixels with native alpha composition; same1..256 extent and2MiB aggregate cap."
     },
     {
       "header": "wx/bitmap.h",
@@ -9177,7 +9202,7 @@
         "wxl_canvas_client_size",
         "wxl_save_canvas_image"
       ],
-      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md. ABI60 adds copied RGBA scene pixels with native alpha composition; same1..256 extent and2MiB aggregate cap."
     },
     {
       "header": "wx/bitmap.h",
@@ -9190,15 +9215,18 @@
         "make-drawing-canvas",
         "canvas-content",
         "canvas-client-size",
-        "save-canvas-image"
+        "save-canvas-image",
+        "bitmap",
+        "make-bitmap"
       ],
       "native": [
         "wxl_drawing_canvas",
         "wxl_set_canvas_content",
         "wxl_canvas_client_size",
-        "wxl_save_canvas_image"
+        "wxl_save_canvas_image",
+        "wxl_bitmap"
       ],
-      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md. Session-owned copied image/bitmap values, at most256 resources and64Mi total pixels,1..4096 pixel axes, GUI/main-thread checked. No raw buffers/adoption; writes/allocations/disposal defer during callbacks. See docs/IMAGES-DISPLAYS.md. Native image conversion may premultiply/round alpha; display values are not lossless archives. ABI60 adds copied RGBA scene pixels with native alpha composition; same1..256 extent and2MiB aggregate cap."
     },
     {
       "header": "wx/bitmap.h",
@@ -9211,15 +9239,17 @@
         "make-drawing-canvas",
         "canvas-content",
         "canvas-client-size",
-        "save-canvas-image"
+        "save-canvas-image",
+        "bitmap-image"
       ],
       "native": [
         "wxl_drawing_canvas",
         "wxl_set_canvas_content",
         "wxl_canvas_client_size",
-        "wxl_save_canvas_image"
+        "wxl_save_canvas_image",
+        "wxl_bitmap_image"
       ],
-      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md. Session-owned copied image/bitmap values, at most256 resources and64Mi total pixels,1..4096 pixel axes, GUI/main-thread checked. No raw buffers/adoption; writes/allocations/disposal defer during callbacks. See docs/IMAGES-DISPLAYS.md. Native backing pixels, logical size, DIP and scale are distinct read-only queries; no scale setter. ABI60 adds copied RGBA scene pixels with native alpha composition; same1..256 extent and2MiB aggregate cap."
     },
     {
       "header": "wx/image.h",
@@ -9232,15 +9262,18 @@
         "make-drawing-canvas",
         "canvas-content",
         "canvas-client-size",
-        "save-canvas-image"
+        "save-canvas-image",
+        "image",
+        "make-image"
       ],
       "native": [
         "wxl_drawing_canvas",
         "wxl_set_canvas_content",
         "wxl_canvas_client_size",
-        "wxl_save_canvas_image"
+        "wxl_save_canvas_image",
+        "wxl_image"
       ],
-      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md. Session-owned copied image/bitmap values, at most256 resources and64Mi total pixels,1..4096 pixel axes, GUI/main-thread checked. No raw buffers/adoption; writes/allocations/disposal defer during callbacks. See docs/IMAGES-DISPLAYS.md. ABI60 adds copied RGBA scene pixels with native alpha composition; same1..256 extent and2MiB aggregate cap."
     },
     {
       "header": "wx/dcmemory.h",
@@ -9261,7 +9294,7 @@
         "wxl_canvas_client_size",
         "wxl_save_canvas_image"
       ],
-      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md. ABI60 adds copied RGBA scene pixels with native alpha composition; same1..256 extent and2MiB aggregate cap."
     },
     {
       "header": "wx/dcbuffer.h",
@@ -9282,7 +9315,7 @@
         "wxl_canvas_client_size",
         "wxl_save_canvas_image"
       ],
-      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md. ABI60 adds copied RGBA scene pixels with native alpha composition; same1..256 extent and2MiB aggregate cap."
     },
     {
       "header": "wx/imagpng.h",
@@ -9295,15 +9328,17 @@
         "make-drawing-canvas",
         "canvas-content",
         "canvas-client-size",
-        "save-canvas-image"
+        "save-canvas-image",
+        "save-image"
       ],
       "native": [
         "wxl_drawing_canvas",
         "wxl_set_canvas_content",
         "wxl_canvas_client_size",
-        "wxl_save_canvas_image"
+        "wxl_save_canvas_image",
+        "wxl_save_image"
       ],
-      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md. Explicit wxPNGHandler stream SaveFile only, PNG input24bytes..64MiB with preflight signature/dimensions1..4096, copied decoded channels and checked write/flush/close. No wxImage generic LoadFile/SaveFile coverage, handler registration or other formats. ABI60 adds copied RGBA scene pixels with native alpha composition; same1..256 extent and2MiB aggregate cap."
     },
     {
       "header": "wx/window.h",
@@ -9324,7 +9359,7 @@
         "wxl_canvas_client_size",
         "wxl_save_canvas_image"
       ],
-      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md. ABI60 adds copied RGBA scene pixels with native alpha composition; same1..256 extent and2MiB aggregate cap."
     },
     {
       "header": "wx/window.h",
@@ -9759,12 +9794,7 @@
         "web-view-stop"
       ],
       "native": [
-        "wxl_web_view",
-        "wxl_web_view_string",
-        "wxl_web_view_property",
-        "wxl_web_view_load",
-        "wxl_web_view_action",
-        "wxl_web_view_script"
+        "wxl_web_view"
       ],
       "scope": "Verified macOS wxWidgets3.2.12 WKWebView backend only. Active GUI thread/session and live WEB-VIEW WINDOW container; private browser child has no public handle. JavaScript enabled for trusted development content, not a security sandbox. Known wx native dialogs/upload/popups/printing suppressed, known permission requests denied; no complete OS WebKit security/permission policy claim. Mutations/scripts reject callbacks and protect receiver/ancestors/native reentry; use deferred actions. No managed handler stacks, native backend adoption, owned/synthetic/cloned web events. See docs/WEB-VIEW.md. Queued immutable command snapshots: :web-message text is JSON (including quoted strings); :web-script-result text is JSON on success or an error description on failure, EVENT-INTEGER is1/0 and EVENT-EXTRA-LONG is the request ticket; :web-loaded text is native URL and :web-error text is native error description. BIND-EVENT supports scoped contexts/Skip/propagation but payload SETF rejects. Async delivery occurs through normal GUI polling/RUN, never directly from an Objective-C completion. Native loaded/error events can reflect prior/subframe navigation; no exact per-navigation correlation or veto API. JavaScript evaluation uses internal WKWebView evaluateJavaScript, not wxWebView::RunScriptAsync/clientData ownership. Native per-navigation veto/history-resource APIs remain unbound. Explicit URL navigation/base-URL inputs support about:blank or absolute http/https/file URLs only; native links, redirects and subresource loads are not a complete navigation sandbox. JSON script messages can originate from all frames and origins; receipt does not authenticate the sender or authorize an action."
     },
@@ -10140,9 +10170,7 @@
         "allow-next-key-event"
       ],
       "native": [
-        "wxl_input_detail",
-        "wxl_input_allow_next",
-        "wxl_input_next_allowed"
+        "wxl_input_detail"
       ],
       "scope": "Raw input uses existing BIND-EVENT immutable snapshots/current-innermost contexts. Readers kind-check; payloads read-only; no native pointer adoption, owned/synthetic/cloned input events. Observers automatically Skip; contextual bindings must explicitly Skip unhandled input. Consuming KEY_DOWN/CHAR_HOOK can suppress normal CHAR/native editing/accelerators. Raw events do not imply portable IME composition support. GUI-thread/lifetime/source/ancestor/native-entry guards apply during callbacks. See docs/INPUT-EVENTS.md."
     },
@@ -10510,9 +10538,7 @@
         "allow-next-key-event"
       ],
       "native": [
-        "wxl_input_detail",
-        "wxl_input_allow_next",
-        "wxl_input_next_allowed"
+        "wxl_input_detail"
       ],
       "scope": "Raw input uses existing BIND-EVENT immutable snapshots/current-innermost contexts. Readers kind-check; payloads read-only; no native pointer adoption, owned/synthetic/cloned input events. Observers automatically Skip; contextual bindings must explicitly Skip unhandled input. Consuming KEY_DOWN/CHAR_HOOK can suppress normal CHAR/native editing/accelerators. Raw events do not imply portable IME composition support. GUI-thread/lifetime/source/ancestor/native-entry guards apply during callbacks. See docs/INPUT-EVENTS.md."
     },
@@ -10917,9 +10943,7 @@
         "allow-next-key-event"
       ],
       "native": [
-        "wxl_input_detail",
-        "wxl_input_allow_next",
-        "wxl_input_next_allowed"
+        "wxl_input_detail"
       ],
       "scope": "Raw input uses existing BIND-EVENT immutable snapshots/current-innermost contexts. Readers kind-check; payloads read-only; no native pointer adoption, owned/synthetic/cloned input events. Observers automatically Skip; contextual bindings must explicitly Skip unhandled input. Consuming KEY_DOWN/CHAR_HOOK can suppress normal CHAR/native editing/accelerators. Raw events do not imply portable IME composition support. GUI-thread/lifetime/source/ancestor/native-entry guards apply during callbacks. See docs/INPUT-EVENTS.md."
     },
@@ -10991,9 +11015,7 @@
         "allow-next-key-event"
       ],
       "native": [
-        "wxl_input_detail",
-        "wxl_input_allow_next",
-        "wxl_input_next_allowed"
+        "wxl_input_detail"
       ],
       "scope": "Raw input uses existing BIND-EVENT immutable snapshots/current-innermost contexts. Readers kind-check; payloads read-only; no native pointer adoption, owned/synthetic/cloned input events. Observers automatically Skip; contextual bindings must explicitly Skip unhandled input. Consuming KEY_DOWN/CHAR_HOOK can suppress normal CHAR/native editing/accelerators. Raw events do not imply portable IME composition support. GUI-thread/lifetime/source/ancestor/native-entry guards apply during callbacks. See docs/INPUT-EVENTS.md."
     },
@@ -11028,9 +11050,7 @@
         "allow-next-key-event"
       ],
       "native": [
-        "wxl_input_detail",
-        "wxl_input_allow_next",
-        "wxl_input_next_allowed"
+        "wxl_input_detail"
       ],
       "scope": "Raw input uses existing BIND-EVENT immutable snapshots/current-innermost contexts. Readers kind-check; payloads read-only; no native pointer adoption, owned/synthetic/cloned input events. Observers automatically Skip; contextual bindings must explicitly Skip unhandled input. Consuming KEY_DOWN/CHAR_HOOK can suppress normal CHAR/native editing/accelerators. Raw events do not imply portable IME composition support. GUI-thread/lifetime/source/ancestor/native-entry guards apply during callbacks. See docs/INPUT-EVENTS.md."
     },
@@ -11102,9 +11122,7 @@
         "allow-next-key-event"
       ],
       "native": [
-        "wxl_input_detail",
-        "wxl_input_allow_next",
-        "wxl_input_next_allowed"
+        "wxl_input_detail"
       ],
       "scope": "Raw input uses existing BIND-EVENT immutable snapshots/current-innermost contexts. Readers kind-check; payloads read-only; no native pointer adoption, owned/synthetic/cloned input events. Observers automatically Skip; contextual bindings must explicitly Skip unhandled input. Consuming KEY_DOWN/CHAR_HOOK can suppress normal CHAR/native editing/accelerators. Raw events do not imply portable IME composition support. GUI-thread/lifetime/source/ancestor/native-entry guards apply during callbacks. See docs/INPUT-EVENTS.md."
     },
@@ -11176,9 +11194,7 @@
         "allow-next-key-event"
       ],
       "native": [
-        "wxl_input_detail",
-        "wxl_input_allow_next",
-        "wxl_input_next_allowed"
+        "wxl_input_detail"
       ],
       "scope": "Raw input uses existing BIND-EVENT immutable snapshots/current-innermost contexts. Readers kind-check; payloads read-only; no native pointer adoption, owned/synthetic/cloned input events. Observers automatically Skip; contextual bindings must explicitly Skip unhandled input. Consuming KEY_DOWN/CHAR_HOOK can suppress normal CHAR/native editing/accelerators. Raw events do not imply portable IME composition support. GUI-thread/lifetime/source/ancestor/native-entry guards apply during callbacks. See docs/INPUT-EVENTS.md."
     },
@@ -15475,6 +15491,518 @@
         "wxl_views_detail"
       ],
       "scope": "Copied native tree-item-menu point only; immutable snapshots and current innermost contexts. No arbitrary native point/event adoption."
+    },
+    {
+      "header": "wx/image.h",
+      "line": 718,
+      "declaration": "wxImage Copy() const;",
+      "status": "~",
+      "symbol": "wxImage::Copy",
+      "lisp": [
+        "image-rgb",
+        "image-alpha",
+        "image-pixel"
+      ],
+      "native": [
+        "wxl_image_set_bytes",
+        "wxl_image_pixel"
+      ],
+      "scope": "Session-owned copied image/bitmap values, at most256 resources and64Mi total pixels,1..4096 pixel axes, GUI/main-thread checked. No raw buffers/adoption; writes/allocations/disposal defer during callbacks. See docs/IMAGES-DISPLAYS.md. Copied channel/pixel values only; native buffer pointers are private implementation details."
+    },
+    {
+      "header": "wx/image.h",
+      "line": 988,
+      "declaration": "wxImage Scale(int width, int height, wxImageResizeQuality quality = wxIMAGE_QUALITY_NORMAL) const;",
+      "status": "~",
+      "symbol": "wxImage::Scale",
+      "lisp": [
+        "scale-image"
+      ],
+      "native": [
+        "wxl_scale_image"
+      ],
+      "scope": "Session-owned copied image/bitmap values, at most256 resources and64Mi total pixels,1..4096 pixel axes, GUI/main-thread checked. No raw buffers/adoption; writes/allocations/disposal defer during callbacks. See docs/IMAGES-DISPLAYS.md. Copied channel/pixel values only; native buffer pointers are private implementation details."
+    },
+    {
+      "header": "wx/image.h",
+      "line": 1246,
+      "declaration": "int GetWidth() const;",
+      "status": "~",
+      "symbol": "wxImage::GetWidth",
+      "lisp": [
+        "image-size"
+      ],
+      "native": [
+        "wxl_image_size"
+      ],
+      "scope": "Session-owned copied image/bitmap values, at most256 resources and64Mi total pixels,1..4096 pixel axes, GUI/main-thread checked. No raw buffers/adoption; writes/allocations/disposal defer during callbacks. See docs/IMAGES-DISPLAYS.md. Copied channel/pixel values only; native buffer pointers are private implementation details."
+    },
+    {
+      "header": "wx/image.h",
+      "line": 1253,
+      "declaration": "int GetHeight() const;",
+      "status": "~",
+      "symbol": "wxImage::GetHeight",
+      "lisp": [
+        "image-size"
+      ],
+      "native": [
+        "wxl_image_size"
+      ],
+      "scope": "Session-owned copied image/bitmap values, at most256 resources and64Mi total pixels,1..4096 pixel axes, GUI/main-thread checked. No raw buffers/adoption; writes/allocations/disposal defer during callbacks. See docs/IMAGES-DISPLAYS.md. Copied channel/pixel values only; native buffer pointers are private implementation details."
+    },
+    {
+      "header": "wx/image.h",
+      "line": 1204,
+      "declaration": "unsigned char* GetData() const;",
+      "status": "~",
+      "symbol": "wxImage::GetData",
+      "lisp": [
+        "image-rgb"
+      ],
+      "native": [
+        "wxl_image_copy_bytes"
+      ],
+      "scope": "Session-owned copied image/bitmap values, at most256 resources and64Mi total pixels,1..4096 pixel axes, GUI/main-thread checked. No raw buffers/adoption; writes/allocations/disposal defer during callbacks. See docs/IMAGES-DISPLAYS.md. Copied channel/pixel values only; native buffer pointers are private implementation details."
+    },
+    {
+      "header": "wx/image.h",
+      "line": 1190,
+      "declaration": "unsigned char* GetAlpha() const;",
+      "status": "~",
+      "symbol": "wxImage::GetAlpha",
+      "lisp": [
+        "image-alpha",
+        "image-pixel"
+      ],
+      "native": [
+        "wxl_image_copy_bytes",
+        "wxl_image_pixel"
+      ],
+      "scope": "Session-owned copied image/bitmap values, at most256 resources and64Mi total pixels,1..4096 pixel axes, GUI/main-thread checked. No raw buffers/adoption; writes/allocations/disposal defer during callbacks. See docs/IMAGES-DISPLAYS.md. Copied channel/pixel values only; native buffer pointers are private implementation details."
+    },
+    {
+      "header": "wx/image.h",
+      "line": 1209,
+      "declaration": "unsigned char GetAlpha(int x, int y) const;",
+      "status": "~",
+      "symbol": "wxImage::GetAlpha",
+      "lisp": [
+        "image-alpha",
+        "image-pixel"
+      ],
+      "native": [
+        "wxl_image_copy_bytes",
+        "wxl_image_pixel"
+      ],
+      "scope": "Session-owned copied image/bitmap values, at most256 resources and64Mi total pixels,1..4096 pixel axes, GUI/main-thread checked. No raw buffers/adoption; writes/allocations/disposal defer during callbacks. See docs/IMAGES-DISPLAYS.md. Copied channel/pixel values only; native buffer pointers are private implementation details."
+    },
+    {
+      "header": "wx/image.h",
+      "line": 1214,
+      "declaration": "unsigned char GetRed(int x, int y) const;",
+      "status": "~",
+      "symbol": "wxImage::GetRed",
+      "lisp": [
+        "image-pixel"
+      ],
+      "native": [
+        "wxl_image_pixel"
+      ],
+      "scope": "Session-owned copied image/bitmap values, at most256 resources and64Mi total pixels,1..4096 pixel axes, GUI/main-thread checked. No raw buffers/adoption; writes/allocations/disposal defer during callbacks. See docs/IMAGES-DISPLAYS.md. Copied channel/pixel values only; native buffer pointers are private implementation details."
+    },
+    {
+      "header": "wx/image.h",
+      "line": 1219,
+      "declaration": "unsigned char GetGreen(int x, int y) const;",
+      "status": "~",
+      "symbol": "wxImage::GetGreen",
+      "lisp": [
+        "image-pixel"
+      ],
+      "native": [
+        "wxl_image_pixel"
+      ],
+      "scope": "Session-owned copied image/bitmap values, at most256 resources and64Mi total pixels,1..4096 pixel axes, GUI/main-thread checked. No raw buffers/adoption; writes/allocations/disposal defer during callbacks. See docs/IMAGES-DISPLAYS.md. Copied channel/pixel values only; native buffer pointers are private implementation details."
+    },
+    {
+      "header": "wx/image.h",
+      "line": 1224,
+      "declaration": "unsigned char GetBlue(int x, int y) const;",
+      "status": "~",
+      "symbol": "wxImage::GetBlue",
+      "lisp": [
+        "image-pixel"
+      ],
+      "native": [
+        "wxl_image_pixel"
+      ],
+      "scope": "Session-owned copied image/bitmap values, at most256 resources and64Mi total pixels,1..4096 pixel axes, GUI/main-thread checked. No raw buffers/adoption; writes/allocations/disposal defer during callbacks. See docs/IMAGES-DISPLAYS.md. Copied channel/pixel values only; native buffer pointers are private implementation details."
+    },
+    {
+      "header": "wx/image.h",
+      "line": 1448,
+      "declaration": "bool HasAlpha() const;",
+      "status": "~",
+      "symbol": "wxImage::HasAlpha",
+      "lisp": [
+        "image-alpha-p"
+      ],
+      "native": [
+        "wxl_image_has_alpha"
+      ],
+      "scope": "Session-owned copied image/bitmap values, at most256 resources and64Mi total pixels,1..4096 pixel axes, GUI/main-thread checked. No raw buffers/adoption; writes/allocations/disposal defer during callbacks. See docs/IMAGES-DISPLAYS.md. Copied channel/pixel values only; native buffer pointers are private implementation details."
+    },
+    {
+      "header": "wx/image.h",
+      "line": 780,
+      "declaration": "void InitAlpha();",
+      "status": "~",
+      "symbol": "wxImage::InitAlpha",
+      "lisp": [
+        "image-alpha"
+      ],
+      "native": [
+        "wxl_image_set_bytes"
+      ],
+      "scope": "Session-owned copied image/bitmap values, at most256 resources and64Mi total pixels,1..4096 pixel axes, GUI/main-thread checked. No raw buffers/adoption; writes/allocations/disposal defer during callbacks. See docs/IMAGES-DISPLAYS.md. Copied channel/pixel values only; native buffer pointers are private implementation details."
+    },
+    {
+      "header": "wx/image.h",
+      "line": 1704,
+      "declaration": "void ClearAlpha();",
+      "status": "~",
+      "symbol": "wxImage::ClearAlpha",
+      "lisp": [
+        "image-alpha"
+      ],
+      "native": [
+        "wxl_image_set_bytes"
+      ],
+      "scope": "Session-owned copied image/bitmap values, at most256 resources and64Mi total pixels,1..4096 pixel axes, GUI/main-thread checked. No raw buffers/adoption; writes/allocations/disposal defer during callbacks. See docs/IMAGES-DISPLAYS.md. Copied channel/pixel values only; native buffer pointers are private implementation details."
+    },
+    {
+      "header": "wx/image.h",
+      "line": 1694,
+      "declaration": "void SetAlpha(int x, int y, unsigned char alpha);",
+      "status": "~",
+      "symbol": "wxImage::SetAlpha",
+      "lisp": [
+        "image-pixel"
+      ],
+      "native": [
+        "wxl_image_pixel"
+      ],
+      "scope": "Session-owned copied image/bitmap values, at most256 resources and64Mi total pixels,1..4096 pixel axes, GUI/main-thread checked. No raw buffers/adoption; writes/allocations/disposal defer during callbacks. See docs/IMAGES-DISPLAYS.md. Copied channel/pixel values only; native buffer pointers are private implementation details."
+    },
+    {
+      "header": "wx/image.h",
+      "line": 1838,
+      "declaration": "void SetRGB( int x, int y, unsigned char r, unsigned char g, unsigned char b );",
+      "status": "~",
+      "symbol": "wxImage::SetRGB",
+      "lisp": [
+        "image-pixel"
+      ],
+      "native": [
+        "wxl_image_pixel"
+      ],
+      "scope": "Session-owned copied image/bitmap values, at most256 resources and64Mi total pixels,1..4096 pixel axes, GUI/main-thread checked. No raw buffers/adoption; writes/allocations/disposal defer during callbacks. See docs/IMAGES-DISPLAYS.md. Copied channel/pixel values only; native buffer pointers are private implementation details."
+    },
+    {
+      "header": "wx/bitmap.h",
+      "line": 231,
+      "declaration": "wxBitmap(const wxBitmap& bitmap);",
+      "status": "~",
+      "symbol": "wxBitmap::wxBitmap",
+      "lisp": [
+        "make-bitmap"
+      ],
+      "native": [
+        "wxl_copy_bitmap"
+      ],
+      "scope": "Session-owned copied image/bitmap values, at most256 resources and64Mi total pixels,1..4096 pixel axes, GUI/main-thread checked. No raw buffers/adoption; writes/allocations/disposal defer during callbacks. See docs/IMAGES-DISPLAYS.md. Native bitmap value copy; no mutable native pointer adoption."
+    },
+    {
+      "header": "wx/bitmap.h",
+      "line": 774,
+      "declaration": "virtual int GetWidth() const;",
+      "status": "~",
+      "symbol": "wxBitmap::GetWidth",
+      "lisp": [
+        "bitmap-size"
+      ],
+      "native": [
+        "wxl_image_size"
+      ],
+      "scope": "Session-owned copied image/bitmap values, at most256 resources and64Mi total pixels,1..4096 pixel axes, GUI/main-thread checked. No raw buffers/adoption; writes/allocations/disposal defer during callbacks. See docs/IMAGES-DISPLAYS.md. Native backing pixels, logical size, DIP and scale are distinct read-only queries; no scale setter."
+    },
+    {
+      "header": "wx/bitmap.h",
+      "line": 640,
+      "declaration": "virtual int GetHeight() const;",
+      "status": "~",
+      "symbol": "wxBitmap::GetHeight",
+      "lisp": [
+        "bitmap-size"
+      ],
+      "native": [
+        "wxl_image_size"
+      ],
+      "scope": "Session-owned copied image/bitmap values, at most256 resources and64Mi total pixels,1..4096 pixel axes, GUI/main-thread checked. No raw buffers/adoption; writes/allocations/disposal defer during callbacks. See docs/IMAGES-DISPLAYS.md. Native backing pixels, logical size, DIP and scale are distinct read-only queries; no scale setter."
+    },
+    {
+      "header": "wx/bitmap.h",
+      "line": 673,
+      "declaration": "wxSize GetLogicalSize() const;",
+      "status": "~",
+      "symbol": "wxBitmap::GetLogicalSize",
+      "lisp": [
+        "bitmap-logical-size"
+      ],
+      "native": [
+        "wxl_bitmap_geometry"
+      ],
+      "scope": "Session-owned copied image/bitmap values, at most256 resources and64Mi total pixels,1..4096 pixel axes, GUI/main-thread checked. No raw buffers/adoption; writes/allocations/disposal defer during callbacks. See docs/IMAGES-DISPLAYS.md. Native backing pixels, logical size, DIP and scale are distinct read-only queries; no scale setter."
+    },
+    {
+      "header": "wx/bitmap.h",
+      "line": 626,
+      "declaration": "wxSize GetDIPSize() const;",
+      "status": "~",
+      "symbol": "wxBitmap::GetDIPSize",
+      "lisp": [
+        "bitmap-dip-size"
+      ],
+      "native": [
+        "wxl_bitmap_geometry"
+      ],
+      "scope": "Session-owned copied image/bitmap values, at most256 resources and64Mi total pixels,1..4096 pixel axes, GUI/main-thread checked. No raw buffers/adoption; writes/allocations/disposal defer during callbacks. See docs/IMAGES-DISPLAYS.md. Native backing pixels, logical size, DIP and scale are distinct read-only queries; no scale setter."
+    },
+    {
+      "header": "wx/bitmap.h",
+      "line": 724,
+      "declaration": "virtual double GetScaleFactor() const;",
+      "status": "~",
+      "symbol": "wxBitmap::GetScaleFactor",
+      "lisp": [
+        "bitmap-scale-factor"
+      ],
+      "native": [
+        "wxl_bitmap_geometry"
+      ],
+      "scope": "Session-owned copied image/bitmap values, at most256 resources and64Mi total pixels,1..4096 pixel axes, GUI/main-thread checked. No raw buffers/adoption; writes/allocations/disposal defer during callbacks. See docs/IMAGES-DISPLAYS.md. Native backing pixels, logical size, DIP and scale are distinct read-only queries; no scale setter."
+    },
+    {
+      "header": "wx/statbmp.h",
+      "line": 91,
+      "declaration": "wxStaticBitmap(wxWindow* parent, wxWindowID id, const wxBitmapBundle& label, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = 0, const wxString& name = wxStaticBitmapNameStr);",
+      "status": "~",
+      "symbol": "wxStaticBitmap::wxStaticBitmap",
+      "lisp": [
+        "static-bitmap",
+        "make-static-bitmap"
+      ],
+      "native": [
+        "wxl_static_bitmap"
+      ],
+      "scope": "Session-owned copied image/bitmap values, at most256 resources and64Mi total pixels,1..4096 pixel axes, GUI/main-thread checked. No raw buffers/adoption; writes/allocations/disposal defer during callbacks. See docs/IMAGES-DISPLAYS.md. Native-backed WINDOW parent/bitmap construction, native-owned display copy; remaining style/ID/position options use defaults."
+    },
+    {
+      "header": "wx/statbmp.h",
+      "line": 112,
+      "declaration": "virtual wxBitmap GetBitmap() const;",
+      "status": "~",
+      "symbol": "wxStaticBitmap::GetBitmap",
+      "lisp": [
+        "bitmap-value"
+      ],
+      "native": [
+        "wxl_static_bitmap_get"
+      ],
+      "scope": "Session-owned copied image/bitmap values, at most256 resources and64Mi total pixels,1..4096 pixel axes, GUI/main-thread checked. No raw buffers/adoption; writes/allocations/disposal defer during callbacks. See docs/IMAGES-DISPLAYS.md. Every read allocates an independently disposable BITMAP; native high-DPI readback can resize/resample backing pixels."
+    },
+    {
+      "header": "wx/statbmp.h",
+      "line": 132,
+      "declaration": "virtual void SetBitmap(const wxBitmapBundle& label);",
+      "status": "~",
+      "symbol": "wxStaticBitmap::SetBitmap",
+      "lisp": [
+        "bitmap-value"
+      ],
+      "native": [
+        "wxl_static_bitmap_set"
+      ],
+      "scope": "Session-owned copied image/bitmap values, at most256 resources and64Mi total pixels,1..4096 pixel axes, GUI/main-thread checked. No raw buffers/adoption; writes/allocations/disposal defer during callbacks. See docs/IMAGES-DISPLAYS.md. Guarded native display replacement with copied wxBitmap value."
+    },
+    {
+      "header": "wx/imagpng.h",
+      "line": 47,
+      "declaration": "virtual bool LoadFile( wxImage *image, wxInputStream& stream, bool verbose=true, int index=-1 );",
+      "status": "~",
+      "symbol": "wxPNGHandler::LoadFile",
+      "lisp": [
+        "make-image"
+      ],
+      "native": [
+        "wxl_load_image"
+      ],
+      "scope": "Explicit wxPNGHandler stream LoadFile only, PNG input24bytes..64MiB with preflight signature/dimensions1..4096, copied decoded channels and checked write/flush/close. No wxImage generic LoadFile/SaveFile coverage, handler registration or other formats."
+    },
+    {
+      "header": "wx/display.h",
+      "line": 81,
+      "declaration": "static unsigned int GetCount();",
+      "status": "~",
+      "symbol": "wxDisplay::GetCount",
+      "lisp": [
+        "display-count"
+      ],
+      "native": [
+        "wxl_display_count"
+      ],
+      "scope": "GUI-thread checked native read-only display index/geometry/PPI/scale queries. No public wxDisplay object/adoption, physical display mode mutation or hotplug guarantees; unavailable window display returnsNIL."
+    },
+    {
+      "header": "wx/display.h",
+      "line": 76,
+      "declaration": "wxRect GetClientArea() const;",
+      "status": "~",
+      "symbol": "wxDisplay::GetClientArea",
+      "lisp": [
+        "display-geometry"
+      ],
+      "native": [
+        "wxl_display_info"
+      ],
+      "scope": "GUI-thread checked native read-only display index/geometry/PPI/scale queries. No public wxDisplay object/adoption, physical display mode mutation or hotplug guarantees; unavailable window display returnsNIL."
+    },
+    {
+      "header": "wx/display.h",
+      "line": 116,
+      "declaration": "wxRect GetGeometry() const;",
+      "status": "~",
+      "symbol": "wxDisplay::GetGeometry",
+      "lisp": [
+        "display-geometry"
+      ],
+      "native": [
+        "wxl_display_info"
+      ],
+      "scope": "GUI-thread checked native read-only display index/geometry/PPI/scale queries. No public wxDisplay object/adoption, physical display mode mutation or hotplug guarantees; unavailable window display returnsNIL."
+    },
+    {
+      "header": "wx/display.h",
+      "line": 151,
+      "declaration": "wxSize GetPPI() const;",
+      "status": "~",
+      "symbol": "wxDisplay::GetPPI",
+      "lisp": [
+        "display-ppi"
+      ],
+      "native": [
+        "wxl_display_info"
+      ],
+      "scope": "GUI-thread checked native read-only display index/geometry/PPI/scale queries. No public wxDisplay object/adoption, physical display mode mutation or hotplug guarantees; unavailable window display returnsNIL."
+    },
+    {
+      "header": "wx/display.h",
+      "line": 164,
+      "declaration": "double GetScaleFactor() const;",
+      "status": "~",
+      "symbol": "wxDisplay::GetScaleFactor",
+      "lisp": [
+        "display-scale-factor"
+      ],
+      "native": [
+        "wxl_display_info"
+      ],
+      "scope": "GUI-thread checked native read-only display index/geometry/PPI/scale queries. No public wxDisplay object/adoption, physical display mode mutation or hotplug guarantees; unavailable window display returnsNIL."
+    },
+    {
+      "header": "wx/display.h",
+      "line": 108,
+      "declaration": "static int GetFromWindow(const wxWindow* win);",
+      "status": "~",
+      "symbol": "wxDisplay::GetFromWindow",
+      "lisp": [
+        "window-display-index"
+      ],
+      "native": [
+        "wxl_window_display"
+      ],
+      "scope": "GUI-thread checked native read-only display index/geometry/PPI/scale queries. No public wxDisplay object/adoption, physical display mode mutation or hotplug guarantees; unavailable window display returnsNIL."
+    },
+    {
+      "header": "wx/window.h",
+      "line": 2042,
+      "declaration": "wxPoint ClientToScreen(const wxPoint& pt) const;",
+      "status": "~",
+      "symbol": "wxWindow::ClientToScreen",
+      "lisp": [
+        "client-to-screen"
+      ],
+      "native": [
+        "wxl_window_point"
+      ],
+      "scope": "Native WINDOW read-only size/point/scale adapter; copied tuples, signed input coordinates bounded\u00b11000000. Client/screen native units, backing pixels, logical size and DIP remain distinct. Receiver inherits existing checked WINDOW lifetime/main-thread policy."
+    },
+    {
+      "header": "wx/window.h",
+      "line": 2105,
+      "declaration": "wxPoint ScreenToClient(const wxPoint& pt) const;",
+      "status": "~",
+      "symbol": "wxWindow::ScreenToClient",
+      "lisp": [
+        "screen-to-client"
+      ],
+      "native": [
+        "wxl_window_point"
+      ],
+      "scope": "Native WINDOW read-only size/point/scale adapter; copied tuples, signed input coordinates bounded\u00b11000000. Client/screen native units, backing pixels, logical size and DIP remain distinct. Receiver inherits existing checked WINDOW lifetime/main-thread policy."
+    },
+    {
+      "header": "wx/window.h",
+      "line": 1093,
+      "declaration": "wxPoint FromDIP(const wxPoint& pt) const;",
+      "status": "~",
+      "symbol": "wxWindow::FromDIP",
+      "lisp": [
+        "from-dip"
+      ],
+      "native": [
+        "wxl_window_point"
+      ],
+      "scope": "Native WINDOW read-only size/point/scale adapter; copied tuples, signed input coordinates bounded\u00b11000000. Client/screen native units, backing pixels, logical size and DIP remain distinct. Receiver inherits existing checked WINDOW lifetime/main-thread policy."
+    },
+    {
+      "header": "wx/window.h",
+      "line": 1161,
+      "declaration": "wxPoint ToDIP(const wxPoint& pt) const;",
+      "status": "~",
+      "symbol": "wxWindow::ToDIP",
+      "lisp": [
+        "to-dip"
+      ],
+      "native": [
+        "wxl_window_point"
+      ],
+      "scope": "Native WINDOW read-only size/point/scale adapter; copied tuples, signed input coordinates bounded\u00b11000000. Client/screen native units, backing pixels, logical size and DIP remain distinct. Receiver inherits existing checked WINDOW lifetime/main-thread policy."
+    },
+    {
+      "header": "wx/window.h",
+      "line": 1530,
+      "declaration": "double GetContentScaleFactor() const;",
+      "status": "~",
+      "symbol": "wxWindow::GetContentScaleFactor",
+      "lisp": [
+        "window-content-scale-factor"
+      ],
+      "native": [
+        "wxl_window_content_scale"
+      ],
+      "scope": "Native WINDOW read-only size/point/scale adapter; copied tuples, signed input coordinates bounded\u00b11000000. Client/screen native units, backing pixels, logical size and DIP remain distinct. Receiver inherits existing checked WINDOW lifetime/main-thread policy."
     }
   ],
   "classes": {
@@ -15512,7 +16040,7 @@
         "wxl_save_canvas_image",
         "wxl_web_view"
       ],
-      "scope": "Native-backed CLOS construction, including subclass initargs/defaults and managed rollback. Parent only; remaining constructor options use defaults. Full class and inherited API coverage remain open. DRAWING-CANVAS additionally uses a private retained wxPanel subclass with WINDOW Lisp ancestry and copied bounded rendering data; it does not widen general PANEL methods. Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md. WEB-VIEW additionally uses a private wxPanel container with WINDOW Lisp ancestry around a privately owned wxWebView child. This grants the container supported generic WINDOW layout/state/lifetime behavior, not arbitrary PANEL/browser-child API or raw ownership. Native browser/backend/JS delegate resources remain private; managed handler-stack access rejects. Verified macOS3.2.12 WKWebView only; see docs/WEB-VIEW.md."
+      "scope": "Native-backed CLOS construction, including subclass initargs/defaults and managed rollback. Parent only; remaining constructor options use defaults. Full class and inherited API coverage remain open. DRAWING-CANVAS additionally uses a private retained wxPanel subclass with WINDOW Lisp ancestry and copied bounded rendering data; it does not widen general PANEL methods. Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md. WEB-VIEW additionally uses a private wxPanel container with WINDOW Lisp ancestry around a privately owned wxWebView child. This grants the container supported generic WINDOW layout/state/lifetime behavior, not arbitrary PANEL/browser-child API or raw ownership. Native browser/backend/JS delegate resources remain private; managed handler-stack access rejects. Verified macOS3.2.12 WKWebView only; see docs/WEB-VIEW.md. ABI60 adds copied RGBA scene pixels with native alpha composition; same1..256 extent and2MiB aggregate cap."
     },
     "wxButton": {
       "status": "~",
@@ -16906,7 +17434,7 @@
         "wxl_canvas_client_size",
         "wxl_save_canvas_image"
       ],
-      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md. ABI60 adds copied RGBA scene pixels with native alpha composition; same1..256 extent and2MiB aggregate cap."
     },
     "wxColour": {
       "status": "~",
@@ -16923,7 +17451,7 @@
         "wxl_canvas_client_size",
         "wxl_save_canvas_image"
       ],
-      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md. ABI60 adds copied RGBA scene pixels with native alpha composition; same1..256 extent and2MiB aggregate cap."
     },
     "wxFontInfo": {
       "status": "~",
@@ -16940,7 +17468,7 @@
         "wxl_canvas_client_size",
         "wxl_save_canvas_image"
       ],
-      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md. ABI60 adds copied RGBA scene pixels with native alpha composition; same1..256 extent and2MiB aggregate cap."
     },
     "wxFont": {
       "status": "~",
@@ -16957,7 +17485,7 @@
         "wxl_canvas_client_size",
         "wxl_save_canvas_image"
       ],
-      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md. ABI60 adds copied RGBA scene pixels with native alpha composition; same1..256 extent and2MiB aggregate cap."
     },
     "wxBitmap": {
       "status": "~",
@@ -16966,15 +17494,24 @@
         "make-drawing-canvas",
         "canvas-content",
         "canvas-client-size",
-        "save-canvas-image"
+        "save-canvas-image",
+        "bitmap",
+        "make-bitmap",
+        "bitmap-image",
+        "bitmap-logical-size",
+        "bitmap-dip-size",
+        "bitmap-scale-factor"
       ],
       "native": [
         "wxl_drawing_canvas",
         "wxl_set_canvas_content",
         "wxl_canvas_client_size",
-        "wxl_save_canvas_image"
+        "wxl_save_canvas_image",
+        "wxl_bitmap",
+        "wxl_bitmap_image",
+        "wxl_bitmap_geometry"
       ],
-      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md. Session-owned copied image/bitmap values, at most256 resources and64Mi total pixels,1..4096 pixel axes, GUI/main-thread checked. No raw buffers/adoption; writes/allocations/disposal defer during callbacks. See docs/IMAGES-DISPLAYS.md. Native conversion and independent value copies; immutable bitmap sizing, no raw adoption. ABI60 adds copied RGBA scene pixels with native alpha composition; same1..256 extent and2MiB aggregate cap."
     },
     "wxImage": {
       "status": "~",
@@ -16983,15 +17520,25 @@
         "make-drawing-canvas",
         "canvas-content",
         "canvas-client-size",
-        "save-canvas-image"
+        "save-canvas-image",
+        "image",
+        "make-image",
+        "image-rgb",
+        "image-alpha",
+        "image-pixel",
+        "scale-image"
       ],
       "native": [
         "wxl_drawing_canvas",
         "wxl_set_canvas_content",
         "wxl_canvas_client_size",
-        "wxl_save_canvas_image"
+        "wxl_save_canvas_image",
+        "wxl_image",
+        "wxl_image_set_bytes",
+        "wxl_image_pixel",
+        "wxl_scale_image"
       ],
-      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md. Session-owned copied image/bitmap values, at most256 resources and64Mi total pixels,1..4096 pixel axes, GUI/main-thread checked. No raw buffers/adoption; writes/allocations/disposal defer during callbacks. See docs/IMAGES-DISPLAYS.md. Explicit PNG operations use wxPNGHandler, not general image loading APIs. ABI60 adds copied RGBA scene pixels with native alpha composition; same1..256 extent and2MiB aggregate cap."
     },
     "wxMemoryDC": {
       "status": "~",
@@ -17008,7 +17555,7 @@
         "wxl_canvas_client_size",
         "wxl_save_canvas_image"
       ],
-      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md. ABI60 adds copied RGBA scene pixels with native alpha composition; same1..256 extent and2MiB aggregate cap."
     },
     "wxAutoBufferedPaintDC": {
       "status": "~",
@@ -17025,7 +17572,7 @@
         "wxl_canvas_client_size",
         "wxl_save_canvas_image"
       ],
-      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md. ABI60 adds copied RGBA scene pixels with native alpha composition; same1..256 extent and2MiB aggregate cap."
     },
     "wxPNGHandler": {
       "status": "~",
@@ -17034,15 +17581,19 @@
         "make-drawing-canvas",
         "canvas-content",
         "canvas-client-size",
-        "save-canvas-image"
+        "save-canvas-image",
+        "make-image",
+        "save-image"
       ],
       "native": [
         "wxl_drawing_canvas",
         "wxl_set_canvas_content",
         "wxl_canvas_client_size",
-        "wxl_save_canvas_image"
+        "wxl_save_canvas_image",
+        "wxl_load_image",
+        "wxl_save_image"
       ],
-      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md. Explicit checked PNG stream loading/saving only, no public handler registration or general image format support. ABI60 adds copied RGBA scene pixels with native alpha composition; same1..256 extent and2MiB aggregate cap."
     },
     "wxGrid": {
       "status": "~",
@@ -17549,6 +18100,36 @@
         "wxl_views_detail"
       ],
       "scope": "Bounded native report selected/deselected/activated/right-click/cache-hint/column-click events, copied immutable snapshots and current contexts. Kind-specific getters only, payload/ID/timestamp readonly; no constructor, owned/synthetic/clone or full class coverage."
+    },
+    "wxStaticBitmap": {
+      "status": "~",
+      "lisp": [
+        "static-bitmap",
+        "make-static-bitmap",
+        "bitmap-value"
+      ],
+      "native": [
+        "wxl_static_bitmap",
+        "wxl_static_bitmap_get",
+        "wxl_static_bitmap_set"
+      ],
+      "scope": "Session-owned copied image/bitmap values, at most256 resources and64Mi total pixels,1..4096 pixel axes, GUI/main-thread checked. No raw buffers/adoption; writes/allocations/disposal defer during callbacks. See docs/IMAGES-DISPLAYS.md. Public WINDOW control with native copied bitmap ownership; no full class parity."
+    },
+    "wxDisplay": {
+      "status": "~",
+      "lisp": [
+        "display-count",
+        "display-geometry",
+        "display-ppi",
+        "display-scale-factor",
+        "window-display-index"
+      ],
+      "native": [
+        "wxl_display_count",
+        "wxl_display_info",
+        "wxl_window_display"
+      ],
+      "scope": "Read-only native display queries by index/window; no public object, mode switching, capture or hotplug policy."
     }
   }
 }

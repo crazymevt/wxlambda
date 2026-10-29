@@ -3011,7 +3011,7 @@
     "syntax": "(wxlambda:canvas-content canvas)",
     "arguments": "DRAWING-CANVAS. SETF value is a proper plist with exactly :background RGB and :items, containing at most512 bounded primitives.",
     "returns": "Fresh normalized deep scene copy, including strings/RGB lists/pixel vectors. SETF returns supplied object.",
-    "description": "Items are (:rect x y width height rgb), (:ellipse x y width height rgb), (:line x1 y1 x2 y2 rgb stroke-width), (:text x y string point-size rgb), or (:bitmap x y width height pixels). RGB bytes0..255, coordinates/endpoints \u00b110000, non-bitmap extents1..10000, line widths1..32, text6..72 points in native Swiss/sans family. Text is NUL/CR/LF-free, total65536 UTF-8 bytes; bitmaps1..256 per axis use exact simple RGB byte vectors, total2MiB. On-screen geometry uses DIP; no alpha/native resource handles.",
+    "description": "Items are (:rect x y width height rgb), (:ellipse x y width height rgb), (:line x1 y1 x2 y2 rgb stroke-width), (:text x y string point-size rgb), or (:bitmap x y width height pixels). RGB bytes0..255, coordinates/endpoints \u00b110000, non-bitmap extents1..10000, line widths1..32, text6..72 points in native Swiss/sans family. Text is NUL/CR/LF-free, total65536 UTF-8 bytes; bitmaps1..256 per axis use exact simple RGB byte vectors, total2MiB. On-screen geometry uses DIP; no alpha/native resource handles. ABI60 adds :RGBA-BITMAP with copied straight RGBA bytes (4 per pixel), the same1..256 extent and2MiB aggregate scene cap; native alpha composition and screen DIP sizing apply.",
     "scope": "Active main-thread GUI session, live managed DRAWING-CANVAS, no DC/native object adoption or Lisp paint callback. Native scene staging, rendering/export and Input lifetime/reentry guards; writes/export reject event callbacks. Copied bounded data only; font/paint/DPI appearance is native. See docs/DRAWING-CANVAS.md. Getter validates native lifetime and reports retained native paint errors. Invalid staging preserves prior scene; successful paint/new content clears paint error. Input/output objects are independent copies.",
     "wxwidgets": "Bounded wxDC geometry/text/bitmap operations with private wxColour/wxFont/wxImage/wxBitmap adapters, wxWidgets3.2.12.",
     "setf": {
@@ -5045,5 +5045,373 @@
       "syntax": "(setf (wxlambda:tree-item-has-children-p item) value)",
       "description": "Use generic SETF with validated arguments; report/tree mutations reject active providers/callbacks and native lifetime violations. ITEM-COUNT SETF is virtual LIST-CONTROL only."
     }
+  },
+  {
+    "name": "image",
+    "kind": "class",
+    "arguments": "Session-owned wxImage. Construct with WIDTH/HEIGHT and copied RGB/optional ALPHA, local PNG PATH, or SOURCE image/bitmap. Native-backed subclass initargs/AFTER hooks and rollback.",
+    "returns": "A native-backed instance.",
+    "description": "Session-owned wxImage. Construct with WIDTH/HEIGHT and copied RGB/optional ALPHA, local PNG PATH, or SOURCE image/bitmap. Native-backed subclass initargs/AFTER hooks and rollback.",
+    "scope": "Active GUI/main-thread session and checked native lifetime. Image/bitmap values are session-owned and explicitly disposable; no raw pointers/finalizers. Native reads are callback-safe; writes, file IO, allocation/conversion, disposal and BITMAP-VALUE copying reject callback execution. Copied channels,256 resources/64Mi pixel aggregate,1..4096 pixel axes; PNG24 bytes..64MiB encoded. Native bitmap alpha/DPI conversion can change pixels. Invalid bounds/types/stale handles and native failures signal errors. See docs/IMAGES-DISPLAYS.md.",
+    "wxwidgets": "wxImage, wxWidgets3.2.12.",
+    "syntax": "wxlambda:image",
+    "construction": {
+      "syntax": "(make-instance 'wxlambda:image :width 32 :height 32 :rgb rgb :alpha alpha)",
+      "description": "Concrete native-backed resource/control; subclass initargs/defaults/native-ready AFTER hooks and managed rollback."
+    }
+  },
+  {
+    "name": "bitmap",
+    "kind": "class",
+    "arguments": "Session-owned wxBitmap constructed from exactly one IMAGE or SOURCE; SOURCE copies BITMAP or native STATIC-BITMAP. Native backing pixel/logical/DIP size and scale remain distinct.",
+    "returns": "A native-backed instance.",
+    "description": "Session-owned wxBitmap constructed from exactly one IMAGE or SOURCE; SOURCE copies BITMAP or native STATIC-BITMAP. Native backing pixel/logical/DIP size and scale remain distinct.",
+    "scope": "Active GUI/main-thread session and checked native lifetime. Image/bitmap values are session-owned and explicitly disposable; no raw pointers/finalizers. Native reads are callback-safe; writes, file IO, allocation/conversion, disposal and BITMAP-VALUE copying reject callback execution. Copied channels,256 resources/64Mi pixel aggregate,1..4096 pixel axes; PNG24 bytes..64MiB encoded. Native bitmap alpha/DPI conversion can change pixels. Invalid bounds/types/stale handles and native failures signal errors. See docs/IMAGES-DISPLAYS.md.",
+    "wxwidgets": "wxBitmap, wxWidgets3.2.12.",
+    "syntax": "wxlambda:bitmap",
+    "construction": {
+      "syntax": "(make-instance 'wxlambda:bitmap :image image)",
+      "description": "Concrete native-backed resource/control; subclass initargs/defaults/native-ready AFTER hooks and managed rollback."
+    }
+  },
+  {
+    "name": "static-bitmap",
+    "kind": "class",
+    "arguments": "Native wxStaticBitmap WINDOW with PARENT/BITMAP and native-backed subclass construction.",
+    "returns": "A native-backed instance.",
+    "description": "Native wxStaticBitmap WINDOW with PARENT/BITMAP and native-backed subclass construction.",
+    "scope": "Active GUI/main-thread session and checked native lifetime. Image/bitmap values are session-owned and explicitly disposable; no raw pointers/finalizers. Native reads are callback-safe; writes, file IO, allocation/conversion, disposal and BITMAP-VALUE copying reject callback execution. Copied channels,256 resources/64Mi pixel aggregate,1..4096 pixel axes; PNG24 bytes..64MiB encoded. Native bitmap alpha/DPI conversion can change pixels. Invalid bounds/types/stale handles and native failures signal errors. See docs/IMAGES-DISPLAYS.md.",
+    "wxwidgets": "wxStaticBitmap, wxWidgets3.2.12.",
+    "syntax": "wxlambda:static-bitmap",
+    "construction": {
+      "syntax": "(make-instance 'wxlambda:static-bitmap :parent parent :bitmap bitmap)",
+      "description": "Concrete native-backed resource/control; subclass initargs/defaults/native-ready AFTER hooks and managed rollback."
+    }
+  },
+  {
+    "name": "make-image",
+    "kind": "function",
+    "syntax": "(wxlambda:make-image &rest initargs &key class width height rgb alpha path source quality)",
+    "arguments": "&rest initargs &key class width height rgb alpha path source quality",
+    "returns": "A new IMAGE.",
+    "description": "Construct a native image or subclass; RGB defaults black, alpha absent,1..4096 pixel axes. PATH is bounded PNG only. SOURCE image requires destination size and native nearest/high scaling; SOURCE bitmap retains backing pixel size.",
+    "scope": "Active GUI/main-thread session and checked native lifetime. Image/bitmap values are session-owned and explicitly disposable; no raw pointers/finalizers. Native reads are callback-safe; writes, file IO, allocation/conversion, disposal and BITMAP-VALUE copying reject callback execution. Copied channels,256 resources/64Mi pixel aggregate,1..4096 pixel axes; PNG24 bytes..64MiB encoded. Native bitmap alpha/DPI conversion can change pixels. Invalid bounds/types/stale handles and native failures signal errors. See docs/IMAGES-DISPLAYS.md.",
+    "wxwidgets": "wxImage/wxBitmap/wxStaticBitmap/wxDisplay/wxWindow, selected native methods in wxWidgets3.2.12."
+  },
+  {
+    "name": "make-bitmap",
+    "kind": "function",
+    "syntax": "(wxlambda:make-bitmap &rest initargs &key class image source)",
+    "arguments": "Exactly one IMAGE or SOURCE; SOURCE is BITMAP or STATIC-BITMAP. CLASS and subclass initargs.",
+    "returns": "A new BITMAP.",
+    "description": "Construct a native display bitmap from IMAGE, with validated CLASS and forwarded subclass initargs. SOURCE copies an existing bitmap value or native static display GetBitmap through managed CLOS construction.",
+    "scope": "Active GUI/main-thread session and checked native lifetime. Image/bitmap values are session-owned and explicitly disposable; no raw pointers/finalizers. Native reads are callback-safe; writes, file IO, allocation/conversion, disposal and BITMAP-VALUE copying reject callback execution. Copied channels,256 resources/64Mi pixel aggregate,1..4096 pixel axes; PNG24 bytes..64MiB encoded. Native bitmap alpha/DPI conversion can change pixels. Invalid bounds/types/stale handles and native failures signal errors. See docs/IMAGES-DISPLAYS.md.",
+    "wxwidgets": "wxImage/wxBitmap/wxStaticBitmap/wxDisplay/wxWindow, selected native methods in wxWidgets3.2.12."
+  },
+  {
+    "name": "image-size",
+    "kind": "generic-function",
+    "syntax": "(wxlambda:image-size image)",
+    "arguments": "image",
+    "returns": "(width height) in pixels.",
+    "description": "Read native wxImage dimensions.",
+    "scope": "Active GUI/main-thread session and checked native lifetime. Image/bitmap values are session-owned and explicitly disposable; no raw pointers/finalizers. Native reads are callback-safe; writes, file IO, allocation/conversion, disposal and BITMAP-VALUE copying reject callback execution. Copied channels,256 resources/64Mi pixel aggregate,1..4096 pixel axes; PNG24 bytes..64MiB encoded. Native bitmap alpha/DPI conversion can change pixels. Invalid bounds/types/stale handles and native failures signal errors. See docs/IMAGES-DISPLAYS.md.",
+    "wxwidgets": "wxImage/wxBitmap/wxStaticBitmap/wxDisplay/wxWindow, selected native methods in wxWidgets3.2.12."
+  },
+  {
+    "name": "bitmap-size",
+    "kind": "generic-function",
+    "syntax": "(wxlambda:bitmap-size bitmap)",
+    "arguments": "bitmap",
+    "returns": "(width height) in backing pixels.",
+    "description": "Read native wxBitmap dimensions; native static display readback may resample for DPI.",
+    "scope": "Active GUI/main-thread session and checked native lifetime. Image/bitmap values are session-owned and explicitly disposable; no raw pointers/finalizers. Native reads are callback-safe; writes, file IO, allocation/conversion, disposal and BITMAP-VALUE copying reject callback execution. Copied channels,256 resources/64Mi pixel aggregate,1..4096 pixel axes; PNG24 bytes..64MiB encoded. Native bitmap alpha/DPI conversion can change pixels. Invalid bounds/types/stale handles and native failures signal errors. See docs/IMAGES-DISPLAYS.md.",
+    "wxwidgets": "wxImage/wxBitmap/wxStaticBitmap/wxDisplay/wxWindow, selected native methods in wxWidgets3.2.12."
+  },
+  {
+    "name": "bitmap-logical-size",
+    "kind": "generic-function",
+    "syntax": "(wxlambda:bitmap-logical-size bitmap)",
+    "arguments": "bitmap",
+    "returns": "(width height) in native logical units.",
+    "description": "Read native wxBitmap GetLogicalSize; platform units differ from backing pixels.",
+    "scope": "Active GUI/main-thread session and checked native lifetime. Image/bitmap values are session-owned and explicitly disposable; no raw pointers/finalizers. Native reads are callback-safe; writes, file IO, allocation/conversion, disposal and BITMAP-VALUE copying reject callback execution. Copied channels,256 resources/64Mi pixel aggregate,1..4096 pixel axes; PNG24 bytes..64MiB encoded. Native bitmap alpha/DPI conversion can change pixels. Invalid bounds/types/stale handles and native failures signal errors. See docs/IMAGES-DISPLAYS.md.",
+    "wxwidgets": "wxImage/wxBitmap/wxStaticBitmap/wxDisplay/wxWindow, selected native methods in wxWidgets3.2.12."
+  },
+  {
+    "name": "bitmap-dip-size",
+    "kind": "generic-function",
+    "syntax": "(wxlambda:bitmap-dip-size bitmap)",
+    "arguments": "bitmap",
+    "returns": "(width height) in DIP.",
+    "description": "Read native wxBitmap GetDIPSize.",
+    "scope": "Active GUI/main-thread session and checked native lifetime. Image/bitmap values are session-owned and explicitly disposable; no raw pointers/finalizers. Native reads are callback-safe; writes, file IO, allocation/conversion, disposal and BITMAP-VALUE copying reject callback execution. Copied channels,256 resources/64Mi pixel aggregate,1..4096 pixel axes; PNG24 bytes..64MiB encoded. Native bitmap alpha/DPI conversion can change pixels. Invalid bounds/types/stale handles and native failures signal errors. See docs/IMAGES-DISPLAYS.md.",
+    "wxwidgets": "wxImage/wxBitmap/wxStaticBitmap/wxDisplay/wxWindow, selected native methods in wxWidgets3.2.12."
+  },
+  {
+    "name": "bitmap-scale-factor",
+    "kind": "generic-function",
+    "syntax": "(wxlambda:bitmap-scale-factor bitmap)",
+    "arguments": "bitmap",
+    "returns": "Native double-float scale factor.",
+    "description": "Read native wxBitmap GetScaleFactor.",
+    "scope": "Active GUI/main-thread session and checked native lifetime. Image/bitmap values are session-owned and explicitly disposable; no raw pointers/finalizers. Native reads are callback-safe; writes, file IO, allocation/conversion, disposal and BITMAP-VALUE copying reject callback execution. Copied channels,256 resources/64Mi pixel aggregate,1..4096 pixel axes; PNG24 bytes..64MiB encoded. Native bitmap alpha/DPI conversion can change pixels. Invalid bounds/types/stale handles and native failures signal errors. See docs/IMAGES-DISPLAYS.md.",
+    "wxwidgets": "wxImage/wxBitmap/wxStaticBitmap/wxDisplay/wxWindow, selected native methods in wxWidgets3.2.12."
+  },
+  {
+    "name": "image-rgb",
+    "kind": "generic-function",
+    "syntax": "(wxlambda:image-rgb image)",
+    "arguments": "image",
+    "returns": "A fresh simple unsigned-byte8 vector.",
+    "description": "Copy interleaved RGB bytes; SETF copies an exact width*height*3 vector into native image data.",
+    "scope": "Active GUI/main-thread session and checked native lifetime. Image/bitmap values are session-owned and explicitly disposable; no raw pointers/finalizers. Native reads are callback-safe; writes, file IO, allocation/conversion, disposal and BITMAP-VALUE copying reject callback execution. Copied channels,256 resources/64Mi pixel aggregate,1..4096 pixel axes; PNG24 bytes..64MiB encoded. Native bitmap alpha/DPI conversion can change pixels. Invalid bounds/types/stale handles and native failures signal errors. See docs/IMAGES-DISPLAYS.md.",
+    "wxwidgets": "wxImage/wxBitmap/wxStaticBitmap/wxDisplay/wxWindow, selected native methods in wxWidgets3.2.12.",
+    "setf": {
+      "syntax": "(setf (wxlambda:image-rgb object) value)",
+      "description": "Invoke the native mutation with copied/checked data; return supplied value. See supported scope."
+    }
+  },
+  {
+    "name": "image-alpha",
+    "kind": "generic-function",
+    "syntax": "(wxlambda:image-alpha image)",
+    "arguments": "image",
+    "returns": "A fresh simple unsigned-byte8 vector.",
+    "description": "Copy width*height opacity bytes,255 if no channel. SETF copies a vector or NIL to clear the channel.",
+    "scope": "Active GUI/main-thread session and checked native lifetime. Image/bitmap values are session-owned and explicitly disposable; no raw pointers/finalizers. Native reads are callback-safe; writes, file IO, allocation/conversion, disposal and BITMAP-VALUE copying reject callback execution. Copied channels,256 resources/64Mi pixel aggregate,1..4096 pixel axes; PNG24 bytes..64MiB encoded. Native bitmap alpha/DPI conversion can change pixels. Invalid bounds/types/stale handles and native failures signal errors. See docs/IMAGES-DISPLAYS.md.",
+    "wxwidgets": "wxImage/wxBitmap/wxStaticBitmap/wxDisplay/wxWindow, selected native methods in wxWidgets3.2.12.",
+    "setf": {
+      "syntax": "(setf (wxlambda:image-alpha object) value)",
+      "description": "Invoke the native mutation with copied/checked data; return supplied value. See supported scope."
+    }
+  },
+  {
+    "name": "image-alpha-p",
+    "kind": "generic-function",
+    "syntax": "(wxlambda:image-alpha-p image)",
+    "arguments": "image",
+    "returns": "Generalized boolean.",
+    "description": "Query native HasAlpha; absence differs from an explicit all-opaque channel.",
+    "scope": "Active GUI/main-thread session and checked native lifetime. Image/bitmap values are session-owned and explicitly disposable; no raw pointers/finalizers. Native reads are callback-safe; writes, file IO, allocation/conversion, disposal and BITMAP-VALUE copying reject callback execution. Copied channels,256 resources/64Mi pixel aggregate,1..4096 pixel axes; PNG24 bytes..64MiB encoded. Native bitmap alpha/DPI conversion can change pixels. Invalid bounds/types/stale handles and native failures signal errors. See docs/IMAGES-DISPLAYS.md.",
+    "wxwidgets": "wxImage/wxBitmap/wxStaticBitmap/wxDisplay/wxWindow, selected native methods in wxWidgets3.2.12."
+  },
+  {
+    "name": "image-pixel",
+    "kind": "generic-function",
+    "syntax": "(wxlambda:image-pixel image x y)",
+    "arguments": "image x y",
+    "returns": "Four-element (R G B A) byte list.",
+    "description": "Read/write one zero-based pixel; SETF accepts four bytes, allocating alpha for nonopaque values if absent.",
+    "scope": "Active GUI/main-thread session and checked native lifetime. Image/bitmap values are session-owned and explicitly disposable; no raw pointers/finalizers. Native reads are callback-safe; writes, file IO, allocation/conversion, disposal and BITMAP-VALUE copying reject callback execution. Copied channels,256 resources/64Mi pixel aggregate,1..4096 pixel axes; PNG24 bytes..64MiB encoded. Native bitmap alpha/DPI conversion can change pixels. Invalid bounds/types/stale handles and native failures signal errors. See docs/IMAGES-DISPLAYS.md.",
+    "wxwidgets": "wxImage/wxBitmap/wxStaticBitmap/wxDisplay/wxWindow, selected native methods in wxWidgets3.2.12.",
+    "setf": {
+      "syntax": "(setf (wxlambda:image-pixel image x y) value)",
+      "description": "Invoke the native mutation with copied/checked data; return supplied value. See supported scope."
+    }
+  },
+  {
+    "name": "scale-image",
+    "kind": "generic-function",
+    "syntax": "(wxlambda:scale-image image width height &key quality class)",
+    "arguments": "image width height &key quality class",
+    "returns": "A new independently owned IMAGE.",
+    "description": "Call native Scale using :NEAREST or default :HIGH, with1..4096 destination pixel axes and validated subclass construction.",
+    "scope": "Active GUI/main-thread session and checked native lifetime. Image/bitmap values are session-owned and explicitly disposable; no raw pointers/finalizers. Native reads are callback-safe; writes, file IO, allocation/conversion, disposal and BITMAP-VALUE copying reject callback execution. Copied channels,256 resources/64Mi pixel aggregate,1..4096 pixel axes; PNG24 bytes..64MiB encoded. Native bitmap alpha/DPI conversion can change pixels. Invalid bounds/types/stale handles and native failures signal errors. See docs/IMAGES-DISPLAYS.md.",
+    "wxwidgets": "wxImage/wxBitmap/wxStaticBitmap/wxDisplay/wxWindow, selected native methods in wxWidgets3.2.12."
+  },
+  {
+    "name": "save-image",
+    "kind": "generic-function",
+    "syntax": "(wxlambda:save-image image path)",
+    "arguments": "image path",
+    "returns": "PATH.",
+    "description": "Encode via native PNG handler and write/flush/close the local native pathname. Existing output may be overwritten; failure may leave a partial file.",
+    "scope": "Active GUI/main-thread session and checked native lifetime. Image/bitmap values are session-owned and explicitly disposable; no raw pointers/finalizers. Native reads are callback-safe; writes, file IO, allocation/conversion, disposal and BITMAP-VALUE copying reject callback execution. Copied channels,256 resources/64Mi pixel aggregate,1..4096 pixel axes; PNG24 bytes..64MiB encoded. Native bitmap alpha/DPI conversion can change pixels. Invalid bounds/types/stale handles and native failures signal errors. See docs/IMAGES-DISPLAYS.md.",
+    "wxwidgets": "wxImage/wxBitmap/wxStaticBitmap/wxDisplay/wxWindow, selected native methods in wxWidgets3.2.12."
+  },
+  {
+    "name": "bitmap-image",
+    "kind": "generic-function",
+    "syntax": "(wxlambda:bitmap-image bitmap &key class)",
+    "arguments": "bitmap &key class",
+    "returns": "A new independently owned IMAGE.",
+    "description": "Convert native bitmap to image. Native alpha premultiplication/rounding can discard RGB under transparent pixels; this is not lossless archival conversion.",
+    "scope": "Active GUI/main-thread session and checked native lifetime. Image/bitmap values are session-owned and explicitly disposable; no raw pointers/finalizers. Native reads are callback-safe; writes, file IO, allocation/conversion, disposal and BITMAP-VALUE copying reject callback execution. Copied channels,256 resources/64Mi pixel aggregate,1..4096 pixel axes; PNG24 bytes..64MiB encoded. Native bitmap alpha/DPI conversion can change pixels. Invalid bounds/types/stale handles and native failures signal errors. See docs/IMAGES-DISPLAYS.md.",
+    "wxwidgets": "wxImage/wxBitmap/wxStaticBitmap/wxDisplay/wxWindow, selected native methods in wxWidgets3.2.12."
+  },
+  {
+    "name": "image-alive-p",
+    "kind": "generic-function",
+    "syntax": "(wxlambda:image-alive-p image)",
+    "arguments": "image",
+    "returns": "Generalized boolean.",
+    "description": "Query active-session image validity; NIL after explicit disposal.",
+    "scope": "Active GUI/main-thread session and checked native lifetime. Image/bitmap values are session-owned and explicitly disposable; no raw pointers/finalizers. Native reads are callback-safe; writes, file IO, allocation/conversion, disposal and BITMAP-VALUE copying reject callback execution. Copied channels,256 resources/64Mi pixel aggregate,1..4096 pixel axes; PNG24 bytes..64MiB encoded. Native bitmap alpha/DPI conversion can change pixels. Invalid bounds/types/stale handles and native failures signal errors. See docs/IMAGES-DISPLAYS.md.",
+    "wxwidgets": "wxImage/wxBitmap/wxStaticBitmap/wxDisplay/wxWindow, selected native methods in wxWidgets3.2.12."
+  },
+  {
+    "name": "bitmap-alive-p",
+    "kind": "generic-function",
+    "syntax": "(wxlambda:bitmap-alive-p bitmap)",
+    "arguments": "bitmap",
+    "returns": "Generalized boolean.",
+    "description": "Query active-session bitmap validity; NIL after explicit disposal.",
+    "scope": "Active GUI/main-thread session and checked native lifetime. Image/bitmap values are session-owned and explicitly disposable; no raw pointers/finalizers. Native reads are callback-safe; writes, file IO, allocation/conversion, disposal and BITMAP-VALUE copying reject callback execution. Copied channels,256 resources/64Mi pixel aggregate,1..4096 pixel axes; PNG24 bytes..64MiB encoded. Native bitmap alpha/DPI conversion can change pixels. Invalid bounds/types/stale handles and native failures signal errors. See docs/IMAGES-DISPLAYS.md.",
+    "wxwidgets": "wxImage/wxBitmap/wxStaticBitmap/wxDisplay/wxWindow, selected native methods in wxWidgets3.2.12."
+  },
+  {
+    "name": "destroy-image",
+    "kind": "generic-function",
+    "syntax": "(wxlambda:destroy-image image)",
+    "arguments": "image",
+    "returns": "IMAGE.",
+    "description": "Release native session-owned image; stale/double disposal rejects.",
+    "scope": "Active GUI/main-thread session and checked native lifetime. Image/bitmap values are session-owned and explicitly disposable; no raw pointers/finalizers. Native reads are callback-safe; writes, file IO, allocation/conversion, disposal and BITMAP-VALUE copying reject callback execution. Copied channels,256 resources/64Mi pixel aggregate,1..4096 pixel axes; PNG24 bytes..64MiB encoded. Native bitmap alpha/DPI conversion can change pixels. Invalid bounds/types/stale handles and native failures signal errors. See docs/IMAGES-DISPLAYS.md.",
+    "wxwidgets": "wxImage/wxBitmap/wxStaticBitmap/wxDisplay/wxWindow, selected native methods in wxWidgets3.2.12."
+  },
+  {
+    "name": "destroy-bitmap",
+    "kind": "generic-function",
+    "syntax": "(wxlambda:destroy-bitmap bitmap)",
+    "arguments": "bitmap",
+    "returns": "BITMAP.",
+    "description": "Release native session-owned bitmap; displays retain independent native values.",
+    "scope": "Active GUI/main-thread session and checked native lifetime. Image/bitmap values are session-owned and explicitly disposable; no raw pointers/finalizers. Native reads are callback-safe; writes, file IO, allocation/conversion, disposal and BITMAP-VALUE copying reject callback execution. Copied channels,256 resources/64Mi pixel aggregate,1..4096 pixel axes; PNG24 bytes..64MiB encoded. Native bitmap alpha/DPI conversion can change pixels. Invalid bounds/types/stale handles and native failures signal errors. See docs/IMAGES-DISPLAYS.md.",
+    "wxwidgets": "wxImage/wxBitmap/wxStaticBitmap/wxDisplay/wxWindow, selected native methods in wxWidgets3.2.12."
+  },
+  {
+    "name": "make-static-bitmap",
+    "kind": "generic-function",
+    "syntax": "(wxlambda:make-static-bitmap parent bitmap &rest initargs &key class)",
+    "arguments": "parent bitmap &rest initargs &key class",
+    "returns": "A new STATIC-BITMAP.",
+    "description": "Thin native-backed wxStaticBitmap constructor with validated CLASS and forwarded initargs.",
+    "scope": "Active GUI/main-thread session and checked native lifetime. Image/bitmap values are session-owned and explicitly disposable; no raw pointers/finalizers. Native reads are callback-safe; writes, file IO, allocation/conversion, disposal and BITMAP-VALUE copying reject callback execution. Copied channels,256 resources/64Mi pixel aggregate,1..4096 pixel axes; PNG24 bytes..64MiB encoded. Native bitmap alpha/DPI conversion can change pixels. Invalid bounds/types/stale handles and native failures signal errors. See docs/IMAGES-DISPLAYS.md.",
+    "wxwidgets": "wxImage/wxBitmap/wxStaticBitmap/wxDisplay/wxWindow, selected native methods in wxWidgets3.2.12."
+  },
+  {
+    "name": "bitmap-value",
+    "kind": "generic-function",
+    "syntax": "(wxlambda:bitmap-value static-bitmap)",
+    "arguments": "static-bitmap",
+    "returns": "A new owned BITMAP on each read.",
+    "description": "Copy native GetBitmap; caller must dispose result. SETF invokes native SetBitmap and retains an independent native value. Native DPI resampling may change backing pixels and scale.",
+    "scope": "Active GUI/main-thread session and checked native lifetime. Image/bitmap values are session-owned and explicitly disposable; no raw pointers/finalizers. Native reads are callback-safe; writes, file IO, allocation/conversion, disposal and BITMAP-VALUE copying reject callback execution. Copied channels,256 resources/64Mi pixel aggregate,1..4096 pixel axes; PNG24 bytes..64MiB encoded. Native bitmap alpha/DPI conversion can change pixels. Invalid bounds/types/stale handles and native failures signal errors. See docs/IMAGES-DISPLAYS.md.",
+    "wxwidgets": "wxImage/wxBitmap/wxStaticBitmap/wxDisplay/wxWindow, selected native methods in wxWidgets3.2.12.",
+    "setf": {
+      "syntax": "(setf (wxlambda:bitmap-value object) value)",
+      "description": "Invoke the native mutation with copied/checked data; return supplied value. See supported scope."
+    }
+  },
+  {
+    "name": "display-count",
+    "kind": "function",
+    "syntax": "(wxlambda:display-count)",
+    "arguments": "No arguments.",
+    "returns": "Current nonnegative native display count.",
+    "description": "Query wxDisplay GetCount on the GUI thread.",
+    "scope": "Active GUI/main-thread session and checked native lifetime. Image/bitmap values are session-owned and explicitly disposable; no raw pointers/finalizers. Native reads are callback-safe; writes, file IO, allocation/conversion, disposal and BITMAP-VALUE copying reject callback execution. Copied channels,256 resources/64Mi pixel aggregate,1..4096 pixel axes; PNG24 bytes..64MiB encoded. Native bitmap alpha/DPI conversion can change pixels. Invalid bounds/types/stale handles and native failures signal errors. See docs/IMAGES-DISPLAYS.md.",
+    "wxwidgets": "wxImage/wxBitmap/wxStaticBitmap/wxDisplay/wxWindow, selected native methods in wxWidgets3.2.12."
+  },
+  {
+    "name": "display-geometry",
+    "kind": "function",
+    "syntax": "(wxlambda:display-geometry index &key client-p)",
+    "arguments": "index &key client-p",
+    "returns": "(x y width height) in native screen units.",
+    "description": "Query wxDisplay GetGeometry, or GetClientArea with CLIENT-P; zero-based transient display index, possibly negative origins.",
+    "scope": "Active GUI/main-thread session and checked native lifetime. Image/bitmap values are session-owned and explicitly disposable; no raw pointers/finalizers. Native reads are callback-safe; writes, file IO, allocation/conversion, disposal and BITMAP-VALUE copying reject callback execution. Copied channels,256 resources/64Mi pixel aggregate,1..4096 pixel axes; PNG24 bytes..64MiB encoded. Native bitmap alpha/DPI conversion can change pixels. Invalid bounds/types/stale handles and native failures signal errors. See docs/IMAGES-DISPLAYS.md.",
+    "wxwidgets": "wxImage/wxBitmap/wxStaticBitmap/wxDisplay/wxWindow, selected native methods in wxWidgets3.2.12."
+  },
+  {
+    "name": "display-ppi",
+    "kind": "function",
+    "syntax": "(wxlambda:display-ppi index)",
+    "arguments": "index",
+    "returns": "(horizontal vertical) native PPI.",
+    "description": "Query wxDisplay GetPPI for a current display index.",
+    "scope": "Active GUI/main-thread session and checked native lifetime. Image/bitmap values are session-owned and explicitly disposable; no raw pointers/finalizers. Native reads are callback-safe; writes, file IO, allocation/conversion, disposal and BITMAP-VALUE copying reject callback execution. Copied channels,256 resources/64Mi pixel aggregate,1..4096 pixel axes; PNG24 bytes..64MiB encoded. Native bitmap alpha/DPI conversion can change pixels. Invalid bounds/types/stale handles and native failures signal errors. See docs/IMAGES-DISPLAYS.md.",
+    "wxwidgets": "wxImage/wxBitmap/wxStaticBitmap/wxDisplay/wxWindow, selected native methods in wxWidgets3.2.12."
+  },
+  {
+    "name": "display-scale-factor",
+    "kind": "function",
+    "syntax": "(wxlambda:display-scale-factor index)",
+    "arguments": "index",
+    "returns": "Native double-float scale.",
+    "description": "Query wxDisplay GetScaleFactor.",
+    "scope": "Active GUI/main-thread session and checked native lifetime. Image/bitmap values are session-owned and explicitly disposable; no raw pointers/finalizers. Native reads are callback-safe; writes, file IO, allocation/conversion, disposal and BITMAP-VALUE copying reject callback execution. Copied channels,256 resources/64Mi pixel aggregate,1..4096 pixel axes; PNG24 bytes..64MiB encoded. Native bitmap alpha/DPI conversion can change pixels. Invalid bounds/types/stale handles and native failures signal errors. See docs/IMAGES-DISPLAYS.md.",
+    "wxwidgets": "wxImage/wxBitmap/wxStaticBitmap/wxDisplay/wxWindow, selected native methods in wxWidgets3.2.12."
+  },
+  {
+    "name": "window-display-index",
+    "kind": "generic-function",
+    "syntax": "(wxlambda:window-display-index window)",
+    "arguments": "window",
+    "returns": "A zero-based display index or NIL.",
+    "description": "Query native GetFromWindow; NIL when native lookup finds no display.",
+    "scope": "Active GUI/main-thread session and checked native lifetime. Image/bitmap values are session-owned and explicitly disposable; no raw pointers/finalizers. Native reads are callback-safe; writes, file IO, allocation/conversion, disposal and BITMAP-VALUE copying reject callback execution. Copied channels,256 resources/64Mi pixel aggregate,1..4096 pixel axes; PNG24 bytes..64MiB encoded. Native bitmap alpha/DPI conversion can change pixels. Invalid bounds/types/stale handles and native failures signal errors. See docs/IMAGES-DISPLAYS.md.",
+    "wxwidgets": "wxImage/wxBitmap/wxStaticBitmap/wxDisplay/wxWindow, selected native methods in wxWidgets3.2.12."
+  },
+  {
+    "name": "window-client-size",
+    "kind": "generic-function",
+    "syntax": "(wxlambda:window-client-size window)",
+    "arguments": "window",
+    "returns": "(width height) in native logical units.",
+    "description": "Query native GetClientSize.",
+    "scope": "Active GUI/main-thread session and checked native lifetime. Image/bitmap values are session-owned and explicitly disposable; no raw pointers/finalizers. Native reads are callback-safe; writes, file IO, allocation/conversion, disposal and BITMAP-VALUE copying reject callback execution. Copied channels,256 resources/64Mi pixel aggregate,1..4096 pixel axes; PNG24 bytes..64MiB encoded. Native bitmap alpha/DPI conversion can change pixels. Invalid bounds/types/stale handles and native failures signal errors. See docs/IMAGES-DISPLAYS.md.",
+    "wxwidgets": "wxImage/wxBitmap/wxStaticBitmap/wxDisplay/wxWindow, selected native methods in wxWidgets3.2.12."
+  },
+  {
+    "name": "client-to-screen",
+    "kind": "generic-function",
+    "syntax": "(wxlambda:client-to-screen window x y)",
+    "arguments": "window x y",
+    "returns": "Two-element converted coordinate list.",
+    "description": "Invoke native ClientToScreen; input\u00b11000000 logical units.",
+    "scope": "Active GUI/main-thread session and checked native lifetime. Image/bitmap values are session-owned and explicitly disposable; no raw pointers/finalizers. Native reads are callback-safe; writes, file IO, allocation/conversion, disposal and BITMAP-VALUE copying reject callback execution. Copied channels,256 resources/64Mi pixel aggregate,1..4096 pixel axes; PNG24 bytes..64MiB encoded. Native bitmap alpha/DPI conversion can change pixels. Invalid bounds/types/stale handles and native failures signal errors. See docs/IMAGES-DISPLAYS.md.",
+    "wxwidgets": "wxImage/wxBitmap/wxStaticBitmap/wxDisplay/wxWindow, selected native methods in wxWidgets3.2.12."
+  },
+  {
+    "name": "screen-to-client",
+    "kind": "generic-function",
+    "syntax": "(wxlambda:screen-to-client window x y)",
+    "arguments": "window x y",
+    "returns": "Two-element converted coordinate list.",
+    "description": "Invoke native ScreenToClient; input\u00b11000000 native screen units.",
+    "scope": "Active GUI/main-thread session and checked native lifetime. Image/bitmap values are session-owned and explicitly disposable; no raw pointers/finalizers. Native reads are callback-safe; writes, file IO, allocation/conversion, disposal and BITMAP-VALUE copying reject callback execution. Copied channels,256 resources/64Mi pixel aggregate,1..4096 pixel axes; PNG24 bytes..64MiB encoded. Native bitmap alpha/DPI conversion can change pixels. Invalid bounds/types/stale handles and native failures signal errors. See docs/IMAGES-DISPLAYS.md.",
+    "wxwidgets": "wxImage/wxBitmap/wxStaticBitmap/wxDisplay/wxWindow, selected native methods in wxWidgets3.2.12."
+  },
+  {
+    "name": "from-dip",
+    "kind": "generic-function",
+    "syntax": "(wxlambda:from-dip window x y)",
+    "arguments": "window x y",
+    "returns": "Two-element converted coordinate list.",
+    "description": "Invoke native FromDIP(wxPoint); input\u00b11000000 DIP.",
+    "scope": "Active GUI/main-thread session and checked native lifetime. Image/bitmap values are session-owned and explicitly disposable; no raw pointers/finalizers. Native reads are callback-safe; writes, file IO, allocation/conversion, disposal and BITMAP-VALUE copying reject callback execution. Copied channels,256 resources/64Mi pixel aggregate,1..4096 pixel axes; PNG24 bytes..64MiB encoded. Native bitmap alpha/DPI conversion can change pixels. Invalid bounds/types/stale handles and native failures signal errors. See docs/IMAGES-DISPLAYS.md.",
+    "wxwidgets": "wxImage/wxBitmap/wxStaticBitmap/wxDisplay/wxWindow, selected native methods in wxWidgets3.2.12."
+  },
+  {
+    "name": "to-dip",
+    "kind": "generic-function",
+    "syntax": "(wxlambda:to-dip window x y)",
+    "arguments": "window x y",
+    "returns": "Two-element converted coordinate list.",
+    "description": "Invoke native ToDIP(wxPoint); input\u00b11000000 native logical units.",
+    "scope": "Active GUI/main-thread session and checked native lifetime. Image/bitmap values are session-owned and explicitly disposable; no raw pointers/finalizers. Native reads are callback-safe; writes, file IO, allocation/conversion, disposal and BITMAP-VALUE copying reject callback execution. Copied channels,256 resources/64Mi pixel aggregate,1..4096 pixel axes; PNG24 bytes..64MiB encoded. Native bitmap alpha/DPI conversion can change pixels. Invalid bounds/types/stale handles and native failures signal errors. See docs/IMAGES-DISPLAYS.md.",
+    "wxwidgets": "wxImage/wxBitmap/wxStaticBitmap/wxDisplay/wxWindow, selected native methods in wxWidgets3.2.12."
+  },
+  {
+    "name": "window-content-scale-factor",
+    "kind": "generic-function",
+    "syntax": "(wxlambda:window-content-scale-factor window)",
+    "arguments": "window",
+    "returns": "Native double-float scale.",
+    "description": "Invoke native GetContentScaleFactor; do not confuse native logical coordinates, DIP and backing pixels.",
+    "scope": "Active GUI/main-thread session and checked native lifetime. Image/bitmap values are session-owned and explicitly disposable; no raw pointers/finalizers. Native reads are callback-safe; writes, file IO, allocation/conversion, disposal and BITMAP-VALUE copying reject callback execution. Copied channels,256 resources/64Mi pixel aggregate,1..4096 pixel axes; PNG24 bytes..64MiB encoded. Native bitmap alpha/DPI conversion can change pixels. Invalid bounds/types/stale handles and native failures signal errors. See docs/IMAGES-DISPLAYS.md.",
+    "wxwidgets": "wxImage/wxBitmap/wxStaticBitmap/wxDisplay/wxWindow, selected native methods in wxWidgets3.2.12."
   }
 ]

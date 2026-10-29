@@ -1796,6 +1796,7 @@ void exercise_search_controls() {
 #include "thread-native.inc"
 #include "styled-text-native.inc"
 #include "views-native.inc"
+#include "images-native.inc"
 
 int main() {
     std::thread([] { std::this_thread::sleep_for(std::chrono::seconds(10)); std::_Exit(124); }).detach();
@@ -1843,10 +1844,12 @@ int main() {
         exercise_thread_events();
         exercise_styled_text();
         exercise_report_views();
+        exercise_images();
         bool shutdown_ran=false;
         ui_action_probe=[&](uint64_t,int) { shutdown_ran=true; };
         expect(wxl_defer_ui_action(5000,0)==0 && wxl_start_ui_timer(5001,1,0,0)==0,"Queue shutdown action/timer");
         expect(wxl_finish() == 0, "Application cleanup failed");
+        expect(image_resources.empty()&&bitmap_resources.empty(),"Automatic image/bitmap shutdown before wx cleanup");
         active = false;
         int late_thread_post=0; std::thread late_worker([&] { late_thread_post=wxl_queue_thread_event(1,"late",4); }); late_worker.join();
         expect(late_thread_post==-1,"Worker post after wxEntryCleanup rejects without entering wx");

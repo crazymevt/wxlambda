@@ -244,7 +244,7 @@ Pinned references: [AUI notebook interface](https://github.com/wxWidgets/wxWidge
 [images](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/image.h),
 [filesystem watcher](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/fswatcher.h).
 
-## Current delivery: ABI57 priority bindings and ABI58 worker events
+## Current delivery: ABI57–ABI60 selected native bindings
 
 Implemented: native-backed styled text with UTF-8 byte ranges, modification
 metadata, multiple/rectangular selection, undo/save points, application styling,
@@ -267,7 +267,24 @@ recommendations above. No exhaustive native parity is implied.
 Both-Lisp87-scenario GUI suites, native fixtures and isolated package checks pass
 on local macOS wxWidgets3.2.12. Physical keyboard/IME/drag/accessibility behavior
 and other ports remain unverified. The primary KryptonEdit goal is **not yet
-complete**: richer views/grid events and public image resources remain selected work.
+complete**: audited grid editing/events/dynamic shape remain selected work.
+
+ABI59 adds native report LIST-CONTROL with stored rows or a copied synchronous
+OnGetItemText provider, selection/activation/context/cache notifications, and tree
+activation/context/expansion events plus bold/color/expander decorations. Virtual
+providers run as guarded pure queries with explicit supported container ancestry;
+see [report/tree views](REPORT-TREE-VIEWS.md). wxDataViewCtrl and custom native
+model ownership remain unbound; virtual wxListCtrl supplies the selected scalable
+results-table path.
+
+ABI60 adds session-owned wxImage/wxBitmap, native static bitmap display, copied
+RGB/alpha/pixel access, PNG loading/saving, scaling and native display/coordinate
+queries. Bitmap backing pixels, logical units, DIP and scale remain distinct.
+The retained wxDC renderer accepts copied RGBA images. No image-grid/flame-graph
+application model is provided. See [images/displays](IMAGES-DISPLAYS.md) and
+[drawing](DRAWING-CANVAS.md). PNG-only file loading and resource/scene bounds are
+explicit supported scope; physical color fidelity, hotplug and other ports are
+unverified.
 
 ABI58 adds `queue-thread-event` and native `:thread` delivery through existing
 EVENT-HANDLER receivers. Registration/binding stays on the GUI thread; workers

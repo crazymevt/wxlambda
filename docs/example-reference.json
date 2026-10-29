@@ -250,5 +250,9 @@
   "report-views.lisp": {
     "description": "Million-row native virtual report using a CLOS OnGetItemText override, checked decorated tree sidebar and deferred activation actions.",
     "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/report-views.lisp --eval '(wxlambda-report-views:start)'"
+  },
+  "image-viewer.lisp": {
+    "description": "Compose native PNG/RGB/alpha/scaling/bitmap/static display and mouse events; pixel inspection behavior is application code.",
+    "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/image-viewer.lisp --eval \"(wxlambda-image-viewer:start)\""
   }
 }

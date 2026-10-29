@@ -17,7 +17,7 @@ class or constructor does not imply full upstream coverage.
 
 ## Current coverage and remaining work
 
-0 implemented; 119 partial; 1756 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
+0 implemented; 126 partial; 1749 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
 
 Counts describe inventory entries, not distinct APIs or percent completion.
 See the [coverage summary](README.md) for phase/header comparisons.
@@ -783,25 +783,25 @@ See the [coverage summary](README.md) for phase/header comparisons.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/display.h)
 
-0 implemented; 0 partial; 20 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
+0 implemented; 7 partial; 13 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
 
-- [ ] [L16](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/display.h#L16) `class wxDisplay {`
+- [~] [L16](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/display.h#L16) `class wxDisplay {` — **Partial**: `display-count`, `display-geometry`, `display-ppi`, `display-scale-factor`, `window-display-index`; ABI: `wxl_display_count`, `wxl_display_info`, `wxl_window_display`. Read-only native display queries by index/window; no public object, mode switching, capture or hotplug policy.
 - [ ] [L23](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/display.h#L23) `wxDisplay();`
 - [ ] [L33](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/display.h#L33) `explicit wxDisplay(unsigned int index);`
 - [ ] [L50](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/display.h#L50) `explicit wxDisplay(const wxWindow* window);`
 - [ ] [L55](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/display.h#L55) `~wxDisplay();`
 - [ ] [L68](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/display.h#L68) `bool ChangeMode(const wxVideoMode& mode = wxDefaultVideoMode);`
-- [ ] [L76](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/display.h#L76) `wxRect GetClientArea() const;`
-- [ ] [L81](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/display.h#L81) `static unsigned int GetCount();`
+- [~] [L76](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/display.h#L76) `wxRect GetClientArea() const;` — **Partial**: `display-geometry`; ABI: `wxl_display_info`. GUI-thread checked native read-only display index/geometry/PPI/scale queries. No public wxDisplay object/adoption, physical display mode mutation or hotplug guarantees; unavailable window display returnsNIL.
+- [~] [L81](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/display.h#L81) `static unsigned int GetCount();` — **Partial**: `display-count`; ABI: `wxl_display_count`. GUI-thread checked native read-only display index/geometry/PPI/scale queries. No public wxDisplay object/adoption, physical display mode mutation or hotplug guarantees; unavailable window display returnsNIL.
 - [ ] [L86](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/display.h#L86) `wxVideoMode GetCurrentMode() const;`
 - [ ] [L95](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/display.h#L95) `static int GetFromPoint(const wxPoint& pt);`
-- [ ] [L108](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/display.h#L108) `static int GetFromWindow(const wxWindow* win);`
-- [ ] [L116](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/display.h#L116) `wxRect GetGeometry() const;`
+- [~] [L108](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/display.h#L108) `static int GetFromWindow(const wxWindow* win);` — **Partial**: `window-display-index`; ABI: `wxl_window_display`. GUI-thread checked native read-only display index/geometry/PPI/scale queries. No public wxDisplay object/adoption, physical display mode mutation or hotplug guarantees; unavailable window display returnsNIL.
+- [~] [L116](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/display.h#L116) `wxRect GetGeometry() const;` — **Partial**: `display-geometry`; ABI: `wxl_display_info`. GUI-thread checked native read-only display index/geometry/PPI/scale queries. No public wxDisplay object/adoption, physical display mode mutation or hotplug guarantees; unavailable window display returnsNIL.
 - [ ] [L123](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/display.h#L123) `wxArrayVideoModes GetModes(const wxVideoMode& mode = wxDefaultVideoMode) const;`
 - [ ] [L131](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/display.h#L131) `wxString GetName() const;`
 - [ ] [L138](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/display.h#L138) `int GetDepth() const;`
-- [ ] [L151](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/display.h#L151) `wxSize GetPPI() const;`
-- [ ] [L164](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/display.h#L164) `double GetScaleFactor() const;`
+- [~] [L151](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/display.h#L151) `wxSize GetPPI() const;` — **Partial**: `display-ppi`; ABI: `wxl_display_info`. GUI-thread checked native read-only display index/geometry/PPI/scale queries. No public wxDisplay object/adoption, physical display mode mutation or hotplug guarantees; unavailable window display returnsNIL.
+- [~] [L164](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/display.h#L164) `double GetScaleFactor() const;` — **Partial**: `display-scale-factor`; ABI: `wxl_display_info`. GUI-thread checked native read-only display index/geometry/PPI/scale queries. No public wxDisplay object/adoption, physical display mode mutation or hotplug guarantees; unavailable window display returnsNIL.
 - [ ] [L181](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/display.h#L181) `static int GetStdPPIValue();`
 - [ ] [L191](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/display.h#L191) `static wxSize GetStdPPI();`
 - [ ] [L197](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/display.h#L197) `bool IsPrimary() const;`

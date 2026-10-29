@@ -62,6 +62,7 @@ WXL_API int wxl_abi_version(void);
 #include "input-events-api.h"
 #include "thread-events-api.h"
 #include "views-api.h"
+#include "images-api.h"
 #include "aui-api.h"
 /* Editable single-line search text/hint: explicit UTF-8 lengths, NUL/CR/LF reject.
    Field0=text,1=hint; setter notify is valid only for text (one TEXT event).

@@ -46,8 +46,8 @@ public:
                     const auto resized=image.Scale(unit(item.width),unit(item.height),wxIMAGE_QUALITY_NEAREST);
                     require(resized.IsOk(),"Canvas bitmap scaling failed");
                     const wxBitmap scaled(resized); require(scaled.IsOk(),"Canvas scaled bitmap allocation failed");
-                    dc.DrawBitmap(scaled,unit(item.x),unit(item.y),false);
-                } else dc.DrawBitmap(item.bitmap,unit(item.x),unit(item.y),false);
+                    dc.DrawBitmap(scaled,unit(item.x),unit(item.y),true);
+                } else dc.DrawBitmap(item.bitmap,unit(item.x),unit(item.y),true);
             }
         }
     }
@@ -73,13 +73,13 @@ int wxl_set_canvas_content(wxl_handle id,uint32_t background,const wxl_canvas_it
     size_t text_bytes=0, bitmap_bytes=0;
     for (size_t i=0;i<count;++i) {
         const auto& input=raw[i];
-        require(input.kind>=1 && input.kind<=5,"Unsupported canvas item kind");
+        require(input.kind>=1 && input.kind<=6,"Unsupported canvas item kind");
         require(input.x>=-10000 && input.x<=10000 && input.y>=-10000 && input.y<=10000,"Canvas coordinate outside supported bounds");
         CanvasItem item{input.kind,input.x,input.y,input.width,input.height,input.option,canvas_colour(input.rgb),wxString(),wxBitmap()};
         if (input.kind==2) {
             require(input.width>=-10000 && input.width<=10000 && input.height>=-10000 && input.height<=10000 && input.option>=1 && input.option<=32,"Invalid canvas line endpoint/width");
-        } else if (input.kind==1 || input.kind==3 || input.kind==5) {
-            const int limit=input.kind==5 ? 256 : 10000;
+        } else if (input.kind==1 || input.kind==3 || input.kind==5 || input.kind==6) {
+            const int limit=(input.kind==5 || input.kind==6) ? 256 : 10000;
             require(input.width>=1 && input.width<=limit && input.height>=1 && input.height<=limit,"Canvas item extent outside supported bounds");
         }
         if (input.kind==4) {
@@ -88,12 +88,20 @@ int wxl_set_canvas_content(wxl_handle id,uint32_t background,const wxl_canvas_it
             text_bytes+=input.text_length; item.text=text_value(input.text,input.text_length);
             require(item.text.find('\r')==wxString::npos && item.text.find('\n')==wxString::npos,"Canvas text must be single-line");
         } else require(input.text_length==0,"Non-text canvas item cannot carry text");
-        if (input.kind==5) {
-            const size_t size=static_cast<size_t>(input.width)*input.height*3;
-            require(input.pixels && input.pixel_length==size && size<=2097152-bitmap_bytes,"Canvas bitmap requires exact RGB bytes within2MiB scene total");
+        if (input.kind==5 || input.kind==6) {
+            const size_t size=static_cast<size_t>(input.width)*input.height*(input.kind==6 ? 4:3);
+            require(input.pixels && input.pixel_length==size && size<=2097152-bitmap_bytes,"Canvas bitmap requires exact RGB/RGBA bytes within2MiB scene total");
             bitmap_bytes+=size;
             wxImage image(input.width,input.height,false); require(image.IsOk(),"Canvas image allocation failed");
-            std::memcpy(image.GetData(),input.pixels,size); item.bitmap=wxBitmap(image);
+            if (input.kind==5) std::memcpy(image.GetData(),input.pixels,size);
+            else {
+                image.InitAlpha(); require(image.GetAlpha(),"Canvas alpha allocation failed");
+                for (size_t pixel=0;pixel<size/4;++pixel) {
+                    std::memcpy(image.GetData()+pixel*3,input.pixels+pixel*4,3);
+                    image.GetAlpha()[pixel]=input.pixels[pixel*4+3];
+                }
+            }
+            item.bitmap=wxBitmap(image);
             require(item.bitmap.IsOk(),"Canvas bitmap allocation failed");
         } else require(input.pixel_length==0,"Non-bitmap canvas item cannot carry pixels");
         staged.push_back(std::move(item));

@@ -593,3 +593,13 @@ remain partial; no DataView parity or editor/file model is implied. Virtual hook
 are pure synchronous queries with copied replies and audited bounded container
 ancestry. Next selected dependencies are public image/bitmap/canvas resources and
 audited grid editing/dynamic shape. Native pending APIs remain factual backlog.
+
+## Public image resources and native display geometry
+
+[Images and displays](IMAGES-DISPLAYS.md) add bounded session-owned wxImage/wxBitmap
+values, copied RGB/alpha/pixels, PNG-only stream IO, scaling, native static bitmap
+displays and read-only native display/window coordinate/scale queries. Retained
+canvas scenes support copied RGBA composition. Bitmap backing/logical/DIP size and
+scale remain distinct; no raw buffer/adoption, arbitrary image format, display
+mode switching or capture coverage is implied. These native classes remain partial.
+The next selected dependency is audited grid editing/validation/dynamic shape.

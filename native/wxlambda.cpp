@@ -2,6 +2,8 @@
 #include <wx/wx.h>
 #include <wx/thread.h>
 #include <wx/listctrl.h>
+#include <wx/statbmp.h>
+#include <wx/display.h>
 #include <wx/choice.h>
 #include <wx/combobox.h>
 #include <wx/scrolwin.h>
@@ -70,6 +72,7 @@
 #endif
 
 namespace {
+void clear_image_resources();
 bool protected_views_provider(wxWindow*);
 #include "thread-events.inc"
 // wxEvtHandler exposes no public storage-kind query. Its getters assert when
@@ -1492,7 +1495,7 @@ bool process_deferred_ui_action() {
 
 }
 extern "C" {
-int wxl_abi_version() { return 59; }
+int wxl_abi_version() { return 60; }
 const char* wxl_last_error() { return error.c_str(); }
 int wxl_clipboard_text_available() {
     return boolean_result([&] {
@@ -1688,7 +1691,7 @@ int wxl_finish() {
         // Destroy remaining top-level windows before OnExit (also on setup failure).
         while (!wxTopLevelWindows.empty())
             delete wxTopLevelWindows.GetFirst()->GetData();
-        owned_events.clear();
+        owned_events.clear(); clear_image_resources();
         pushed_handlers.clear();
         owned_handlers.clear();
         application_handle = 0;
@@ -3772,3 +3775,5 @@ extern "C" {
 #undef WXL_THREAD_EVENT_IMPLEMENTATION
 
 #include "views.inc"
+
+#include "images.inc"

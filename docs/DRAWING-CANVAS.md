@@ -5,7 +5,7 @@ ABI55 adds native-backed `drawing-canvas`, `make-drawing-canvas`,
 bounded retained renderer for practical drawings and monitoring tools. Lisp
 supplies copied scene data; native paint/resize handling owns the DC and renders
 without calling Lisp. It does not expose paint callbacks, DC/bitmap/font handles,
-native pointer adoption or C++ virtual methods to Lisp subclasses.
+native pointer adoption or C++ virtual methods to Lisp subclasses. Separately owned image/bitmap values and static displays are documented in [Images and displays](IMAGES-DISPLAYS.md).
 
 ```lisp
 (defparameter view
@@ -30,7 +30,7 @@ row/column with `:proportion 1 :expand t`. Lisp ancestry is WINDOW, not PANEL.
 
 Content is a proper four-element plist containing exactly `:background` and
 `:items` (either key order accepted). RGB colours are three integer bytes0..255;
-there is no alpha. Items are drawn in supplied order with native clipping:
+primitive colours are opaque. Items are drawn in supplied order with native clipping:
 
 | Item | Data |
 | --- | --- |
@@ -39,15 +39,18 @@ there is no alpha. Items are drawn in supplied order with native clipping:
 | `:line` | `(:line x1 y1 x2 y2 rgb stroke-width)` |
 | `:text` | `(:text x y string point-size rgb)` single-line Unicode text in native Swiss/sans family |
 | `:bitmap` | `(:bitmap x y width height pixels)` opaque row-major RGB byte vector |
+| `:rgba-bitmap` | `(:rgba-bitmap x y width height pixels)` straight row-major RGBA byte vector, native alpha composition |
 
 Coordinates/endpoints are signed integers within±10000. Rectangle/ellipse
 extents are1..10000. Stroke width is1..32. Font point size is6..72; exact font
 face, glyph coverage and metrics follow native fallback. Text rejects NUL/CR/LF.
 At most512 items,65536 total UTF-8 text bytes and2MiB total bitmap bytes are
 supported. Each bitmap dimension is1..256; PIXELS is a simple
-`(unsigned-byte 8)` vector of exactly width*height*3 bytes, RGB per pixel.
-Bitmaps have no alpha, scaling option, file loader or separately disposable
-resource. All data crosses the ABI by value/copy, never pointer adoption.
+`(unsigned-byte 8)` vector of exactly width*height*3 bytes for RGB or
+width*height*4 bytes for RGBA. RGBA values use straight alpha; native display
+conversion can premultiply and round colours. Screen bitmap extents use DIP,
+while export extents use pixels. Scene bitmaps remain copied scene data; the
+separate IMAGE/BITMAP resource API does not transfer pointers into this transport. All data crosses the ABI by value/copy, never pointer adoption.
 
 Native scene compilation stages all items/strings/bitmaps before replacing the
 old scene; invalid inputs preserve the old model. The Lisp writer returns its

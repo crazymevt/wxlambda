@@ -18,7 +18,7 @@
       (mapcar
         (lambda (item)
           (let ((count (canvas-list item 7)))
-            (unless (and (member (first item) '(:rect :line :ellipse :text :bitmap))
+            (unless (and (member (first item) '(:rect :line :ellipse :text :bitmap :rgba-bitmap))
                          (= count (if (eq (first item) :line) 7 6))) (error "Invalid canvas primitive shape or kind")))
           (let ((kind (first item)) (x (second item)) (y (third item))
                 (a (fourth item)) (b (fifth item)) (payload (sixth item)))
@@ -36,10 +36,10 @@
                   (incf text-bytes (1- bytes)))
                 (when (> text-bytes 65536) (error "Canvas scene exceeds65536 UTF-8 text bytes"))
                 (list kind x y (copy-seq a) b (canvas-rgb payload)))
-              (:bitmap
+              ((:bitmap :rgba-bitmap)
                 (check-type a (integer 1 256)) (check-type b (integer 1 256))
                 (check-type payload (simple-array (unsigned-byte 8) (*)))
-                (unless (= (length payload) (* a b 3)) (error "Bitmap requires exact width*height*3 RGB bytes"))
+                (unless (= (length payload) (* a b (if (eq kind :rgba-bitmap) 4 3))) (error "Bitmap requires exact RGB/RGBA byte length"))
                 (incf bitmap-bytes (length payload))
                 (when (> bitmap-bytes 2097152) (error "Canvas scene exceeds2MiB bitmap bytes"))
                 (list kind x y a b (copy-seq payload)))
@@ -58,14 +58,14 @@
            (loop for item in items for i from 0 do
              (let ((record (cffi:mem-aptr array '(:struct native-canvas-item) i)))
                (cffi:with-foreign-slots ((kind x y width height rgb option text text-length pixels pixel-length) record (:struct native-canvas-item))
-                 (setf kind (ecase (first item) (:rect 1) (:line 2) (:ellipse 3) (:text 4) (:bitmap 5))
+                 (setf kind (ecase (first item) (:rect 1) (:line 2) (:ellipse 3) (:text 4) (:bitmap 5) (:rgba-bitmap 6))
                        x (second item) y (third item) width 0 height 0 rgb 0 option 1
                        text (cffi:null-pointer) text-length 0 pixels (cffi:null-pointer) pixel-length 0)
                  (if (= kind 4)
                      (multiple-value-bind (pointer bytes) (cffi:foreign-string-alloc (fourth item) :encoding :utf-8)
                        (push pointer allocated) (setf text pointer text-length (1- bytes) option (fifth item)))
                      (setf width (fourth item) height (fifth item)))
-                 (if (= kind 5)
+                 (if (member kind '(5 6))
                      (let* ((data (sixth item)) (pointer (cffi:foreign-alloc :uint8 :count (length data))))
                        (push pointer allocated)
                        (dotimes (j (length data)) (setf (cffi:mem-aref pointer :uint8 j) (aref data j)))

@@ -519,7 +519,7 @@ RETURN-TO-APPLICATION-REPL restart. Setup errors propagate to the caller."
       (setf (handler-token object) nil))
     (when (and (slot-boundp object 'handle) (slot-value object 'handle))
       ;; Keep the original initialization condition/nonlocal exit intact.
-      (ignore-errors (funcall (cond ((typep object 'window) #'%destroy) ((typep object 'owned-event) #'%event-destroy) ((typep object 'menu-resource) #'%menu-destroy) (t #'%handler-destroy))
+      (ignore-errors (funcall (cond ((typep object 'image-resource) (lambda (id) (%image-destroy id (if (typep object 'bitmap) 1 0)))) ((typep object 'window) #'%destroy) ((typep object 'owned-event) #'%event-destroy) ((typep object 'menu-resource) #'%menu-destroy) (t #'%handler-destroy))
                              (slot-value object 'handle)))
       (when *standalone-handler-objects*
         (remhash (slot-value object 'handle) *standalone-handler-objects*))
@@ -538,7 +538,7 @@ RETURN-TO-APPLICATION-REPL restart. Setup errors propagate to the caller."
     (error "APPLICATION-HANDLER is borrowed; use CURRENT-APPLICATION-HANDLER"))
   (when (and (typep object 'window)
              (/= 1 (count-if (lambda (kind) (typep object kind))
-                         '(frame toolbar status-bar panel scrolled-panel notebook list-box tree-control splitter-window button text-control label checkbox choice gauge slider spin-control radio-box toggle-button combo-box date-picker time-picker search-control drawing-canvas activity-indicator grid web-view styled-text-control aui-notebook list-control text-entry-dialog single-choice-dialog message-dialog file-dialog))))
+                         '(frame toolbar status-bar panel scrolled-panel notebook list-box tree-control splitter-window button text-control label checkbox choice gauge slider spin-control radio-box toggle-button combo-box date-picker time-picker search-control drawing-canvas activity-indicator grid web-view styled-text-control aui-notebook list-control static-bitmap text-entry-dialog single-choice-dialog message-dialog file-dialog))))
     (error "~A must inherit exactly one concrete wxlambda widget class; WINDOW is abstract"
            (class-name (class-of object))))
   (unless *active*

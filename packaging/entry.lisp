@@ -92,6 +92,30 @@
            (assert (string= "Packaged λ 999999/0" (wxlambda:list-item-text report 999999 0))))
       (wxlambda:destroy-window frame))))
 
+(defun check-image-resources ()
+  (let* ((frame (wxlambda:make-frame))
+         (image (wxlambda:make-image :width 1 :height 1
+                  :rgb (make-array 3 :element-type '(unsigned-byte 8) :initial-contents '(32 64 128))
+                  :alpha (make-array 1 :element-type '(unsigned-byte 8) :initial-element 128)))
+         (bitmap (wxlambda:make-bitmap :image image))
+         (view (wxlambda:make-static-bitmap frame bitmap)))
+    (unwind-protect
+         (progn
+           (assert (equal '(32 64 128 128) (wxlambda:image-pixel image 0 0)))
+           (uiop:with-temporary-file (:pathname path :prefix "wxlambda-image-" :type "png")
+             (wxlambda:save-image image path)
+             (let ((loaded (wxlambda:make-image :path path)))
+               (unwind-protect
+                    (assert (equal '(32 64 128 128) (wxlambda:image-pixel loaded 0 0)))
+                 (wxlambda:destroy-image loaded))))
+           (let ((copy (wxlambda:bitmap-value view)))
+             (unwind-protect
+                  (assert (equal '(1 1) (wxlambda:bitmap-logical-size copy)))
+               (wxlambda:destroy-bitmap copy)))
+           (assert (> (wxlambda:display-count) 0)))
+      (wxlambda:destroy-window frame)
+      (wxlambda:destroy-bitmap bitmap) (wxlambda:destroy-image image))))
+
 (defun self-test ()
   "Exercise real GUI events, Unicode, recreation, and cleanup in the saved image."
   (let ((calls 0))
@@ -107,6 +131,7 @@
                  (wxlambda-form:set-submit-action #'submitted)
                  (wxlambda:queue-click wxlambda-form:*submit*))))
       (wxlambda:with-application ()
+        (check-image-resources)
         (check-report-views)
         (check-thread-delivery)
         (check-styled-workspace)

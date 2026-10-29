@@ -341,5 +341,29 @@ live children, deletion destroys. Preserve private group/global index separation
 501 private-ID allocation budget, multi-group drag restrictions, close pre-dispatch
 cache pruning and readonly event ID/timestamp. Splitter Initialize/Unsplit/Replace/
 Resplit retain explicit pane ownership. See docs/AUI-NOTEBOOK.md and docs/SPLITTER.md.
-The selected KryptonEdit scope is in docs/KRYPTONEDIT-COVERAGE.md; worker delivery,
-views/table depth and graphics resources remain required selected batches.
+The selected KryptonEdit scope is in docs/KRYPTONEDIT-COVERAGE.md. ABI58 worker,
+ABI59 views/tree and ABI60 images complete those bounded slices; grid depth is
+the remaining selected dependency before application integration.
+
+ABI58 QUEUE-THREAD-EVENT alone is worker-safe. Preserve endpoint ingress mutex,
+monotonic identities, early Destroy retirement/refusal restoration, shutdown-before-
+cleanup, serialized pending deletion/app unregister and atomic packet retirement.
+Native SetString owns a uniquified wxString before queue publication; inherited
+Clone deep-copies without duplicating packet reservations. No GUI registries or
+Lisp callbacks on workers. See docs/THREAD-EVENTS.md.
+
+ABI59 LIST-CONTROL supports stored/virtual native reports. OnGetItemText is a pure
+query with scoped copied replies, original error/nonlocal containment, context
+suspension and canonical provider roots. Preserve ready-before-registry access,
+source/ancestor mutation guards and bounded exact virtual ancestor types. No
+construction/pumps/modal/clipboard during providers. New tree native events retain
+checked item tokens, wxQt construction gate and expansion veto/Skip semantics.
+See docs/REPORT-TREE-VIEWS.md.
+
+ABI60 IMAGE/BITMAP are session-owned native resources with explicit disposal and
+nested CLOS rollback; clear after windows and before wx cleanup. Preserve copied
+RGB/alpha buffers, mask-to-alpha normalization, allocation checks, PNG preflight,
+resource budgets and bitmap pixel/logical/DIP/scale distinctions. BITMAP-VALUE
+reads create owned managed copies. RGBA canvas kind6 must receive the same native
+extent/aggregate-byte guards as RGB before allocation. No raw resource adoption,
+finalizers, handler registry mutation or worker image calls. See docs/IMAGES-DISPLAYS.md.

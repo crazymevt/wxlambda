@@ -12,4 +12,5 @@
                (:file "lisp/input-events-ffi") (:file "lisp/input-events")
                (:file "lisp/aui-ffi") (:file "lisp/aui") (:file "lisp/splitter-extra")
                (:file "lisp/thread-events-ffi") (:file "lisp/thread-events")
-               (:file "lisp/views-ffi") (:file "lisp/views")))
+               (:file "lisp/views-ffi") (:file "lisp/views")
+               (:file "lisp/images-ffi") (:file "lisp/images")))

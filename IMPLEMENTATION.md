@@ -3437,3 +3437,61 @@ Isolated package build and all5 package tests pass STwP6WnK; output
 `dist/wxlambda-report-views`, report
 `evidence/packaging/report-views-20261029/`. Root final isolated docset install and
 regeneration follow these notes. Views slice is ready for root commit.
+
+## ABI60 images, static bitmaps, displays and RGBA scenes (2026-10-29)
+
+IMAGE/BITMAP are native-backed session resources with copied RGB/alpha/pixels,
+PNG-only stream load/save, scaling, conversion, explicit disposal and CLOS nested
+rollback. STATIC-BITMAP is a WINDOW with managed native bitmap copies; BITMAP-VALUE
+reads allocate independently disposable values. Native backing pixel size, logical
+size, DIP size and scale remain separate; Cocoa native display readback may
+resample. Read-only display/coordinate/window-scale queries expose existing native
+methods.34 new exports; no raw buffers/pointers, finalizers, arbitrary formats,
+image handler registration, display mode mutation or screenshot APIs.
+
+The retained renderer additionally accepts copied :RGBA-BITMAP scene bytes with
+native alpha composition, existing1..256 extents/2MiB aggregate cap and screen DIP
+versus export pixel coordinates. The monitor example uses a transparent badge;
+image-viewer demonstrates general image resources and native display/mouse reads.
+See docs/IMAGES-DISPLAYS.md and docs/DRAWING-CANVAS.md. wxUSE_STATBMP/DISPLAY plus
+existing IMAGE/LIBPNG/STREAMS/FFILE are required. Resources clear after native
+windows are destroyed and before wx cleanup; ABI59 provider/construction guards
+remain in force.
+
+Independent review found RGBA kind6 initially bypassed native extent validation,
+and some InitAlpha paths did not check allocation before pointer use. All are
+fixed with native regression0/-1/257 rejection, transparent/opaque composition,
+source-copy tests and explicit alpha pointer checks. Integrated native harness
+EmKDKwkZ passes zero wx assertions and verifies image/bitmap maps empty after
+finish. Focused separate-process GUI image+changed canvas/example tests pass
+SBCLnGGnW8fN and CCLXSMBasWi. Full90 GUI scenarios plus preflight are running on
+both Lisps; final inventory/docset/export and root integration review gates follow.
+Pinned native records remain factual partial mappings: explicit PNG methods map
+wxPNGHandler LoadFile/SaveFile, no generic wxImage loading or DC bitmap constructor
+claims. Native bitmap sizing methods have separate readonly mappings. Remaining
+selected primary work is audited grid editing/validation/dynamic shape depth.
+
+ABI60 final worker gates: all90 GUI scenarios plus platform preflight pass on both
+SBCL and CCL (quiet-run.9AucCgbr/kWZjrlsG), fresh evidence/images/{sbcl,ccl}-20261029/.
+Both actual loaded packages verify501 public exports and class construction/generic
+SETF sections (wMeZ6GdQ); docset has632 entries. All10 Python docset tests pass
+IpdzyEDD; final14 pinned inventory tests pass wne03WF9 after effective class and
+class-declaration annotation alignment. Native EmKDKwkZ remains zero assertions.
+A test-only PNG path split prevents SBCL/CCL parallel-suite collisions; focused
+both-Lisp rerun Ns4J55VI passes. Root independent integration review found no
+additional actionable source issues; guide wording now distinguishes authoritative
+IMAGE channels from native PNG decoding/scaling semantics. Final package/discovery
+checks are handled by root; no commit made by this worker.
+
+Final build review found that extending an already cached drawing feature probe
+could bypass newly added prerequisites. A distinct WXLAMBDA_HAS_IMAGE_DISPLAYS
+probe now checks STATBMP/DISPLAY and required IMAGE/LIBPNG/STREAMS/FFILE support.
+Forced cached FALSE configure rejects with the accurate prerequisite diagnostic
+(quiet-run.jAsecmiW, expected exit1); ordinary main configure/rebuild pass
+KxxrlDIA/ksOCH9Ow. This build-configuration correction changes no native behavior;
+full90 GUI suites remain the accepted evidence above.
+Independent review of packaged CHECK-IMAGE-RESOURCES found no actionable issue:
+actual PNG/alpha roundtrip, native static display GetBitmap/logical sizing,
+independent copied-value disposal and display availability are checked before
+other saved-image workflows. Isolated package and all5 checks pass PW63yF6h,
+output dist/wxlambda-images, report evidence/packaging/images-20261029/.
