@@ -202,6 +202,7 @@ class CoverageInventoryChecks(unittest.TestCase):
         }
         self.assertTrue(required <= {record['symbol'] for record in self.status['declarations']})
         self.assertEqual(set(self.status['classes']), {
+            'wxGrid', 'wxWebView',
             'wxActivityIndicator', 'wxDC', 'wxColour', 'wxFontInfo', 'wxFont', 'wxBitmap', 'wxImage', 'wxMemoryDC', 'wxAutoBufferedPaintDC', 'wxPNGHandler',
             'wxSearchCtrl', 'wxDatePickerCtrl', 'wxTimePickerCtrl', 'wxDateEvent', 'wxDateTime',
             'wxFrame', 'wxPanel', 'wxButton', 'wxTextCtrl', 'wxStaticText',

@@ -1,0 +1,46 @@
+;;; Fixed-shape editable string table; no spreadsheet evaluation or custom table.
+(require :asdf)
+(load (merge-pathnames "../wxlambda.asd" *load-truename*))
+(asdf:load-system "wxlambda")
+(defpackage #:wxlambda-grid (:use #:cl) (:export #:start #:exercise))
+(in-package #:wxlambda-grid)
+(defun build-window ()
+  (let* ((frame (wxlambda:make-frame :title "Inventory grid λ" :width 700 :height 430))
+         (panel (wxlambda:make-panel frame))
+         (grid (wxlambda:make-grid panel :rows 6 :columns 3))
+         (feedback (wxlambda:make-label panel :label "Edit a cell, then finish the edit before reading."))
+         (read (wxlambda:make-button panel :label "Read first item")))
+    (loop for name in '("Item" "Quantity" "Notes") for column from 0
+          do (setf (wxlambda:grid-column-label grid column) name))
+    (loop for row below 6
+          for item in '("Keyboard" "Display" "Cable λ" "Mouse" "Adapter" "Headset")
+          do (setf (wxlambda:grid-cell-text grid row 0) item
+                   (wxlambda:grid-cell-text grid row 1) (write-to-string (1+ row))))
+    (wxlambda:make-column panel)
+    (wxlambda:add-child panel grid :proportion 1 :expand t :border 8)
+    (wxlambda:add-child panel feedback :border 8)
+    (wxlambda:add-child panel read :border 8)
+    (wxlambda:on-click read
+      (lambda ()
+        (wxlambda:defer-ui-action
+          (lambda ()
+            (setf (wxlambda:label-text feedback)
+                  (format nil "Committed first item: ~A~A" (wxlambda:grid-cell-text grid 0 0)
+                          (if (wxlambda:grid-editing-p grid) " (edit still active)" ""))))
+          :owner grid)))
+    (values frame grid feedback read)))
+(defun exercise ()
+  (multiple-value-bind (frame grid feedback read) (build-window)
+    (unwind-protect
+         (progn
+           (wxlambda:show-window frame) (wxlambda:process-events)
+           (assert (= 6 (wxlambda:grid-rows grid)))
+           (assert (string= "Cable λ" (wxlambda:grid-cell-text grid 2 0)))
+           (setf (wxlambda:grid-cell-text grid 0 0) "Updated λ")
+           (wxlambda:queue-click read)
+           (loop repeat 30 until (search "Updated λ" (wxlambda:label-text feedback)) do (wxlambda:process-events))
+           (assert (search "Updated λ" (wxlambda:label-text feedback))) t)
+      (wxlambda:destroy-window frame) (wxlambda:process-events))))
+(defun start ()
+  (wxlambda:with-application ()
+    (let ((frame (build-window))) (wxlambda:show-window frame) (wxlambda:run))))

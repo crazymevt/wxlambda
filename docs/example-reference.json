@@ -222,5 +222,13 @@
   "drawing-monitor.lisp": {
     "description": "Retained native canvas with bounded geometry, Unicode text/font/RGB/bitmap adapters, activity animation and owner-bound periodic UI updates. EXERCISE self-stops after three real timer ticks, exports PNG and resumes; data is simulated, not background work.",
     "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/drawing-monitor.lisp --eval '(wxlambda-drawing-monitor:start)'"
+  },
+  "grid.lisp": {
+    "description": "Fixed-shape inventory string grid with native editing, copied Unicode cells/labels and deferred committed-value readback; EXERCISE validates automated model behavior.",
+    "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/grid.lisp --eval '(wxlambda-grid:start)'"
+  },
+  "webview.lisp": {
+    "description": "Interactive trusted-development HTML/JavaScript WebView with asynchronous script tickets and JSON message bridge; no external network required by deterministic exercise. Known native popup/dialog/upload paths are suppressed; this is not a general security sandbox.",
+    "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/webview.lisp --eval '(wxlambda-webview:start)'"
   }
 }

@@ -87,7 +87,7 @@ is scheduled by feature priority, not automatically required for a release. A cl
 works. Context, class-definition and declaration counts must not be interpreted
 as percentages of distinct wxWidgets APIs.
 
-The current ABI55 baseline covers everyday controls, navigation, actions,
+The accepted ABI55 baseline covers everyday controls, navigation, actions,
 dialogs, deferred/timed work and bounded retained drawing, with a deeply tested
 managed lifetime/event layer. The finite automated local macOS MVP is accepted
 against form/editor, manager and drawing/monitoring workflows. See
@@ -297,10 +297,14 @@ may fit better than literal native containers.
 
 [Complete C5 source inventory](coverage/phase-c5.md). The [retained drawing canvas](DRAWING-CANVAS.md) provides bounded geometry, text/font, RGB colour/bitmap and PNG output adapters for the monitoring workflow. Raw resource/DC ownership, other backends, metafiles and printing remain on-demand.
 
+[Grid](GRID.md) now adds a fixed editable string-table scope on explicit application demand.
+
 ### C6: Optional libraries, rich content, and integration
 
 [Complete C6 source inventory](coverage/phase-c6.md). Select AUI/ribbon/property-grid,
 HTML/rich text/STC, web/media/OpenGL or XML/XRC when an application needs them.
+The requested [interactive WebView](WEB-VIEW.md) now adds a guarded macOS WKWebView
+preview with asynchronous JavaScript and JSON messaging. Other backends remain gated.
 Chosen components require explicit build/availability behavior; unselected optional
 libraries do not block an everyday-GUI milestone.
 

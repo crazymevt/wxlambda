@@ -7,6 +7,13 @@ factual discovery records, not a required sequence or release gate.
 
 ## Session handoff: broad GUI coverage
 
+ABI56 adds the user's requested wxGrid and interactive JavaScript WebView
+extension after MVP acceptance. Both are implemented in bounded documented scope;
+WebView construction remains gated to verified macOS wxWidgets3.2.12 WKWebView.
+The current ABI56 evidence and review findings are recorded at the end of this
+handoff. No new required feature batch follows this explicitly requested extension.
+
+
 The ABI55 coordinated batch closes the finite automated local macOS MVP: retained
 drawing/monitoring, activity feedback and cohesive tree/list record management
 complement the persistent form/editor workflow. Current acceptance and remaining
@@ -3172,3 +3179,83 @@ requires an application need or explicitly selected extension/validation target.
 No physical-input/IME/accessibility, hosted Windows/Linux/Qt, exhaustive font/
 locale/DPI, external clipboard or graphical Cadre verification is claimed.
 Primary automated local macOS MVP completion ends the mandatory expansion loop.
+
+
+## ABI56: requested grid and interactive WebView — 2026-10-29
+
+The user requested wxGrid/wxWebView for the next project and clarified interactive
+JavaScript testing from an editor. This extends the accepted ABI55 local MVP;
+it does not reopen exhaustive native parity. GRID has fixed native string-table
+dimensions, copied cell/row/column strings and generalized whole-grid editing
+policy. Default10x5, axes1..256 and total<=16384 cells, NUL-free programmatic text
+<=65536 UTF-8 bytes. Preserve active-editor refusal: native SetCellValue and
+EnableEditing can implicitly alter/commit editor state. Reads report committed
+table values; pending editor text is separate. Native table/editor ownership,
+structural changes, cursor/selection and grid event families are not exposed.
+
+WEB-VIEW is a WINDOW container with a private wxWebView child, copied URL/title/
+load state, HTML and history/stop/reload, asynchronous JavaScript request tickets
+and JSON page messaging. JavaScript is enabled. WK completion blocks retain only
+numeric owner/ticket IDs; copied wx events deliver through ordinary guarded Lisp
+callbacks.64 requests per view,256 queued messages,1MiB script/message/result,
+2MiB HTML and8192-byte URL/base bounds apply. Results retire request identity
+before Lisp entry; owner/session teardown removes handlers and drops late work.
+Native LOADED can precede title/application readiness. Tests use a ready message
+plus title predicate. Full polling was separately verified (quiet-run.mO9O6TYg);
+RUN/timer-driven tests also pass. No blocking RunScript bridge or awaited Promises.
+
+The macOS Objective-C++ adapter suppresses known unguarded wx JS dialogs/uploads/
+popups/printing, denies SDK-supported media/geolocation requests and removes wx
+fullscreen injected callbacks. Direct WK loading validates absolute URL/base
+inputs under Objective-C exception containment. Initial URL schemes are about:
+blank/http/https/file; page links/redirects/subresources are not sandboxed.
+All frames/origins can post JSON; receipt authenticates nobody. Trusted editor
+preview only, no full browser automation/DevTools/security policy claim. WebView
+construction is gated to macOS wxWidgets3.2.12 WKWebView pending other backend
+lifetime/UI audits. CMake requires GRID/WEBVIEW plus the webview component; macOS
+links system WebKit. Negative cached feature configure probe passes
+(quiet-run.IrEHht7V); no actual disabled-feature wx build was tested.
+
+Independent subagents implemented grid and the Cocoa shim, then cross-reviewed
+root integration, lifetime/event/queue logic, metadata, guides/examples/tests and
+package integration. Findings resolved: malformed URLs could raise Objective-C
+exceptions; added checked Cocoa load boundary and offline URL probes. Rejected
+same-view script reentry leaked request slots; moved InputOperation before ticket
+allocation and added unchanged-slot-count regression. Oversized-result fallback
+length now uses strlen. Native title/load ordering is handled explicitly in tests.
+Final independent reviews report no remaining actionable findings.
+
+Main/native builds pass (quiet-run.2W8WkW0a). Grid focused SBCL/CCL pass
+(quiet-run.KRYQQC6V/14W93U4h). Real WebKit interactive JS/JSON/dialog suppression,
+callback metadata/propagation, constructor rollback and pending teardown pass on
+SBCL/CCL (quiet-run.Av0D4G9n/QuLDKz6t). Final native combined harness reports zero
+wx assertions (quiet-run.HmS5tXWK), including real grid editing, child TEXT/BUTTON,
+early Destroy refusal, raw/thread/operation checks, WebView bounded queue,
+completion dedupe, rejected request rollback and stale callbacks. Final84 GUI
+scenarios plus preflight pass on SBCL2.6.9 and CCL1.13
+(quiet-run.EtMFhP57/uieXl4z6), reports
+`evidence/web-grid/{sbcl,ccl}-20261029/`. Both new examples run automatically.
+
+All16 Python checks and418-entry docset build/check pass (quiet-run.S8ti09Hv).
+Pinned coverage regenerated with factual partial wxGrid/wxWebView adapters and
+inherited WINDOW receiver scope; all14 inventory tests pass
+(quiet-run.X8G1E4xv/SllWNss0). RunScriptAsync remains natively pending: this bridge
+uses WK evaluateJavaScript with independent lifetime-safe completion instead.
+Both-Lisp actual300-export/class/SETF docset coverage, isolated install/discovery/
+lookup/guide/example access pass (quiet-run.u1I1CFAe). Counts:300 exports,220 named
+generics,67 SETF generics,33 WINDOW wrappers (31 concrete+2 abstract),58 examples,
+60 guides and418 total entries. Final docset rebuild/check/install follows these
+handoff notes. Normal install is $XDG_DATA_HOME/docsets/wxlambda (default
+~/.local/share/docsets/wxlambda/); verified isolated root
+/private/tmp/wxlambda-webgrid-docsets/wxlambda. See docs/DOCSET.md.
+
+Final package dist/wxlambda-web-grid includes recursive webview dylib relocation.
+Its self-test now creates a grid, reads Unicode cells, loads offline HTML, receives
+real page JSON, evaluates6*7 asynchronously and verifies result42 outside the
+checkout. Package build and all five isolation checks pass
+(quiet-run.EnftFjZY/9PhqBcBT), report `evidence/packaging/web-grid-20261029/`.
+No automatic system clipboard transfer. Native browser keyboard/clipboard paths
+remain native and physically untested. Hosted platforms/other wx versions,
+physical input/IME/accessibility, every OS permission/auth/certificate/upload path,
+external network flows, DevTools and graphical Cadre remain unverified. No next
+required batch; further work follows an explicit application need.

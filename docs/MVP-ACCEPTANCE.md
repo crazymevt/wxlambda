@@ -65,3 +65,12 @@ The verified isolated install is under `/private/tmp/wxlambda-mvp-docsets/wxlamb
 Graphical Cadre itself was not exercised. See [docset installation](DOCSET.md),
 [record manager](RECORD-MANAGER.md), [drawing canvas](DRAWING-CANVAS.md),
 [activity indicators](ACTIVITY-INDICATORS.md) and [persistent form](DOCUMENT-FORM.md).
+
+
+## Requested extensions after acceptance
+
+ABI56 adds [grid](GRID.md) and an [interactive WebView](WEB-VIEW.md) for the user's
+next project. This explicitly requested extension preserves the completed MVP
+checkpoint above. Its current verification is recorded in IMPLEMENTATION.md:
+84 GUI scenarios per Lisp,300 exports,418 docset entries and all package checks.
+The WebView backend is explicitly limited to verified macOS wxWidgets3.2.12 WKWebView.

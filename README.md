@@ -18,6 +18,10 @@ The event foundation includes immutable snapshots, scoped contexts, owned events
 pending delivery, managed handler chains/window stacks and rooted Lisp data.
 Native OS alerts/panels remain unbound.
 
+The requested [grid](docs/GRID.md) extension adds editable string cells and labels.
+The [interactive WebView](docs/WEB-VIEW.md) extension adds a macOS WKWebView preview,
+asynchronous JavaScript and JSON messaging for editor-driven development.
+
 Native pointers never escape the bridge. Construction, callbacks and lifetime
 checks remain on the main GUI thread. There is one GUI session per process;
 restart Lisp for a new native session. Control-specific ON-* registrations should
@@ -26,7 +30,7 @@ lifetime/weak invalidation rules.
 
 The [CLOS API](docs/CLOS-API.md) provides subclass initargs/defaults/AFTER hooks,
 thin :CLASS-validating factories and canonical generic SETF. The current public
-API has 278 exports, 200 named generic operations and 62 generic property writers.
+API has 300 exports, 220 named generic operations and 67 generic property writers.
 Native C++ virtual Lisp callbacks remain separate work. These counts describe
 public interfaces, not full native class coverage or completed platform validation.
 

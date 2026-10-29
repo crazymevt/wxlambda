@@ -1,0 +1,6 @@
+(in-package #:wxlambda)
+(cffi:defcfun ("wxl_grid" %grid) :uint64 (parent :uint64) (rows :int) (columns :int) (editable :int))
+(cffi:defcfun ("wxl_grid_property" %grid-property) :int (grid :uint64) (property :int))
+(cffi:defcfun ("wxl_grid_text" %grid-text) :pointer (grid :uint64) (field :int) (row :int) (column :int) (length :pointer))
+(cffi:defcfun ("wxl_set_grid_text" %set-grid-text) :int (grid :uint64) (field :int) (row :int) (column :int) (value :pointer) (length :size))
+(cffi:defcfun ("wxl_set_grid_editable" %set-grid-editable) :int (grid :uint64) (editable :int))

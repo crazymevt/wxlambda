@@ -2,6 +2,41 @@
   (:use #:cl))
 (in-package #:wxlambda-packaged)
 
+(defun check-web-grid ()
+  (let* ((frame (wxlambda:make-frame :width 640 :height 480))
+         (panel (wxlambda:make-panel frame))
+         (grid (wxlambda:make-grid panel :rows 2 :columns 2))
+         (view (wxlambda:make-web-view panel))
+         (ready nil) (ticket nil) (received nil) (timer nil) (ticks 0))
+    (unwind-protect
+         (progn
+           (wxlambda:make-column panel)
+           (wxlambda:add-child panel grid :expand t)
+           (wxlambda:add-child panel view :proportion 1 :expand t)
+           (setf (wxlambda:grid-cell-text grid 0 0) "Packaged grid λ")
+           (assert (string= "Packaged grid λ" (wxlambda:grid-cell-text grid 0 0)))
+           (wxlambda:bind-event view :web-message
+             (lambda (event) (when (search "ready" (wxlambda:event-text event)) (setf ready t))))
+           (wxlambda:bind-event view :web-script-result
+             (lambda (event)
+               (when (= ticket (wxlambda:event-extra-long event))
+                 (assert (= 1 (wxlambda:event-integer event)))
+                 (assert (string= "42" (wxlambda:event-text event)))
+                 (setf received t) (wxlambda:stop))))
+           (wxlambda:set-web-page view
+             "<!doctype html><meta charset='utf-8'><title>Packaged WebView λ</title><script>window.webkit.messageHandlers.wxlambda.postMessage({ready:true});</script>")
+           (wxlambda:show-window frame)
+           (setf timer (wxlambda:start-ui-timer
+             (lambda ()
+               (incf ticks)
+               (when (> ticks 1000) (error "Packaged WebView timed out"))
+               (when (and ready (not ticket))
+                 (setf ticket (wxlambda:run-web-script view "6*7")))) 10 :owner frame))
+           (wxlambda:run)
+           (assert received))
+      (when timer (wxlambda:cancel-ui-timer timer))
+      (wxlambda:destroy-window frame))))
+
 (defun self-test ()
   "Exercise real GUI events, Unicode, recreation, and cleanup in the saved image."
   (let ((calls 0))
@@ -17,6 +52,7 @@
                  (wxlambda-form:set-submit-action #'submitted)
                  (wxlambda:queue-click wxlambda-form:*submit*))))
       (wxlambda:with-application ()
+        (check-web-grid)
         (let* ((frame (wxlambda:make-frame))
                (canvas (wxlambda:make-drawing-canvas frame
                          :content '(:background (255 255 255)
@@ -42,7 +78,7 @@
         (wxlambda:queue-click wxlambda-form:*submit*)
         (wxlambda:run)))
     (assert (= calls 2)))
-  (format t "PASS: packaged startup, Unicode callbacks, recreation, drawing PNG, activity, and cleanup~%"))
+  (format t "PASS: packaged startup, Unicode callbacks, recreation, drawing PNG, activity, grid, JavaScript messaging, and cleanup~%"))
 
 (defun main ()
   (handler-case

@@ -1,0 +1,7 @@
+(in-package #:wxlambda)
+(cffi:defcfun ("wxl_web_view" %web-view) :uint64 (parent :uint64))
+(cffi:defcfun ("wxl_web_view_string" %web-view-string) :pointer (id :uint64) (field :int) (length :pointer))
+(cffi:defcfun ("wxl_web_view_property" %web-view-property) :int (id :uint64) (field :int))
+(cffi:defcfun ("wxl_web_view_load" %web-view-load) :int (id :uint64) (text :pointer) (length :size) (base :pointer) (base-length :size) (html :int))
+(cffi:defcfun ("wxl_web_view_action" %web-view-action) :int (id :uint64) (action :int))
+(cffi:defcfun ("wxl_web_view_script" %web-view-script) :int64 (id :uint64) (script :pointer) (length :size))

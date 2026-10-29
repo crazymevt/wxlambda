@@ -5,4 +5,6 @@
   :serial t
   :components ((:file "lisp/package") (:file "lisp/ffi") (:file "lisp/api")
                (:file "lisp/drawing-canvas-ffi") (:file "lisp/drawing-canvas")
-               (:file "lisp/activity-indicator-ffi") (:file "lisp/activity-indicator")))
+               (:file "lisp/activity-indicator-ffi") (:file "lisp/activity-indicator")
+               (:file "lisp/grid-ffi") (:file "lisp/grid")
+               (:file "lisp/webview-ffi") (:file "lisp/webview")))

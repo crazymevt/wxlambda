@@ -9344,6 +9344,768 @@
         "wxl_save_canvas_image"
       ],
       "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+    },
+    {
+      "header": "wx/grid.h",
+      "line": 2922,
+      "declaration": "class wxGrid : public wxScrolledCanvas {",
+      "symbol": "wxGrid",
+      "status": "~",
+      "lisp": [
+        "grid",
+        "make-grid",
+        "grid-rows",
+        "grid-columns",
+        "grid-cell-text",
+        "grid-row-label",
+        "grid-column-label",
+        "grid-editable-p",
+        "grid-editing-p"
+      ],
+      "native": [
+        "wxl_grid",
+        "wxl_grid_property",
+        "wxl_grid_text",
+        "wxl_set_grid_text",
+        "wxl_set_grid_editable"
+      ],
+      "scope": "Bounded fixed-shape GRID WINDOW backed by native-owned default string table, dimensions1..256/total16384, cell text and row/column labels, whole-grid editable policy and enabled-editor readback. Native-backed CLOS/defaults/rollback, copied NUL-free programmatic text<=65536UTF8 bytes, zero-based indices. All scalar writers reject Lisp callbacks and active editors; committed reads remain available. Composite Input guards, early Destroy suppression and no managed handler-stack edits. No custom table/editor/renderer, grid events/selection/cursor/shape mutations or full wxGrid parity. Requires wxUSE_GRID/core; docs/GRID.md."
+    },
+    {
+      "header": "wx/grid.h",
+      "line": 3025,
+      "declaration": "wxGrid();",
+      "symbol": "wxGrid::wxGrid",
+      "status": "~",
+      "lisp": [
+        "grid",
+        "make-grid",
+        "grid-rows",
+        "grid-columns",
+        "grid-cell-text",
+        "grid-row-label",
+        "grid-column-label",
+        "grid-editable-p",
+        "grid-editing-p"
+      ],
+      "native": [
+        "wxl_grid",
+        "wxl_grid_property",
+        "wxl_grid_text",
+        "wxl_set_grid_text",
+        "wxl_set_grid_editable"
+      ],
+      "scope": "Bounded fixed-shape GRID WINDOW backed by native-owned default string table, dimensions1..256/total16384, cell text and row/column labels, whole-grid editable policy and enabled-editor readback. Native-backed CLOS/defaults/rollback, copied NUL-free programmatic text<=65536UTF8 bytes, zero-based indices. All scalar writers reject Lisp callbacks and active editors; committed reads remain available. Composite Input guards, early Destroy suppression and no managed handler-stack edits. No custom table/editor/renderer, grid events/selection/cursor/shape mutations or full wxGrid parity. Requires wxUSE_GRID/core; docs/GRID.md."
+    },
+    {
+      "header": "wx/grid.h",
+      "line": 3054,
+      "declaration": "bool Create(wxWindow* parent, wxWindowID id, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxWANTS_CHARS, const wxString& name = wxGridNameStr);",
+      "symbol": "wxGrid::Create",
+      "status": "~",
+      "lisp": [
+        "grid",
+        "make-grid",
+        "grid-rows",
+        "grid-columns",
+        "grid-cell-text",
+        "grid-row-label",
+        "grid-column-label",
+        "grid-editable-p",
+        "grid-editing-p"
+      ],
+      "native": [
+        "wxl_grid",
+        "wxl_grid_property",
+        "wxl_grid_text",
+        "wxl_set_grid_text",
+        "wxl_set_grid_editable"
+      ],
+      "scope": "Bounded fixed-shape GRID WINDOW backed by native-owned default string table, dimensions1..256/total16384, cell text and row/column labels, whole-grid editable policy and enabled-editor readback. Native-backed CLOS/defaults/rollback, copied NUL-free programmatic text<=65536UTF8 bytes, zero-based indices. All scalar writers reject Lisp callbacks and active editors; committed reads remain available. Composite Input guards, early Destroy suppression and no managed handler-stack edits. No custom table/editor/renderer, grid events/selection/cursor/shape mutations or full wxGrid parity. Requires wxUSE_GRID/core; docs/GRID.md."
+    },
+    {
+      "header": "wx/grid.h",
+      "line": 3072,
+      "declaration": "bool CreateGrid(int numRows, int numCols, wxGridSelectionModes selmode = wxGridSelectCells);",
+      "symbol": "wxGrid::CreateGrid",
+      "status": "~",
+      "lisp": [
+        "grid",
+        "make-grid",
+        "grid-rows",
+        "grid-columns",
+        "grid-cell-text",
+        "grid-row-label",
+        "grid-column-label",
+        "grid-editable-p",
+        "grid-editing-p"
+      ],
+      "native": [
+        "wxl_grid",
+        "wxl_grid_property",
+        "wxl_grid_text",
+        "wxl_set_grid_text",
+        "wxl_set_grid_editable"
+      ],
+      "scope": "Bounded fixed-shape GRID WINDOW backed by native-owned default string table, dimensions1..256/total16384, cell text and row/column labels, whole-grid editable policy and enabled-editor readback. Native-backed CLOS/defaults/rollback, copied NUL-free programmatic text<=65536UTF8 bytes, zero-based indices. All scalar writers reject Lisp callbacks and active editors; committed reads remain available. Composite Input guards, early Destroy suppression and no managed handler-stack edits. No custom table/editor/renderer, grid events/selection/cursor/shape mutations or full wxGrid parity. Requires wxUSE_GRID/core; docs/GRID.md."
+    },
+    {
+      "header": "wx/grid.h",
+      "line": 3224,
+      "declaration": "wxString GetColLabelValue(int col) const;",
+      "symbol": "wxGrid::GetColLabelValue",
+      "status": "~",
+      "lisp": [
+        "grid",
+        "make-grid",
+        "grid-rows",
+        "grid-columns",
+        "grid-cell-text",
+        "grid-row-label",
+        "grid-column-label",
+        "grid-editable-p",
+        "grid-editing-p"
+      ],
+      "native": [
+        "wxl_grid",
+        "wxl_grid_property",
+        "wxl_grid_text",
+        "wxl_set_grid_text",
+        "wxl_set_grid_editable"
+      ],
+      "scope": "Bounded fixed-shape GRID WINDOW backed by native-owned default string table, dimensions1..256/total16384, cell text and row/column labels, whole-grid editable policy and enabled-editor readback. Native-backed CLOS/defaults/rollback, copied NUL-free programmatic text<=65536UTF8 bytes, zero-based indices. All scalar writers reject Lisp callbacks and active editors; committed reads remain available. Composite Input guards, early Destroy suppression and no managed handler-stack edits. No custom table/editor/renderer, grid events/selection/cursor/shape mutations or full wxGrid parity. Requires wxUSE_GRID/core; docs/GRID.md."
+    },
+    {
+      "header": "wx/grid.h",
+      "line": 3287,
+      "declaration": "wxString GetRowLabelValue(int row) const;",
+      "symbol": "wxGrid::GetRowLabelValue",
+      "status": "~",
+      "lisp": [
+        "grid",
+        "make-grid",
+        "grid-rows",
+        "grid-columns",
+        "grid-cell-text",
+        "grid-row-label",
+        "grid-column-label",
+        "grid-editable-p",
+        "grid-editing-p"
+      ],
+      "native": [
+        "wxl_grid",
+        "wxl_grid_property",
+        "wxl_grid_text",
+        "wxl_set_grid_text",
+        "wxl_set_grid_editable"
+      ],
+      "scope": "Bounded fixed-shape GRID WINDOW backed by native-owned default string table, dimensions1..256/total16384, cell text and row/column labels, whole-grid editable policy and enabled-editor readback. Native-backed CLOS/defaults/rollback, copied NUL-free programmatic text<=65536UTF8 bytes, zero-based indices. All scalar writers reject Lisp callbacks and active editors; committed reads remain available. Composite Input guards, early Destroy suppression and no managed handler-stack edits. No custom table/editor/renderer, grid events/selection/cursor/shape mutations or full wxGrid parity. Requires wxUSE_GRID/core; docs/GRID.md."
+    },
+    {
+      "header": "wx/grid.h",
+      "line": 3337,
+      "declaration": "void SetColLabelValue(int col, const wxString& value);",
+      "symbol": "wxGrid::SetColLabelValue",
+      "status": "~",
+      "lisp": [
+        "grid",
+        "make-grid",
+        "grid-rows",
+        "grid-columns",
+        "grid-cell-text",
+        "grid-row-label",
+        "grid-column-label",
+        "grid-editable-p",
+        "grid-editing-p"
+      ],
+      "native": [
+        "wxl_grid",
+        "wxl_grid_property",
+        "wxl_grid_text",
+        "wxl_set_grid_text",
+        "wxl_set_grid_editable"
+      ],
+      "scope": "Bounded fixed-shape GRID WINDOW backed by native-owned default string table, dimensions1..256/total16384, cell text and row/column labels, whole-grid editable policy and enabled-editor readback. Native-backed CLOS/defaults/rollback, copied NUL-free programmatic text<=65536UTF8 bytes, zero-based indices. All scalar writers reject Lisp callbacks and active editors; committed reads remain available. Composite Input guards, early Destroy suppression and no managed handler-stack edits. No custom table/editor/renderer, grid events/selection/cursor/shape mutations or full wxGrid parity. Requires wxUSE_GRID/core; docs/GRID.md."
+    },
+    {
+      "header": "wx/grid.h",
+      "line": 3398,
+      "declaration": "void SetRowLabelValue(int row, const wxString& value);",
+      "symbol": "wxGrid::SetRowLabelValue",
+      "status": "~",
+      "lisp": [
+        "grid",
+        "make-grid",
+        "grid-rows",
+        "grid-columns",
+        "grid-cell-text",
+        "grid-row-label",
+        "grid-column-label",
+        "grid-editable-p",
+        "grid-editing-p"
+      ],
+      "native": [
+        "wxl_grid",
+        "wxl_grid_property",
+        "wxl_grid_text",
+        "wxl_set_grid_text",
+        "wxl_set_grid_editable"
+      ],
+      "scope": "Bounded fixed-shape GRID WINDOW backed by native-owned default string table, dimensions1..256/total16384, cell text and row/column labels, whole-grid editable policy and enabled-editor readback. Native-backed CLOS/defaults/rollback, copied NUL-free programmatic text<=65536UTF8 bytes, zero-based indices. All scalar writers reject Lisp callbacks and active editors; committed reads remain available. Composite Input guards, early Destroy suppression and no managed handler-stack edits. No custom table/editor/renderer, grid events/selection/cursor/shape mutations or full wxGrid parity. Requires wxUSE_GRID/core; docs/GRID.md."
+    },
+    {
+      "header": "wx/grid.h",
+      "line": 3648,
+      "declaration": "void EnableEditing(bool edit);",
+      "symbol": "wxGrid::EnableEditing",
+      "status": "~",
+      "lisp": [
+        "grid",
+        "make-grid",
+        "grid-rows",
+        "grid-columns",
+        "grid-cell-text",
+        "grid-row-label",
+        "grid-column-label",
+        "grid-editable-p",
+        "grid-editing-p"
+      ],
+      "native": [
+        "wxl_grid",
+        "wxl_grid_property",
+        "wxl_grid_text",
+        "wxl_set_grid_text",
+        "wxl_set_grid_editable"
+      ],
+      "scope": "Bounded fixed-shape GRID WINDOW backed by native-owned default string table, dimensions1..256/total16384, cell text and row/column labels, whole-grid editable policy and enabled-editor readback. Native-backed CLOS/defaults/rollback, copied NUL-free programmatic text<=65536UTF8 bytes, zero-based indices. All scalar writers reject Lisp callbacks and active editors; committed reads remain available. Composite Input guards, early Destroy suppression and no managed handler-stack edits. No custom table/editor/renderer, grid events/selection/cursor/shape mutations or full wxGrid parity. Requires wxUSE_GRID/core; docs/GRID.md."
+    },
+    {
+      "header": "wx/grid.h",
+      "line": 3684,
+      "declaration": "wxString GetCellValue(int row, int col) const;",
+      "symbol": "wxGrid::GetCellValue",
+      "status": "~",
+      "lisp": [
+        "grid",
+        "make-grid",
+        "grid-rows",
+        "grid-columns",
+        "grid-cell-text",
+        "grid-row-label",
+        "grid-column-label",
+        "grid-editable-p",
+        "grid-editing-p"
+      ],
+      "native": [
+        "wxl_grid",
+        "wxl_grid_property",
+        "wxl_grid_text",
+        "wxl_set_grid_text",
+        "wxl_set_grid_editable"
+      ],
+      "scope": "Bounded fixed-shape GRID WINDOW backed by native-owned default string table, dimensions1..256/total16384, cell text and row/column labels, whole-grid editable policy and enabled-editor readback. Native-backed CLOS/defaults/rollback, copied NUL-free programmatic text<=65536UTF8 bytes, zero-based indices. All scalar writers reject Lisp callbacks and active editors; committed reads remain available. Composite Input guards, early Destroy suppression and no managed handler-stack edits. No custom table/editor/renderer, grid events/selection/cursor/shape mutations or full wxGrid parity. Requires wxUSE_GRID/core; docs/GRID.md."
+    },
+    {
+      "header": "wx/grid.h",
+      "line": 3785,
+      "declaration": "bool IsCellEditControlEnabled() const;",
+      "symbol": "wxGrid::IsCellEditControlEnabled",
+      "status": "~",
+      "lisp": [
+        "grid",
+        "make-grid",
+        "grid-rows",
+        "grid-columns",
+        "grid-cell-text",
+        "grid-row-label",
+        "grid-column-label",
+        "grid-editable-p",
+        "grid-editing-p"
+      ],
+      "native": [
+        "wxl_grid",
+        "wxl_grid_property",
+        "wxl_grid_text",
+        "wxl_set_grid_text",
+        "wxl_set_grid_editable"
+      ],
+      "scope": "Bounded fixed-shape GRID WINDOW backed by native-owned default string table, dimensions1..256/total16384, cell text and row/column labels, whole-grid editable policy and enabled-editor readback. Native-backed CLOS/defaults/rollback, copied NUL-free programmatic text<=65536UTF8 bytes, zero-based indices. All scalar writers reject Lisp callbacks and active editors; committed reads remain available. Composite Input guards, early Destroy suppression and no managed handler-stack edits. No custom table/editor/renderer, grid events/selection/cursor/shape mutations or full wxGrid parity. Requires wxUSE_GRID/core; docs/GRID.md."
+    },
+    {
+      "header": "wx/grid.h",
+      "line": 3808,
+      "declaration": "bool IsEditable() const;",
+      "symbol": "wxGrid::IsEditable",
+      "status": "~",
+      "lisp": [
+        "grid",
+        "make-grid",
+        "grid-rows",
+        "grid-columns",
+        "grid-cell-text",
+        "grid-row-label",
+        "grid-column-label",
+        "grid-editable-p",
+        "grid-editing-p"
+      ],
+      "native": [
+        "wxl_grid",
+        "wxl_grid_property",
+        "wxl_grid_text",
+        "wxl_set_grid_text",
+        "wxl_set_grid_editable"
+      ],
+      "scope": "Bounded fixed-shape GRID WINDOW backed by native-owned default string table, dimensions1..256/total16384, cell text and row/column labels, whole-grid editable policy and enabled-editor readback. Native-backed CLOS/defaults/rollback, copied NUL-free programmatic text<=65536UTF8 bytes, zero-based indices. All scalar writers reject Lisp callbacks and active editors; committed reads remain available. Composite Input guards, early Destroy suppression and no managed handler-stack edits. No custom table/editor/renderer, grid events/selection/cursor/shape mutations or full wxGrid parity. Requires wxUSE_GRID/core; docs/GRID.md."
+    },
+    {
+      "header": "wx/grid.h",
+      "line": 3902,
+      "declaration": "void SetCellValue(int row, int col, const wxString& s);",
+      "symbol": "wxGrid::SetCellValue",
+      "status": "~",
+      "lisp": [
+        "grid",
+        "make-grid",
+        "grid-rows",
+        "grid-columns",
+        "grid-cell-text",
+        "grid-row-label",
+        "grid-column-label",
+        "grid-editable-p",
+        "grid-editing-p"
+      ],
+      "native": [
+        "wxl_grid",
+        "wxl_grid_property",
+        "wxl_grid_text",
+        "wxl_set_grid_text",
+        "wxl_set_grid_editable"
+      ],
+      "scope": "Bounded fixed-shape GRID WINDOW backed by native-owned default string table, dimensions1..256/total16384, cell text and row/column labels, whole-grid editable policy and enabled-editor readback. Native-backed CLOS/defaults/rollback, copied NUL-free programmatic text<=65536UTF8 bytes, zero-based indices. All scalar writers reject Lisp callbacks and active editors; committed reads remain available. Composite Input guards, early Destroy suppression and no managed handler-stack edits. No custom table/editor/renderer, grid events/selection/cursor/shape mutations or full wxGrid parity. Requires wxUSE_GRID/core; docs/GRID.md."
+    },
+    {
+      "header": "wx/grid.h",
+      "line": 5681,
+      "declaration": "int GetNumberCols() const;",
+      "symbol": "wxGrid::GetNumberCols",
+      "status": "~",
+      "lisp": [
+        "grid",
+        "make-grid",
+        "grid-rows",
+        "grid-columns",
+        "grid-cell-text",
+        "grid-row-label",
+        "grid-column-label",
+        "grid-editable-p",
+        "grid-editing-p"
+      ],
+      "native": [
+        "wxl_grid",
+        "wxl_grid_property",
+        "wxl_grid_text",
+        "wxl_set_grid_text",
+        "wxl_set_grid_editable"
+      ],
+      "scope": "Bounded fixed-shape GRID WINDOW backed by native-owned default string table, dimensions1..256/total16384, cell text and row/column labels, whole-grid editable policy and enabled-editor readback. Native-backed CLOS/defaults/rollback, copied NUL-free programmatic text<=65536UTF8 bytes, zero-based indices. All scalar writers reject Lisp callbacks and active editors; committed reads remain available. Composite Input guards, early Destroy suppression and no managed handler-stack edits. No custom table/editor/renderer, grid events/selection/cursor/shape mutations or full wxGrid parity. Requires wxUSE_GRID/core; docs/GRID.md."
+    },
+    {
+      "header": "wx/grid.h",
+      "line": 5688,
+      "declaration": "int GetNumberRows() const;",
+      "symbol": "wxGrid::GetNumberRows",
+      "status": "~",
+      "lisp": [
+        "grid",
+        "make-grid",
+        "grid-rows",
+        "grid-columns",
+        "grid-cell-text",
+        "grid-row-label",
+        "grid-column-label",
+        "grid-editable-p",
+        "grid-editing-p"
+      ],
+      "native": [
+        "wxl_grid",
+        "wxl_grid_property",
+        "wxl_grid_text",
+        "wxl_set_grid_text",
+        "wxl_set_grid_editable"
+      ],
+      "scope": "Bounded fixed-shape GRID WINDOW backed by native-owned default string table, dimensions1..256/total16384, cell text and row/column labels, whole-grid editable policy and enabled-editor readback. Native-backed CLOS/defaults/rollback, copied NUL-free programmatic text<=65536UTF8 bytes, zero-based indices. All scalar writers reject Lisp callbacks and active editors; committed reads remain available. Composite Input guards, early Destroy suppression and no managed handler-stack edits. No custom table/editor/renderer, grid events/selection/cursor/shape mutations or full wxGrid parity. Requires wxUSE_GRID/core; docs/GRID.md."
+    },
+    {
+      "header": "wx/webview.h",
+      "line": 502,
+      "declaration": "class wxWebView : public wxControl {",
+      "symbol": "wxWebView",
+      "status": "~",
+      "lisp": [
+        "web-view",
+        "make-web-view",
+        "web-view-url",
+        "web-view-title",
+        "web-view-busy-p",
+        "set-web-page",
+        "run-web-script",
+        "web-view-can-go-back-p",
+        "web-view-go-back",
+        "web-view-can-go-forward-p",
+        "web-view-go-forward",
+        "web-view-reload",
+        "web-view-stop"
+      ],
+      "native": [
+        "wxl_web_view",
+        "wxl_web_view_string",
+        "wxl_web_view_property",
+        "wxl_web_view_load",
+        "wxl_web_view_action",
+        "wxl_web_view_script"
+      ],
+      "scope": "Verified macOS wxWidgets3.2.12 WKWebView backend only. Active GUI thread/session and live WEB-VIEW WINDOW container; private browser child has no public handle. JavaScript enabled for trusted development content, not a security sandbox. Known wx native dialogs/upload/popups/printing suppressed, known permission requests denied; no complete OS WebKit security/permission policy claim. Mutations/scripts reject callbacks and protect receiver/ancestors/native reentry; use deferred actions. No managed handler stacks, native backend adoption, owned/synthetic/cloned web events. See docs/WEB-VIEW.md. Queued immutable command snapshots: :web-message text is JSON (including quoted strings); :web-script-result text is JSON on success or an error description on failure, EVENT-INTEGER is1/0 and EVENT-EXTRA-LONG is the request ticket; :web-loaded text is native URL and :web-error text is native error description. BIND-EVENT supports scoped contexts/Skip/propagation but payload SETF rejects. Async delivery occurs through normal GUI polling/RUN, never directly from an Objective-C completion. Native loaded/error events can reflect prior/subframe navigation; no exact per-navigation correlation or veto API. JavaScript evaluation uses internal WKWebView evaluateJavaScript, not wxWebView::RunScriptAsync/clientData ownership. Native per-navigation veto/history-resource APIs remain unbound. Explicit URL navigation/base-URL inputs support about:blank or absolute http/https/file URLs only; native links, redirects and subresource loads are not a complete navigation sandbox. JSON script messages can originate from all frames and origins; receipt does not authenticate the sender or authorize an action."
+    },
+    {
+      "header": "wx/webview.h",
+      "line": 591,
+      "declaration": "virtual wxString GetCurrentTitle() const = 0;",
+      "symbol": "wxWebView::GetCurrentTitle",
+      "status": "~",
+      "lisp": [
+        "web-view",
+        "make-web-view",
+        "web-view-url",
+        "web-view-title",
+        "web-view-busy-p",
+        "set-web-page",
+        "run-web-script",
+        "web-view-can-go-back-p",
+        "web-view-go-back",
+        "web-view-can-go-forward-p",
+        "web-view-go-forward",
+        "web-view-reload",
+        "web-view-stop"
+      ],
+      "native": [
+        "wxl_web_view",
+        "wxl_web_view_string",
+        "wxl_web_view_property",
+        "wxl_web_view_load",
+        "wxl_web_view_action",
+        "wxl_web_view_script"
+      ],
+      "scope": "Verified macOS wxWidgets3.2.12 WKWebView backend only. Active GUI thread/session and live WEB-VIEW WINDOW container; private browser child has no public handle. JavaScript enabled for trusted development content, not a security sandbox. Known wx native dialogs/upload/popups/printing suppressed, known permission requests denied; no complete OS WebKit security/permission policy claim. Mutations/scripts reject callbacks and protect receiver/ancestors/native reentry; use deferred actions. No managed handler stacks, native backend adoption, owned/synthetic/cloned web events. See docs/WEB-VIEW.md. Queued immutable command snapshots: :web-message text is JSON (including quoted strings); :web-script-result text is JSON on success or an error description on failure, EVENT-INTEGER is1/0 and EVENT-EXTRA-LONG is the request ticket; :web-loaded text is native URL and :web-error text is native error description. BIND-EVENT supports scoped contexts/Skip/propagation but payload SETF rejects. Async delivery occurs through normal GUI polling/RUN, never directly from an Objective-C completion. Native loaded/error events can reflect prior/subframe navigation; no exact per-navigation correlation or veto API. JavaScript evaluation uses internal WKWebView evaluateJavaScript, not wxWebView::RunScriptAsync/clientData ownership. Native per-navigation veto/history-resource APIs remain unbound. Explicit URL navigation/base-URL inputs support about:blank or absolute http/https/file URLs only; native links, redirects and subresource loads are not a complete navigation sandbox. JSON script messages can originate from all frames and origins; receipt does not authenticate the sender or authorize an action."
+    },
+    {
+      "header": "wx/webview.h",
+      "line": 596,
+      "declaration": "virtual wxString GetCurrentURL() const = 0;",
+      "symbol": "wxWebView::GetCurrentURL",
+      "status": "~",
+      "lisp": [
+        "web-view",
+        "make-web-view",
+        "web-view-url",
+        "web-view-title",
+        "web-view-busy-p",
+        "set-web-page",
+        "run-web-script",
+        "web-view-can-go-back-p",
+        "web-view-go-back",
+        "web-view-can-go-forward-p",
+        "web-view-go-forward",
+        "web-view-reload",
+        "web-view-stop"
+      ],
+      "native": [
+        "wxl_web_view",
+        "wxl_web_view_string",
+        "wxl_web_view_property",
+        "wxl_web_view_load",
+        "wxl_web_view_action",
+        "wxl_web_view_script"
+      ],
+      "scope": "Verified macOS wxWidgets3.2.12 WKWebView backend only. Active GUI thread/session and live WEB-VIEW WINDOW container; private browser child has no public handle. JavaScript enabled for trusted development content, not a security sandbox. Known wx native dialogs/upload/popups/printing suppressed, known permission requests denied; no complete OS WebKit security/permission policy claim. Mutations/scripts reject callbacks and protect receiver/ancestors/native reentry; use deferred actions. No managed handler stacks, native backend adoption, owned/synthetic/cloned web events. See docs/WEB-VIEW.md. Queued immutable command snapshots: :web-message text is JSON (including quoted strings); :web-script-result text is JSON on success or an error description on failure, EVENT-INTEGER is1/0 and EVENT-EXTRA-LONG is the request ticket; :web-loaded text is native URL and :web-error text is native error description. BIND-EVENT supports scoped contexts/Skip/propagation but payload SETF rejects. Async delivery occurs through normal GUI polling/RUN, never directly from an Objective-C completion. Native loaded/error events can reflect prior/subframe navigation; no exact per-navigation correlation or veto API. JavaScript evaluation uses internal WKWebView evaluateJavaScript, not wxWebView::RunScriptAsync/clientData ownership. Native per-navigation veto/history-resource APIs remain unbound. Explicit URL navigation/base-URL inputs support about:blank or absolute http/https/file URLs only; native links, redirects and subresource loads are not a complete navigation sandbox. JSON script messages can originate from all frames and origins; receipt does not authenticate the sender or authorize an action."
+    },
+    {
+      "header": "wx/webview.h",
+      "line": 641,
+      "declaration": "virtual bool IsBusy() const = 0;",
+      "symbol": "wxWebView::IsBusy",
+      "status": "~",
+      "lisp": [
+        "web-view",
+        "make-web-view",
+        "web-view-url",
+        "web-view-title",
+        "web-view-busy-p",
+        "set-web-page",
+        "run-web-script",
+        "web-view-can-go-back-p",
+        "web-view-go-back",
+        "web-view-can-go-forward-p",
+        "web-view-go-forward",
+        "web-view-reload",
+        "web-view-stop"
+      ],
+      "native": [
+        "wxl_web_view",
+        "wxl_web_view_string",
+        "wxl_web_view_property",
+        "wxl_web_view_load",
+        "wxl_web_view_action",
+        "wxl_web_view_script"
+      ],
+      "scope": "Verified macOS wxWidgets3.2.12 WKWebView backend only. Active GUI thread/session and live WEB-VIEW WINDOW container; private browser child has no public handle. JavaScript enabled for trusted development content, not a security sandbox. Known wx native dialogs/upload/popups/printing suppressed, known permission requests denied; no complete OS WebKit security/permission policy claim. Mutations/scripts reject callbacks and protect receiver/ancestors/native reentry; use deferred actions. No managed handler stacks, native backend adoption, owned/synthetic/cloned web events. See docs/WEB-VIEW.md. Queued immutable command snapshots: :web-message text is JSON (including quoted strings); :web-script-result text is JSON on success or an error description on failure, EVENT-INTEGER is1/0 and EVENT-EXTRA-LONG is the request ticket; :web-loaded text is native URL and :web-error text is native error description. BIND-EVENT supports scoped contexts/Skip/propagation but payload SETF rejects. Async delivery occurs through normal GUI polling/RUN, never directly from an Objective-C completion. Native loaded/error events can reflect prior/subframe navigation; no exact per-navigation correlation or veto API. JavaScript evaluation uses internal WKWebView evaluateJavaScript, not wxWebView::RunScriptAsync/clientData ownership. Native per-navigation veto/history-resource APIs remain unbound. Explicit URL navigation/base-URL inputs support about:blank or absolute http/https/file URLs only; native links, redirects and subresource loads are not a complete navigation sandbox. JSON script messages can originate from all frames and origins; receipt does not authenticate the sender or authorize an action."
+    },
+    {
+      "header": "wx/webview.h",
+      "line": 655,
+      "declaration": "virtual void LoadURL(const wxString& url) = 0;",
+      "symbol": "wxWebView::LoadURL",
+      "status": "~",
+      "lisp": [
+        "web-view",
+        "make-web-view",
+        "web-view-url",
+        "web-view-title",
+        "web-view-busy-p",
+        "set-web-page",
+        "run-web-script",
+        "web-view-can-go-back-p",
+        "web-view-go-back",
+        "web-view-can-go-forward-p",
+        "web-view-go-forward",
+        "web-view-reload",
+        "web-view-stop"
+      ],
+      "native": [
+        "wxl_web_view",
+        "wxl_web_view_string",
+        "wxl_web_view_property",
+        "wxl_web_view_load",
+        "wxl_web_view_action",
+        "wxl_web_view_script"
+      ],
+      "scope": "Verified macOS wxWidgets3.2.12 WKWebView backend only. Active GUI thread/session and live WEB-VIEW WINDOW container; private browser child has no public handle. JavaScript enabled for trusted development content, not a security sandbox. Known wx native dialogs/upload/popups/printing suppressed, known permission requests denied; no complete OS WebKit security/permission policy claim. Mutations/scripts reject callbacks and protect receiver/ancestors/native reentry; use deferred actions. No managed handler stacks, native backend adoption, owned/synthetic/cloned web events. See docs/WEB-VIEW.md. Queued immutable command snapshots: :web-message text is JSON (including quoted strings); :web-script-result text is JSON on success or an error description on failure, EVENT-INTEGER is1/0 and EVENT-EXTRA-LONG is the request ticket; :web-loaded text is native URL and :web-error text is native error description. BIND-EVENT supports scoped contexts/Skip/propagation but payload SETF rejects. Async delivery occurs through normal GUI polling/RUN, never directly from an Objective-C completion. Native loaded/error events can reflect prior/subframe navigation; no exact per-navigation correlation or veto API. JavaScript evaluation uses internal WKWebView evaluateJavaScript, not wxWebView::RunScriptAsync/clientData ownership. Native per-navigation veto/history-resource APIs remain unbound. Explicit URL navigation/base-URL inputs support about:blank or absolute http/https/file URLs only; native links, redirects and subresource loads are not a complete navigation sandbox. JSON script messages can originate from all frames and origins; receipt does not authenticate the sender or authorize an action."
+    },
+    {
+      "header": "wx/webview.h",
+      "line": 677,
+      "declaration": "virtual void Reload(wxWebViewReloadFlags flags = wxWEBVIEW_RELOAD_DEFAULT) = 0;",
+      "symbol": "wxWebView::Reload",
+      "status": "~",
+      "lisp": [
+        "web-view",
+        "make-web-view",
+        "web-view-url",
+        "web-view-title",
+        "web-view-busy-p",
+        "set-web-page",
+        "run-web-script",
+        "web-view-can-go-back-p",
+        "web-view-go-back",
+        "web-view-can-go-forward-p",
+        "web-view-go-forward",
+        "web-view-reload",
+        "web-view-stop"
+      ],
+      "native": [
+        "wxl_web_view",
+        "wxl_web_view_string",
+        "wxl_web_view_property",
+        "wxl_web_view_load",
+        "wxl_web_view_action",
+        "wxl_web_view_script"
+      ],
+      "scope": "Verified macOS wxWidgets3.2.12 WKWebView backend only. Active GUI thread/session and live WEB-VIEW WINDOW container; private browser child has no public handle. JavaScript enabled for trusted development content, not a security sandbox. Known wx native dialogs/upload/popups/printing suppressed, known permission requests denied; no complete OS WebKit security/permission policy claim. Mutations/scripts reject callbacks and protect receiver/ancestors/native reentry; use deferred actions. No managed handler stacks, native backend adoption, owned/synthetic/cloned web events. See docs/WEB-VIEW.md. Queued immutable command snapshots: :web-message text is JSON (including quoted strings); :web-script-result text is JSON on success or an error description on failure, EVENT-INTEGER is1/0 and EVENT-EXTRA-LONG is the request ticket; :web-loaded text is native URL and :web-error text is native error description. BIND-EVENT supports scoped contexts/Skip/propagation but payload SETF rejects. Async delivery occurs through normal GUI polling/RUN, never directly from an Objective-C completion. Native loaded/error events can reflect prior/subframe navigation; no exact per-navigation correlation or veto API. JavaScript evaluation uses internal WKWebView evaluateJavaScript, not wxWebView::RunScriptAsync/clientData ownership. Native per-navigation veto/history-resource APIs remain unbound. Explicit URL navigation/base-URL inputs support about:blank or absolute http/https/file URLs only; native links, redirects and subresource loads are not a complete navigation sandbox. JSON script messages can originate from all frames and origins; receipt does not authenticate the sender or authorize an action."
+    },
+    {
+      "header": "wx/webview.h",
+      "line": 697,
+      "declaration": "virtual void SetPage(const wxString& html, const wxString& baseUrl) = 0;",
+      "symbol": "wxWebView::SetPage",
+      "status": "~",
+      "lisp": [
+        "web-view",
+        "make-web-view",
+        "web-view-url",
+        "web-view-title",
+        "web-view-busy-p",
+        "set-web-page",
+        "run-web-script",
+        "web-view-can-go-back-p",
+        "web-view-go-back",
+        "web-view-can-go-forward-p",
+        "web-view-go-forward",
+        "web-view-reload",
+        "web-view-stop"
+      ],
+      "native": [
+        "wxl_web_view",
+        "wxl_web_view_string",
+        "wxl_web_view_property",
+        "wxl_web_view_load",
+        "wxl_web_view_action",
+        "wxl_web_view_script"
+      ],
+      "scope": "Verified macOS wxWidgets3.2.12 WKWebView backend only. Active GUI thread/session and live WEB-VIEW WINDOW container; private browser child has no public handle. JavaScript enabled for trusted development content, not a security sandbox. Known wx native dialogs/upload/popups/printing suppressed, known permission requests denied; no complete OS WebKit security/permission policy claim. Mutations/scripts reject callbacks and protect receiver/ancestors/native reentry; use deferred actions. No managed handler stacks, native backend adoption, owned/synthetic/cloned web events. See docs/WEB-VIEW.md. Queued immutable command snapshots: :web-message text is JSON (including quoted strings); :web-script-result text is JSON on success or an error description on failure, EVENT-INTEGER is1/0 and EVENT-EXTRA-LONG is the request ticket; :web-loaded text is native URL and :web-error text is native error description. BIND-EVENT supports scoped contexts/Skip/propagation but payload SETF rejects. Async delivery occurs through normal GUI polling/RUN, never directly from an Objective-C completion. Native loaded/error events can reflect prior/subframe navigation; no exact per-navigation correlation or veto API. JavaScript evaluation uses internal WKWebView evaluateJavaScript, not wxWebView::RunScriptAsync/clientData ownership. Native per-navigation veto/history-resource APIs remain unbound. Explicit URL navigation/base-URL inputs support about:blank or absolute http/https/file URLs only; native links, redirects and subresource loads are not a complete navigation sandbox. JSON script messages can originate from all frames and origins; receipt does not authenticate the sender or authorize an action."
+    },
+    {
+      "header": "wx/webview.h",
+      "line": 712,
+      "declaration": "virtual void Stop() = 0;",
+      "symbol": "wxWebView::Stop",
+      "status": "~",
+      "lisp": [
+        "web-view",
+        "make-web-view",
+        "web-view-url",
+        "web-view-title",
+        "web-view-busy-p",
+        "set-web-page",
+        "run-web-script",
+        "web-view-can-go-back-p",
+        "web-view-go-back",
+        "web-view-can-go-forward-p",
+        "web-view-go-forward",
+        "web-view-reload",
+        "web-view-stop"
+      ],
+      "native": [
+        "wxl_web_view",
+        "wxl_web_view_string",
+        "wxl_web_view_property",
+        "wxl_web_view_load",
+        "wxl_web_view_action",
+        "wxl_web_view_script"
+      ],
+      "scope": "Verified macOS wxWidgets3.2.12 WKWebView backend only. Active GUI thread/session and live WEB-VIEW WINDOW container; private browser child has no public handle. JavaScript enabled for trusted development content, not a security sandbox. Known wx native dialogs/upload/popups/printing suppressed, known permission requests denied; no complete OS WebKit security/permission policy claim. Mutations/scripts reject callbacks and protect receiver/ancestors/native reentry; use deferred actions. No managed handler stacks, native backend adoption, owned/synthetic/cloned web events. See docs/WEB-VIEW.md. Queued immutable command snapshots: :web-message text is JSON (including quoted strings); :web-script-result text is JSON on success or an error description on failure, EVENT-INTEGER is1/0 and EVENT-EXTRA-LONG is the request ticket; :web-loaded text is native URL and :web-error text is native error description. BIND-EVENT supports scoped contexts/Skip/propagation but payload SETF rejects. Async delivery occurs through normal GUI polling/RUN, never directly from an Objective-C completion. Native loaded/error events can reflect prior/subframe navigation; no exact per-navigation correlation or veto API. JavaScript evaluation uses internal WKWebView evaluateJavaScript, not wxWebView::RunScriptAsync/clientData ownership. Native per-navigation veto/history-resource APIs remain unbound. Explicit URL navigation/base-URL inputs support about:blank or absolute http/https/file URLs only; native links, redirects and subresource loads are not a complete navigation sandbox. JSON script messages can originate from all frames and origins; receipt does not authenticate the sender or authorize an action."
+    },
+    {
+      "header": "wx/webview.h",
+      "line": 986,
+      "declaration": "virtual bool CanGoBack() const = 0;",
+      "symbol": "wxWebView::CanGoBack",
+      "status": "~",
+      "lisp": [
+        "web-view",
+        "make-web-view",
+        "web-view-url",
+        "web-view-title",
+        "web-view-busy-p",
+        "set-web-page",
+        "run-web-script",
+        "web-view-can-go-back-p",
+        "web-view-go-back",
+        "web-view-can-go-forward-p",
+        "web-view-go-forward",
+        "web-view-reload",
+        "web-view-stop"
+      ],
+      "native": [
+        "wxl_web_view",
+        "wxl_web_view_string",
+        "wxl_web_view_property",
+        "wxl_web_view_load",
+        "wxl_web_view_action",
+        "wxl_web_view_script"
+      ],
+      "scope": "Verified macOS wxWidgets3.2.12 WKWebView backend only. Active GUI thread/session and live WEB-VIEW WINDOW container; private browser child has no public handle. JavaScript enabled for trusted development content, not a security sandbox. Known wx native dialogs/upload/popups/printing suppressed, known permission requests denied; no complete OS WebKit security/permission policy claim. Mutations/scripts reject callbacks and protect receiver/ancestors/native reentry; use deferred actions. No managed handler stacks, native backend adoption, owned/synthetic/cloned web events. See docs/WEB-VIEW.md. Queued immutable command snapshots: :web-message text is JSON (including quoted strings); :web-script-result text is JSON on success or an error description on failure, EVENT-INTEGER is1/0 and EVENT-EXTRA-LONG is the request ticket; :web-loaded text is native URL and :web-error text is native error description. BIND-EVENT supports scoped contexts/Skip/propagation but payload SETF rejects. Async delivery occurs through normal GUI polling/RUN, never directly from an Objective-C completion. Native loaded/error events can reflect prior/subframe navigation; no exact per-navigation correlation or veto API. JavaScript evaluation uses internal WKWebView evaluateJavaScript, not wxWebView::RunScriptAsync/clientData ownership. Native per-navigation veto/history-resource APIs remain unbound. Explicit URL navigation/base-URL inputs support about:blank or absolute http/https/file URLs only; native links, redirects and subresource loads are not a complete navigation sandbox. JSON script messages can originate from all frames and origins; receipt does not authenticate the sender or authorize an action."
+    },
+    {
+      "header": "wx/webview.h",
+      "line": 992,
+      "declaration": "virtual bool CanGoForward() const = 0;",
+      "symbol": "wxWebView::CanGoForward",
+      "status": "~",
+      "lisp": [
+        "web-view",
+        "make-web-view",
+        "web-view-url",
+        "web-view-title",
+        "web-view-busy-p",
+        "set-web-page",
+        "run-web-script",
+        "web-view-can-go-back-p",
+        "web-view-go-back",
+        "web-view-can-go-forward-p",
+        "web-view-go-forward",
+        "web-view-reload",
+        "web-view-stop"
+      ],
+      "native": [
+        "wxl_web_view",
+        "wxl_web_view_string",
+        "wxl_web_view_property",
+        "wxl_web_view_load",
+        "wxl_web_view_action",
+        "wxl_web_view_script"
+      ],
+      "scope": "Verified macOS wxWidgets3.2.12 WKWebView backend only. Active GUI thread/session and live WEB-VIEW WINDOW container; private browser child has no public handle. JavaScript enabled for trusted development content, not a security sandbox. Known wx native dialogs/upload/popups/printing suppressed, known permission requests denied; no complete OS WebKit security/permission policy claim. Mutations/scripts reject callbacks and protect receiver/ancestors/native reentry; use deferred actions. No managed handler stacks, native backend adoption, owned/synthetic/cloned web events. See docs/WEB-VIEW.md. Queued immutable command snapshots: :web-message text is JSON (including quoted strings); :web-script-result text is JSON on success or an error description on failure, EVENT-INTEGER is1/0 and EVENT-EXTRA-LONG is the request ticket; :web-loaded text is native URL and :web-error text is native error description. BIND-EVENT supports scoped contexts/Skip/propagation but payload SETF rejects. Async delivery occurs through normal GUI polling/RUN, never directly from an Objective-C completion. Native loaded/error events can reflect prior/subframe navigation; no exact per-navigation correlation or veto API. JavaScript evaluation uses internal WKWebView evaluateJavaScript, not wxWebView::RunScriptAsync/clientData ownership. Native per-navigation veto/history-resource APIs remain unbound. Explicit URL navigation/base-URL inputs support about:blank or absolute http/https/file URLs only; native links, redirects and subresource loads are not a complete navigation sandbox. JSON script messages can originate from all frames and origins; receipt does not authenticate the sender or authorize an action."
+    },
+    {
+      "header": "wx/webview.h",
+      "line": 1025,
+      "declaration": "virtual void GoBack() = 0;",
+      "symbol": "wxWebView::GoBack",
+      "status": "~",
+      "lisp": [
+        "web-view",
+        "make-web-view",
+        "web-view-url",
+        "web-view-title",
+        "web-view-busy-p",
+        "set-web-page",
+        "run-web-script",
+        "web-view-can-go-back-p",
+        "web-view-go-back",
+        "web-view-can-go-forward-p",
+        "web-view-go-forward",
+        "web-view-reload",
+        "web-view-stop"
+      ],
+      "native": [
+        "wxl_web_view",
+        "wxl_web_view_string",
+        "wxl_web_view_property",
+        "wxl_web_view_load",
+        "wxl_web_view_action",
+        "wxl_web_view_script"
+      ],
+      "scope": "Verified macOS wxWidgets3.2.12 WKWebView backend only. Active GUI thread/session and live WEB-VIEW WINDOW container; private browser child has no public handle. JavaScript enabled for trusted development content, not a security sandbox. Known wx native dialogs/upload/popups/printing suppressed, known permission requests denied; no complete OS WebKit security/permission policy claim. Mutations/scripts reject callbacks and protect receiver/ancestors/native reentry; use deferred actions. No managed handler stacks, native backend adoption, owned/synthetic/cloned web events. See docs/WEB-VIEW.md. Queued immutable command snapshots: :web-message text is JSON (including quoted strings); :web-script-result text is JSON on success or an error description on failure, EVENT-INTEGER is1/0 and EVENT-EXTRA-LONG is the request ticket; :web-loaded text is native URL and :web-error text is native error description. BIND-EVENT supports scoped contexts/Skip/propagation but payload SETF rejects. Async delivery occurs through normal GUI polling/RUN, never directly from an Objective-C completion. Native loaded/error events can reflect prior/subframe navigation; no exact per-navigation correlation or veto API. JavaScript evaluation uses internal WKWebView evaluateJavaScript, not wxWebView::RunScriptAsync/clientData ownership. Native per-navigation veto/history-resource APIs remain unbound. Explicit URL navigation/base-URL inputs support about:blank or absolute http/https/file URLs only; native links, redirects and subresource loads are not a complete navigation sandbox. JSON script messages can originate from all frames and origins; receipt does not authenticate the sender or authorize an action."
+    },
+    {
+      "header": "wx/webview.h",
+      "line": 1031,
+      "declaration": "virtual void GoForward() = 0;",
+      "symbol": "wxWebView::GoForward",
+      "status": "~",
+      "lisp": [
+        "web-view",
+        "make-web-view",
+        "web-view-url",
+        "web-view-title",
+        "web-view-busy-p",
+        "set-web-page",
+        "run-web-script",
+        "web-view-can-go-back-p",
+        "web-view-go-back",
+        "web-view-can-go-forward-p",
+        "web-view-go-forward",
+        "web-view-reload",
+        "web-view-stop"
+      ],
+      "native": [
+        "wxl_web_view",
+        "wxl_web_view_string",
+        "wxl_web_view_property",
+        "wxl_web_view_load",
+        "wxl_web_view_action",
+        "wxl_web_view_script"
+      ],
+      "scope": "Verified macOS wxWidgets3.2.12 WKWebView backend only. Active GUI thread/session and live WEB-VIEW WINDOW container; private browser child has no public handle. JavaScript enabled for trusted development content, not a security sandbox. Known wx native dialogs/upload/popups/printing suppressed, known permission requests denied; no complete OS WebKit security/permission policy claim. Mutations/scripts reject callbacks and protect receiver/ancestors/native reentry; use deferred actions. No managed handler stacks, native backend adoption, owned/synthetic/cloned web events. See docs/WEB-VIEW.md. Queued immutable command snapshots: :web-message text is JSON (including quoted strings); :web-script-result text is JSON on success or an error description on failure, EVENT-INTEGER is1/0 and EVENT-EXTRA-LONG is the request ticket; :web-loaded text is native URL and :web-error text is native error description. BIND-EVENT supports scoped contexts/Skip/propagation but payload SETF rejects. Async delivery occurs through normal GUI polling/RUN, never directly from an Objective-C completion. Native loaded/error events can reflect prior/subframe navigation; no exact per-navigation correlation or veto API. JavaScript evaluation uses internal WKWebView evaluateJavaScript, not wxWebView::RunScriptAsync/clientData ownership. Native per-navigation veto/history-resource APIs remain unbound. Explicit URL navigation/base-URL inputs support about:blank or absolute http/https/file URLs only; native links, redirects and subresource loads are not a complete navigation sandbox. JSON script messages can originate from all frames and origins; receipt does not authenticate the sender or authorize an action."
     }
   ],
   "classes": {
@@ -9369,16 +10131,19 @@
         "make-drawing-canvas",
         "canvas-content",
         "canvas-client-size",
-        "save-canvas-image"
+        "save-canvas-image",
+        "web-view",
+        "make-web-view"
       ],
       "native": [
         "wxl_panel",
         "wxl_drawing_canvas",
         "wxl_set_canvas_content",
         "wxl_canvas_client_size",
-        "wxl_save_canvas_image"
+        "wxl_save_canvas_image",
+        "wxl_web_view"
       ],
-      "scope": "Native-backed CLOS construction, including subclass initargs/defaults and managed rollback. Parent only; remaining constructor options use defaults. Full class and inherited API coverage remain open. DRAWING-CANVAS additionally uses a private retained wxPanel subclass with WINDOW Lisp ancestry and copied bounded rendering data; it does not widen general PANEL methods. Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+      "scope": "Native-backed CLOS construction, including subclass initargs/defaults and managed rollback. Parent only; remaining constructor options use defaults. Full class and inherited API coverage remain open. DRAWING-CANVAS additionally uses a private retained wxPanel subclass with WINDOW Lisp ancestry and copied bounded rendering data; it does not widen general PANEL methods. Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md. WEB-VIEW additionally uses a private wxPanel container with WINDOW Lisp ancestry around a privately owned wxWebView child. This grants the container supported generic WINDOW layout/state/lifetime behavior, not arbitrary PANEL/browser-child API or raw ownership. Native browser/backend/JS delegate resources remain private; managed handler-stack access rejects. Verified macOS3.2.12 WKWebView only; see docs/WEB-VIEW.md."
     },
     "wxButton": {
       "status": "~",
@@ -9472,7 +10237,9 @@
         "process-window-event",
         "process-window-event-locally",
         "drawing-canvas",
-        "activity-indicator"
+        "activity-indicator",
+        "grid",
+        "web-view"
       ],
       "native": [
         "wxl_show_state",
@@ -9485,9 +10252,11 @@
         "wxl_remove_handler",
         "wxl_dispatch_owned",
         "wxl_drawing_canvas",
-        "wxl_activity_indicator"
+        "wxl_activity_indicator",
+        "wxl_grid",
+        "wxl_web_view"
       ],
-      "scope": "Logical names, visibility and effective enabled state, layout, geometry and destruction are exposed; the remaining wxWindow API stays open. Managed handler stacks and explicit stack-aware copied routing are now supported. Push preserves bridge ownership; default pop/remove detach alive, deleting pop consumes native resource. All supported concrete native window destructors (including supported generic dialogs) pop(false) before base teardown, independent of destroy observers/enabled flags. No external adoption/SetEventHandler or retained origins. Modal-only dialog show writers reject; active modal/ancestor close/destroy guards preserve native modal lifetime. Native availability rejects pending/scheduled receiver or ancestor deletion through public wxApp::IsScheduledForDestruction plus bridge markers; no dedicated general deletion-query API. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md. DRAWING-CANVAS and ACTIVITY-INDICATOR are WINDOW receivers for implemented generic layout/geometry/state/lifetime/handler protocols; this is not arbitrary wxPanel/wxControl parity. Canvas writes/export and activity writes retain their callback/native-operation guards."
+      "scope": "Logical names, visibility and effective enabled state, layout, geometry and destruction are exposed; the remaining wxWindow API stays open. Managed handler stacks and explicit stack-aware copied routing are now supported. Push preserves bridge ownership; default pop/remove detach alive, deleting pop consumes native resource. All supported concrete native window destructors (including supported generic dialogs) pop(false) before base teardown, independent of destroy observers/enabled flags. No external adoption/SetEventHandler or retained origins. Modal-only dialog show writers reject; active modal/ancestor close/destroy guards preserve native modal lifetime. Native availability rejects pending/scheduled receiver or ancestor deletion through public wxApp::IsScheduledForDestruction plus bridge markers; no dedicated general deletion-query API. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md. DRAWING-CANVAS and ACTIVITY-INDICATOR are WINDOW receivers for implemented generic layout/geometry/state/lifetime/handler protocols; this is not arbitrary wxPanel/wxControl parity. Canvas writes/export and activity writes retain their callback/native-operation guards. GRID and WEB-VIEW are concrete WINDOW receivers for the implemented generic layout, geometry, visibility, enabled state and lifetime operations. Their private composite scroll/browser event handling forbids managed handler-stack access/edits; their own mutation and callback guards remain in force."
     },
     "wxTopLevelWindow": {
       "status": "~",
@@ -10881,6 +11650,50 @@
         "wxl_save_canvas_image"
       ],
       "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+    },
+    "wxGrid": {
+      "status": "~",
+      "lisp": [
+        "grid",
+        "make-grid",
+        "grid-rows",
+        "grid-columns",
+        "grid-cell-text",
+        "grid-row-label",
+        "grid-column-label",
+        "grid-editable-p",
+        "grid-editing-p"
+      ],
+      "native": [
+        "wxl_grid",
+        "wxl_grid_property",
+        "wxl_grid_text",
+        "wxl_set_grid_text",
+        "wxl_set_grid_editable"
+      ],
+      "scope": "Bounded fixed-shape GRID WINDOW backed by native-owned default string table, dimensions1..256/total16384, cell text and row/column labels, whole-grid editable policy and enabled-editor readback. Native-backed CLOS/defaults/rollback, copied NUL-free programmatic text<=65536UTF8 bytes, zero-based indices. All scalar writers reject Lisp callbacks and active editors; committed reads remain available. Composite Input guards, early Destroy suppression and no managed handler-stack edits. No custom table/editor/renderer, grid events/selection/cursor/shape mutations or full wxGrid parity. Requires wxUSE_GRID/core; docs/GRID.md."
+    },
+    "wxWebView": {
+      "status": "~",
+      "lisp": [
+        "web-view",
+        "make-web-view",
+        "web-view-url",
+        "web-view-title",
+        "web-view-busy-p",
+        "set-web-page",
+        "run-web-script",
+        "web-view-can-go-back-p",
+        "web-view-go-back",
+        "web-view-can-go-forward-p",
+        "web-view-go-forward",
+        "web-view-reload",
+        "web-view-stop"
+      ],
+      "native": [
+        "wxl_web_view"
+      ],
+      "scope": "Verified macOS wxWidgets3.2.12 WKWebView backend only. Active GUI thread/session and live WEB-VIEW WINDOW container; private browser child has no public handle. JavaScript enabled for trusted development content, not a security sandbox. Known wx native dialogs/upload/popups/printing suppressed, known permission requests denied; no complete OS WebKit security/permission policy claim. Mutations/scripts reject callbacks and protect receiver/ancestors/native reentry; use deferred actions. No managed handler stacks, native backend adoption, owned/synthetic/cloned web events. See docs/WEB-VIEW.md. Queued immutable command snapshots: :web-message text is JSON (including quoted strings); :web-script-result text is JSON on success or an error description on failure, EVENT-INTEGER is1/0 and EVENT-EXTRA-LONG is the request ticket; :web-loaded text is native URL and :web-error text is native error description. BIND-EVENT supports scoped contexts/Skip/propagation but payload SETF rejects. Async delivery occurs through normal GUI polling/RUN, never directly from an Objective-C completion. Native loaded/error events can reflect prior/subframe navigation; no exact per-navigation correlation or veto API. JavaScript evaluation uses internal WKWebView evaluateJavaScript, not wxWebView::RunScriptAsync/clientData ownership. Native per-navigation veto/history-resource APIs remain unbound. Explicit URL navigation/base-URL inputs support about:blank or absolute http/https/file URLs only; native links, redirects and subresource loads are not a complete navigation sandbox. JSON script messages can originate from all frames and origins; receipt does not authenticate the sender or authorize an action."
     }
   }
 }

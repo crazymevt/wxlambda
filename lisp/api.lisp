@@ -159,7 +159,7 @@
           (when handler
             (when (cffi:null-pointer-p payload) (error "Missing event payload"))
             (cffi:with-foreign-slots ((kind text checked selection id text-length context native-type can-veto vetoed family integer logging-off timestamp command origin-id category extra-long selection-action user-data-token more-requested tree-item sash-position date-code time-code) payload (:struct native-event))
-              (let* ((event-kind (or (case kind (1 :click) (2 :text-change) (3 :toggle) (4 :selection) (5 :close) (6 :query-end-session) (7 :end-session) (8 :idle) (9 :menu) (10 :notebook-page-changing) (11 :notebook-page-changed) (12 :listbox-selection) (13 :listbox-double-click) (14 :tree-selection-changing) (15 :tree-selection-changed) (16 :splitter-sash-changing) (17 :splitter-sash-changed) (18 :slider-change) (19 :spin-change) (20 :radio-selection) (21 :toggle-button-change) (22 :combo-selection) (23 :date-change) (24 :time-change) (25 :search) (26 :search-cancel))
+              (let* ((event-kind (or (case kind (1 :click) (2 :text-change) (3 :toggle) (4 :selection) (5 :close) (6 :query-end-session) (7 :end-session) (8 :idle) (9 :menu) (10 :notebook-page-changing) (11 :notebook-page-changed) (12 :listbox-selection) (13 :listbox-double-click) (14 :tree-selection-changing) (15 :tree-selection-changed) (16 :splitter-sash-changing) (17 :splitter-sash-changed) (18 :slider-change) (19 :spin-change) (20 :radio-selection) (21 :toggle-button-change) (22 :combo-selection) (23 :date-change) (24 :time-change) (25 :search) (26 :search-cancel) (27 :web-message) (28 :web-script-result) (29 :web-loaded) (30 :web-error))
                                      (gethash kind *registered-event-kinds*)
                                      (error "Unregistered native event kind ~S" kind)))
                      (user-data (unless (zerop user-data-token)
@@ -522,7 +522,7 @@ RETURN-TO-APPLICATION-REPL restart. Setup errors propagate to the caller."
     (error "APPLICATION-HANDLER is borrowed; use CURRENT-APPLICATION-HANDLER"))
   (when (and (typep object 'window)
              (/= 1 (count-if (lambda (kind) (typep object kind))
-                         '(frame toolbar status-bar panel scrolled-panel notebook list-box tree-control splitter-window button text-control label checkbox choice gauge slider spin-control radio-box toggle-button combo-box date-picker time-picker search-control drawing-canvas activity-indicator text-entry-dialog single-choice-dialog message-dialog file-dialog))))
+                         '(frame toolbar status-bar panel scrolled-panel notebook list-box tree-control splitter-window button text-control label checkbox choice gauge slider spin-control radio-box toggle-button combo-box date-picker time-picker search-control drawing-canvas activity-indicator grid web-view text-entry-dialog single-choice-dialog message-dialog file-dialog))))
     (error "~A must inherit exactly one concrete wxlambda widget class; WINDOW is abstract"
            (class-name (class-of object))))
   (unless *active*
@@ -991,7 +991,7 @@ live checkbox, including when called from inside its handler."
   t)
 
 (defun builtin-event-kind (kind)
-  (case kind (:click 1) (:text-change 2) (:toggle 3) (:selection 4) (:close 5) (:query-end-session 6) (:end-session 7) (:idle 8) (:menu 9) (:notebook-page-changing 10) (:notebook-page-changed 11) (:listbox-selection 12) (:listbox-double-click 13) (:tree-selection-changing 14) (:tree-selection-changed 15) (:splitter-sash-changing 16) (:splitter-sash-changed 17) (:slider-change 18) (:spin-change 19) (:radio-selection 20) (:toggle-button-change 21) (:combo-selection 22) (:date-change 23) (:time-change 24) (:search 25) (:search-cancel 26)))
+  (case kind (:click 1) (:text-change 2) (:toggle 3) (:selection 4) (:close 5) (:query-end-session 6) (:end-session 7) (:idle 8) (:menu 9) (:notebook-page-changing 10) (:notebook-page-changed 11) (:listbox-selection 12) (:listbox-double-click 13) (:tree-selection-changing 14) (:tree-selection-changed 15) (:splitter-sash-changing 16) (:splitter-sash-changed 17) (:slider-change 18) (:spin-change 19) (:radio-selection 20) (:toggle-button-change 21) (:combo-selection 22) (:date-change 23) (:time-change 24) (:search 25) (:search-cancel 26) (:web-message 27) (:web-script-result 28) (:web-loaded 29) (:web-error 30)))
 (defun native-event-kind (kind)
   (or (builtin-event-kind kind)
       (and *registered-event-types* (gethash kind *registered-event-types*))
@@ -1342,7 +1342,7 @@ live checkbox, including when called from inside its handler."
     (check-status (%set-event-field id contextual field native-value))) value)
 (defun keyword-event-kind (code)
   (or (case code (1 :click) (2 :text-change) (3 :toggle) (4 :selection) (5 :close)
-                (6 :query-end-session) (7 :end-session) (8 :idle) (9 :menu) (10 :notebook-page-changing) (11 :notebook-page-changed) (12 :listbox-selection) (13 :listbox-double-click) (14 :tree-selection-changing) (15 :tree-selection-changed) (16 :splitter-sash-changing) (17 :splitter-sash-changed) (18 :slider-change) (19 :spin-change) (20 :radio-selection) (21 :toggle-button-change) (22 :combo-selection) (23 :date-change) (24 :time-change) (25 :search) (26 :search-cancel))
+                (6 :query-end-session) (7 :end-session) (8 :idle) (9 :menu) (10 :notebook-page-changing) (11 :notebook-page-changed) (12 :listbox-selection) (13 :listbox-double-click) (14 :tree-selection-changing) (15 :tree-selection-changed) (16 :splitter-sash-changing) (17 :splitter-sash-changed) (18 :slider-change) (19 :spin-change) (20 :radio-selection) (21 :toggle-button-change) (22 :combo-selection) (23 :date-change) (24 :time-change) (25 :search) (26 :search-cancel) (27 :web-message) (28 :web-script-result) (29 :web-loaded) (30 :web-error))
       (gethash code *registered-event-kinds*) (error "Unknown native event kind ~S" code)))
 (defgeneric event-kind (event))
 (defmethod event-kind ((event event)) (event-kind-value event))

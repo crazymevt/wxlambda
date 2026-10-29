@@ -302,3 +302,27 @@ has been reached. Do not manufacture another required widget batch; further work
 is application-driven or explicitly requested platform/manual validation.
 Preserve manager stable-ID deferred targeting, first-request coalescing and
 pending-owner cancellation; see docs/RECORD-MANAGER.md.
+
+
+ABI56 GRID owns a fixed native string table (1..256 axes, <=16384 cells), copied
+cell/label text and whole-grid editing policy. Preserve active-native-editor
+write refusal, committed-value reads, composite TEXT/BUTTON Input guards,
+early Destroy suppression and private scroll-handler order. No custom table/
+editor ownership, structural edits or public grid event family. See docs/GRID.md.
+
+ABI56 WEB-VIEW owns a private wxWebView child in a WINDOW container, initially
+gated to verified macOS wxWidgets3.2.12 WKWebView. Preserve Objective-C exception
+containment/URL validation, retained stateless UI/message delegate, removal of
+wx fullscreen callbacks and known modal/upload/popup/permission suppression.
+JavaScript remains enabled for trusted development; all-frame/all-origin messages
+are unauthenticated data. Never retain a raw C++ owner across WebKit completion:
+use monotonic numeric owner/ticket lookup, copied queued events, bounded messages/
+requests/results and owner/session cleanup. Preserve request-slot rollback on
+rejected reentry, readonly payload metadata, no synthetic/owned/cloned web events,
+Input propagation/lifetime guards and rejection of private handler-stack edits.
+Native LOADED is not an application readiness guarantee; scripts may finish after
+navigation and Promise objects are not awaited. See docs/WEB-VIEW.md.
+
+The user explicitly requested grid and interactive JavaScript WebView after the
+finite local MVP was accepted; this is an application-driven extension, not a
+resumption of exhaustive parity. Further expansion still requires a concrete need.
