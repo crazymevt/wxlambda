@@ -120,7 +120,7 @@ session ownership; actual native window destruction pops managed stacks without
 deleting those handlers. Explicit stack-aware processing differs from generic
 window receiver dispatch, which retains native stack bypass. Public window wrapper
 classes are `window` (abstract), `frame`, `panel`, `scrolled-panel`, `button`,
-`text-control`, `label`, `checkbox`, `choice`, `gauge`, `combo-box`, `date-picker`, `time-picker`, `toggle-button`, `radio-box`, `slider`, `spin-control`, `notebook`, `list-box`, `tree-control`, `splitter-window`, `toolbar` and `status-bar` (plus the
+`text-control`, `label`, `checkbox`, `choice`, `gauge`, `combo-box`, `date-picker`, `time-picker`, `search-control`, `toggle-button`, `radio-box`, `slider`, `spin-control`, `notebook`, `list-box`, `tree-control`, `splitter-window`, `toolbar` and `status-bar` (plus the
 DIALOG hierarchy described below). Lisp subclassing does not imply
 native C++ subclassing or virtual-method callbacks; those need separate bridge
 support. See `docs/CLOS-API.md`.
@@ -274,3 +274,12 @@ with component roundtrip/readback, independent immutable EVENT-TIME metadata
 early Destroy guards. Date portions, fractions, timezones and scheduling are not
 exposed; no owned/synthetic/cloned time events. Requires wxUSE_TIMEPICKCTRL plus
 wxUSE_DATETIME/adv; see `docs/TIME-PICKER.md`.
+
+ABI54 SEARCH-CONTROL uses copied single-line query TEXT and SEARCH-HINT properties,
+with NUL/CR/LF rejection, silent defaults and explicit TEXT notify. Preserve actual/
+propagated/composite Input and early Destroy guards. SEARCH/SEARCH-CANCEL copy
+native strings without query inference; native cancel/icon/Enter behavior varies.
+Those kinds reject owned/synthetic/cloning, while generic TEXT scope is retained.
+Search-origin TEXT context string SETF rejects even without WXGetTextEntry; do
+not weaken that portable rule. Requires wxUSE_SEARCHCTRL/wxUSE_TEXTCTRL; see
+`docs/SEARCH-CONTROLS.md`.

@@ -190,14 +190,17 @@
       "lisp": [
         "(setf text)",
         "combo-box",
-        "text"
+        "text",
+        "search-control"
       ],
       "native": [
         "wxl_set_text",
         "wxl_combo_text",
-        "wxl_set_combo_text"
+        "wxl_set_combo_text",
+        "wxl_search_field",
+        "wxl_set_search_field"
       ],
-      "scope": "TEXT-CONTROL UTF8/multiline behavior and editable COMBO-BOX single-line text only. Explicit-length NUL rejection; combo additionally rejects CR/LF, clears prior native selection before silent ChangeValue, then optional explicit TEXT notify. Other wxTextEntry receiver families remain unbound. See docs/TEXT-EDITING.md and docs/COMBO-BOXES.md."
+      "scope": "TEXT-CONTROL UTF8/multiline behavior, editable COMBO-BOX and SEARCH-CONTROL single-line text only. Explicit-length NUL rejection; combo/search additionally reject CR/LF. Combo clears prior native selection before silent ChangeValue; search uses its native composite-aware ChangeValue. Optional explicit TEXT notify once even unchanged for combo/search, with Input callback/ancestor/reentry protection. Other wxTextEntry receivers/editing APIs remain unbound. See docs/TEXT-EDITING.md, docs/COMBO-BOXES.md and docs/SEARCH-CONTROLS.md."
     },
     {
       "header": "wx/textentry.h",
@@ -207,14 +210,17 @@
       "symbol": "wxTextEntry::GetValue",
       "lisp": [
         "text",
-        "combo-box"
+        "combo-box",
+        "search-control"
       ],
       "native": [
         "wxl_get_text",
         "wxl_combo_text",
-        "wxl_set_combo_text"
+        "wxl_set_combo_text",
+        "wxl_search_field",
+        "wxl_set_search_field"
       ],
-      "scope": "TEXT-CONTROL UTF8/multiline behavior and editable COMBO-BOX single-line text only. Explicit-length NUL rejection; combo additionally rejects CR/LF, clears prior native selection before silent ChangeValue, then optional explicit TEXT notify. Other wxTextEntry receiver families remain unbound. See docs/TEXT-EDITING.md and docs/COMBO-BOXES.md."
+      "scope": "TEXT-CONTROL UTF8/multiline behavior, editable COMBO-BOX and SEARCH-CONTROL single-line text only. Explicit-length NUL rejection; combo/search additionally reject CR/LF. Combo clears prior native selection before silent ChangeValue; search uses its native composite-aware ChangeValue. Optional explicit TEXT notify once even unchanged for combo/search, with Input callback/ancestor/reentry protection. Other wxTextEntry receivers/editing APIs remain unbound. See docs/TEXT-EDITING.md, docs/COMBO-BOXES.md and docs/SEARCH-CONTROLS.md."
     },
     {
       "header": "wx/textentry.h",
@@ -1341,7 +1347,7 @@
         "wxl_bind",
         "wxl_event_text"
       ],
-      "scope": "Snapshots retain copied values. Owned/current command/notify values support generic event-text reads; snapshots stay immutable. Signed32 integer or counted UTF-8 string transport; close-family reads are zero/NIL and writes reject. Native wxEVT_TEXT text-entry-origin SETF rejects; detached clones freeze effective native text. No client/userData ownership or arbitrary native classes. Also reads observational radio-box command metadata; not a control setter. Also observes COMBO-BOX native command/text payloads, not a control setter."
+      "scope": "Snapshots retain copied values. Owned/current command/notify values support generic event-text reads; snapshots stay immutable. Signed32 integer or counted UTF-8 string transport; close-family reads are zero/NIL and writes reject. Native wxEVT_TEXT text-entry-origin SETF rejects; detached clones freeze effective native text. No client/userData ownership or arbitrary native classes. Also reads observational radio-box command metadata; not a control setter. Also observes COMBO-BOX native command/text payloads, not a control setter. SEARCH-CONTROL query-origin TEXT context string writes also reject on ports without a native text-entry hook; generic TEXT cloning retains its scope. Native search/cancel string metadata is copied, not inferred from current query, and does not edit the control; those two kinds reject owned/synthetic/cloned resources. See docs/SEARCH-CONTROLS.md."
     },
     {
       "header": "wx/event.h",
@@ -1379,7 +1385,7 @@
         "wxl_process_event",
         "wxl_set_event_text"
       ],
-      "scope": "Snapshots retain copied values. Owned/current command/notify values support generic event-text reads and SETF; snapshots stay immutable. Signed32 integer or counted UTF-8 string transport; close-family reads are zero/NIL and writes reject. Native wxEVT_TEXT text-entry-origin SETF rejects; detached clones freeze effective native text. No client/userData ownership or arbitrary native classes."
+      "scope": "Snapshots retain copied values. Owned/current command/notify values support generic event-text reads and SETF; snapshots stay immutable. Signed32 integer or counted UTF-8 string transport; close-family reads are zero/NIL and writes reject. Native wxEVT_TEXT text-entry-origin SETF rejects; detached clones freeze effective native text. No client/userData ownership or arbitrary native classes. SEARCH-CONTROL query-origin TEXT context string writes also reject on ports without a native text-entry hook; generic TEXT cloning retains its scope. Native search/cancel string metadata is copied, not inferred from current query, and does not edit the control; those two kinds reject owned/synthetic/cloned resources. See docs/SEARCH-CONTROLS.md."
     },
     {
       "header": "wx/app.h",
@@ -8424,6 +8430,206 @@
         "wxl_set_clock_time"
       ],
       "scope": "Bounded required TIME-PICKER WINDOW with copied (hour minute second) values, hour0..23 and minute/second0..59, midnight default. Fixed local2012-01-01 input anchor and native component readback, silent SETF/explicit native time event, immutable copied time snapshots/current contexts and shared Input/early Destroy protection. No date/timezone/scheduling/raw resources, nullable/range/styles, owned/synthetic/time clones or full parity. See docs/TIME-PICKER.md."
+    },
+    {
+      "header": "wx/srchctrl.h",
+      "line": 68,
+      "declaration": "class wxSearchCtrl : public wxControl, public wxTextEntry {",
+      "status": "~",
+      "symbol": "wxSearchCtrl",
+      "lisp": [
+        "search-control",
+        "make-search-control",
+        "text",
+        "search-hint",
+        "event-text"
+      ],
+      "native": [
+        "wxl_search_control",
+        "wxl_search_field",
+        "wxl_set_search_field"
+      ],
+      "scope": "Bounded editable SEARCH-CONTROL WINDOW with copied single-line UTF-8 query and descriptive hint, NUL/CR/LF rejection, native-backed CLOS and rollback. Default TEXT writes/hint writes silent; explicit TEXT notify once even unchanged. Native-only search/cancel payloads copied without query inference; shared Input source/composite/propagation and early Destroy guards. Requests both icons and PROCESS_ENTER, with native GTK/Cocoa/generic visibility/empty/cancel differences. No menus/styles/button visibility/editing APIs/raw adoption or full parity. See docs/SEARCH-CONTROLS.md. Search-origin TEXT context string writes reject uniformly, including absent native text-entry hook; generic TEXT cloning remains supported."
+    },
+    {
+      "header": "wx/srchctrl.h",
+      "line": 74,
+      "declaration": "wxSearchCtrl();",
+      "status": "~",
+      "symbol": "wxSearchCtrl::wxSearchCtrl",
+      "lisp": [
+        "search-control",
+        "make-search-control",
+        "text",
+        "search-hint",
+        "event-text"
+      ],
+      "native": [
+        "wxl_search_control",
+        "wxl_search_field",
+        "wxl_set_search_field"
+      ],
+      "scope": "Bounded editable SEARCH-CONTROL WINDOW with copied single-line UTF-8 query and descriptive hint, NUL/CR/LF rejection, native-backed CLOS and rollback. Default TEXT writes/hint writes silent; explicit TEXT notify once even unchanged. Native-only search/cancel payloads copied without query inference; shared Input source/composite/propagation and early Destroy guards. Requests both icons and PROCESS_ENTER, with native GTK/Cocoa/generic visibility/empty/cancel differences. No menus/styles/button visibility/editing APIs/raw adoption or full parity. See docs/SEARCH-CONTROLS.md. Search-origin TEXT context string writes reject uniformly, including absent native text-entry hook; generic TEXT cloning remains supported."
+    },
+    {
+      "header": "wx/srchctrl.h",
+      "line": 98,
+      "declaration": "wxSearchCtrl(wxWindow* parent, wxWindowID id, const wxString& value = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = 0, const wxValidator& validator = wxDefaultValidator, const wxString& name = wxSearchCtrlNameStr);",
+      "status": "~",
+      "symbol": "wxSearchCtrl::wxSearchCtrl",
+      "lisp": [
+        "search-control",
+        "make-search-control",
+        "text",
+        "search-hint",
+        "event-text"
+      ],
+      "native": [
+        "wxl_search_control",
+        "wxl_search_field",
+        "wxl_set_search_field"
+      ],
+      "scope": "Bounded editable SEARCH-CONTROL WINDOW with copied single-line UTF-8 query and descriptive hint, NUL/CR/LF rejection, native-backed CLOS and rollback. Default TEXT writes/hint writes silent; explicit TEXT notify once even unchanged. Native-only search/cancel payloads copied without query inference; shared Input source/composite/propagation and early Destroy guards. Requests both icons and PROCESS_ENTER, with native GTK/Cocoa/generic visibility/empty/cancel differences. No menus/styles/button visibility/editing APIs/raw adoption or full parity. See docs/SEARCH-CONTROLS.md. Search-origin TEXT context string writes reject uniformly, including absent native text-entry hook; generic TEXT cloning remains supported."
+    },
+    {
+      "header": "wx/srchctrl.h",
+      "line": 112,
+      "declaration": "bool Create(wxWindow* parent, wxWindowID id, const wxString& value = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = 0, const wxValidator& validator = wxDefaultValidator, const wxString& name = wxSearchCtrlNameStr);",
+      "status": "~",
+      "symbol": "wxSearchCtrl::Create",
+      "lisp": [
+        "search-control",
+        "make-search-control",
+        "text",
+        "search-hint",
+        "event-text"
+      ],
+      "native": [
+        "wxl_search_control",
+        "wxl_search_field",
+        "wxl_set_search_field"
+      ],
+      "scope": "Bounded editable SEARCH-CONTROL WINDOW with copied single-line UTF-8 query and descriptive hint, NUL/CR/LF rejection, native-backed CLOS and rollback. Default TEXT writes/hint writes silent; explicit TEXT notify once even unchanged. Native-only search/cancel payloads copied without query inference; shared Input source/composite/propagation and early Destroy guards. Requests both icons and PROCESS_ENTER, with native GTK/Cocoa/generic visibility/empty/cancel differences. No menus/styles/button visibility/editing APIs/raw adoption or full parity. See docs/SEARCH-CONTROLS.md. Search-origin TEXT context string writes reject uniformly, including absent native text-entry hook; generic TEXT cloning remains supported."
+    },
+    {
+      "header": "wx/srchctrl.h",
+      "line": 171,
+      "declaration": "void SetDescriptiveText(const wxString& text);",
+      "status": "~",
+      "symbol": "wxSearchCtrl::SetDescriptiveText",
+      "lisp": [
+        "search-control",
+        "make-search-control",
+        "text",
+        "search-hint",
+        "event-text"
+      ],
+      "native": [
+        "wxl_search_control",
+        "wxl_search_field",
+        "wxl_set_search_field"
+      ],
+      "scope": "Bounded editable SEARCH-CONTROL WINDOW with copied single-line UTF-8 query and descriptive hint, NUL/CR/LF rejection, native-backed CLOS and rollback. Default TEXT writes/hint writes silent; explicit TEXT notify once even unchanged. Native-only search/cancel payloads copied without query inference; shared Input source/composite/propagation and early Destroy guards. Requests both icons and PROCESS_ENTER, with native GTK/Cocoa/generic visibility/empty/cancel differences. No menus/styles/button visibility/editing APIs/raw adoption or full parity. See docs/SEARCH-CONTROLS.md. Search-origin TEXT context string writes reject uniformly, including absent native text-entry hook; generic TEXT cloning remains supported."
+    },
+    {
+      "header": "wx/srchctrl.h",
+      "line": 176,
+      "declaration": "wxString GetDescriptiveText() const;",
+      "status": "~",
+      "symbol": "wxSearchCtrl::GetDescriptiveText",
+      "lisp": [
+        "search-control",
+        "make-search-control",
+        "text",
+        "search-hint",
+        "event-text"
+      ],
+      "native": [
+        "wxl_search_control",
+        "wxl_search_field",
+        "wxl_set_search_field"
+      ],
+      "scope": "Bounded editable SEARCH-CONTROL WINDOW with copied single-line UTF-8 query and descriptive hint, NUL/CR/LF rejection, native-backed CLOS and rollback. Default TEXT writes/hint writes silent; explicit TEXT notify once even unchanged. Native-only search/cancel payloads copied without query inference; shared Input source/composite/propagation and early Destroy guards. Requests both icons and PROCESS_ENTER, with native GTK/Cocoa/generic visibility/empty/cancel differences. No menus/styles/button visibility/editing APIs/raw adoption or full parity. See docs/SEARCH-CONTROLS.md. Search-origin TEXT context string writes reject uniformly, including absent native text-entry hook; generic TEXT cloning remains supported."
+    },
+    {
+      "header": "wx/srchctrl.h",
+      "line": 51,
+      "declaration": "documented event: EVT_SEARCH(id, func)",
+      "status": "~",
+      "symbol": "EVT_SEARCH",
+      "lisp": [
+        "search-control",
+        "make-search-control",
+        "text",
+        "search-hint",
+        "event-text"
+      ],
+      "native": [
+        "wxl_search_control",
+        "wxl_search_field",
+        "wxl_set_search_field"
+      ],
+      "scope": "Bounded editable SEARCH-CONTROL WINDOW with copied single-line UTF-8 query and descriptive hint, NUL/CR/LF rejection, native-backed CLOS and rollback. Default TEXT writes/hint writes silent; explicit TEXT notify once even unchanged. Native-only search/cancel payloads copied without query inference; shared Input source/composite/propagation and early Destroy guards. Requests both icons and PROCESS_ENTER, with native GTK/Cocoa/generic visibility/empty/cancel differences. No menus/styles/button visibility/editing APIs/raw adoption or full parity. See docs/SEARCH-CONTROLS.md. Search-origin TEXT context string writes reject uniformly, including absent native text-entry hook; generic TEXT cloning remains supported."
+    },
+    {
+      "header": "wx/srchctrl.h",
+      "line": 57,
+      "declaration": "documented event: EVT_SEARCH_CANCEL(id, func)",
+      "status": "~",
+      "symbol": "EVT_SEARCH_CANCEL",
+      "lisp": [
+        "search-control",
+        "make-search-control",
+        "text",
+        "search-hint",
+        "event-text"
+      ],
+      "native": [
+        "wxl_search_control",
+        "wxl_search_field",
+        "wxl_set_search_field"
+      ],
+      "scope": "Bounded editable SEARCH-CONTROL WINDOW with copied single-line UTF-8 query and descriptive hint, NUL/CR/LF rejection, native-backed CLOS and rollback. Default TEXT writes/hint writes silent; explicit TEXT notify once even unchanged. Native-only search/cancel payloads copied without query inference; shared Input source/composite/propagation and early Destroy guards. Requests both icons and PROCESS_ENTER, with native GTK/Cocoa/generic visibility/empty/cancel differences. No menus/styles/button visibility/editing APIs/raw adoption or full parity. See docs/SEARCH-CONTROLS.md. Search-origin TEXT context string writes reject uniformly, including absent native text-entry hook; generic TEXT cloning remains supported."
+    },
+    {
+      "header": "wx/srchctrl.h",
+      "line": 180,
+      "declaration": "wxEventType wxEVT_SEARCH_CANCEL;",
+      "status": "~",
+      "symbol": "wxEVT_SEARCH_CANCEL",
+      "lisp": [
+        "search-control",
+        "make-search-control",
+        "text",
+        "search-hint",
+        "event-text"
+      ],
+      "native": [
+        "wxl_search_control",
+        "wxl_search_field",
+        "wxl_set_search_field"
+      ],
+      "scope": "Bounded editable SEARCH-CONTROL WINDOW with copied single-line UTF-8 query and descriptive hint, NUL/CR/LF rejection, native-backed CLOS and rollback. Default TEXT writes/hint writes silent; explicit TEXT notify once even unchanged. Native-only search/cancel payloads copied without query inference; shared Input source/composite/propagation and early Destroy guards. Requests both icons and PROCESS_ENTER, with native GTK/Cocoa/generic visibility/empty/cancel differences. No menus/styles/button visibility/editing APIs/raw adoption or full parity. See docs/SEARCH-CONTROLS.md. Search-origin TEXT context string writes reject uniformly, including absent native text-entry hook; generic TEXT cloning remains supported."
+    },
+    {
+      "header": "wx/srchctrl.h",
+      "line": 181,
+      "declaration": "wxEventType wxEVT_SEARCH;",
+      "status": "~",
+      "symbol": "wxEVT_SEARCH",
+      "lisp": [
+        "search-control",
+        "make-search-control",
+        "text",
+        "search-hint",
+        "event-text"
+      ],
+      "native": [
+        "wxl_search_control",
+        "wxl_search_field",
+        "wxl_set_search_field"
+      ],
+      "scope": "Bounded editable SEARCH-CONTROL WINDOW with copied single-line UTF-8 query and descriptive hint, NUL/CR/LF rejection, native-backed CLOS and rollback. Default TEXT writes/hint writes silent; explicit TEXT notify once even unchanged. Native-only search/cancel payloads copied without query inference; shared Input source/composite/propagation and early Destroy guards. Requests both icons and PROCESS_ENTER, with native GTK/Cocoa/generic visibility/empty/cancel differences. No menus/styles/button visibility/editing APIs/raw adoption or full parity. See docs/SEARCH-CONTROLS.md. Search-origin TEXT context string writes reject uniformly, including absent native text-entry hook; generic TEXT cloning remains supported."
     }
   ],
   "classes": {
@@ -9765,6 +9971,22 @@
         "wxl_set_clock_time"
       ],
       "scope": "Bounded required TIME-PICKER WINDOW with copied (hour minute second) values, hour0..23 and minute/second0..59, midnight default. Fixed local2012-01-01 input anchor and native component readback, silent SETF/explicit native time event, immutable copied time snapshots/current contexts and shared Input/early Destroy protection. No date/timezone/scheduling/raw resources, nullable/range/styles, owned/synthetic/time clones or full parity. See docs/TIME-PICKER.md."
+    },
+    "wxSearchCtrl": {
+      "status": "~",
+      "lisp": [
+        "search-control",
+        "make-search-control",
+        "text",
+        "search-hint",
+        "event-text"
+      ],
+      "native": [
+        "wxl_search_control",
+        "wxl_search_field",
+        "wxl_set_search_field"
+      ],
+      "scope": "Bounded editable SEARCH-CONTROL WINDOW with copied single-line UTF-8 query and descriptive hint, NUL/CR/LF rejection, native-backed CLOS and rollback. Default TEXT writes/hint writes silent; explicit TEXT notify once even unchanged. Native-only search/cancel payloads copied without query inference; shared Input source/composite/propagation and early Destroy guards. Requests both icons and PROCESS_ENTER, with native GTK/Cocoa/generic visibility/empty/cancel differences. No menus/styles/button visibility/editing APIs/raw adoption or full parity. See docs/SEARCH-CONTROLS.md. Search-origin TEXT context string writes reject uniformly, including absent native text-entry hook; generic TEXT cloning remains supported."
     }
   }
 }

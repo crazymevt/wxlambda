@@ -17,7 +17,7 @@ extern "C" {
 typedef uint64_t wxl_handle;
 enum wxl_alignment { WXL_ALIGN_START = 0, WXL_ALIGN_CENTER = 1, WXL_ALIGN_END = 2 };
 enum wxl_event_family { WXL_FAMILY_COMMAND = 0, WXL_FAMILY_CLOSE = 1, WXL_FAMILY_NOTIFY = 2, WXL_FAMILY_IDLE = 3 };
-enum wxl_event_kind { WXL_EVENT_CLICK = 1, WXL_EVENT_TEXT_CHANGE = 2, WXL_EVENT_TOGGLE = 3, WXL_EVENT_SELECTION = 4, WXL_EVENT_CLOSE = 5, WXL_EVENT_QUERY_END_SESSION = 6, WXL_EVENT_END_SESSION = 7, WXL_EVENT_IDLE = 8, WXL_EVENT_MENU = 9, WXL_EVENT_NOTEBOOK_CHANGING = 10, WXL_EVENT_NOTEBOOK_CHANGED = 11, WXL_EVENT_LISTBOX_SELECTION = 12, WXL_EVENT_LISTBOX_DOUBLE_CLICK = 13, WXL_EVENT_TREE_CHANGING = 14, WXL_EVENT_TREE_CHANGED = 15, WXL_EVENT_SPLITTER_CHANGING = 16, WXL_EVENT_SPLITTER_CHANGED = 17, WXL_EVENT_SLIDER_CHANGE = 18, WXL_EVENT_SPIN_CHANGE = 19, WXL_EVENT_RADIO_SELECTION = 20, WXL_EVENT_TOGGLE_BUTTON_CHANGE = 21, WXL_EVENT_COMBO_SELECTION = 22, WXL_EVENT_DATE_CHANGE = 23, WXL_EVENT_TIME_CHANGE = 24 };
+enum wxl_event_kind { WXL_EVENT_CLICK = 1, WXL_EVENT_TEXT_CHANGE = 2, WXL_EVENT_TOGGLE = 3, WXL_EVENT_SELECTION = 4, WXL_EVENT_CLOSE = 5, WXL_EVENT_QUERY_END_SESSION = 6, WXL_EVENT_END_SESSION = 7, WXL_EVENT_IDLE = 8, WXL_EVENT_MENU = 9, WXL_EVENT_NOTEBOOK_CHANGING = 10, WXL_EVENT_NOTEBOOK_CHANGED = 11, WXL_EVENT_LISTBOX_SELECTION = 12, WXL_EVENT_LISTBOX_DOUBLE_CLICK = 13, WXL_EVENT_TREE_CHANGING = 14, WXL_EVENT_TREE_CHANGED = 15, WXL_EVENT_SPLITTER_CHANGING = 16, WXL_EVENT_SPLITTER_CHANGED = 17, WXL_EVENT_SLIDER_CHANGE = 18, WXL_EVENT_SPIN_CHANGE = 19, WXL_EVENT_RADIO_SELECTION = 20, WXL_EVENT_TOGGLE_BUTTON_CHANGE = 21, WXL_EVENT_COMBO_SELECTION = 22, WXL_EVENT_DATE_CHANGE = 23, WXL_EVENT_TIME_CHANGE = 24, WXL_EVENT_SEARCH = 25, WXL_EVENT_SEARCH_CANCEL = 26 };
 typedef struct wxl_event {
     int kind;
     const char *text; /* UTF-8 for text changes, combo-box/toggle-button/radio-box/listbox events and registered command/notify tags. */
@@ -53,6 +53,12 @@ typedef void (*wxl_callback)(uint64_t token, const wxl_event *event);
    Never unwind across this boundary. No borrowed event context is active. */
 typedef void (*wxl_ui_callback)(uint64_t token, int kind);
 WXL_API int wxl_abi_version(void);
+/* Editable single-line search text/hint: explicit UTF-8 lengths, NUL/CR/LF reject.
+   Field0=text,1=hint; setter notify is valid only for text (one TEXT event).
+   Search/cancel are native-only command kinds; no widget menu/button policy API. */
+WXL_API wxl_handle wxl_search_control(wxl_handle parent, const char* value, size_t length, const char* hint, size_t hint_length);
+WXL_API const char* wxl_search_field(wxl_handle id, int field, size_t* length);
+WXL_API int wxl_set_search_field(wxl_handle id, int field, const char* value, size_t length, int notify);
 /* Required local wall-clock time: hour0..23, minute/second0..59, no date/timezone.
    Getter copies1+seconds since midnight; silent unless notify=1 (wxDateEvent). */
 WXL_API wxl_handle wxl_time_picker(wxl_handle parent, int hour, int minute, int second);

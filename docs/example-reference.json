@@ -206,5 +206,9 @@
   "time-picker.lisp": {
     "description": "Time-of-day start form with native snapshot feedback and an owner-bound deferred Reset action. EXERCISE checks explicit-notify feedback and reset without simulating physical time input or scheduling anything.",
     "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/time-picker.lisp --eval '(wxlambda-time-picker:start)'"
+  },
+  "search-controls.lisp": {
+    "description": "Native query and Lisp-native list filtering with deferred TEXT/search handling and explicit deferred cancel/clear policy. EXERCISE uses explicit TEXT notification and a Clear filter command; native search/cancel gestures are tested separately without physical input simulation.",
+    "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/search-controls.lisp --eval '(wxlambda-search-controls:start)'"
   }
 }

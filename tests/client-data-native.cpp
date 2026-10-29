@@ -35,7 +35,7 @@ void inspect_binding(uint64_t token, const wxl_event* event) {
     saved_context = event->context;
     binding_called = true;
 }
-std::function<void(uint64_t, const wxl_event*)> notebook_probe, list_probe, tree_probe, splitter_probe, toolbar_probe, accelerator_probe, deferred_event_probe, numeric_probe, radio_probe, toggle_probe, combo_probe, scroll_probe, tooltip_probe, date_probe, time_probe;
+std::function<void(uint64_t, const wxl_event*)> notebook_probe, list_probe, tree_probe, splitter_probe, toolbar_probe, accelerator_probe, deferred_event_probe, numeric_probe, radio_probe, toggle_probe, combo_probe, scroll_probe, tooltip_probe, date_probe, time_probe, search_probe;
 std::function<void(uint64_t,int)> ui_action_probe;
 void ignore_ui_action(uint64_t token, int execute) { if (ui_action_probe) ui_action_probe(token, execute); }
 void ignore_event(uint64_t token, const wxl_event* event) {
@@ -54,6 +54,7 @@ void ignore_event(uint64_t token, const wxl_event* event) {
     if (token==929 && tooltip_probe) tooltip_probe(token,event);
     if ((token==930 || token==931 || token==932) && date_probe) date_probe(token,event);
     if ((token==933 || token==934 || token==935) && time_probe) time_probe(token,event);
+    if ((token==936 || token==937 || token==938) && search_probe) search_probe(token,event);
     if (token == 901) inspect_binding(token, event);
     if (token == 903) { ++menu_calls; menu_checked_payload = event->checked; menu_integer_payload = event->integer; menu_origin = event->origin_id; }
 }
@@ -1667,6 +1668,122 @@ void exercise_time_picker() {
     expect(wxl_clock_time(picker,&code)==-1 && wxl_set_clock_time(picker,0,0,0,0)==-1,"Time teardown stale handles");
 }
 
+class NonEntrySearchProbe : public wxSearchCtrl {
+public:
+    using wxSearchCtrl::wxSearchCtrl;
+    // Generic ports don't necessarily provide WXGetTextEntry().
+    const wxTextEntry* WXGetTextEntry() const override { return nullptr; }
+};
+class EarlySearchDestroyProbe : public wxSearchCtrl {
+public:
+    using wxSearchCtrl::wxSearchCtrl;
+    std::function<void()> during_destroy;
+    bool refuse=false;
+    bool Destroy() override {
+        if (during_destroy) during_destroy();
+        return refuse ? false : wxSearchCtrl::Destroy();
+    }
+};
+void exercise_search_controls() {
+    const auto frame=wxl_frame("Search",460,240), panel=wxl_panel(frame);
+    unsigned calls=0; bool constructing=true;
+    search_probe=[&](uint64_t,const wxl_event*) { ++calls; expect(!constructing,"Search constructor callbacks suppressed"); };
+    expect(wxl_bind(frame,WXL_EVENT_TEXT_CHANGE,938,wxID_ANY,wxID_ANY,1,0)==0,"Observe search construction");
+    const auto search=wxl_search_control(panel,"query λ",8,"Find λ",7), other=wxl_search_control(panel,"",0,"Search",6);
+    expect(search && other && !calls,"Search construction silence"); constructing=false; expect(wxl_unbind(938)==1,"Search constructor unbind");
+    size_t length=0;
+    const auto value=wxl_search_field(search,0,&length); expect(value && std::string(value,length)=="query λ","Native search text");
+    const auto hint=wxl_search_field(search,1,&length); expect(hint && std::string(hint,length)=="Find λ","Native search placeholder");
+    expect(!wxl_search_control(panel,"a\nb",3,"",0) && !wxl_search_control(panel,"",0,"a\rb",3) &&
+           wxl_set_search_field(search,0,"a\0b",3,0)==-1 && wxl_set_search_field(search,0,nullptr,1,0)==-1 &&
+           wxl_set_search_field(search,0,"\xff",1,0)==-1 && wxl_set_search_field(search,2,"",0,0)==-1 &&
+           wxl_set_search_field(search,1,"",0,1)==-1 && wxl_set_search_field(search,0,"",0,2)==-1 &&
+           !wxl_search_field(frame,0,&length) && !wxl_search_field(search,2,&length) && !wxl_search_field(search,0,nullptr),"Raw search field/input validation");
+    const auto dialog=wxl_message_dialog(frame,"Search",6,"Probe",5,0,0);
+    uint64_t expired=0;
+    std::string expected="payload λ";
+    auto check_guards=[&] {
+        expect(wxl_set_search_field(search,0,"nested",6,0)==-1 && wxl_set_search_field(search,1,"nested",6,0)==-1 &&
+               wxl_destroy(search)==-1 && wxl_destroy(panel)==-1 && wxl_close(frame,1)==-1,"Actual search origin/ancestor guards");
+        int result=-1;
+        expect(wxl_poll()==-1 && wxl_clipboard_text_available()==-1 && wxl_dialog_show(dialog,&result)==-1,"Search native-entry guards");
+        expect(wxl_set_search_field(other,0,"Sync",4,0)==0 && wxl_set_search_field(other,1,"Hint",4,0)==0,"Silent cross-search writes");
+    };
+    search_probe=[&](uint64_t token,const wxl_event* event) {
+        ++calls; expired=event->context; check_guards();
+        expect(event->origin_id==search && event->family==WXL_FAMILY_COMMAND && !event->can_veto,"Search native origin/family");
+        expect(event->text && std::string(event->text,event->text_length)==expected,"Native search/cancel payload copied without inference");
+        size_t size=0;
+        if (event->kind==WXL_EVENT_TEXT_CHANGE) {
+            expect(wxl_set_event_text(event->context,1,"metadata",8)==-1,"Lazy search-origin TEXT metadata rejects writes");
+            const auto clone=wxl_clone_event(event->context,1);
+            expect(clone!=0,"Existing generic TEXT clone support remains");
+            const auto text=wxl_event_text(clone,0,&size); expect(text && std::string(text,size)==expected,"Detached TEXT freezes native search string");
+            expect(wxl_event_destroy(clone)==0,"TEXT clone disposal");
+        } else {
+            expect(!wxl_clone_event(event->context,1),"Native search/cancel clone rejects");
+            const auto old_value=wxl_search_field(search,0,&size); const std::string before(old_value,size);
+            expect(wxl_set_event_text(event->context,1,"metadata",8)==0,"Search/cancel string metadata remains ordinary command text");
+            const auto current=wxl_search_field(search,0,&size); expect(current && std::string(current,size)==before,"Command metadata does not edit query");
+            expect(wxl_set_event_text(event->context,1,expected.data(),expected.size())==0,"Restore command string for parent probe");
+        }
+        if (token==936) expect(wxl_context_set_skipped(event->context,1)==0,"Search propagation");
+    };
+    auto send=[&](int kind) {
+        expect(wxl_bind(search,kind,936,wxID_ANY,wxID_ANY,1,0)==0 && wxl_bind(frame,kind,937,wxID_ANY,wxID_ANY,1,0)==0,"Search native bindings");
+        wxCommandEvent event(native_event_type(kind),window(search)->GetId()); event.SetEventObject(window(search)); event.SetString(expected);
+        window(search)->HandleWindowEvent(event);
+        expect(wxl_unbind(936)==1 && wxl_unbind(937)==1,"Search native unbind");
+    };
+    // Deliver native commands outside setter operations; prevent assumptions about cancel defaults.
+    send(WXL_EVENT_SEARCH);
+    expected=""; send(WXL_EVENT_SEARCH_CANCEL);
+    expect(calls==4 && input_operations.empty(),"Direct search/cancel propagation and operation cleanup");
+    size_t restored=0;
+    // Native cancel may clear, so restore query before checking independent TEXT events.
+    expect(wxl_set_search_field(search,0,"query λ",8,0)==0,"Restore query silently after native cancel");
+    expected="query λ"; send(WXL_EVENT_TEXT_CHANGE);
+    int64_t integer=-1;
+    expect(calls==6 && wxl_event_field(expired,1,7,&integer)==-1,"Search contexts expire");
+    expect(wxl_bind(search,WXL_EVENT_TEXT_CHANGE,936,wxID_ANY,wxID_ANY,1,0)==0 && wxl_bind(frame,WXL_EVENT_TEXT_CHANGE,937,wxID_ANY,wxID_ANY,1,0)==0,"Search TEXT notify bindings");
+    expect(wxl_set_search_field(search,0,"query λ",8,0)==0 && wxl_set_search_field(search,1,"",0,0)==0 && calls==6,"Silent search fields");
+    expect(wxl_set_search_field(search,0,"query λ",8,1)==0 && calls==8,"Exactly one explicit TEXT event even unchanged");
+    expect(wxl_unbind(936)==1 && wxl_unbind(937)==1,"Search notify unbind");
+    expect(!wxl_owned_event(WXL_EVENT_SEARCH,1,nullptr,0,0,0,0,0) && !wxl_owned_event(WXL_EVENT_SEARCH_CANCEL,1,nullptr,0,0,0,0,0),"Search/cancel owned events reject");
+    // Private/composite child TEXT origin protects the owning search control.
+    const auto child=wxl_text(search,"child",5,0,1);
+    search_probe=[&](uint64_t,const wxl_event*) { ++calls; check_guards(); };
+    expect(wxl_bind(frame,WXL_EVENT_TEXT_CHANGE,938,wxID_ANY,wxID_ANY,1,0)==0,"Search child TEXT bind");
+    wxCommandEvent text(wxEVT_TEXT,window(child)->GetId()); text.SetEventObject(window(child)); text.SetString("child"); window(child)->HandleWindowEvent(text);
+    expect(calls==9 && wxl_unbind(938)==1,"Search composite child input guard");
+    auto* nonentry=new ManagedWindow<NonEntrySearchProbe>(window(panel),wxID_ANY,"query");
+    const auto nonentry_id=track(nonentry); input_owners.emplace(nonentry,false);
+    unsigned nonentry_calls=0;
+    search_probe=[&](uint64_t,const wxl_event* event) {
+        ++nonentry_calls;
+        expect(std::string(event->text,event->text_length)=="stored λ" &&
+               wxl_set_event_text(event->context,1,"metadata",8)==-1,"Search TEXT metadata guard independent of native text-entry hook");
+        const auto clone=wxl_clone_event(event->context,1); size_t size=0;
+        const auto value=wxl_event_text(clone,0,&size);
+        expect(clone && value && std::string(value,size)=="stored λ" && wxl_event_destroy(clone)==0,"Non-lazy TEXT clone retains stored string");
+    };
+    expect(wxl_bind(nonentry_id,WXL_EVENT_TEXT_CHANGE,938,wxID_ANY,wxID_ANY,1,0)==0,"Non-entry search TEXT binding");
+    wxCommandEvent stored(wxEVT_TEXT,nonentry->GetId()); stored.SetEventObject(nonentry); stored.SetString("stored λ"); nonentry->HandleWindowEvent(stored);
+    expect(nonentry_calls==1 && wxl_unbind(938)==1 && wxl_destroy(nonentry_id)==0,"Non-entry search probe cleanup");
+    auto* teardown=new ManagedWindow<EarlySearchDestroyProbe>(window(panel),wxID_ANY);
+    const auto teardown_id=track(teardown); input_owners.emplace(teardown,false);
+    unsigned teardown_callbacks=0;
+    search_probe=[&](uint64_t,const wxl_event*) { ++teardown_callbacks; };
+    expect(wxl_bind(frame,WXL_EVENT_SEARCH,936,wxID_ANY,wxID_ANY,1,0)==0,"Early search teardown binding");
+    teardown->during_destroy=[&] { wxCommandEvent event(wxEVT_SEARCH,teardown->GetId()); event.SetEventObject(teardown); teardown->HandleWindowEvent(event); };
+    teardown->refuse=true;
+    expect(!teardown->Destroy() && !input_owners.at(teardown) && !teardown_callbacks,"Failed search Destroy restores Input guard");
+    teardown->refuse=false;
+    expect(wxl_destroy(teardown_id)==0 && !teardown_callbacks && wxl_unbind(936)==1,"Early search Destroy suppresses callbacks");
+    search_probe={}; delete window(frame);
+    expect(!wxl_search_field(search,0,&restored) && wxl_set_search_field(search,1,"stale",5,0)==-1,"Search teardown invalidates handles");
+}
+
 int main() {
     std::thread([] { std::this_thread::sleep_for(std::chrono::seconds(10)); std::_Exit(124); }).detach();
     auto old_assert_handler = wxSetAssertHandler(capture_assert);
@@ -1703,6 +1820,7 @@ int main() {
         exercise_tooltips();
         exercise_date_picker();
         exercise_time_picker();
+        exercise_search_controls();
         bool shutdown_ran=false;
         ui_action_probe=[&](uint64_t,int) { shutdown_ran=true; };
         expect(wxl_defer_ui_action(5000,0)==0 && wxl_start_ui_timer(5001,1,0,0)==0,"Queue shutdown action/timer");

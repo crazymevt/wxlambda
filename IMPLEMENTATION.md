@@ -3007,3 +3007,95 @@ Next selected slice: bounded search controls for list/tree filtering workflows,
 reusing copied UTF-8 text and command/Input lifetime foundations. Preserve explicit
 native text/event semantics, CLOS/SETF, independent review and aligned examples/
 docs/docset/coverage rather than exhausting a native inventory category.
+
+## Search inputs and Lisp-native filtering (2026-10-29)
+
+ABI54 adds native-backed SEARCH-CONTROL, generic MAKE-SEARCH-CONTROL, SEARCH-HINT/
+SETF and TEXT/SETF methods. Required :parent; query:value defaults empty and :hint
+literal Search. Copied explicit-length UTF-8 query/hint reject NUL/CR/LF; empty
+strings valid. Native-backed subclasses/defaults/native-ready AFTER hooks,
+validated :class forwarding and managed failure/root rollback retain construction
+contract. Lisp base WINDOW, not TEXT-CONTROL: native wxSearchCtrl ancestry differs
+by port. Existing editing/selection/insertion/convenience ON-TEXT-CHANGE receiver
+scopes do not widen. No style/menu/icon-visibility/raw-adoption API. Construction
+requests PROCESS_ENTER and both icons; actual icon visibility/native gestures
+remain port-specific, notably inactive GTK SearchEntry search icon and automatic
+cancel display. Generic/GTK Enter commonly suppresses empty queries; Cocoa empty
+actions may cancel. Native cancel can clear before/during dispatch, with native
+TEXT ordering/count and payloads. No normalized native cancel side effect.
+
+TEXT writes use composite-aware ChangeValue silently; :notify emits exactly1
+native TEXT event even unchanged. Hint writes silent, no notify option. New
+:SEARCH/:SEARCH-CANCEL native-only command kinds capture GetString including
+empty, without inferring current query. Current command string SETF is metadata
+only, not control mutation; snapshots remain immutable. New kinds reject owned/
+synthetic/cloning; existing generic TEXT construction/cloning retains its scope.
+Shared Input callbacks protect actual source/propagated/composite-child TEXT,
+same-source query/hint writes and ancestor destruction/close, native GUI/modal/
+clipboard/safe-idle entry. Silent cross-search writes allowed. Early managed
+Destroy and creation/native-base teardown suppress relevant callbacks; weak-ref
+refusal/exception guard restoration retained. Notifier error boundary preserves
+original conditions and committed text.
+
+Independent code/test/docs/coverage review found no remaining actionable findings.
+Final source audit found generic search can have WXGetTextEntry()==nullptr, so
+the existing lazy-text hook guard alone did not enforce the intended portable
+new-receiver rule. Added explicit search-origin TEXT string SETF rejection before
+the unchanged prior text-entry guard. NonEntrySearchProbe emulates the missing
+hook, proves rejection and preserves detached TEXT clone contents. Independently
+re-reviewed with no findings. Source audits pinned generic/GTK/OSX/Cocoa search
+implementations and headers in /private/tmp/wxl-search-source. Runtime local
+macOS wxWidgets3.2.12 only; no hosted GUI claim. CMake requires wxUSE_SEARCHCTRL
+and wxUSE_TEXTCTRL with existing core/base/adv linkage. Negative configuration
+gate probe passes (quiet-run.F1aNNb6A); no actual disabled-feature wxWidgets build.
+Existing wxQt tree construction gate remains unchanged.
+
+Main/final native builds pass (quiet-run.sqKtPHft/TpaKXv5K), focused SBCL/CCL
+example/tests pass (quiet-run.mijwNj7O/cTwr1Yet); final full suites rerun after
+the portable metadata guard. Native harness has zero wx assertions
+(quiet-run.rLYjtKnn), covering direct SEARCH/CANCEL/TEXT outside setter guards,
+native copied payloads/empty cancel independent of query, propagation, metadata
+vs control writes, lazy/missing-hook TEXT rejection and clones, child TEXT,
+silence/unchanged explicit notify, raw validation, source/ancestor/native-entry
+protection, early Destroy refusal and suppression, stale handles. Lisp tests add
+Unicode field copying, CLOS/default/factory/rollback, condition identity/committed
+text, context expiry and post-session snapshots. A fabricated CFFI callback-copy
+probe verifies new keyword/payload decoding and string independence on both
+Lisps; it is not native search gesture simulation.
+
+Example examples/search-controls.lisp filters a Lisp list into LIST-BOX using
+CHAR-EQUAL substring matching (not native/Unicode collation). TEXT/search defer
+filtering and read query at delivery time; cancel and Clear filter explicitly
+defer clear+filter. Owner removal cancels actions; filtering is application code,
+not native widget behavior. EXERCISE uses explicit TEXT notify plus Clear command.
+Full79 GUI scenarios plus preflight pass on SBCL2.6.9 and CCL1.13 after final
+guard (quiet-run.tiwnvxrd/Q8oJPqq5), fresh reports
+evidence/search-controls/{sbcl,ccl}-20261029-final/. Initial pre-guard full suites
+also passed and remain under the corresponding unsuffixed report directories.
+Physical typing/IME/Enter/search/cancel, locale/Unicode collation, icon display,
+accessibility, hosted Windows/Linux/Qt and graphical Cadre remain unverified.
+Native early teardown/missing-hook probes emulate generic phases on macOS, not
+hosted generic behavior. No automatic system clipboard content reads/writes.
+ASDF cache uses /private/tmp.
+
+Pinned coverage inventory/14 checks and16 Python checks pass
+(quiet-run.nQeOdzyq); exact Create line was initially111 and rejected by generator,
+corrected against pinned line112 before regeneration. Final metadata describes
+the portable guard and all inherited receiver scopes; final14-check inventory
+verification passes (quiet-run.q4b2HglR). Counts:270 exports,194 named generics,60 SETF generics,29 window wrappers
+(27 concrete+2 abstract),53 examples and377 docset entries. Both-Lisp actual
+public-export/class/SETF coverage and isolated install/discovery/symbol/guide/
+example checks pass after final guard (quiet-run.KoOHVowx). Install root
+/private/tmp/wxlambda-search-docsets/wxlambda; normal Cadre installation under
+$XDG_DATA_HOME/docsets/wxlambda (default ~/.local/share/docsets/wxlambda/) is in
+docs/DOCSET.md. Final package dist/wxlambda-form-search-controls-final remains the
+established form binary; new example is separate repository/docset content.
+All five final package isolation checks pass (quiet-run.082JN4Ug),
+evidence/packaging/search-controls-20261029-final/. Preliminary pre-guard package/
+reports remain separate. Final docset build/check/install follows these notes.
+
+Session handoff: broad GUI coverage with selective depth remains the objective.
+Next selected slice: bounded activity indicators for busy/deferred workflows.
+Preserve native animation/lifetime and main-thread rules, explicit supported
+scope, independent review and aligned examples/docs/docset/coverage; no exhaustive
+native inventory-category parity requirement.

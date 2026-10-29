@@ -97,7 +97,7 @@
           (if (probe-file local)
               (cffi:load-foreign-library local)
               (cffi:use-foreign-library wxlambda-native))))
-    (unless (= 53 (%abi-version)) (error "Unsupported wxlambda native ABI"))
+    (unless (= 54 (%abi-version)) (error "Unsupported wxlambda native ABI"))
     (setf *native-loaded* t))
   t)
 
@@ -366,3 +366,7 @@
 (cffi:defcfun ("wxl_time_picker" %time-picker) :uint64 (parent :uint64) (hour :int) (minute :int) (second :int))
 (cffi:defcfun ("wxl_clock_time" %clock-time) :int (control :uint64) (code :pointer))
 (cffi:defcfun ("wxl_set_clock_time" %set-clock-time) :int (control :uint64) (hour :int) (minute :int) (second :int) (notify :int))
+
+(cffi:defcfun ("wxl_search_control" %search-control) :uint64 (parent :uint64) (value :pointer) (length :size) (hint :pointer) (hint-length :size))
+(cffi:defcfun ("wxl_search_field" %search-field) :pointer (control :uint64) (field :int) (length :pointer))
+(cffi:defcfun ("wxl_set_search_field" %set-search-field) :int (control :uint64) (field :int) (value :pointer) (length :size) (notify :int))

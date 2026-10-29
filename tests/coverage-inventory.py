@@ -200,7 +200,7 @@ class CoverageInventoryChecks(unittest.TestCase):
         }
         self.assertTrue(required <= {record['symbol'] for record in self.status['declarations']})
         self.assertEqual(set(self.status['classes']), {
-            'wxDatePickerCtrl', 'wxTimePickerCtrl', 'wxDateEvent', 'wxDateTime',
+            'wxSearchCtrl', 'wxDatePickerCtrl', 'wxTimePickerCtrl', 'wxDateEvent', 'wxDateTime',
             'wxFrame', 'wxPanel', 'wxButton', 'wxTextCtrl', 'wxStaticText',
             'wxCheckBox', 'wxChoice', 'wxGauge', 'wxBoxSizer', 'wxWindow', 'wxTopLevelWindow',
             'wxScrolled', 'wxComboBox', 'wxToggleButton', 'wxRadioBox', 'wxSlider', 'wxSpinCtrl', 'wxSpinEvent', 'wxTimer', 'wxAcceleratorEntry', 'wxAcceleratorTable', 'wxToolBar', 'wxStatusBar', 'wxArtProvider', 'wxSplitterWindow', 'wxSplitterEvent', 'wxTreeCtrl', 'wxTreeItemId', 'wxTreeEvent', 'wxListBox', 'wxItemContainer', 'wxItemContainerImmutable', 'wxNotebook', 'wxBookCtrlBase', 'wxBookCtrlEvent', 'wxClipboard', 'wxTextDataObject', 'wxMessageDialog', 'wxFileDialog', 'wxModalDialogHook', 'wxDialog', 'wxTextEntryDialog', 'wxSingleChoiceDialog', 'wxMenuBar', 'wxMenu', 'wxMenuItem', 'wxAppConsole', 'wxApp', 'wxEvtHandler', 'wxClientData', 'wxObject', 'wxIdleEvent', 'wxEvent', 'wxCloseEvent', 'wxNotifyEvent', 'wxCommandEvent',

@@ -19,17 +19,17 @@ and verify platforms when selected features or completeness claims require it.
 | Category | Headers | Tasks | Implemented | Partial | Pending | Context |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | [C1: Foundation, values, application, events, and base utilities](phase-c1.md) | 119 | 5292 | 7 | 114 | 5171 | 26 |
-| [C2: Windows, layout, basic controls, and input](phase-c2.md) | 82 | 2862 | 28 | 189 | 2645 | 0 |
+| [C2: Windows, layout, basic controls, and input](phase-c2.md) | 82 | 2862 | 28 | 199 | 2635 | 0 |
 | [C3: Dialogs, navigation, menus, and application services](phase-c3.md) | 57 | 1875 | 0 | 118 | 1757 | 0 |
 | [C4: Models, complex controls, and document frameworks](phase-c4.md) | 20 | 2328 | 0 | 24 | 2304 | 4 |
 | [C5: Drawing, images, graphics, and printing](phase-c5.md) | 52 | 2245 | 0 | 0 | 2245 | 0 |
 | [C6: Optional libraries, rich content, and integration](phase-c6.md) | 57 | 8912 | 0 | 0 | 8912 | 380 |
 | [C7: Platform extensions and remaining portability APIs](phase-c7.md) | 11 | 279 | 0 | 0 | 279 | 3 |
-| Total | 398 | 23793 | 35 | 445 | 23313 | 413 |
+| Total | 398 | 23793 | 35 | 455 | 23303 | 413 |
 
 ## Classes and widgets
 
-1016 class/struct definitions: 0 complete; 60 partial; 956 pending.
+1016 class/struct definitions: 0 complete; 61 partial; 955 pending.
 
 See the [complete class/widget index](classes.md) for partial scopes and missing
 types. An implemented constructor does not complete a class or its inherited API.
@@ -223,7 +223,7 @@ unreviewed inherited/platform behavior.
 | [wx/spinbutt.h](phase-c2.md#wxspinbutth) | 0 | 2 | 24 | 0 |
 | [wx/spinctrl.h](phase-c2.md#wxspinctrlh) | 0 | 11 | 42 | 0 |
 | [wx/splitter.h](phase-c2.md#wxsplitterh) | 0 | 20 | 55 | 0 |
-| [wx/srchctrl.h](phase-c2.md#wxsrchctrlh) | 0 | 0 | 23 | 0 |
+| [wx/srchctrl.h](phase-c2.md#wxsrchctrlh) | 0 | 10 | 13 | 0 |
 | [wx/statbmp.h](phase-c2.md#wxstatbmph) | 0 | 0 | 12 | 0 |
 | [wx/statbox.h](phase-c2.md#wxstatboxh) | 0 | 0 | 8 | 0 |
 | [wx/statline.h](phase-c2.md#wxstatlineh) | 0 | 0 | 8 | 0 |

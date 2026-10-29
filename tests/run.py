@@ -21,6 +21,7 @@ def scenarios():
     yield "window-state", "window-state.lisp", {}
     yield "window-metadata", "window-metadata.lisp", {}
     yield "clos", "clos.lisp", {}
+    yield "search-controls", "search-controls.lisp", {}
     yield "time-picker", "time-picker.lisp", {}
     yield "date-picker", "date-picker.lisp", {}
     yield "tooltips", "tooltips.lisp", {}

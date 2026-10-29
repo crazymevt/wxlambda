@@ -36,6 +36,11 @@ check_cxx_source_compiles("#include <wx/setup.h>
 #error Time picker and datetime support are required
 #endif
 int main() { return 0; }" WXLAMBDA_HAS_TIME_PICKER)
+check_cxx_source_compiles("#include <wx/setup.h>
+#if !wxUSE_SEARCHCTRL || !wxUSE_TEXTCTRL
+#error Search and text controls are required
+#endif
+int main() { return 0; }" WXLAMBDA_HAS_SEARCH_CONTROL)
 cmake_pop_check_state()
 if(NOT WXLAMBDA_HAS_ACCELERATORS)
   message(FATAL_ERROR "wxlambda requires wxWidgets built with wxUSE_ACCEL=1")
@@ -54,6 +59,9 @@ if(NOT WXLAMBDA_HAS_DATE_PICKER)
 endif()
 if(NOT WXLAMBDA_HAS_TIME_PICKER)
   message(FATAL_ERROR "wxlambda requires wxUSE_TIMEPICKCTRL=1 and wxUSE_DATETIME=1 (wxWidgets adv)")
+endif()
+if(NOT WXLAMBDA_HAS_SEARCH_CONTROL)
+  message(FATAL_ERROR "wxlambda requires wxUSE_SEARCHCTRL=1 and wxUSE_TEXTCTRL=1")
 endif()
 add_library(wxlambda SHARED native/wxlambda.cpp)
 target_compile_features(wxlambda PRIVATE cxx_std_17)

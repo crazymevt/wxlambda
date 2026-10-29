@@ -228,14 +228,14 @@
   {
     "name": "text",
     "kind": "generic-function",
-    "arguments": "CONTROL is a live TEXT-CONTROL or COMBO-BOX. Optional NOTIFY affects writes and is ignored by reads.",
+    "arguments": "CONTROL is a live TEXT-CONTROL, COMBO-BOX or SEARCH-CONTROL. Optional NOTIFY affects writes and is ignored by reads.",
     "returns": "An independent Lisp string.",
-    "description": "Read the current UTF-8 text; returned storage survives later native calls. ABI36 carries explicit UTF-8 lengths and rejects embedded NUL on writes; multiline native values use LF-separated lines. Read-only controls still allow programmatic edits. Native positions are not Lisp string indices. COMBO-BOX is single-line: NUL/CR/LF writes reject. Clears old native selection then ChangeValue; matching-text selection readback remains native.",
+    "description": "Read the current UTF-8 text; returned storage survives later native calls. ABI36 carries explicit UTF-8 lengths and rejects embedded NUL on writes; multiline native values use LF-separated lines. Read-only controls still allow programmatic edits. Native positions are not Lisp string indices. COMBO-BOX is single-line: NUL/CR/LF writes reject. Clears old native selection then ChangeValue; matching-text selection readback remains native. SEARCH-CONTROL query is copied native single-line text with NUL/CR/LF write rejection; hint is separate SEARCH-HINT.",
     "scope": "Requires an active GUI session on the process main thread. Invalid/destroyed handles or unsupported native arguments signal NATIVE-ERROR; Lisp argument/type errors remain Lisp conditions. One GUI session per process. Widget behavior uses CLOS generic dispatch. Wrong receiver types signal Lisp dispatch conditions; native handle/state failures signal NATIVE-ERROR.",
-    "wxwidgets": "wxTextEntry::GetValue/ChangeValue for wxTextCtrl and wxComboBox; explicit bridge notification of wxEVT_TEXT (wxWidgets3.2.12).",
+    "wxwidgets": "wxTextEntry::GetValue/ChangeValue for wxTextCtrl, wxComboBox and wxSearchCtrl; explicit bridge notification of wxEVT_TEXT (wxWidgets3.2.12).",
     "setf": {
       "syntax": "(setf (wxlambda:text control :notify notify) new-value)",
-      "description": "Text replacement is silent by default. :NOTIFY T emits text-change events synchronously; callback conditions return to the writer caller. Writers are generic functions with VALUE first, followed by the receiver. Values must be strings without NUL; ABI36 validates instead of truncating. Read-only is user typing policy, not a programmatic mutation restriction. COMBO-BOX writes are silent by default; :NOTIFY T emits exactly one :TEXT-CHANGE even unchanged, after commit. Same-combo callback writes reject; callback errors preserve committed text. See docs/COMBO-BOXES.md."
+      "description": "Text replacement is silent by default. :NOTIFY T emits text-change events synchronously; callback conditions return to the writer caller. Writers are generic functions with VALUE first, followed by the receiver. Values must be strings without NUL; ABI36 validates instead of truncating. Read-only is user typing policy, not a programmatic mutation restriction. COMBO-BOX writes are silent by default; :NOTIFY T emits exactly one :TEXT-CHANGE even unchanged, after commit. Same-combo callback writes reject; callback errors preserve committed text. See docs/COMBO-BOXES.md. SEARCH-CONTROL uses silent ChangeValue by default; notify emits exactly one TEXT event even unchanged. Same-source query/hint writes reject during actual input callbacks; native search/cancel are separate kinds. See docs/SEARCH-CONTROLS.md."
     }
   },
   {
@@ -414,7 +414,7 @@
     "arguments": "EVENT is a snapshot, current context or live OWNED-EVENT. SETF VALUE is a string and requires native command/notify state.",
     "returns": "Snapshot kind-specific copied string/NIL; live command/notify string (possibly empty), or NIL for close/idle-family reads. SETF returns VALUE.",
     "description": "Read or copy native command string payload. Context/owned SETF uses explicit UTF-8 byte lengths, preserving embedded NULs. Saved snapshots stay immutable and retain their prior kind-specific payload interpretation. ABI38 listbox selection/double-click command events carry cached string/index payloads; snapshots are independent of later item edits. Native list callback guards protect receiver/ancestors and defer modal/clipboard entry while allowing item edits.",
-    "scope": "Saved reads need no session. Live access requires active main-thread session and valid owned/innermost-context lifetime. Text writes to close/idle-family events reject; non-string values signal TYPE-ERROR. Native wxEVT_TEXT with a tracked text-entry origin rejects context string SETF; unknown origins reject too. The control is not changed. Detached context clones freeze effective GetString before clearing origin. RADIO-BOX :radio-selection is a native-only command kind with copied/current index and native label metadata. Snapshot reads survive source/session cleanup; borrowed contexts require the exact innermost current callback. No owned/synthetic/cloned radio events. See docs/RADIO-GROUPS.md. :TOGGLE-BUTTON-CHANGE copies native checked/text metadata (text normally empty, including explicit notify; no inferred label); no owned/synthetic/clone. Snapshots survive cleanup, contexts expire. See docs/TOGGLE-BUTTONS.md. COMBO-BOX uses new native-only :COMBO-SELECTION and existing :TEXT-CHANGE. Physical native selections may emit multiple command/text notifications; explicit setters emit only their requested kind. See docs/COMBO-BOXES.md.",
+    "scope": "Saved reads need no session. Live access requires active main-thread session and valid owned/innermost-context lifetime. Text writes to close/idle-family events reject; non-string values signal TYPE-ERROR. Native wxEVT_TEXT with a tracked text-entry or SEARCH-CONTROL origin rejects context string SETF; unknown origins reject too. The control is not changed. Detached context clones freeze effective GetString before clearing origin. RADIO-BOX :radio-selection is a native-only command kind with copied/current index and native label metadata. Snapshot reads survive source/session cleanup; borrowed contexts require the exact innermost current callback. No owned/synthetic/cloned radio events. See docs/RADIO-GROUPS.md. :TOGGLE-BUTTON-CHANGE copies native checked/text metadata (text normally empty, including explicit notify; no inferred label); no owned/synthetic/clone. Snapshots survive cleanup, contexts expire. See docs/TOGGLE-BUTTONS.md. COMBO-BOX uses new native-only :COMBO-SELECTION and existing :TEXT-CHANGE. Physical native selections may emit multiple command/text notifications; explicit setters emit only their requested kind. See docs/COMBO-BOXES.md. SEARCH-CONTROL :SEARCH/:SEARCH-CANCEL copy native command strings including empty, without inferring current query. Context metadata writes do not change the query. New kinds reject owned/synthetic/clones; generic TEXT scope remains unchanged. See docs/SEARCH-CONTROLS.md.",
     "wxwidgets": "wxCommandEvent::GetString / SetString, including wxNotifyEvent (wxWidgets 3.2.12 baseline).",
     "syntax": "(wxlambda:event-text event)",
     "setf": {
@@ -2899,5 +2899,42 @@
     "description": "Read captured/current native wxDateEvent time components independently of current control value; ignore date/milliseconds. Non-time or expired/outer contexts reject. Snapshot survives callback/session. No setter, owned/synthetic events or detached clones.",
     "scope": "Native :time-change command family only. Separate from EVENT-DATE, EVENT-TIMESTAMP and raw integer/text metadata. Context lifetime isolation applies; no date/timezone/instant interpretation. See docs/TIME-PICKER.md.",
     "wxwidgets": "wxDateEvent::GetDate components and wxEVT_TIME_CHANGED, wxWidgets3.2.12."
+  },
+  {
+    "name": "search-control",
+    "kind": "class",
+    "syntax": "wxlambda:search-control",
+    "arguments": "Required :parent WINDOW, :value defaults empty string and :hint defaults literal Search, plus subclass initargs.",
+    "returns": "Native-backed SEARCH-CONTROL WINDOW subtype.",
+    "description": "Search query field with native search/cancel command gestures. Lisp WINDOW ancestry only; does not inherit TEXT-CONTROL editing/convenience APIs. Applications implement filtering.",
+    "scope": "Active main-thread GUI session and live WINDOW lifetime. Editable single-line copied UTF-8 query/hint, NUL/CR/LF rejected, empty accepted. Fixed native style/icon requests; actual native search/cancel/Enter/default-clear/text event behavior varies by port. Shared Input actual/propagated/composite callbacks and early Destroy guards. No style/menu/button visibility/editing/raw-resource APIs. See docs/SEARCH-CONTROLS.md.",
+    "wxwidgets": "wxSearchCtrl::Create with wxTE_PROCESS_ENTER, icon requests, GetValue/ChangeValue and descriptive text, wxWidgets3.2.12.",
+    "construction": {
+      "syntax": "(make-instance 'wxlambda:search-control :parent parent :value \"\u03bb\" :hint \"Find records\")",
+      "description": "Direct subclasses/defaults/native-ready AFTER hooks, one concrete widget kind and managed initialization rollback."
+    }
+  },
+  {
+    "name": "make-search-control",
+    "kind": "generic-function",
+    "arguments": "PARENT and forwarded :value/:hint/:class/subclass initargs.",
+    "returns": "New SEARCH-CONTROL or validated subclass.",
+    "description": "Thin native-backed CLOS factory. Query defaults empty; hint defaults literal Search. Native icon display and Enter/empty-query/cancel behavior are not normalized.",
+    "scope": "Active main-thread GUI session and live WINDOW lifetime. Editable single-line copied UTF-8 query/hint, NUL/CR/LF rejected, empty accepted. Fixed native style/icon requests; actual native search/cancel/Enter/default-clear/text event behavior varies by port. Shared Input actual/propagated/composite callbacks and early Destroy guards. No style/menu/button visibility/editing/raw-resource APIs. See docs/SEARCH-CONTROLS.md.",
+    "wxwidgets": "wxSearchCtrl::Create, wxWidgets3.2.12."
+  },
+  {
+    "name": "search-hint",
+    "kind": "generic-function",
+    "syntax": "(wxlambda:search-hint control)",
+    "arguments": "SEARCH-CONTROL; SETF value is a NUL/CR/LF-free string, including empty.",
+    "returns": "Fresh native descriptive text string; SETF returns supplied string.",
+    "description": "Read/write the placeholder independently of the query. Silent writes use shared Input guard; no notify option. No inference from native text or search/cancel events.",
+    "scope": "Active main-thread GUI session and live WINDOW lifetime. Editable single-line copied UTF-8 query/hint, NUL/CR/LF rejected, empty accepted. Fixed native style/icon requests; actual native search/cancel/Enter/default-clear/text event behavior varies by port. Shared Input actual/propagated/composite callbacks and early Destroy guards. No style/menu/button visibility/editing/raw-resource APIs. See docs/SEARCH-CONTROLS.md.",
+    "wxwidgets": "wxSearchCtrl::GetDescriptiveText/SetDescriptiveText, wxWidgets3.2.12.",
+    "setf": {
+      "syntax": "(setf (wxlambda:search-hint control) \"Find records\")",
+      "description": "Copies input to native descriptive text, rejects same-source callback writes, returns input string. Native presentation remains port-specific."
+    }
   }
 ]
