@@ -17,7 +17,7 @@ class or constructor does not imply full upstream coverage.
 
 ## Current coverage and remaining work
 
-0 implemented; 120 partial; 2208 pending; 4 context entries. Native gaps stay visible; feature priority is separate.
+0 implemented; 121 partial; 2207 pending; 4 context entries. Native gaps stay visible; feature priority is separate.
 
 Counts describe inventory entries, not distinct APIs or percent completion.
 See the [coverage summary](README.md) for phase/header comparisons.
@@ -2216,7 +2216,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/treectrl.h)
 
-0 implemented; 39 partial; 137 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
+0 implemented; 40 partial; 136 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
 
 - [ ] [L49](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/treectrl.h#L49) `documented style: wxTR_EDIT_LABELS`
 - [ ] [L52](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/treectrl.h#L52) `documented style: wxTR_NO_BUTTONS`
@@ -2373,7 +2373,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [~] [L1146](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/treectrl.h#L1146) `wxPoint GetPoint() const;` — **Partial**: `event-tree-position`; ABI: `wxl_views_detail`. Copied native tree-item-menu point only; immutable snapshots and current innermost contexts. No arbitrary native point/event adoption.
 - [ ] [L1152](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/treectrl.h#L1152) `bool IsEditCancelled() const;`
 - [ ] [L1158](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/treectrl.h#L1158) `void SetToolTip(const wxString& tooltip);`
-- [ ] [L1162](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/treectrl.h#L1162) `wxEventType wxEVT_TREE_BEGIN_DRAG;`
+- [~] [L1162](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/treectrl.h#L1162) `wxEventType wxEVT_TREE_BEGIN_DRAG;` — **Partial**: `drag-tree-item`, `event-tree-position`; ABI: `wxl_tree_drag`. ABI68 bounded same-tree private move drag; no arbitrary data transfer or external targets. See TREE-DRAG.md.
 - [ ] [L1163](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/treectrl.h#L1163) `wxEventType wxEVT_TREE_BEGIN_RDRAG;`
 - [ ] [L1164](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/treectrl.h#L1164) `wxEventType wxEVT_TREE_BEGIN_LABEL_EDIT;`
 - [ ] [L1165](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/treectrl.h#L1165) `wxEventType wxEVT_TREE_END_LABEL_EDIT;`

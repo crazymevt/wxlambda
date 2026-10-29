@@ -3746,3 +3746,22 @@ docset build/check plus actual SBCL/CCL export/SETF lookup checks pass. KryptonE
 Interactive popup keyboard/mouse selection and Windows/Linux rendering were not
 run. No outstanding independent-review findings remain after removing the
 unbalanced menu-open tracking.
+
+ABI68: guarded DRAG-TREE-ITEM and copied :TREE-BEGIN-DRAG metadata support
+same-tree moves. Built-in drag always stays vetoed. Independent review found
+that generic native dragging retains raw nodes after capture loss; the custom
+wxDropSource/temporary target instead holds tree/input guards for its full loop.
+See TREE-DRAG.md. No filesystem behavior enters the binding. Interactive drag,
+Escape/capture-loss and Windows/Linux runtime checks remain outstanding.
+
+ABI68 automated checks passed on macOS: native build/lifetime fixture including
+BEGIN metadata/forced veto/callback rejection; SBCL and CCL API example checks;
+KryptonEdit781299 headless and576 UI checks (file/folder moves, dirty buffers,
+undo/save, containment/no-overwrite and recent/tab paths). Independent native
+review found no outstanding findings in the guarded source/target design.
+Docset export checks pass on SBCL/CCL. Physical mouse drops and cancellation
+still need interactive validation; Windows/Linux native paths remain unrun.
+
+Final hover review caught native SetItemDropHighlight clearing custom item colors.
+The drag target now snapshots/restores foreground/background on leave and
+teardown; the native fixture covers both cleanup paths.

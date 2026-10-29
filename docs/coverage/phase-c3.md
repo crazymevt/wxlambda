@@ -17,7 +17,7 @@ class or constructor does not imply full upstream coverage.
 
 ## Current coverage and remaining work
 
-0 implemented; 131 partial; 1744 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
+0 implemented; 135 partial; 1740 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
 
 Counts describe inventory entries, not distinct APIs or percent completion.
 See the [coverage summary](README.md) for phase/header comparisons.
@@ -810,7 +810,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dnd.h)
 
-0 implemented; 0 partial; 38 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
+0 implemented; 4 partial; 34 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
 
 - [ ] [L11](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dnd.h#L11) `enum {`
 - [ ] [L13](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dnd.h#L13) `wxDrag_CopyOnly = 0, wxDrag_AllowMove = 1, wxDrag_DefaultMove = 3 }`
@@ -820,9 +820,9 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [ ] [L59](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dnd.h#L59) `wxDropTarget(wxDataObject* data = NULL);`
 - [ ] [L64](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dnd.h#L64) `virtual ~wxDropTarget();`
 - [ ] [L72](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dnd.h#L72) `virtual bool GetData();`
-- [ ] [L78](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dnd.h#L78) `virtual wxDragResult OnData(wxCoord x, wxCoord y, wxDragResult defResult) = 0;`
-- [ ] [L96](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dnd.h#L96) `virtual wxDragResult OnDragOver(wxCoord x, wxCoord y, wxDragResult defResult);`
-- [ ] [L109](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dnd.h#L109) `virtual bool OnDrop(wxCoord x, wxCoord y);`
+- [~] [L78](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dnd.h#L78) `virtual wxDragResult OnData(wxCoord x, wxCoord y, wxDragResult defResult) = 0;` — **Partial**: `drag-tree-item`, `event-tree-position`; ABI: `wxl_tree_drag`. ABI68 bounded same-tree private move drag; no arbitrary data transfer or external targets. See TREE-DRAG.md.
+- [~] [L96](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dnd.h#L96) `virtual wxDragResult OnDragOver(wxCoord x, wxCoord y, wxDragResult defResult);` — **Partial**: `drag-tree-item`, `event-tree-position`; ABI: `wxl_tree_drag`. ABI68 bounded same-tree private move drag; no arbitrary data transfer or external targets. See TREE-DRAG.md.
+- [~] [L109](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dnd.h#L109) `virtual bool OnDrop(wxCoord x, wxCoord y);` — **Partial**: `drag-tree-item`, `event-tree-position`; ABI: `wxl_tree_drag`. ABI68 bounded same-tree private move drag; no arbitrary data transfer or external targets. See TREE-DRAG.md.
 - [ ] [L127](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dnd.h#L127) `virtual wxDragResult OnEnter(wxCoord x, wxCoord y, wxDragResult defResult);`
 - [ ] [L132](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dnd.h#L132) `virtual void OnLeave();`
 - [ ] [L137](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dnd.h#L137) `wxDataObject *GetDataObject() const;`
@@ -834,7 +834,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [ ] [L223](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dnd.h#L223) `wxDropSource(wxDataObject& data, wxWindow* win = NULL, const wxCursor& iconCopy = wxNullCursor, const wxCursor& iconMove = wxNullCursor, const wxCursor& iconNone = wxNullCursor);`
 - [ ] [L245](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dnd.h#L245) `wxDropSource(wxWindow* win = NULL, const wxIcon& iconCopy = wxNullIcon, const wxIcon& iconMove = wxNullIcon, const wxIcon& iconNone = wxNullIcon);`
 - [ ] [L269](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dnd.h#L269) `wxDropSource(wxDataObject& data, wxWindow* win = NULL, const wxIcon& iconCopy = wxNullIcon, const wxIcon& iconMove = wxNullIcon, const wxIcon& iconNone = wxNullIcon);`
-- [ ] [L290](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dnd.h#L290) `virtual wxDragResult DoDragDrop(int flags = wxDrag_CopyOnly);`
+- [~] [L290](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dnd.h#L290) `virtual wxDragResult DoDragDrop(int flags = wxDrag_CopyOnly);` — **Partial**: `drag-tree-item`, `event-tree-position`; ABI: `wxl_tree_drag`. ABI68 bounded same-tree private move drag; no arbitrary data transfer or external targets. See TREE-DRAG.md.
 - [ ] [L295](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dnd.h#L295) `wxDataObject* GetDataObject();`
 - [ ] [L309](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dnd.h#L309) `virtual bool GiveFeedback(wxDragResult effect);`
 - [ ] [L321](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dnd.h#L321) `void SetCursor(wxDragResult res, const wxCursor& cursor);`

@@ -632,3 +632,10 @@ Independent review caught that tracking issue; it was removed before delivery.
 See MENUS.md, context-menus example/tests. Native popup interaction remains
 an interactive platform check; automated ownership/validation checks cover
 submenus. Linux/Windows runtime verification remains outstanding.
+
+ABI68: guarded DRAG-TREE-ITEM and copied :TREE-BEGIN-DRAG metadata support
+same-tree moves. Built-in drag always stays vetoed. Independent review found
+that generic native dragging retains raw nodes after capture loss; the custom
+wxDropSource/temporary target instead holds tree/input guards for its full loop.
+See TREE-DRAG.md. No filesystem behavior enters the binding. Interactive drag,
+Escape/capture-loss and Windows/Linux runtime checks remain outstanding.

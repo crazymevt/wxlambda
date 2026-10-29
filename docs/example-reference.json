@@ -278,5 +278,9 @@
   "context-menus.lisp": {
     "description": "Owned recent submenu exercise and native right-click choices. EXERCISE runs ownership checks; START shows an interactive tree.",
     "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/context-menus.lisp --eval '(wxlambda-context-menus:start)'"
+  },
+  "tree-drag.lisp": {
+    "description": "Deferred guarded same-tree native drag; prints the dropped-on item without mutating the tree. EXERCISE validates hidden-source rejection; START is interactive.",
+    "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/tree-drag.lisp --eval '(wxlambda-tree-drag:start)'"
   }
 }

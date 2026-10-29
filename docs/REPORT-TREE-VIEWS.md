@@ -161,3 +161,7 @@ bounded wxWidgets3.2.12 list/tree adapter, not complete ListCtrl/DataView parity
 ## Example and checks
 
 Run `sbcl --load ~/quicklisp/setup.lisp --load examples/report-views.lisp --eval '(wxlambda-report-views:start)'`. The `exercise` entry point checks the million-row provider and copied values without manual input. `tests/report-views.lisp` additionally verifies CLOS subclass initialization/rollback, provider errors/nonlocal containment, suspended outer contexts, tree veto and root cleanup. The native harness checks native list selection and tree expansion, nested supported containers, read-only provider ancestor operations and callback retirement. These derived event fixtures do not claim physical gesture coverage.
+
+ABI68 adds `:tree-begin-drag` source item/client point snapshots. Built-in dragging
+remains vetoed; see [Guarded tree dragging](TREE-DRAG.md) for deferred
+`drag-tree-item` and native lifetime boundaries.

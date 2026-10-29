@@ -1,6 +1,7 @@
 #include <wx/fontenum.h>
 #include "wxlambda.h"
 #include <wx/wx.h>
+#include <wx/dnd.h>
 #include <wx/thread.h>
 #include <wx/listctrl.h>
 #include <wx/statbmp.h>
@@ -578,15 +579,17 @@ struct TreeOperation {
     ~TreeOperation() { tree_operations.pop_back(); }
 };
 struct TreeCallbackOperation {
+    wxTreeEvent* drag_begin=nullptr;
     bool added = false, allow = true;
     explicit TreeCallbackOperation(wxEvent& event) {
+        if (event.GetEventType()==wxEVT_TREE_BEGIN_DRAG) drag_begin=dynamic_cast<wxTreeEvent*>(&event);
         if (event.GetEventType() != wxEVT_TREE_SEL_CHANGING && event.GetEventType() != wxEVT_TREE_SEL_CHANGED && !views_tree_event(event.GetEventType())) return;
         auto* tree = dynamic_cast<wxTreeCtrl*>(event.GetEventObject());
         if (!tree || !tree_owners.count(tree) || window_destruction_pending(tree)) { allow = false; return; }
         for (const auto& active : tree_operations) if (active.get() == tree) return;
         tree_operations.emplace_back(tree); added = true;
     }
-    ~TreeCallbackOperation() { if (added) tree_operations.pop_back(); }
+    ~TreeCallbackOperation() { if (drag_begin) drag_begin->Veto(); if (added) tree_operations.pop_back(); }
 };
 wxl_handle event_tree_token(wxEvent& event) {
     auto* tree_event = dynamic_cast<wxTreeEvent*>(&event);
@@ -1506,7 +1509,7 @@ bool process_deferred_ui_action() {
 
 }
 extern "C" {
-int wxl_abi_version() { return 67; }
+int wxl_abi_version() { return 68; }
 const char* wxl_last_error() { return error.c_str(); }
 int wxl_clipboard_text_available() {
     return boolean_result([&] {
@@ -2459,6 +2462,7 @@ int wxl_context_set_vetoed(uint64_t token, int vetoed) {
             require(close->CanVeto(), "This close event cannot be vetoed");
             close->Veto(vetoed != 0);
         } else if (auto* notify = dynamic_cast<wxNotifyEvent*>(&event)) {
+            require(vetoed || event.GetEventType()!=wxEVT_TREE_BEGIN_DRAG,"Use deferred DRAG-TREE-ITEM; built-in tree dragging stays vetoed");
             if (vetoed) notify->Veto(); else notify->Allow();
         } else throw std::runtime_error("This event family has no veto state");
     });
@@ -3858,3 +3862,70 @@ extern "C" {
 #include "views.inc"
 
 #include "images.inc"
+
+
+// Custom same-tree drag. Built-in wxTreeCtrl BEGIN stays vetoed: its generic
+// implementation retains raw item pointers outside callbacks. This operation
+// instead holds native lifetime guards for the complete nested drag loop.
+class TreeMoveTarget final : public wxDropTarget {
+public:
+    wxTreeCtrl* tree; const std::string payload; wxTreeItemId target,hover; wxColour hover_foreground,hover_background;
+    TreeMoveTarget(wxTreeCtrl* owner,std::string value):tree(owner),payload(std::move(value)) {
+        SetDataObject(new wxCustomDataObject(wxDataFormat("application/x-wxlambda-tree-item")));
+    }
+    ~TreeMoveTarget() override { ClearHover(); }
+    void ClearHover() {
+        if (hover.IsOk()) {
+            tree->SetItemDropHighlight(hover,false);
+            tree->SetItemTextColour(hover,hover_foreground);
+            tree->SetItemBackgroundColour(hover,hover_background);
+            hover=wxTreeItemId();
+        }
+    }
+    void SetHover(wxTreeItemId item) {
+        if (item==hover) return;
+        ClearHover(); hover=item;
+        if (hover.IsOk()) {
+            hover_foreground=tree->GetItemTextColour(hover);
+            hover_background=tree->GetItemBackgroundColour(hover);
+            tree->SetItemDropHighlight(hover,true);
+        }
+    }
+    void OnLeave() override { ClearHover(); }
+    wxDragResult OnDragOver(wxCoord x,wxCoord y,wxDragResult) override {
+        int flags=0; const auto item=tree->HitTest(wxPoint(x,y),flags);
+        SetHover(item);
+        return item.IsOk()?wxDragMove:wxDragNone;
+    }
+    bool OnDrop(wxCoord x,wxCoord y) override {
+        int flags=0; return tree->HitTest(wxPoint(x,y),flags).IsOk();
+    }
+    wxDragResult OnData(wxCoord x,wxCoord y,wxDragResult) override {
+        if (!GetData()) return wxDragNone;
+        auto* data=static_cast<wxCustomDataObject*>(GetDataObject());
+        if (data->GetSize()!=payload.size() || std::memcmp(data->GetData(),payload.data(),payload.size())) return wxDragNone;
+        int flags=0; target=tree->HitTest(wxPoint(x,y),flags);
+        return target.IsOk()?wxDragMove:wxDragNone;
+    }
+};
+int wxl_tree_drag(wxl_handle item,wxl_handle* result) {
+    return status([&] {
+        require(result,"Null tree drag target output"); *result=0;
+        require_dispatch_entry(true);
+        const auto node=tree_node(item); auto* tree=as<wxTreeCtrl>(node.owner);
+        require(tree->IsShownOnScreen() && tree->IsEnabled(),"Drag source must be shown and enabled");
+        require(!tree->GetDropTarget(),"Tree already has a drop target");
+        TreeOperation tree_operation(tree); InputOperation input_operation(tree);
+        const auto payload=std::to_string(node.owner)+":"+std::to_string(item)+":"+std::to_string(next_handle++);
+        wxCustomDataObject data(wxDataFormat("application/x-wxlambda-tree-item"));
+        data.SetData(payload.size(),payload.data());
+        auto target=std::make_unique<TreeMoveTarget>(tree,payload);
+        auto* receiver=target.get();
+        tree->SetDropTarget(target.release());
+        struct Cleanup {wxTreeCtrl* tree; ~Cleanup(){tree->SetDropTarget(nullptr);}} cleanup{tree};
+        wxDropSource source(tree); source.SetData(data);
+        const auto outcome=source.DoDragDrop(wxDrag_DefaultMove);
+        require(outcome!=wxDragError,"Native tree drag failed");
+        if (outcome==wxDragMove && receiver->target.IsOk()) *result=tree_token(tree,receiver->target);
+    });
+}

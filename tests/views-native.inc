@@ -59,6 +59,29 @@ void exercise_report_views() {
  wxl_handle child=0;expect(wxl_tree_add(tree,item,"Child",5,&child)==0&&wxl_bind(tree,152,971,wxID_ANY,wxID_ANY,1,0)==0,"Expansion fixture");
  as<wxTreeCtrl>(tree)->Expand(tree_node(item).native);expect(tree_expanding==1&&!as<wxTreeCtrl>(tree)->IsExpanded(tree_node(item).native),"Actual native expansion veto readback");
  int64_t expired=0;expect(wxl_views_detail(context,0,&expired)==-1&&wxl_unbind(970)==1&&wxl_unbind(971)==1,"Expired views context and fixture unbind");event_checks={};
+ unsigned drag_calls=0;
+ event_checks=[&](uint64_t,const wxl_event* event){
+   ++drag_calls;wxl_handle dropped=0;
+   expect(event->kind==156&&event->tree_item==child&&event->detail[4]==11&&event->detail[5]==19,"Tree drag snapshot");
+   expect(wxl_context_set_vetoed(event->context,0)==-1,"Built-in tree drag Allow must reject");
+   expect(wxl_tree_drag(child,&dropped)==-1&&dropped==0,"Drag cannot enter from callback");
+ };
+ expect(wxl_bind(tree,156,972,wxID_ANY,wxID_ANY,1,0)==0,"Tree drag binding");
+ {wxTreeEvent event(wxEVT_TREE_BEGIN_DRAG,window(tree)->GetId());event.SetEventObject(window(tree));
+  event.SetItem(tree_node(child).native);event.SetPoint(wxPoint(11,19));event.Allow();
+  window(tree)->GetEventHandler()->ProcessEvent(event);
+  expect(!event.IsAllowed()&&drag_calls==1,"Built-in drag must remain vetoed after delivery");}
+ expect(wxl_unbind(972)==1,"Tree drag unbind");event_checks={};
+ {wxl_handle dropped=99;expect(wxl_tree_drag(child,&dropped)==-1&&dropped==0,"Hidden drag source rejects");}
+ {
+  auto* native=as<wxTreeCtrl>(tree);const auto hovered=tree_node(child).native;
+  native->SetItemTextColour(hovered,wxColour(17,34,51));native->SetItemBackgroundColour(hovered,wxColour(68,85,102));
+  {TreeOperation tree_guard(native);InputOperation input_guard(native);
+   TreeMoveTarget receiver(native,"fixture");receiver.SetHover(hovered);receiver.OnLeave();
+   expect(native->GetItemTextColour(hovered)==wxColour(17,34,51)&&native->GetItemBackgroundColour(hovered)==wxColour(68,85,102),"Leaving drag hover must restore custom colors");
+   receiver.SetHover(hovered);}
+  expect(native->GetItemTextColour(hovered)==wxColour(17,34,51)&&native->GetItemBackgroundColour(hovered)==wxColour(68,85,102),"Drag teardown must restore custom colors");
+ }
  expect(views_provider_owners.empty(),"Provider ancestry scope restored");
  {wxListEvent event(wxEVT_LIST_ITEM_RIGHT_CLICK);event.SetIndex(7);event.SetColumn(2);event.SetPoint(wxPoint(11,19));wxl_event snapshot{};fill_views_detail(event,snapshot);expect(snapshot.detail[0]==7&&snapshot.detail[4]==11&&snapshot.detail[5]==19,"Copied native list event fields");}
  {wxListEvent event(wxEVT_LIST_CACHE_HINT);event.SetCacheFrom(3);event.SetCacheTo(900);wxl_event snapshot{};fill_views_detail(event,snapshot);expect(snapshot.detail[2]==3&&snapshot.detail[3]==900,"Copied native cache hint range");}

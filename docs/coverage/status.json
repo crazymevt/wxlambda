@@ -18150,6 +18150,81 @@
         "wxl_popup_choice"
       ],
       "scope": "ABI67: append owned managed submenus or show a bounded temporary choice popup. No arbitrary adoption/radio items. See docs/MENUS.md."
+    },
+    {
+      "header": "wx/treectrl.h",
+      "line": 1162,
+      "declaration": "wxEventType wxEVT_TREE_BEGIN_DRAG;",
+      "status": "~",
+      "symbol": "wxTreeEvent",
+      "lisp": [
+        "drag-tree-item",
+        "event-tree-position"
+      ],
+      "native": [
+        "wxl_tree_drag"
+      ],
+      "scope": "ABI68 bounded same-tree private move drag; no arbitrary data transfer or external targets. See TREE-DRAG.md."
+    },
+    {
+      "header": "wx/dnd.h",
+      "line": 78,
+      "declaration": "virtual wxDragResult OnData(wxCoord x, wxCoord y, wxDragResult defResult) = 0;",
+      "status": "~",
+      "symbol": "wxDragDrop",
+      "lisp": [
+        "drag-tree-item",
+        "event-tree-position"
+      ],
+      "native": [
+        "wxl_tree_drag"
+      ],
+      "scope": "ABI68 bounded same-tree private move drag; no arbitrary data transfer or external targets. See TREE-DRAG.md."
+    },
+    {
+      "header": "wx/dnd.h",
+      "line": 96,
+      "declaration": "virtual wxDragResult OnDragOver(wxCoord x, wxCoord y, wxDragResult defResult);",
+      "status": "~",
+      "symbol": "wxDragDrop",
+      "lisp": [
+        "drag-tree-item",
+        "event-tree-position"
+      ],
+      "native": [
+        "wxl_tree_drag"
+      ],
+      "scope": "ABI68 bounded same-tree private move drag; no arbitrary data transfer or external targets. See TREE-DRAG.md."
+    },
+    {
+      "header": "wx/dnd.h",
+      "line": 109,
+      "declaration": "virtual bool OnDrop(wxCoord x, wxCoord y);",
+      "status": "~",
+      "symbol": "wxDragDrop",
+      "lisp": [
+        "drag-tree-item",
+        "event-tree-position"
+      ],
+      "native": [
+        "wxl_tree_drag"
+      ],
+      "scope": "ABI68 bounded same-tree private move drag; no arbitrary data transfer or external targets. See TREE-DRAG.md."
+    },
+    {
+      "header": "wx/dnd.h",
+      "line": 290,
+      "declaration": "virtual wxDragResult DoDragDrop(int flags = wxDrag_CopyOnly);",
+      "status": "~",
+      "symbol": "wxDragDrop",
+      "lisp": [
+        "drag-tree-item",
+        "event-tree-position"
+      ],
+      "native": [
+        "wxl_tree_drag"
+      ],
+      "scope": "ABI68 bounded same-tree private move drag; no arbitrary data transfer or external targets. See TREE-DRAG.md."
     }
   ],
   "classes": {

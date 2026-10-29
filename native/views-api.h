@@ -1,7 +1,7 @@
 enum wxl_views_kind { WXL_EVENT_LIST_SELECTED=140,WXL_EVENT_LIST_DESELECTED=141,
  WXL_EVENT_LIST_ACTIVATED=142,WXL_EVENT_LIST_RIGHT_CLICK=143,WXL_EVENT_LIST_CACHE_HINT=144,
  WXL_EVENT_LIST_COLUMN_CLICK=145,WXL_EVENT_TREE_ACTIVATED=150,WXL_EVENT_TREE_MENU=151,
- WXL_EVENT_TREE_EXPANDING=152,WXL_EVENT_TREE_EXPANDED=153,WXL_EVENT_TREE_COLLAPSING=154,WXL_EVENT_TREE_COLLAPSED=155 };
+ WXL_EVENT_TREE_EXPANDING=152,WXL_EVENT_TREE_EXPANDED=153,WXL_EVENT_TREE_COLLAPSING=154,WXL_EVENT_TREE_COLLAPSED=155,WXL_EVENT_TREE_BEGIN_DRAG=156 };
 typedef void (*wxl_report_list_text_callback)(uint64_t token,uint64_t request,int row,int column);
 WXL_API wxl_handle wxl_report_list_control(wxl_handle parent,int virtual_list,uint64_t token,wxl_report_list_text_callback callback);
 WXL_API int wxl_report_list_provider_active(uint64_t token);
@@ -25,3 +25,5 @@ WXL_API int wxl_report_list_refresh(wxl_handle list,int first,int last);
 WXL_API int wxl_views_detail(uint64_t context,int field,int64_t* result);
 WXL_API int wxl_tree_decoration(wxl_handle item,int field,int64_t* result);
 WXL_API int wxl_set_tree_decoration(wxl_handle item,int field,int64_t value);
+
+WXL_API int wxl_tree_drag(wxl_handle item,wxl_handle* target);
