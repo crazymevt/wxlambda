@@ -3782,3 +3782,8 @@ synchronously and filesystem work stays deferred. SBCL/CCL example and docset
 export/discovery checks pass; pinned coverage regeneration/regression passes.
 Independent review found no actionable defects. OS mouse dragging remains a
 manual check; the regression driver does not call Cocoa DoDragDrop.
+
+Drag startup additionally requires BIND-EVENT :WITH-CONTEXT T: observer bindings
+deliver snapshots but create no native EventScope. The KryptonEdit binding and
+example were corrected to use contextual callbacks. A regression checks the
+actual Explorer registration flag, rather than only invoking its helper.

@@ -108,6 +108,16 @@ void exercise_report_views() {
    expect(!event.IsAllowed(),"Custom synchronous drag must not enable built-in dragging");
  }
  expect(driver_calls==2&&wxl_unbind(973)==1,"Native drag callback startup/cancel coverage");
+ unsigned observer_calls=0;
+ event_checks=[&](uint64_t,const wxl_event* event){
+   ++observer_calls;wxl_handle dropped=99;
+   expect(event->context==0&&wxl_tree_drag(child,&dropped)==-1&&dropped==0,
+          "Read-only observer BEGIN has no native drag context; WITH-CONTEXT is required");
+ };
+ expect(wxl_bind(tree,156,974,wxID_ANY,wxID_ANY,0,0)==0,"Observer drag fixture binding");
+ {wxTreeEvent event(wxEVT_TREE_BEGIN_DRAG,window(tree)->GetId());event.SetEventObject(window(tree));
+  event.SetItem(tree_node(child).native);event.Veto();window(tree)->GetEventHandler()->ProcessEvent(event);}
+ expect(observer_calls==1&&driver_calls==2&&wxl_unbind(974)==1,"Observer drag must not enter native drag driver");
  event_checks={};tree_drag_test_driver={};
  expect(views_provider_owners.empty(),"Provider ancestry scope restored");
  {wxListEvent event(wxEVT_LIST_ITEM_RIGHT_CLICK);event.SetIndex(7);event.SetColumn(2);event.SetPoint(wxPoint(11,19));wxl_event snapshot{};fill_views_detail(event,snapshot);expect(snapshot.detail[0]==7&&snapshot.detail[4]==11&&snapshot.detail[5]==19,"Copied native list event fields");}

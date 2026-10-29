@@ -2462,7 +2462,7 @@ int wxl_context_set_vetoed(uint64_t token, int vetoed) {
             require(close->CanVeto(), "This close event cannot be vetoed");
             close->Veto(vetoed != 0);
         } else if (auto* notify = dynamic_cast<wxNotifyEvent*>(&event)) {
-            require(vetoed || event.GetEventType()!=wxEVT_TREE_BEGIN_DRAG,"Use deferred DRAG-TREE-ITEM; built-in tree dragging stays vetoed");
+            require(vetoed || event.GetEventType()!=wxEVT_TREE_BEGIN_DRAG,"Use DRAG-TREE-ITEM in a contextual BEGIN callback; built-in tree dragging stays vetoed");
             if (vetoed) notify->Veto(); else notify->Allow();
         } else throw std::runtime_error("This event family has no veto state");
     });
@@ -3915,7 +3915,7 @@ int wxl_tree_drag(wxl_handle item,wxl_handle* result) {
     return status([&] {
         require(result,"Null tree drag target output"); *result=0;
         ready();
-        require(callback_depth && !EventScope::stack.empty(),"Start tree dragging inside its native BEGIN callback");
+        require(callback_depth && !EventScope::stack.empty(),"Start tree dragging inside a native BEGIN binding with :WITH-CONTEXT T");
         auto& event=current_event(EventScope::stack.back().token);
         const auto node=tree_node(item); auto* tree=as<wxTreeCtrl>(node.owner);
         auto* begin=dynamic_cast<wxTreeEvent*>(&event);

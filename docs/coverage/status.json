@@ -18164,7 +18164,7 @@
       "native": [
         "wxl_tree_drag"
       ],
-      "scope": "ABI69: synchronous private same-tree drag in the matching native BEGIN callback; idle/stale/recursive entry rejects. Defer only post-drag mutations. See TREE-DRAG.md."
+      "scope": "ABI69: synchronous private same-tree drag in the matching native BEGIN callback registered with :WITH-CONTEXT T; idle/stale/recursive entry rejects. Defer only post-drag mutations. See TREE-DRAG.md."
     },
     {
       "header": "wx/dnd.h",
@@ -18179,7 +18179,7 @@
       "native": [
         "wxl_tree_drag"
       ],
-      "scope": "ABI69: synchronous private same-tree drag in the matching native BEGIN callback; idle/stale/recursive entry rejects. Defer only post-drag mutations. See TREE-DRAG.md."
+      "scope": "ABI69: synchronous private same-tree drag in the matching native BEGIN callback registered with :WITH-CONTEXT T; idle/stale/recursive entry rejects. Defer only post-drag mutations. See TREE-DRAG.md."
     },
     {
       "header": "wx/dnd.h",
@@ -18194,7 +18194,7 @@
       "native": [
         "wxl_tree_drag"
       ],
-      "scope": "ABI69: synchronous private same-tree drag in the matching native BEGIN callback; idle/stale/recursive entry rejects. Defer only post-drag mutations. See TREE-DRAG.md."
+      "scope": "ABI69: synchronous private same-tree drag in the matching native BEGIN callback registered with :WITH-CONTEXT T; idle/stale/recursive entry rejects. Defer only post-drag mutations. See TREE-DRAG.md."
     },
     {
       "header": "wx/dnd.h",
@@ -18209,7 +18209,7 @@
       "native": [
         "wxl_tree_drag"
       ],
-      "scope": "ABI69: synchronous private same-tree drag in the matching native BEGIN callback; idle/stale/recursive entry rejects. Defer only post-drag mutations. See TREE-DRAG.md."
+      "scope": "ABI69: synchronous private same-tree drag in the matching native BEGIN callback registered with :WITH-CONTEXT T; idle/stale/recursive entry rejects. Defer only post-drag mutations. See TREE-DRAG.md."
     },
     {
       "header": "wx/dnd.h",
@@ -18224,7 +18224,7 @@
       "native": [
         "wxl_tree_drag"
       ],
-      "scope": "ABI69: synchronous private same-tree drag in the matching native BEGIN callback; idle/stale/recursive entry rejects. Defer only post-drag mutations. See TREE-DRAG.md."
+      "scope": "ABI69: synchronous private same-tree drag in the matching native BEGIN callback registered with :WITH-CONTEXT T; idle/stale/recursive entry rejects. Defer only post-drag mutations. See TREE-DRAG.md."
     }
   ],
   "classes": {

@@ -6,7 +6,9 @@ the built-in generic tree drag would retain raw native item pointers between
 callbacks. SETF `event-vetoed-p` to NIL rejects for this event.
 
 Call `drag-tree-item` synchronously inside the matching `:tree-begin-drag`
-callback. Cocoa needs the original native mouse event to remain live: deferring
+callback, registered with `:with-context t` and a two-argument
+`(lambda (event context) ...)`. Read-only observer bindings do not establish the
+required native event context. Cocoa needs the original native mouse event to remain live: deferring
 the drag itself to idle prevents it from starting. Defer only application/tree
 mutations until the callback returns.
 The operation installs a temporary private same-tree target and runs a native

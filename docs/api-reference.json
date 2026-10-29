@@ -5894,7 +5894,7 @@
     "arguments": "Live TREE-ITEM matching the current native :TREE-BEGIN-DRAG event object and item, in its innermost callback. Tree must be shown/enabled and have no existing drop target.",
     "returns": "Live same-tree target TREE-ITEM after a successful native move drop, or NIL on cancellation/rejected drop.",
     "description": "Run a bounded native move drag with a temporary same-tree drop target. Copied private per-drag identity prevents foreign, stale and cross-tree drops. This returns a target only; it does not mutate items or touch files. Starts synchronously while the original mouse event is live, required by Cocoa.",
-    "scope": "GUI main thread inside the matching native BEGIN callback only; calls deferred to idle reject. Existing tree callback and input guards span the nested drag and target teardown. Other callbacks, stale sources and recursive drag reject. Built-in tree dragging stays vetoed. Defer application/tree mutations until the callback returns. Callback errors propagate at the drag boundary after tracking completes.",
+    "scope": "GUI main thread inside the matching native BEGIN callback registered with :WITH-CONTEXT T only; calls deferred to idle reject. Existing tree callback and input guards span the nested drag and target teardown. Other callbacks, stale sources and recursive drag reject. Built-in tree dragging stays vetoed. Defer application/tree mutations until the callback returns. Callback errors propagate at the drag boundary after tracking completes.",
     "wxwidgets": "wxDropSource::DoDragDrop, wxDropTarget, wxTreeEvent; wxWidgets 3.2.12."
   }
 ]

@@ -27,7 +27,8 @@
       (setf (wxlambda:tree-item-expanded-p root) t)
       (wxlambda:make-column frame) (wxlambda:add-child frame tree :proportion 1)
       (wxlambda:bind-event tree :tree-begin-drag
-        (lambda (event)
+        (lambda (event context)
+          (declare (ignore context))
           (let* ((source (wxlambda:event-tree-item event))
                  (target (wxlambda:drag-tree-item source)))
             ;; Only application mutations defer; native dragging needs this
@@ -35,5 +36,6 @@
             (when target
               (wxlambda:defer-ui-action
                 (lambda () (format t "Drop on ~S~%" (when (wxlambda:tree-item-alive-p target)
-                                                       (wxlambda:tree-item-text target)))))))))
+                                                       (wxlambda:tree-item-text target))))))))
+        :with-context t)
       (wxlambda:show-window frame) (wxlambda:run))))

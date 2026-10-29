@@ -648,3 +648,8 @@ filesystem/tree mutations defer. Native regressions exercise matched callback
 entry, wrong-source and recursive rejection, move/cancel results and teardown.
 The native test driver bypasses OS mouse input; physical dragging still needs
 interactive validation.
+
+Drag startup additionally requires BIND-EVENT :WITH-CONTEXT T: observer bindings
+deliver snapshots but create no native EventScope. The KryptonEdit binding and
+example were corrected to use contextual callbacks. A regression checks the
+actual Explorer registration flag, rather than only invoking its helper.
