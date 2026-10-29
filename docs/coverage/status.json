@@ -1761,7 +1761,7 @@
       "native": [
         "wxl_delete_pending_events"
       ],
-      "scope": "Target handler/window deletion without callbacks or binding removal; synchronizes native app pending-handler membership. Application-handler and RUN/pump/callback use reject. No application-wide cancellation or per-handler pending query/processing."
+      "scope": "Target handler/window deletion without callbacks or binding removal; synchronizes native app pending-handler membership. Application-handler and RUN/pump/callback use reject. No application-wide cancellation or per-handler pending query/processing. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/event.h",
@@ -1831,7 +1831,7 @@
       "native": [
         "wxl_link_handlers"
       ],
-      "scope": "Reciprocal vacant endpoint join or paired NIL edge detach for owned standalone chains; self/cycles/occupied endpoints reject before mutation. Existing pair idempotent. RUN/pump/callback edits and borrowed peers reject. Interface says noNULL; actual setter/Unlink allow paired clears, retained for C7. Attached pushed nodes reject these standalone peer operations; use managed window stack APIs instead."
+      "scope": "Reciprocal vacant endpoint join or paired NIL edge detach for owned standalone chains; self/cycles/occupied endpoints reject before mutation. Existing pair idempotent. RUN/pump/callback edits and borrowed peers reject. Interface says noNULL; actual setter/Unlink allow paired clears, retained for C7. Attached pushed nodes reject these standalone peer operations; use managed window stack APIs instead. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/event.h",
@@ -1845,7 +1845,7 @@
       "native": [
         "wxl_link_handlers"
       ],
-      "scope": "Mirror reciprocal previous endpoint join/split for owned standalone chains, preserving session ownership. Same vacancy/cycle/dispatch/borrowed-peer guards. NIL is composed paired detach rather than one-sided raw native state. Attached pushed nodes reject these standalone peer operations; use managed window stack APIs instead."
+      "scope": "Mirror reciprocal previous endpoint join/split for owned standalone chains, preserving session ownership. Same vacancy/cycle/dispatch/borrowed-peer guards. NIL is composed paired detach rather than one-sided raw native state. Attached pushed nodes reject these standalone peer operations; use managed window stack APIs instead. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/event.h",
@@ -1859,7 +1859,7 @@
       "native": [
         "wxl_unlink_handler"
       ],
-      "scope": "Splice neighbors around an owned standalone node and leave it detached/alive. Active main-thread non-dispatch boundary only; borrowed sources reject. No window Push/Pop/Remove or ownership change. Attached pushed nodes reject these standalone peer operations; use managed window stack APIs instead."
+      "scope": "Splice neighbors around an owned standalone node and leave it detached/alive. Active main-thread non-dispatch boundary only; borrowed sources reject. No window Push/Pop/Remove or ownership change. Attached pushed nodes reject these standalone peer operations; use managed window stack APIs instead. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/event.h",
@@ -1929,7 +1929,7 @@
       "native": [
         "wxl_pop_handler"
       ],
-      "scope": "Managed nonempty stack only at non-dispatch boundary. Default detach returns alive canonical handler; delete true releases registry ownership before native deletion and clears Lisp roots/bindings, returning NIL. Empty/callback/pump/RUN use rejects."
+      "scope": "Managed nonempty stack only at non-dispatch boundary. Default detach returns alive canonical handler; delete true releases registry ownership before native deletion and clears Lisp roots/bindings, returning NIL. Empty/callback/pump/RUN use rejects. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/window.h",
@@ -1943,7 +1943,7 @@
       "native": [
         "wxl_push_handler"
       ],
-      "scope": "Push unlinked unattached owned standalone handler while retaining bridge session ownership. Linked/borrowed peers, active session bindings, queued session events and dispatch-time mutation reject. Managed native widget destructors detach stacks before wxWindowBase teardown."
+      "scope": "Push unlinked unattached owned standalone handler while retaining bridge session ownership. Linked/borrowed peers, active session bindings, queued session events and dispatch-time mutation reject. Managed native widget destructors detach stacks before wxWindowBase teardown. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/window.h",
@@ -1957,7 +1957,7 @@
       "native": [
         "wxl_remove_handler"
       ],
-      "scope": "Managed membership probe returns T after nondeleting removal or NIL for a live detached/other-window handler, avoiding native absent-entry assert. Stale/borrowed peers and dispatch-time mutation reject; other entries/own pending queue survive."
+      "scope": "Managed membership probe returns T after nondeleting removal or NIL for a live detached/other-window handler, avoiding native absent-entry assert. Stale/borrowed peers and dispatch-time mutation reject; other entries/own pending queue survive. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/event.h",
@@ -2247,12 +2247,14 @@
       "status": "~",
       "symbol": "wxWakeUpIdle",
       "lisp": [
-        "wake-up-idle"
+        "wake-up-idle",
+        "defer-ui-action"
       ],
       "native": [
-        "wxl_wake_up_idle"
+        "wxl_wake_up_idle",
+        "wxl_defer_ui_action"
       ],
-      "scope": "Active GUI-thread wake scheduling only, returning T without pumping or inline callback. Native worker-thread wake usage not exposed."
+      "scope": "Active GUI-thread wake scheduling only, returning T without pumping or inline callback. Native worker-thread wake usage not exposed. Also wakes the session FIFO UI-action queue without inline execution; one action after safe native idle, no delivery from pending-only processing or nested modal/callback/operation stacks."
     },
     {
       "header": "wx/window.h",
@@ -2427,7 +2429,7 @@
       "native": [
         "wxl_menu_bar"
       ],
-      "scope": "Default style only; attached immediately to a managed frame. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN."
+      "scope": "Default style only; attached immediately to a managed frame. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/menu.h",
@@ -2442,7 +2444,7 @@
       "native": [
         "wxl_menu_destroy"
       ],
-      "scope": "Native destructor invalidates bar/menu/item identities; frame ownership retained. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN."
+      "scope": "Native destructor invalidates bar/menu/item identities; frame ownership retained. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/menu.h",
@@ -2457,7 +2459,7 @@
       "native": [
         "wxl_menu"
       ],
-      "scope": "Append a newly created managed menu with validated raw label; no existing-menu adoption. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN."
+      "scope": "Append a newly created managed menu with validated raw label; no existing-menu adoption. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/menu.h",
@@ -2513,7 +2515,7 @@
       "native": [
         "wxl_menu_destroy"
       ],
-      "scope": "Internal delete path removes then immediately destroys menu; no public detached native ownership. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN."
+      "scope": "Internal delete path removes then immediately destroys menu; no public detached native ownership. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/menu.h",
@@ -2528,7 +2530,7 @@
       "native": [
         "wxl_menu"
       ],
-      "scope": "Default menu constructor attached immediately to managed menu bar. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN."
+      "scope": "Default menu constructor attached immediately to managed menu bar. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/menu.h",
@@ -2543,7 +2545,7 @@
       "native": [
         "wxl_menu_destroy"
       ],
-      "scope": "Native-owned descendants invalidated on explicit/parent destruction. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN."
+      "scope": "Native-owned descendants invalidated on explicit/parent destruction. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/menu.h",
@@ -2558,7 +2560,7 @@
       "native": [
         "wxl_menu_item"
       ],
-      "scope": "Append newly created managed normal/check/separator item only; no native item adoption. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN."
+      "scope": "Append newly created managed normal/check/separator item only; no native item adoption. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/menu.h",
@@ -2572,7 +2574,7 @@
       "native": [
         "wxl_menu_destroy"
       ],
-      "scope": "Delete managed item through owner; submenu behavior not exposed. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN."
+      "scope": "Delete managed item through owner; submenu behavior not exposed. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/menu.h",
@@ -2601,7 +2603,7 @@
       "native": [
         "wxl_menu_item"
       ],
-      "scope": "Managed parent, positive unique-per-bar signed32 IDs, normal/check/separator only, validated label/help; no submenu. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN."
+      "scope": "Managed parent, positive unique-per-bar signed32 IDs, normal/check/separator only, validated label/help; no submenu. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/menuitem.h",
@@ -2616,7 +2618,7 @@
       "native": [
         "wxl_menu_destroy"
       ],
-      "scope": "Managed native identity invalidates on native destructor. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN."
+      "scope": "Managed native identity invalidates on native destructor. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/menuitem.h",
@@ -2742,7 +2744,7 @@
       "native": [
         "wxl_menu_bar"
       ],
-      "scope": "Internal guard prevents replacing/adopting a preexisting bar; no public frame-bar getter. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN."
+      "scope": "Internal guard prevents replacing/adopting a preexisting bar; no public frame-bar getter. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/frame.h",
@@ -2758,7 +2760,7 @@
         "wxl_menu_bar",
         "wxl_menu_destroy"
       ],
-      "scope": "Attach/detach only managed ownership lifecycle; no public arbitrary bar replacement. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN."
+      "scope": "Attach/detach only managed ownership lifecycle; no public arbitrary bar replacement. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/frame.h",
@@ -3716,7 +3718,7 @@
         "wxl_notebook_selection",
         "wxl_set_notebook_selection"
       ],
-      "scope": "NOTEBOOK only, fixed setup-time PANEL pages with canonical wrapper roots/native parent ownership. Silent or native notifying/vetoable selection and native captions; operation/callback ancestor/reentry/modal/clipboard guards. No other books, page removal/reorder/reparent/icons or full native class coverage."
+      "scope": "NOTEBOOK only, fixed setup-time PANEL pages with canonical wrapper roots/native parent ownership. Silent or native notifying/vetoable selection and native captions; operation/callback ancestor/reentry/modal/clipboard guards. No other books, page removal/reorder/reparent/icons or full native class coverage. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/notebook.h",
@@ -3743,7 +3745,7 @@
         "wxl_notebook_selection",
         "wxl_set_notebook_selection"
       ],
-      "scope": "NOTEBOOK only, fixed setup-time PANEL pages with canonical wrapper roots/native parent ownership. Silent or native notifying/vetoable selection and native captions; operation/callback ancestor/reentry/modal/clipboard guards. No other books, page removal/reorder/reparent/icons or full native class coverage."
+      "scope": "NOTEBOOK only, fixed setup-time PANEL pages with canonical wrapper roots/native parent ownership. Silent or native notifying/vetoable selection and native captions; operation/callback ancestor/reentry/modal/clipboard guards. No other books, page removal/reorder/reparent/icons or full native class coverage. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/notebook.h",
@@ -3770,7 +3772,7 @@
         "wxl_notebook_selection",
         "wxl_set_notebook_selection"
       ],
-      "scope": "NOTEBOOK only, fixed setup-time PANEL pages with canonical wrapper roots/native parent ownership. Silent or native notifying/vetoable selection and native captions; operation/callback ancestor/reentry/modal/clipboard guards. No other books, page removal/reorder/reparent/icons or full native class coverage."
+      "scope": "NOTEBOOK only, fixed setup-time PANEL pages with canonical wrapper roots/native parent ownership. Silent or native notifying/vetoable selection and native captions; operation/callback ancestor/reentry/modal/clipboard guards. No other books, page removal/reorder/reparent/icons or full native class coverage. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/notebook.h",
@@ -3797,7 +3799,7 @@
         "wxl_notebook_selection",
         "wxl_set_notebook_selection"
       ],
-      "scope": "NOTEBOOK only, fixed setup-time PANEL pages with canonical wrapper roots/native parent ownership. Silent or native notifying/vetoable selection and native captions; operation/callback ancestor/reentry/modal/clipboard guards. No other books, page removal/reorder/reparent/icons or full native class coverage."
+      "scope": "NOTEBOOK only, fixed setup-time PANEL pages with canonical wrapper roots/native parent ownership. Silent or native notifying/vetoable selection and native captions; operation/callback ancestor/reentry/modal/clipboard guards. No other books, page removal/reorder/reparent/icons or full native class coverage. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/notebook.h",
@@ -3824,7 +3826,7 @@
         "wxl_notebook_selection",
         "wxl_set_notebook_selection"
       ],
-      "scope": "NOTEBOOK only, fixed setup-time PANEL pages with canonical wrapper roots/native parent ownership. Silent or native notifying/vetoable selection and native captions; operation/callback ancestor/reentry/modal/clipboard guards. No other books, page removal/reorder/reparent/icons or full native class coverage."
+      "scope": "NOTEBOOK only, fixed setup-time PANEL pages with canonical wrapper roots/native parent ownership. Silent or native notifying/vetoable selection and native captions; operation/callback ancestor/reentry/modal/clipboard guards. No other books, page removal/reorder/reparent/icons or full native class coverage. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/notebook.h",
@@ -3851,7 +3853,7 @@
         "wxl_notebook_selection",
         "wxl_set_notebook_selection"
       ],
-      "scope": "NOTEBOOK only, fixed setup-time PANEL pages with canonical wrapper roots/native parent ownership. Silent or native notifying/vetoable selection and native captions; operation/callback ancestor/reentry/modal/clipboard guards. No other books, page removal/reorder/reparent/icons or full native class coverage."
+      "scope": "NOTEBOOK only, fixed setup-time PANEL pages with canonical wrapper roots/native parent ownership. Silent or native notifying/vetoable selection and native captions; operation/callback ancestor/reentry/modal/clipboard guards. No other books, page removal/reorder/reparent/icons or full native class coverage. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/bookctrl.h",
@@ -3878,7 +3880,7 @@
         "wxl_notebook_selection",
         "wxl_set_notebook_selection"
       ],
-      "scope": "NOTEBOOK only, fixed setup-time PANEL pages with canonical wrapper roots/native parent ownership. Silent or native notifying/vetoable selection and native captions; operation/callback ancestor/reentry/modal/clipboard guards. No other books, page removal/reorder/reparent/icons or full native class coverage."
+      "scope": "NOTEBOOK only, fixed setup-time PANEL pages with canonical wrapper roots/native parent ownership. Silent or native notifying/vetoable selection and native captions; operation/callback ancestor/reentry/modal/clipboard guards. No other books, page removal/reorder/reparent/icons or full native class coverage. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/bookctrl.h",
@@ -3905,7 +3907,7 @@
         "wxl_notebook_selection",
         "wxl_set_notebook_selection"
       ],
-      "scope": "NOTEBOOK only, fixed setup-time PANEL pages with canonical wrapper roots/native parent ownership. Silent or native notifying/vetoable selection and native captions; operation/callback ancestor/reentry/modal/clipboard guards. No other books, page removal/reorder/reparent/icons or full native class coverage."
+      "scope": "NOTEBOOK only, fixed setup-time PANEL pages with canonical wrapper roots/native parent ownership. Silent or native notifying/vetoable selection and native captions; operation/callback ancestor/reentry/modal/clipboard guards. No other books, page removal/reorder/reparent/icons or full native class coverage. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/bookctrl.h",
@@ -3932,7 +3934,7 @@
         "wxl_notebook_selection",
         "wxl_set_notebook_selection"
       ],
-      "scope": "NOTEBOOK only, fixed setup-time PANEL pages with canonical wrapper roots/native parent ownership. Silent or native notifying/vetoable selection and native captions; operation/callback ancestor/reentry/modal/clipboard guards. No other books, page removal/reorder/reparent/icons or full native class coverage."
+      "scope": "NOTEBOOK only, fixed setup-time PANEL pages with canonical wrapper roots/native parent ownership. Silent or native notifying/vetoable selection and native captions; operation/callback ancestor/reentry/modal/clipboard guards. No other books, page removal/reorder/reparent/icons or full native class coverage. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/bookctrl.h",
@@ -3959,7 +3961,7 @@
         "wxl_notebook_selection",
         "wxl_set_notebook_selection"
       ],
-      "scope": "NOTEBOOK only, fixed setup-time PANEL pages with canonical wrapper roots/native parent ownership. Silent or native notifying/vetoable selection and native captions; operation/callback ancestor/reentry/modal/clipboard guards. No other books, page removal/reorder/reparent/icons or full native class coverage."
+      "scope": "NOTEBOOK only, fixed setup-time PANEL pages with canonical wrapper roots/native parent ownership. Silent or native notifying/vetoable selection and native captions; operation/callback ancestor/reentry/modal/clipboard guards. No other books, page removal/reorder/reparent/icons or full native class coverage. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/bookctrl.h",
@@ -3986,7 +3988,7 @@
         "wxl_notebook_selection",
         "wxl_set_notebook_selection"
       ],
-      "scope": "NOTEBOOK only, fixed setup-time PANEL pages with canonical wrapper roots/native parent ownership. Silent or native notifying/vetoable selection and native captions; operation/callback ancestor/reentry/modal/clipboard guards. No other books, page removal/reorder/reparent/icons or full native class coverage."
+      "scope": "NOTEBOOK only, fixed setup-time PANEL pages with canonical wrapper roots/native parent ownership. Silent or native notifying/vetoable selection and native captions; operation/callback ancestor/reentry/modal/clipboard guards. No other books, page removal/reorder/reparent/icons or full native class coverage. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/bookctrl.h",
@@ -4013,7 +4015,7 @@
         "wxl_notebook_selection",
         "wxl_set_notebook_selection"
       ],
-      "scope": "NOTEBOOK only, fixed setup-time PANEL pages with canonical wrapper roots/native parent ownership. Silent or native notifying/vetoable selection and native captions; operation/callback ancestor/reentry/modal/clipboard guards. No other books, page removal/reorder/reparent/icons or full native class coverage."
+      "scope": "NOTEBOOK only, fixed setup-time PANEL pages with canonical wrapper roots/native parent ownership. Silent or native notifying/vetoable selection and native captions; operation/callback ancestor/reentry/modal/clipboard guards. No other books, page removal/reorder/reparent/icons or full native class coverage. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/bookctrl.h",
@@ -4040,7 +4042,7 @@
         "wxl_notebook_selection",
         "wxl_set_notebook_selection"
       ],
-      "scope": "NOTEBOOK only, fixed setup-time PANEL pages with canonical wrapper roots/native parent ownership. Silent or native notifying/vetoable selection and native captions; operation/callback ancestor/reentry/modal/clipboard guards. No other books, page removal/reorder/reparent/icons or full native class coverage."
+      "scope": "NOTEBOOK only, fixed setup-time PANEL pages with canonical wrapper roots/native parent ownership. Silent or native notifying/vetoable selection and native captions; operation/callback ancestor/reentry/modal/clipboard guards. No other books, page removal/reorder/reparent/icons or full native class coverage. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/bookctrl.h",
@@ -4067,7 +4069,7 @@
         "wxl_notebook_selection",
         "wxl_set_notebook_selection"
       ],
-      "scope": "NOTEBOOK only, fixed setup-time PANEL pages with canonical wrapper roots/native parent ownership. Silent or native notifying/vetoable selection and native captions; operation/callback ancestor/reentry/modal/clipboard guards. No other books, page removal/reorder/reparent/icons or full native class coverage."
+      "scope": "NOTEBOOK only, fixed setup-time PANEL pages with canonical wrapper roots/native parent ownership. Silent or native notifying/vetoable selection and native captions; operation/callback ancestor/reentry/modal/clipboard guards. No other books, page removal/reorder/reparent/icons or full native class coverage. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/bookctrl.h",
@@ -4094,7 +4096,7 @@
         "wxl_notebook_selection",
         "wxl_set_notebook_selection"
       ],
-      "scope": "NOTEBOOK only, fixed setup-time PANEL pages with canonical wrapper roots/native parent ownership. Silent or native notifying/vetoable selection and native captions; operation/callback ancestor/reentry/modal/clipboard guards. No other books, page removal/reorder/reparent/icons or full native class coverage."
+      "scope": "NOTEBOOK only, fixed setup-time PANEL pages with canonical wrapper roots/native parent ownership. Silent or native notifying/vetoable selection and native captions; operation/callback ancestor/reentry/modal/clipboard guards. No other books, page removal/reorder/reparent/icons or full native class coverage. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/bookctrl.h",
@@ -5198,7 +5200,7 @@
         "wxl_event_sash",
         "wxl_set_event_sash"
       ],
-      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md."
+      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/splitter.h",
@@ -5229,7 +5231,7 @@
         "wxl_event_sash",
         "wxl_set_event_sash"
       ],
-      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md."
+      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/splitter.h",
@@ -5260,7 +5262,7 @@
         "wxl_event_sash",
         "wxl_set_event_sash"
       ],
-      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md."
+      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/splitter.h",
@@ -5291,7 +5293,7 @@
         "wxl_event_sash",
         "wxl_set_event_sash"
       ],
-      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md."
+      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/splitter.h",
@@ -5322,7 +5324,7 @@
         "wxl_event_sash",
         "wxl_set_event_sash"
       ],
-      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md."
+      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/splitter.h",
@@ -5353,7 +5355,7 @@
         "wxl_event_sash",
         "wxl_set_event_sash"
       ],
-      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md."
+      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/splitter.h",
@@ -5384,7 +5386,7 @@
         "wxl_event_sash",
         "wxl_set_event_sash"
       ],
-      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md."
+      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/splitter.h",
@@ -5415,7 +5417,7 @@
         "wxl_event_sash",
         "wxl_set_event_sash"
       ],
-      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md."
+      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/splitter.h",
@@ -5446,7 +5448,7 @@
         "wxl_event_sash",
         "wxl_set_event_sash"
       ],
-      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md."
+      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/splitter.h",
@@ -5477,7 +5479,7 @@
         "wxl_event_sash",
         "wxl_set_event_sash"
       ],
-      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md."
+      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/splitter.h",
@@ -5508,7 +5510,7 @@
         "wxl_event_sash",
         "wxl_set_event_sash"
       ],
-      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md."
+      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/splitter.h",
@@ -5539,7 +5541,7 @@
         "wxl_event_sash",
         "wxl_set_event_sash"
       ],
-      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md."
+      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/splitter.h",
@@ -5570,7 +5572,7 @@
         "wxl_event_sash",
         "wxl_set_event_sash"
       ],
-      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md."
+      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/splitter.h",
@@ -5601,7 +5603,7 @@
         "wxl_event_sash",
         "wxl_set_event_sash"
       ],
-      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md."
+      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/splitter.h",
@@ -5632,7 +5634,7 @@
         "wxl_event_sash",
         "wxl_set_event_sash"
       ],
-      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md."
+      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/splitter.h",
@@ -5663,7 +5665,7 @@
         "wxl_event_sash",
         "wxl_set_event_sash"
       ],
-      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md."
+      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/splitter.h",
@@ -5694,7 +5696,7 @@
         "wxl_event_sash",
         "wxl_set_event_sash"
       ],
-      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md."
+      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/splitter.h",
@@ -5725,7 +5727,7 @@
         "wxl_event_sash",
         "wxl_set_event_sash"
       ],
-      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md."
+      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/toolbar.h",
@@ -5761,7 +5763,7 @@
         "wxl_status_text",
         "wxl_set_status_text"
       ],
-      "scope": "Frame-owned horizontal toolbar, fixed normal/check/separator tools, positive toolbar-scoped IDs, stock art, explicit Realize and silent enabled/checked state. Native TOOL aliases MENU; guarded actions. Fixed status fields/text with automatic frame help disabled. OSX explicit in-window backend; native Cocoa chrome excluded. Quiescent structure/destruction. No raw tool adoption, dynamic tools, radio/dropdown/custom images or full parity. See docs/FRAME-ACTIONS.md."
+      "scope": "Frame-owned horizontal toolbar, fixed normal/check/separator tools, positive toolbar-scoped IDs, stock art, explicit Realize and silent enabled/checked state. Native TOOL aliases MENU; guarded actions. Fixed status fields/text with automatic frame help disabled. OSX explicit in-window backend; native Cocoa chrome excluded. Quiescent structure/destruction. No raw tool adoption, dynamic tools, radio/dropdown/custom images or full parity. See docs/FRAME-ACTIONS.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/toolbar.h",
@@ -5797,7 +5799,7 @@
         "wxl_status_text",
         "wxl_set_status_text"
       ],
-      "scope": "Frame-owned horizontal toolbar, fixed normal/check/separator tools, positive toolbar-scoped IDs, stock art, explicit Realize and silent enabled/checked state. Native TOOL aliases MENU; guarded actions. Fixed status fields/text with automatic frame help disabled. OSX explicit in-window backend; native Cocoa chrome excluded. Quiescent structure/destruction. No raw tool adoption, dynamic tools, radio/dropdown/custom images or full parity. See docs/FRAME-ACTIONS.md."
+      "scope": "Frame-owned horizontal toolbar, fixed normal/check/separator tools, positive toolbar-scoped IDs, stock art, explicit Realize and silent enabled/checked state. Native TOOL aliases MENU; guarded actions. Fixed status fields/text with automatic frame help disabled. OSX explicit in-window backend; native Cocoa chrome excluded. Quiescent structure/destruction. No raw tool adoption, dynamic tools, radio/dropdown/custom images or full parity. See docs/FRAME-ACTIONS.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/toolbar.h",
@@ -5833,7 +5835,7 @@
         "wxl_status_text",
         "wxl_set_status_text"
       ],
-      "scope": "Frame-owned horizontal toolbar, fixed normal/check/separator tools, positive toolbar-scoped IDs, stock art, explicit Realize and silent enabled/checked state. Native TOOL aliases MENU; guarded actions. Fixed status fields/text with automatic frame help disabled. OSX explicit in-window backend; native Cocoa chrome excluded. Quiescent structure/destruction. No raw tool adoption, dynamic tools, radio/dropdown/custom images or full parity. See docs/FRAME-ACTIONS.md."
+      "scope": "Frame-owned horizontal toolbar, fixed normal/check/separator tools, positive toolbar-scoped IDs, stock art, explicit Realize and silent enabled/checked state. Native TOOL aliases MENU; guarded actions. Fixed status fields/text with automatic frame help disabled. OSX explicit in-window backend; native Cocoa chrome excluded. Quiescent structure/destruction. No raw tool adoption, dynamic tools, radio/dropdown/custom images or full parity. See docs/FRAME-ACTIONS.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/toolbar.h",
@@ -5869,7 +5871,7 @@
         "wxl_status_text",
         "wxl_set_status_text"
       ],
-      "scope": "Frame-owned horizontal toolbar, fixed normal/check/separator tools, positive toolbar-scoped IDs, stock art, explicit Realize and silent enabled/checked state. Native TOOL aliases MENU; guarded actions. Fixed status fields/text with automatic frame help disabled. OSX explicit in-window backend; native Cocoa chrome excluded. Quiescent structure/destruction. No raw tool adoption, dynamic tools, radio/dropdown/custom images or full parity. See docs/FRAME-ACTIONS.md."
+      "scope": "Frame-owned horizontal toolbar, fixed normal/check/separator tools, positive toolbar-scoped IDs, stock art, explicit Realize and silent enabled/checked state. Native TOOL aliases MENU; guarded actions. Fixed status fields/text with automatic frame help disabled. OSX explicit in-window backend; native Cocoa chrome excluded. Quiescent structure/destruction. No raw tool adoption, dynamic tools, radio/dropdown/custom images or full parity. See docs/FRAME-ACTIONS.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/toolbar.h",
@@ -5905,7 +5907,7 @@
         "wxl_status_text",
         "wxl_set_status_text"
       ],
-      "scope": "Frame-owned horizontal toolbar, fixed normal/check/separator tools, positive toolbar-scoped IDs, stock art, explicit Realize and silent enabled/checked state. Native TOOL aliases MENU; guarded actions. Fixed status fields/text with automatic frame help disabled. OSX explicit in-window backend; native Cocoa chrome excluded. Quiescent structure/destruction. No raw tool adoption, dynamic tools, radio/dropdown/custom images or full parity. See docs/FRAME-ACTIONS.md."
+      "scope": "Frame-owned horizontal toolbar, fixed normal/check/separator tools, positive toolbar-scoped IDs, stock art, explicit Realize and silent enabled/checked state. Native TOOL aliases MENU; guarded actions. Fixed status fields/text with automatic frame help disabled. OSX explicit in-window backend; native Cocoa chrome excluded. Quiescent structure/destruction. No raw tool adoption, dynamic tools, radio/dropdown/custom images or full parity. See docs/FRAME-ACTIONS.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/toolbar.h",
@@ -5941,7 +5943,7 @@
         "wxl_status_text",
         "wxl_set_status_text"
       ],
-      "scope": "Frame-owned horizontal toolbar, fixed normal/check/separator tools, positive toolbar-scoped IDs, stock art, explicit Realize and silent enabled/checked state. Native TOOL aliases MENU; guarded actions. Fixed status fields/text with automatic frame help disabled. OSX explicit in-window backend; native Cocoa chrome excluded. Quiescent structure/destruction. No raw tool adoption, dynamic tools, radio/dropdown/custom images or full parity. See docs/FRAME-ACTIONS.md."
+      "scope": "Frame-owned horizontal toolbar, fixed normal/check/separator tools, positive toolbar-scoped IDs, stock art, explicit Realize and silent enabled/checked state. Native TOOL aliases MENU; guarded actions. Fixed status fields/text with automatic frame help disabled. OSX explicit in-window backend; native Cocoa chrome excluded. Quiescent structure/destruction. No raw tool adoption, dynamic tools, radio/dropdown/custom images or full parity. See docs/FRAME-ACTIONS.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/toolbar.h",
@@ -5977,7 +5979,7 @@
         "wxl_status_text",
         "wxl_set_status_text"
       ],
-      "scope": "Frame-owned horizontal toolbar, fixed normal/check/separator tools, positive toolbar-scoped IDs, stock art, explicit Realize and silent enabled/checked state. Native TOOL aliases MENU; guarded actions. Fixed status fields/text with automatic frame help disabled. OSX explicit in-window backend; native Cocoa chrome excluded. Quiescent structure/destruction. No raw tool adoption, dynamic tools, radio/dropdown/custom images or full parity. See docs/FRAME-ACTIONS.md."
+      "scope": "Frame-owned horizontal toolbar, fixed normal/check/separator tools, positive toolbar-scoped IDs, stock art, explicit Realize and silent enabled/checked state. Native TOOL aliases MENU; guarded actions. Fixed status fields/text with automatic frame help disabled. OSX explicit in-window backend; native Cocoa chrome excluded. Quiescent structure/destruction. No raw tool adoption, dynamic tools, radio/dropdown/custom images or full parity. See docs/FRAME-ACTIONS.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/toolbar.h",
@@ -6013,7 +6015,7 @@
         "wxl_status_text",
         "wxl_set_status_text"
       ],
-      "scope": "Frame-owned horizontal toolbar, fixed normal/check/separator tools, positive toolbar-scoped IDs, stock art, explicit Realize and silent enabled/checked state. Native TOOL aliases MENU; guarded actions. Fixed status fields/text with automatic frame help disabled. OSX explicit in-window backend; native Cocoa chrome excluded. Quiescent structure/destruction. No raw tool adoption, dynamic tools, radio/dropdown/custom images or full parity. See docs/FRAME-ACTIONS.md."
+      "scope": "Frame-owned horizontal toolbar, fixed normal/check/separator tools, positive toolbar-scoped IDs, stock art, explicit Realize and silent enabled/checked state. Native TOOL aliases MENU; guarded actions. Fixed status fields/text with automatic frame help disabled. OSX explicit in-window backend; native Cocoa chrome excluded. Quiescent structure/destruction. No raw tool adoption, dynamic tools, radio/dropdown/custom images or full parity. See docs/FRAME-ACTIONS.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/toolbar.h",
@@ -6049,7 +6051,7 @@
         "wxl_status_text",
         "wxl_set_status_text"
       ],
-      "scope": "Frame-owned horizontal toolbar, fixed normal/check/separator tools, positive toolbar-scoped IDs, stock art, explicit Realize and silent enabled/checked state. Native TOOL aliases MENU; guarded actions. Fixed status fields/text with automatic frame help disabled. OSX explicit in-window backend; native Cocoa chrome excluded. Quiescent structure/destruction. No raw tool adoption, dynamic tools, radio/dropdown/custom images or full parity. See docs/FRAME-ACTIONS.md."
+      "scope": "Frame-owned horizontal toolbar, fixed normal/check/separator tools, positive toolbar-scoped IDs, stock art, explicit Realize and silent enabled/checked state. Native TOOL aliases MENU; guarded actions. Fixed status fields/text with automatic frame help disabled. OSX explicit in-window backend; native Cocoa chrome excluded. Quiescent structure/destruction. No raw tool adoption, dynamic tools, radio/dropdown/custom images or full parity. See docs/FRAME-ACTIONS.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/toolbar.h",
@@ -6085,7 +6087,7 @@
         "wxl_status_text",
         "wxl_set_status_text"
       ],
-      "scope": "Frame-owned horizontal toolbar, fixed normal/check/separator tools, positive toolbar-scoped IDs, stock art, explicit Realize and silent enabled/checked state. Native TOOL aliases MENU; guarded actions. Fixed status fields/text with automatic frame help disabled. OSX explicit in-window backend; native Cocoa chrome excluded. Quiescent structure/destruction. No raw tool adoption, dynamic tools, radio/dropdown/custom images or full parity. See docs/FRAME-ACTIONS.md."
+      "scope": "Frame-owned horizontal toolbar, fixed normal/check/separator tools, positive toolbar-scoped IDs, stock art, explicit Realize and silent enabled/checked state. Native TOOL aliases MENU; guarded actions. Fixed status fields/text with automatic frame help disabled. OSX explicit in-window backend; native Cocoa chrome excluded. Quiescent structure/destruction. No raw tool adoption, dynamic tools, radio/dropdown/custom images or full parity. See docs/FRAME-ACTIONS.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/statusbr.h",
@@ -6121,7 +6123,7 @@
         "wxl_status_text",
         "wxl_set_status_text"
       ],
-      "scope": "Frame-owned horizontal toolbar, fixed normal/check/separator tools, positive toolbar-scoped IDs, stock art, explicit Realize and silent enabled/checked state. Native TOOL aliases MENU; guarded actions. Fixed status fields/text with automatic frame help disabled. OSX explicit in-window backend; native Cocoa chrome excluded. Quiescent structure/destruction. No raw tool adoption, dynamic tools, radio/dropdown/custom images or full parity. See docs/FRAME-ACTIONS.md."
+      "scope": "Frame-owned horizontal toolbar, fixed normal/check/separator tools, positive toolbar-scoped IDs, stock art, explicit Realize and silent enabled/checked state. Native TOOL aliases MENU; guarded actions. Fixed status fields/text with automatic frame help disabled. OSX explicit in-window backend; native Cocoa chrome excluded. Quiescent structure/destruction. No raw tool adoption, dynamic tools, radio/dropdown/custom images or full parity. See docs/FRAME-ACTIONS.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/statusbr.h",
@@ -6157,7 +6159,7 @@
         "wxl_status_text",
         "wxl_set_status_text"
       ],
-      "scope": "Frame-owned horizontal toolbar, fixed normal/check/separator tools, positive toolbar-scoped IDs, stock art, explicit Realize and silent enabled/checked state. Native TOOL aliases MENU; guarded actions. Fixed status fields/text with automatic frame help disabled. OSX explicit in-window backend; native Cocoa chrome excluded. Quiescent structure/destruction. No raw tool adoption, dynamic tools, radio/dropdown/custom images or full parity. See docs/FRAME-ACTIONS.md."
+      "scope": "Frame-owned horizontal toolbar, fixed normal/check/separator tools, positive toolbar-scoped IDs, stock art, explicit Realize and silent enabled/checked state. Native TOOL aliases MENU; guarded actions. Fixed status fields/text with automatic frame help disabled. OSX explicit in-window backend; native Cocoa chrome excluded. Quiescent structure/destruction. No raw tool adoption, dynamic tools, radio/dropdown/custom images or full parity. See docs/FRAME-ACTIONS.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/statusbr.h",
@@ -6193,7 +6195,7 @@
         "wxl_status_text",
         "wxl_set_status_text"
       ],
-      "scope": "Frame-owned horizontal toolbar, fixed normal/check/separator tools, positive toolbar-scoped IDs, stock art, explicit Realize and silent enabled/checked state. Native TOOL aliases MENU; guarded actions. Fixed status fields/text with automatic frame help disabled. OSX explicit in-window backend; native Cocoa chrome excluded. Quiescent structure/destruction. No raw tool adoption, dynamic tools, radio/dropdown/custom images or full parity. See docs/FRAME-ACTIONS.md."
+      "scope": "Frame-owned horizontal toolbar, fixed normal/check/separator tools, positive toolbar-scoped IDs, stock art, explicit Realize and silent enabled/checked state. Native TOOL aliases MENU; guarded actions. Fixed status fields/text with automatic frame help disabled. OSX explicit in-window backend; native Cocoa chrome excluded. Quiescent structure/destruction. No raw tool adoption, dynamic tools, radio/dropdown/custom images or full parity. See docs/FRAME-ACTIONS.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/statusbr.h",
@@ -6229,7 +6231,7 @@
         "wxl_status_text",
         "wxl_set_status_text"
       ],
-      "scope": "Frame-owned horizontal toolbar, fixed normal/check/separator tools, positive toolbar-scoped IDs, stock art, explicit Realize and silent enabled/checked state. Native TOOL aliases MENU; guarded actions. Fixed status fields/text with automatic frame help disabled. OSX explicit in-window backend; native Cocoa chrome excluded. Quiescent structure/destruction. No raw tool adoption, dynamic tools, radio/dropdown/custom images or full parity. See docs/FRAME-ACTIONS.md."
+      "scope": "Frame-owned horizontal toolbar, fixed normal/check/separator tools, positive toolbar-scoped IDs, stock art, explicit Realize and silent enabled/checked state. Native TOOL aliases MENU; guarded actions. Fixed status fields/text with automatic frame help disabled. OSX explicit in-window backend; native Cocoa chrome excluded. Quiescent structure/destruction. No raw tool adoption, dynamic tools, radio/dropdown/custom images or full parity. See docs/FRAME-ACTIONS.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/statusbr.h",
@@ -6265,7 +6267,7 @@
         "wxl_status_text",
         "wxl_set_status_text"
       ],
-      "scope": "Frame-owned horizontal toolbar, fixed normal/check/separator tools, positive toolbar-scoped IDs, stock art, explicit Realize and silent enabled/checked state. Native TOOL aliases MENU; guarded actions. Fixed status fields/text with automatic frame help disabled. OSX explicit in-window backend; native Cocoa chrome excluded. Quiescent structure/destruction. No raw tool adoption, dynamic tools, radio/dropdown/custom images or full parity. See docs/FRAME-ACTIONS.md."
+      "scope": "Frame-owned horizontal toolbar, fixed normal/check/separator tools, positive toolbar-scoped IDs, stock art, explicit Realize and silent enabled/checked state. Native TOOL aliases MENU; guarded actions. Fixed status fields/text with automatic frame help disabled. OSX explicit in-window backend; native Cocoa chrome excluded. Quiescent structure/destruction. No raw tool adoption, dynamic tools, radio/dropdown/custom images or full parity. See docs/FRAME-ACTIONS.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/frame.h",
@@ -6301,7 +6303,7 @@
         "wxl_status_text",
         "wxl_set_status_text"
       ],
-      "scope": "Frame-owned horizontal toolbar, fixed normal/check/separator tools, positive toolbar-scoped IDs, stock art, explicit Realize and silent enabled/checked state. Native TOOL aliases MENU; guarded actions. Fixed status fields/text with automatic frame help disabled. OSX explicit in-window backend; native Cocoa chrome excluded. Quiescent structure/destruction. No raw tool adoption, dynamic tools, radio/dropdown/custom images or full parity. See docs/FRAME-ACTIONS.md."
+      "scope": "Frame-owned horizontal toolbar, fixed normal/check/separator tools, positive toolbar-scoped IDs, stock art, explicit Realize and silent enabled/checked state. Native TOOL aliases MENU; guarded actions. Fixed status fields/text with automatic frame help disabled. OSX explicit in-window backend; native Cocoa chrome excluded. Quiescent structure/destruction. No raw tool adoption, dynamic tools, radio/dropdown/custom images or full parity. See docs/FRAME-ACTIONS.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/frame.h",
@@ -6337,7 +6339,7 @@
         "wxl_status_text",
         "wxl_set_status_text"
       ],
-      "scope": "Frame-owned horizontal toolbar, fixed normal/check/separator tools, positive toolbar-scoped IDs, stock art, explicit Realize and silent enabled/checked state. Native TOOL aliases MENU; guarded actions. Fixed status fields/text with automatic frame help disabled. OSX explicit in-window backend; native Cocoa chrome excluded. Quiescent structure/destruction. No raw tool adoption, dynamic tools, radio/dropdown/custom images or full parity. See docs/FRAME-ACTIONS.md."
+      "scope": "Frame-owned horizontal toolbar, fixed normal/check/separator tools, positive toolbar-scoped IDs, stock art, explicit Realize and silent enabled/checked state. Native TOOL aliases MENU; guarded actions. Fixed status fields/text with automatic frame help disabled. OSX explicit in-window backend; native Cocoa chrome excluded. Quiescent structure/destruction. No raw tool adoption, dynamic tools, radio/dropdown/custom images or full parity. See docs/FRAME-ACTIONS.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/frame.h",
@@ -6373,7 +6375,7 @@
         "wxl_status_text",
         "wxl_set_status_text"
       ],
-      "scope": "Frame-owned horizontal toolbar, fixed normal/check/separator tools, positive toolbar-scoped IDs, stock art, explicit Realize and silent enabled/checked state. Native TOOL aliases MENU; guarded actions. Fixed status fields/text with automatic frame help disabled. OSX explicit in-window backend; native Cocoa chrome excluded. Quiescent structure/destruction. No raw tool adoption, dynamic tools, radio/dropdown/custom images or full parity. See docs/FRAME-ACTIONS.md."
+      "scope": "Frame-owned horizontal toolbar, fixed normal/check/separator tools, positive toolbar-scoped IDs, stock art, explicit Realize and silent enabled/checked state. Native TOOL aliases MENU; guarded actions. Fixed status fields/text with automatic frame help disabled. OSX explicit in-window backend; native Cocoa chrome excluded. Quiescent structure/destruction. No raw tool adoption, dynamic tools, radio/dropdown/custom images or full parity. See docs/FRAME-ACTIONS.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/artprov.h",
@@ -6409,7 +6411,7 @@
         "wxl_status_text",
         "wxl_set_status_text"
       ],
-      "scope": "Frame-owned horizontal toolbar, fixed normal/check/separator tools, positive toolbar-scoped IDs, stock art, explicit Realize and silent enabled/checked state. Native TOOL aliases MENU; guarded actions. Fixed status fields/text with automatic frame help disabled. OSX explicit in-window backend; native Cocoa chrome excluded. Quiescent structure/destruction. No raw tool adoption, dynamic tools, radio/dropdown/custom images or full parity. See docs/FRAME-ACTIONS.md."
+      "scope": "Frame-owned horizontal toolbar, fixed normal/check/separator tools, positive toolbar-scoped IDs, stock art, explicit Realize and silent enabled/checked state. Native TOOL aliases MENU; guarded actions. Fixed status fields/text with automatic frame help disabled. OSX explicit in-window backend; native Cocoa chrome excluded. Quiescent structure/destruction. No raw tool adoption, dynamic tools, radio/dropdown/custom images or full parity. See docs/FRAME-ACTIONS.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/accel.h",
@@ -6425,7 +6427,7 @@
         "wxl_frame_accelerator_count",
         "wxl_frame_accelerator_entry"
       ],
-      "scope": "Copied explicit FRAME-ACCELERATORS tables only: bounded ASCII/function keys/modifiers, commandIDs1..32767, max256, quiescent replacement/clear. No menu pointers/resource adoption/string parser/arbitrary codes. Native key dispatch :MENU metadata/menu-state semantics vary by port; shared Lisp model needed. All managed MENU callbacks conservatively guard installed frame subtrees/loops. wxUSE_ACCEL required. See docs/KEYBOARD-ACCELERATORS.md."
+      "scope": "Copied explicit FRAME-ACCELERATORS tables only: bounded ASCII/function keys/modifiers, commandIDs1..32767, max256, quiescent replacement/clear. No menu pointers/resource adoption/string parser/arbitrary codes. Native key dispatch :MENU metadata/menu-state semantics vary by port; shared Lisp model needed. All managed MENU callbacks conservatively guard installed frame subtrees/loops. wxUSE_ACCEL required. See docs/KEYBOARD-ACCELERATORS.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/accel.h",
@@ -6441,7 +6443,7 @@
         "wxl_frame_accelerator_count",
         "wxl_frame_accelerator_entry"
       ],
-      "scope": "Copied explicit FRAME-ACCELERATORS tables only: bounded ASCII/function keys/modifiers, commandIDs1..32767, max256, quiescent replacement/clear. No menu pointers/resource adoption/string parser/arbitrary codes. Native key dispatch :MENU metadata/menu-state semantics vary by port; shared Lisp model needed. All managed MENU callbacks conservatively guard installed frame subtrees/loops. wxUSE_ACCEL required. See docs/KEYBOARD-ACCELERATORS.md."
+      "scope": "Copied explicit FRAME-ACCELERATORS tables only: bounded ASCII/function keys/modifiers, commandIDs1..32767, max256, quiescent replacement/clear. No menu pointers/resource adoption/string parser/arbitrary codes. Native key dispatch :MENU metadata/menu-state semantics vary by port; shared Lisp model needed. All managed MENU callbacks conservatively guard installed frame subtrees/loops. wxUSE_ACCEL required. See docs/KEYBOARD-ACCELERATORS.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/accel.h",
@@ -6457,7 +6459,7 @@
         "wxl_frame_accelerator_count",
         "wxl_frame_accelerator_entry"
       ],
-      "scope": "Copied explicit FRAME-ACCELERATORS tables only: bounded ASCII/function keys/modifiers, commandIDs1..32767, max256, quiescent replacement/clear. No menu pointers/resource adoption/string parser/arbitrary codes. Native key dispatch :MENU metadata/menu-state semantics vary by port; shared Lisp model needed. All managed MENU callbacks conservatively guard installed frame subtrees/loops. wxUSE_ACCEL required. See docs/KEYBOARD-ACCELERATORS.md."
+      "scope": "Copied explicit FRAME-ACCELERATORS tables only: bounded ASCII/function keys/modifiers, commandIDs1..32767, max256, quiescent replacement/clear. No menu pointers/resource adoption/string parser/arbitrary codes. Native key dispatch :MENU metadata/menu-state semantics vary by port; shared Lisp model needed. All managed MENU callbacks conservatively guard installed frame subtrees/loops. wxUSE_ACCEL required. See docs/KEYBOARD-ACCELERATORS.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/accel.h",
@@ -6473,7 +6475,7 @@
         "wxl_frame_accelerator_count",
         "wxl_frame_accelerator_entry"
       ],
-      "scope": "Copied explicit FRAME-ACCELERATORS tables only: bounded ASCII/function keys/modifiers, commandIDs1..32767, max256, quiescent replacement/clear. No menu pointers/resource adoption/string parser/arbitrary codes. Native key dispatch :MENU metadata/menu-state semantics vary by port; shared Lisp model needed. All managed MENU callbacks conservatively guard installed frame subtrees/loops. wxUSE_ACCEL required. See docs/KEYBOARD-ACCELERATORS.md."
+      "scope": "Copied explicit FRAME-ACCELERATORS tables only: bounded ASCII/function keys/modifiers, commandIDs1..32767, max256, quiescent replacement/clear. No menu pointers/resource adoption/string parser/arbitrary codes. Native key dispatch :MENU metadata/menu-state semantics vary by port; shared Lisp model needed. All managed MENU callbacks conservatively guard installed frame subtrees/loops. wxUSE_ACCEL required. See docs/KEYBOARD-ACCELERATORS.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/accel.h",
@@ -6489,7 +6491,7 @@
         "wxl_frame_accelerator_count",
         "wxl_frame_accelerator_entry"
       ],
-      "scope": "Copied explicit FRAME-ACCELERATORS tables only: bounded ASCII/function keys/modifiers, commandIDs1..32767, max256, quiescent replacement/clear. No menu pointers/resource adoption/string parser/arbitrary codes. Native key dispatch :MENU metadata/menu-state semantics vary by port; shared Lisp model needed. All managed MENU callbacks conservatively guard installed frame subtrees/loops. wxUSE_ACCEL required. See docs/KEYBOARD-ACCELERATORS.md."
+      "scope": "Copied explicit FRAME-ACCELERATORS tables only: bounded ASCII/function keys/modifiers, commandIDs1..32767, max256, quiescent replacement/clear. No menu pointers/resource adoption/string parser/arbitrary codes. Native key dispatch :MENU metadata/menu-state semantics vary by port; shared Lisp model needed. All managed MENU callbacks conservatively guard installed frame subtrees/loops. wxUSE_ACCEL required. See docs/KEYBOARD-ACCELERATORS.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/accel.h",
@@ -6505,7 +6507,7 @@
         "wxl_frame_accelerator_count",
         "wxl_frame_accelerator_entry"
       ],
-      "scope": "Copied explicit FRAME-ACCELERATORS tables only: bounded ASCII/function keys/modifiers, commandIDs1..32767, max256, quiescent replacement/clear. No menu pointers/resource adoption/string parser/arbitrary codes. Native key dispatch :MENU metadata/menu-state semantics vary by port; shared Lisp model needed. All managed MENU callbacks conservatively guard installed frame subtrees/loops. wxUSE_ACCEL required. See docs/KEYBOARD-ACCELERATORS.md."
+      "scope": "Copied explicit FRAME-ACCELERATORS tables only: bounded ASCII/function keys/modifiers, commandIDs1..32767, max256, quiescent replacement/clear. No menu pointers/resource adoption/string parser/arbitrary codes. Native key dispatch :MENU metadata/menu-state semantics vary by port; shared Lisp model needed. All managed MENU callbacks conservatively guard installed frame subtrees/loops. wxUSE_ACCEL required. See docs/KEYBOARD-ACCELERATORS.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/accel.h",
@@ -6521,7 +6523,7 @@
         "wxl_frame_accelerator_count",
         "wxl_frame_accelerator_entry"
       ],
-      "scope": "Copied explicit FRAME-ACCELERATORS tables only: bounded ASCII/function keys/modifiers, commandIDs1..32767, max256, quiescent replacement/clear. No menu pointers/resource adoption/string parser/arbitrary codes. Native key dispatch :MENU metadata/menu-state semantics vary by port; shared Lisp model needed. All managed MENU callbacks conservatively guard installed frame subtrees/loops. wxUSE_ACCEL required. See docs/KEYBOARD-ACCELERATORS.md."
+      "scope": "Copied explicit FRAME-ACCELERATORS tables only: bounded ASCII/function keys/modifiers, commandIDs1..32767, max256, quiescent replacement/clear. No menu pointers/resource adoption/string parser/arbitrary codes. Native key dispatch :MENU metadata/menu-state semantics vary by port; shared Lisp model needed. All managed MENU callbacks conservatively guard installed frame subtrees/loops. wxUSE_ACCEL required. See docs/KEYBOARD-ACCELERATORS.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/window.h",
@@ -6537,7 +6539,7 @@
         "wxl_frame_accelerator_count",
         "wxl_frame_accelerator_entry"
       ],
-      "scope": "Copied explicit FRAME-ACCELERATORS tables only: bounded ASCII/function keys/modifiers, commandIDs1..32767, max256, quiescent replacement/clear. No menu pointers/resource adoption/string parser/arbitrary codes. Native key dispatch :MENU metadata/menu-state semantics vary by port; shared Lisp model needed. All managed MENU callbacks conservatively guard installed frame subtrees/loops. wxUSE_ACCEL required. See docs/KEYBOARD-ACCELERATORS.md."
+      "scope": "Copied explicit FRAME-ACCELERATORS tables only: bounded ASCII/function keys/modifiers, commandIDs1..32767, max256, quiescent replacement/clear. No menu pointers/resource adoption/string parser/arbitrary codes. Native key dispatch :MENU metadata/menu-state semantics vary by port; shared Lisp model needed. All managed MENU callbacks conservatively guard installed frame subtrees/loops. wxUSE_ACCEL required. See docs/KEYBOARD-ACCELERATORS.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/window.h",
@@ -6553,7 +6555,7 @@
         "wxl_frame_accelerator_count",
         "wxl_frame_accelerator_entry"
       ],
-      "scope": "Copied explicit FRAME-ACCELERATORS tables only: bounded ASCII/function keys/modifiers, commandIDs1..32767, max256, quiescent replacement/clear. No menu pointers/resource adoption/string parser/arbitrary codes. Native key dispatch :MENU metadata/menu-state semantics vary by port; shared Lisp model needed. All managed MENU callbacks conservatively guard installed frame subtrees/loops. wxUSE_ACCEL required. See docs/KEYBOARD-ACCELERATORS.md."
+      "scope": "Copied explicit FRAME-ACCELERATORS tables only: bounded ASCII/function keys/modifiers, commandIDs1..32767, max256, quiescent replacement/clear. No menu pointers/resource adoption/string parser/arbitrary codes. Native key dispatch :MENU metadata/menu-state semantics vary by port; shared Lisp model needed. All managed MENU callbacks conservatively guard installed frame subtrees/loops. wxUSE_ACCEL required. See docs/KEYBOARD-ACCELERATORS.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     }
   ],
   "classes": {
@@ -6684,7 +6686,7 @@
         "wxl_remove_handler",
         "wxl_dispatch_owned"
       ],
-      "scope": "Logical names, visibility and effective enabled state, layout, geometry and destruction are exposed; the remaining wxWindow API stays open. Managed handler stacks and explicit stack-aware copied routing are now supported. Push preserves bridge ownership; default pop/remove detach alive, deleting pop consumes native resource. All supported concrete native window destructors (including supported generic dialogs) pop(false) before base teardown, independent of destroy observers/enabled flags. No external adoption/SetEventHandler or retained origins. Modal-only dialog show writers reject; active modal/ancestor close/destroy guards preserve native modal lifetime. Native availability rejects pending/scheduled receiver or ancestor deletion through public wxApp::IsScheduledForDestruction plus bridge markers; no dedicated general deletion-query API."
+      "scope": "Logical names, visibility and effective enabled state, layout, geometry and destruction are exposed; the remaining wxWindow API stays open. Managed handler stacks and explicit stack-aware copied routing are now supported. Push preserves bridge ownership; default pop/remove detach alive, deleting pop consumes native resource. All supported concrete native window destructors (including supported generic dialogs) pop(false) before base teardown, independent of destroy observers/enabled flags. No external adoption/SetEventHandler or retained origins. Modal-only dialog show writers reject; active modal/ancestor close/destroy guards preserve native modal lifetime. Native availability rejects pending/scheduled receiver or ancestor deletion through public wxApp::IsScheduledForDestruction plus bridge markers; no dedicated general deletion-query API. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     "wxTopLevelWindow": {
       "status": "~",
@@ -6753,14 +6755,22 @@
         "call-with-application",
         "with-application",
         "application-handler",
-        "current-application-handler"
+        "current-application-handler",
+        "ui-action",
+        "ui-action-p",
+        "defer-ui-action",
+        "cancel-ui-action",
+        "ui-action-pending-p"
       ],
       "native": [
         "wxl_start",
         "wxl_finish",
-        "wxl_application_handler"
+        "wxl_application_handler",
+        "wxl_defer_ui_action",
+        "wxl_cancel_ui_action",
+        "wxl_ui_action_pending"
       ],
-      "scope": "One managed GUI application per process on its main thread. Native initialization/cleanup only; application subclass hooks, traits, top-window APIs and remaining GUI-application interfaces are unbound. The CLOS APPLICATION-HANDLER is a borrowed event-handler view only. Borrowed managed application handler view supports inherited binding/dispatch/state; construction and explicit deletion reject. OS session delivery and native application subclass hooks remain unverified/unbound. Query/end-session binding is available on the managed app and isolated owned handlers; synthetic app/window session emission rejects; OS delivery remains unverified. Native availability rejects pending/scheduled receiver or ancestor deletion through public wxApp::IsScheduledForDestruction plus bridge markers; no dedicated general deletion-query API."
+      "scope": "One managed GUI application per process on its main thread. Native initialization/cleanup only; application subclass hooks, traits, top-window APIs and remaining GUI-application interfaces are unbound. The CLOS APPLICATION-HANDLER is a borrowed event-handler view only. Borrowed managed application handler view supports inherited binding/dispatch/state; construction and explicit deletion reject. OS session delivery and native application subclass hooks remain unverified/unbound. Query/end-session binding is available on the managed app and isolated owned handlers; synthetic app/window session emission rejects; OS delivery remains unverified. Native availability rejects pending/scheduled receiver or ancestor deletion through public wxApp::IsScheduledForDestruction plus bridge markers; no dedicated general deletion-query API. Managed ProcessIdle override provides bridge-specific FIFO deferred UI actions; native-entry/idle-depth, callback/modal/operation/error/shutdown gates, weak owner suppression and closure root cleanup. ProcessIdle is omitted from pinned interface declarations, so no invented completed entry. Public Lisp application subclass hooks remain unbound."
     },
     "wxEvtHandler": {
       "status": "~",
@@ -6811,7 +6821,7 @@
         "wxl_context_user_data",
         "wxl_event_user_data"
       ],
-      "scope": "Managed standalone ownership, borrowed window/app identities, guarded standalone chains and managed window stacks support bindings, ID/range filters, normal/local/copied/pending/transfer delivery and bounded target cancellation. Handler-wide Lisp client data and distinct per-binding EQ USER-DATA use native numeric token adapters with session/frame/snapshot lifetime guards. Attached session delivery and dispatch-time structural edits reject. External adoption, arbitrary raw typed/untyped/userData/client/item pointers, generic container ownership, per-handler pending queries, app-wide cancellation, native OS-session validation, timer/idle and worker facilities remain open."
+      "scope": "Managed standalone ownership, borrowed window/app identities, guarded standalone chains and managed window stacks support bindings, ID/range filters, normal/local/copied/pending/transfer delivery and bounded target cancellation. Handler-wide Lisp client data and distinct per-binding EQ USER-DATA use native numeric token adapters with session/frame/snapshot lifetime guards. Attached session delivery and dispatch-time structural edits reject. External adoption, arbitrary raw typed/untyped/userData/client/item pointers, generic container ownership, per-handler pending queries, app-wide cancellation, native OS-session validation, timer/idle and worker facilities remain open. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     "wxEvent": {
       "status": "~",
@@ -7102,7 +7112,7 @@
         "wxl_set_menu_label",
         "wxl_menu_destroy"
       ],
-      "scope": "Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN. Normal/check/separator command actions only. Native OS menu interaction, accelerators, radio/submenu/popup and additional overloads remain outside this selected feature."
+      "scope": "Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN. Normal/check/separator command actions only. Native OS menu interaction, accelerators, radio/submenu/popup and additional overloads remain outside this selected feature. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     "wxMenu": {
       "status": "~",
@@ -7117,7 +7127,7 @@
         "wxl_menu_count",
         "wxl_menu_destroy"
       ],
-      "scope": "Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN. Normal/check/separator command actions only. Native OS menu interaction, accelerators, radio/submenu/popup and additional overloads remain outside this selected feature."
+      "scope": "Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN. Normal/check/separator command actions only. Native OS menu interaction, accelerators, radio/submenu/popup and additional overloads remain outside this selected feature. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     "wxMenuItem": {
       "status": "~",
@@ -7145,7 +7155,7 @@
         "wxl_activate_menu",
         "wxl_menu_destroy"
       ],
-      "scope": "Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN. Normal/check/separator command actions only. Native OS menu interaction, accelerators, radio/submenu/popup and additional overloads remain outside this selected feature."
+      "scope": "Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN. Normal/check/separator command actions only. Native OS menu interaction, accelerators, radio/submenu/popup and additional overloads remain outside this selected feature. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     "wxDialog": {
       "status": "~",
@@ -7299,7 +7309,7 @@
         "wxl_notebook_selection",
         "wxl_set_notebook_selection"
       ],
-      "scope": "NOTEBOOK only, fixed setup-time PANEL pages with canonical wrapper roots/native parent ownership. Silent or native notifying/vetoable selection and native captions; operation/callback ancestor/reentry/modal/clipboard guards. No other books, page removal/reorder/reparent/icons or full native class coverage."
+      "scope": "NOTEBOOK only, fixed setup-time PANEL pages with canonical wrapper roots/native parent ownership. Silent or native notifying/vetoable selection and native captions; operation/callback ancestor/reentry/modal/clipboard guards. No other books, page removal/reorder/reparent/icons or full native class coverage. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     "wxBookCtrlBase": {
       "status": "~",
@@ -7322,7 +7332,7 @@
         "wxl_notebook_selection",
         "wxl_set_notebook_selection"
       ],
-      "scope": "NOTEBOOK only, fixed setup-time PANEL pages with canonical wrapper roots/native parent ownership. Silent or native notifying/vetoable selection and native captions; operation/callback ancestor/reentry/modal/clipboard guards. No other books, page removal/reorder/reparent/icons or full native class coverage."
+      "scope": "NOTEBOOK only, fixed setup-time PANEL pages with canonical wrapper roots/native parent ownership. Silent or native notifying/vetoable selection and native captions; operation/callback ancestor/reentry/modal/clipboard guards. No other books, page removal/reorder/reparent/icons or full native class coverage. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     "wxBookCtrlEvent": {
       "status": "~",
@@ -7519,7 +7529,7 @@
         "wxl_event_sash",
         "wxl_set_event_sash"
       ],
-      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md."
+      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     "wxSplitterEvent": {
       "status": "~",
@@ -7546,7 +7556,7 @@
         "wxl_event_sash",
         "wxl_set_event_sash"
       ],
-      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md."
+      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     "wxToolBar": {
       "status": "~",
@@ -7578,7 +7588,7 @@
         "wxl_status_text",
         "wxl_set_status_text"
       ],
-      "scope": "Frame-owned horizontal toolbar, fixed normal/check/separator tools, positive toolbar-scoped IDs, stock art, explicit Realize and silent enabled/checked state. Native TOOL aliases MENU; guarded actions. Fixed status fields/text with automatic frame help disabled. OSX explicit in-window backend; native Cocoa chrome excluded. Quiescent structure/destruction. No raw tool adoption, dynamic tools, radio/dropdown/custom images or full parity. See docs/FRAME-ACTIONS.md."
+      "scope": "Frame-owned horizontal toolbar, fixed normal/check/separator tools, positive toolbar-scoped IDs, stock art, explicit Realize and silent enabled/checked state. Native TOOL aliases MENU; guarded actions. Fixed status fields/text with automatic frame help disabled. OSX explicit in-window backend; native Cocoa chrome excluded. Quiescent structure/destruction. No raw tool adoption, dynamic tools, radio/dropdown/custom images or full parity. See docs/FRAME-ACTIONS.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     "wxStatusBar": {
       "status": "~",
@@ -7610,7 +7620,7 @@
         "wxl_status_text",
         "wxl_set_status_text"
       ],
-      "scope": "Frame-owned horizontal toolbar, fixed normal/check/separator tools, positive toolbar-scoped IDs, stock art, explicit Realize and silent enabled/checked state. Native TOOL aliases MENU; guarded actions. Fixed status fields/text with automatic frame help disabled. OSX explicit in-window backend; native Cocoa chrome excluded. Quiescent structure/destruction. No raw tool adoption, dynamic tools, radio/dropdown/custom images or full parity. See docs/FRAME-ACTIONS.md."
+      "scope": "Frame-owned horizontal toolbar, fixed normal/check/separator tools, positive toolbar-scoped IDs, stock art, explicit Realize and silent enabled/checked state. Native TOOL aliases MENU; guarded actions. Fixed status fields/text with automatic frame help disabled. OSX explicit in-window backend; native Cocoa chrome excluded. Quiescent structure/destruction. No raw tool adoption, dynamic tools, radio/dropdown/custom images or full parity. See docs/FRAME-ACTIONS.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     "wxArtProvider": {
       "status": "~",
@@ -7642,7 +7652,7 @@
         "wxl_status_text",
         "wxl_set_status_text"
       ],
-      "scope": "Frame-owned horizontal toolbar, fixed normal/check/separator tools, positive toolbar-scoped IDs, stock art, explicit Realize and silent enabled/checked state. Native TOOL aliases MENU; guarded actions. Fixed status fields/text with automatic frame help disabled. OSX explicit in-window backend; native Cocoa chrome excluded. Quiescent structure/destruction. No raw tool adoption, dynamic tools, radio/dropdown/custom images or full parity. See docs/FRAME-ACTIONS.md."
+      "scope": "Frame-owned horizontal toolbar, fixed normal/check/separator tools, positive toolbar-scoped IDs, stock art, explicit Realize and silent enabled/checked state. Native TOOL aliases MENU; guarded actions. Fixed status fields/text with automatic frame help disabled. OSX explicit in-window backend; native Cocoa chrome excluded. Quiescent structure/destruction. No raw tool adoption, dynamic tools, radio/dropdown/custom images or full parity. See docs/FRAME-ACTIONS.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     "wxAcceleratorEntry": {
       "status": "~",
@@ -7654,7 +7664,7 @@
         "wxl_frame_accelerator_count",
         "wxl_frame_accelerator_entry"
       ],
-      "scope": "Copied explicit FRAME-ACCELERATORS tables only: bounded ASCII/function keys/modifiers, commandIDs1..32767, max256, quiescent replacement/clear. No menu pointers/resource adoption/string parser/arbitrary codes. Native key dispatch :MENU metadata/menu-state semantics vary by port; shared Lisp model needed. All managed MENU callbacks conservatively guard installed frame subtrees/loops. wxUSE_ACCEL required. See docs/KEYBOARD-ACCELERATORS.md."
+      "scope": "Copied explicit FRAME-ACCELERATORS tables only: bounded ASCII/function keys/modifiers, commandIDs1..32767, max256, quiescent replacement/clear. No menu pointers/resource adoption/string parser/arbitrary codes. Native key dispatch :MENU metadata/menu-state semantics vary by port; shared Lisp model needed. All managed MENU callbacks conservatively guard installed frame subtrees/loops. wxUSE_ACCEL required. See docs/KEYBOARD-ACCELERATORS.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     "wxAcceleratorTable": {
       "status": "~",
@@ -7666,7 +7676,7 @@
         "wxl_frame_accelerator_count",
         "wxl_frame_accelerator_entry"
       ],
-      "scope": "Copied explicit FRAME-ACCELERATORS tables only: bounded ASCII/function keys/modifiers, commandIDs1..32767, max256, quiescent replacement/clear. No menu pointers/resource adoption/string parser/arbitrary codes. Native key dispatch :MENU metadata/menu-state semantics vary by port; shared Lisp model needed. All managed MENU callbacks conservatively guard installed frame subtrees/loops. wxUSE_ACCEL required. See docs/KEYBOARD-ACCELERATORS.md."
+      "scope": "Copied explicit FRAME-ACCELERATORS tables only: bounded ASCII/function keys/modifiers, commandIDs1..32767, max256, quiescent replacement/clear. No menu pointers/resource adoption/string parser/arbitrary codes. Native key dispatch :MENU metadata/menu-state semantics vary by port; shared Lisp model needed. All managed MENU callbacks conservatively guard installed frame subtrees/loops. wxUSE_ACCEL required. See docs/KEYBOARD-ACCELERATORS.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     }
   }
 }

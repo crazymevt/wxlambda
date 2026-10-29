@@ -27,6 +27,7 @@
 #include <typeinfo>
 #include <unordered_set>
 #include <vector>
+#include <deque>
 #include <limits>
 #include <algorithm>
 #include <cstring>
@@ -78,10 +79,17 @@ private:
         return session_type(event.GetEventType()) ? false : wxEvtHandler::TryAfter(event);
     }
 };
+bool process_deferred_ui_action();
+unsigned idle_processing_depth = 0;
 class App final : public wxApp, public ClientDataAccess {
 public:
     wxClientDataType ClientStorageKind() const override { return m_clientDataType; }
     bool OnInit() override { return true; }
+    bool ProcessIdle() override {
+        struct IdleDepth { IdleDepth() { ++idle_processing_depth; } ~IdleDepth() { --idle_processing_depth; } } depth;
+        const bool more = wxApp::ProcessIdle();
+        return process_deferred_ui_action() || more;
+    }
 };
 thread_local std::string error;
 thread_local std::string label_result;
@@ -177,6 +185,18 @@ wxIdleMode initial_idle_mode = wxIDLE_PROCESS_ALL;
 wxl_handle next_handle = 1;
 wxl_handle application_handle = 0;
 wxl_callback dispatch = nullptr;
+wxl_ui_callback ui_dispatch = nullptr;
+struct UiAction { uint64_t token; wxl_handle owner_id; wxWeakRef<wxWindow> owner; };
+std::deque<UiAction> ui_actions;
+bool ui_action_running = false, finishing = false;
+uint64_t active_ui_action_token = 0;
+thread_local unsigned native_entry_depth = 0;
+unsigned ui_driver_depth = 0;
+struct UiDriverScope {
+    unsigned previous = ui_driver_depth;
+    UiDriverScope() { ui_driver_depth = native_entry_depth; }
+    ~UiDriverScope() { ui_driver_depth = previous; }
+};
 bool started = false, used = false, running = false, pumping = false;
 unsigned callback_depth = 0;
 struct CallbackScope {
@@ -582,11 +602,13 @@ void invoke_callback(uint64_t token, const wxl_event& event) {
     CallbackScope scope;
     dispatch(token, &event);
 }
-void require_dispatch_entry() {
+void require_dispatch_entry(bool structure = false) {
     require(!active_modal.get() && actual_modals.empty(), "Cannot enter structural dispatch during a modal dialog");
     require(notebook_operations.empty() && list_callback_operations.empty() && tree_operations.empty() && splitter_operations.empty() && toolbar_operations.empty() && accelerator_action_frames.empty(), "Cannot enter structural dispatch during navigation callbacks");
-    require(!running, "Event loop is already running");
-    require(!pumping && callback_depth == 0, "Cannot enter event dispatch from a pump or callback");
+    const bool safe_action = structure && ui_action_running;
+    require(!ui_action_running || structure, "Nested RUN/pump/finish is forbidden in a deferred UI action");
+    require(!running || safe_action, "Event loop is already running");
+    require((!pumping || safe_action) && callback_depth == 0, "Cannot enter event dispatch from a pump or callback");
 }
 void emit_event(wxl_handle id, const wxl_event& event) {
     const auto it = handlers.find(id);
@@ -877,6 +899,7 @@ wxl_handle track(wxWindow* object) {
     return id;
 }
 template<class F> int status(F fn) noexcept {
+    struct NativeEntry { NativeEntry() { ++native_entry_depth; } ~NativeEntry() { --native_entry_depth; } } entry;
     error.clear();
     try { fn(); return 0; }
     catch (const std::exception& e) { error = e.what(); }
@@ -1123,9 +1146,34 @@ public:
 };
 #endif
 
+bool ui_action_owner_live(const UiAction& action) {
+    if (!action.owner_id) return true;
+    auto* owner = action.owner.get();
+    return owner && !window_destruction_pending(owner);
+}
+bool ui_action_ready() {
+    return started && !finishing && ui_dispatch && !ui_action_running && !pending_callback_error &&
+           callback_depth == 0 && EventScope::stack.empty() &&
+           ui_driver_depth != 0 && native_entry_depth == ui_driver_depth && idle_processing_depth == 1 &&
+           !active_modal.get() && actual_modals.empty() && dialog_operation_windows.empty() && !clipboard_busy &&
+           notebook_operations.empty() && list_callback_operations.empty() && tree_operations.empty() &&
+           splitter_operations.empty() && toolbar_operations.empty() && accelerator_action_frames.empty();
+}
+bool process_deferred_ui_action() {
+    if (ui_actions.empty() || !ui_action_ready()) return false;
+    const auto action = ui_actions.front(); ui_actions.pop_front();
+    const bool execute = ui_action_owner_live(action);
+    struct ActionScope {
+        explicit ActionScope(uint64_t token) { ui_action_running = true; active_ui_action_token = token; }
+        ~ActionScope() { ui_action_running = false; active_ui_action_token = 0; }
+    };
+    { ActionScope scope(action.token); ui_dispatch(action.token, execute ? 1 : 0); }
+    return !ui_actions.empty() && ui_action_ready(); // More idle only when safely deliverable.
+}
+
 }
 extern "C" {
-int wxl_abi_version() { return 42; }
+int wxl_abi_version() { return 43; }
 const char* wxl_last_error() { return error.c_str(); }
 int wxl_clipboard_text_available() {
     return boolean_result([&] {
@@ -1191,12 +1239,12 @@ int wxl_flush_clipboard() {
 #endif
     });
 }
-int wxl_start(wxl_callback callback) {
+int wxl_start(wxl_callback callback, wxl_ui_callback ui_callback) {
     return status([&] {
         main_thread();
         require(!used, "Only one application session is supported per process");
         require(wxApp::GetInstance() == nullptr, "A wxWidgets application already exists");
-        require(callback != nullptr, "Missing event dispatcher");
+        require(callback != nullptr && ui_callback != nullptr, "Missing event/UI action dispatcher");
         pending_callback_error = false;
         initial_idle_mode = wxIdleEvent::GetMode();
         used = true;
@@ -1211,18 +1259,41 @@ int wxl_start(wxl_callback callback) {
             wxEntryCleanup();
             throw std::runtime_error("wxWidgets application initialization failed");
         }
-        dispatch = callback;
+        dispatch = callback; ui_dispatch = ui_callback; finishing = false;
         application_handle = next_handle++;
         started = true;
         workflow_modal_hook = std::make_unique<WorkflowModalHook>();
         workflow_modal_hook->Register();
     });
 }
+int wxl_defer_ui_action(uint64_t token, wxl_handle owner_id) { return status([&] {
+    ready(); require(!finishing && ui_dispatch, "UI action queue is shutting down");
+    require(token && token != active_ui_action_token, "Invalid/active UI action token");
+    for (const auto& action : ui_actions) require(action.token != token, "Duplicate UI action token");
+    require(ui_actions.size() < 1024, "At most 1024 pending UI actions are supported");
+    auto* owner = owner_id ? window(owner_id) : nullptr;
+    wxWakeUpIdle(); // Wake is non-inline; failed allocation below publishes no queue entry.
+    ui_actions.push_back({token, owner_id, owner});
+}); }
+int wxl_cancel_ui_action(uint64_t token) { return boolean_result([&] {
+    ready(); for (auto it = ui_actions.begin(); it != ui_actions.end(); ++it)
+        if (it->token == token) { ui_actions.erase(it); return true; }
+    return false;
+}); }
+int wxl_ui_action_pending(uint64_t token) { return boolean_result([&] {
+    ready(); for (auto it = ui_actions.begin(); it != ui_actions.end(); ++it)
+        if (it->token == token) {
+            if (!ui_action_owner_live(*it)) { ui_actions.erase(it); return false; }
+            return true;
+        }
+    return false;
+}); }
 int wxl_run() {
     return status([] {
         ready();
         require_dispatch_entry();
         require(!wxTopLevelWindows.empty(), "Create a frame before running the event loop");
+        UiDriverScope driver;
         running = true;
         try { wxTheApp->OnRun(); }
         catch (...) { running = false; throw; }
@@ -1233,6 +1304,7 @@ int wxl_poll() {
     return status([] {
         ready();
         require_dispatch_entry();
+        UiDriverScope driver;
         PumpScope scope;
         wxTheApp->Yield(true);
         wxTheApp->ProcessIdle();
@@ -1257,6 +1329,7 @@ int wxl_finish() {
     return status([] {
         ready();
         require_dispatch_entry();
+        finishing = true; ui_actions.clear(); ui_dispatch = nullptr;
         struct RestoreIdleMode {
             ~RestoreIdleMode() { wxIdleEvent::SetMode(initial_idle_mode); }
         } restore_idle_mode;
@@ -1438,7 +1511,7 @@ int wxl_set_dialog_selection(wxl_handle id, int value) { return status([&] {
 const char* wxl_dialog_selection_text(wxl_handle id, size_t* length) { return metadata_string([&] { return as<wxSingleChoiceDialog>(id)->GetStringSelection(); }, length); }
 int wxl_set_frame_accelerators(wxl_handle id, const int* keys, const int* flags, const int* commands, size_t count) {
     return status([&] {
-        require_dispatch_entry(); auto* frame = as<wxFrame>(id);
+        require_dispatch_entry(true); auto* frame = as<wxFrame>(id);
         require(count <= 256 && (!count || (keys && flags && commands)), "Invalid accelerator arrays/count");
         std::vector<wxAcceleratorEntry> entries; entries.reserve(count);
         std::vector<AcceleratorSpec> specs; specs.reserve(count);
@@ -1487,7 +1560,7 @@ struct ToolbarBackendScope {
 // Frame bars use native window ownership. Tool IDs are scoped to each toolbar.
 wxl_handle wxl_toolbar(wxl_handle frame_id) {
     return create([&] {
-        require_dispatch_entry(); auto* frame = as<wxFrame>(frame_id);
+        require_dispatch_entry(true); auto* frame = as<wxFrame>(frame_id);
         require(!frame->GetToolBar(), "Frame already has a toolbar");
         ToolbarBackendScope backend;
         auto bar = std::make_unique<ManagedWindow<wxToolBar>>(frame, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTB_HORIZONTAL | wxTB_FLAT);
@@ -1496,7 +1569,7 @@ wxl_handle wxl_toolbar(wxl_handle frame_id) {
 }
 wxl_handle wxl_status_bar(wxl_handle frame_id, int fields) {
     return create([&] {
-        require_dispatch_entry(); auto* frame = as<wxFrame>(frame_id);
+        require_dispatch_entry(true); auto* frame = as<wxFrame>(frame_id);
         require(fields >= 1 && fields <= 16, "Status field count must be 1..16");
         require(!frame->GetStatusBar(), "Frame already has a status bar");
         auto bar = std::make_unique<ManagedWindow<wxStatusBar>>(frame, wxID_ANY);
@@ -1507,7 +1580,7 @@ wxl_handle wxl_status_bar(wxl_handle frame_id, int fields) {
 }
 int wxl_add_tool(wxl_handle id, int tool_id, const char* label, size_t length, int art, int kind, const char* help, size_t help_length) {
     return status([&] {
-        require_dispatch_entry(); auto* bar = as<wxToolBar>(id);
+        require_dispatch_entry(true); auto* bar = as<wxToolBar>(id);
         require(!realized_toolbars.count(bar), "Tools are fixed after Realize");
         require(kind >= 0 && kind <= 2, "Unsupported tool kind");
         if (kind == 2) {
@@ -1524,7 +1597,7 @@ int wxl_add_tool(wxl_handle id, int tool_id, const char* label, size_t length, i
     });
 }
 int wxl_realize_toolbar(wxl_handle id) { return status([&] {
-    require_dispatch_entry(); auto* bar = as<wxToolBar>(id);
+    require_dispatch_entry(true); auto* bar = as<wxToolBar>(id);
     require(!realized_toolbars.count(bar), "Toolbar already realized");
     require(bar->GetToolsCount() != 0, "Add tools before Realize");
     ToolbarOperation operation(bar); require(bar->Realize(), "Native toolbar realization failed"); realized_toolbars.insert(bar);
@@ -1568,7 +1641,7 @@ int wxl_set_status_text(wxl_handle id, int field, const char* text, size_t lengt
 }); }
 wxl_handle wxl_menu_bar(wxl_handle frame_id) {
     return create([&] {
-        require_dispatch_entry(); auto* owner = as<wxFrame>(frame_id);
+        require_dispatch_entry(true); auto* owner = as<wxFrame>(frame_id);
         require(!owner->GetMenuBar(), "Frame already has a menu bar");
         auto object = std::make_unique<ManagedMenuBar>();
         const auto id = next_handle++; object->identity = id;
@@ -1580,7 +1653,7 @@ wxl_handle wxl_menu_bar(wxl_handle frame_id) {
 }
 wxl_handle wxl_menu(wxl_handle bar_id, const char* label, size_t length) {
     return create([&] {
-        require_dispatch_entry(); const auto parent = menu_resource(bar_id, 0);
+        require_dispatch_entry(true); const auto parent = menu_resource(bar_id, 0);
         const auto title = menu_string(label, length, false);
         auto object = std::make_unique<ManagedMenu>();
         const auto id = next_handle++; object->identity = id;
@@ -1598,7 +1671,7 @@ wxl_handle wxl_menu(wxl_handle bar_id, const char* label, size_t length) {
 wxl_handle wxl_menu_item(wxl_handle menu_id, int item_id, const char* label, size_t length,
                          const char* help, size_t help_length, int kind) {
     return create([&] {
-        require_dispatch_entry(); const auto parent = menu_resource(menu_id, 1);
+        require_dispatch_entry(true); const auto parent = menu_resource(menu_id, 1);
         require(kind >= 0 && kind <= 2, "Unsupported menu item kind");
         require((label || !length) && (help || !help_length), "Null menu item text");
         require(kind == 2 ? item_id == 0 && !length && !help_length : item_id > 0,
@@ -1633,7 +1706,7 @@ int wxl_menu_alive(wxl_handle id) {
 }
 int wxl_menu_destroy(wxl_handle id) {
     return status([&] {
-        ready(); require_dispatch_entry(); const auto resource = menu_resource(id);
+        ready(); require_dispatch_entry(true); const auto resource = menu_resource(id);
         if (resource.kind == 0) { as<wxFrame>(resource.frame)->SetMenuBar(nullptr); delete static_cast<wxMenuBar*>(resource.object); }
         else if (resource.kind == 1) {
             auto* bar = static_cast<wxMenuBar*>(menu_resource(resource.parent, 0).object);
@@ -1776,7 +1849,7 @@ int wxl_handler_destroy(wxl_handle id) {
                 wxTheApp->CallAfter([id] { owned_handlers.erase(id); pending_destruction.erase(id); });
             } catch (...) { pending_destruction.erase(id); throw; }
         } else {
-            if (pushed_handlers.count(id)) { require_dispatch_entry(); remove_pushed_handler(id); }
+            if (pushed_handlers.count(id)) { require_dispatch_entry(true); remove_pushed_handler(id); }
             owned_handlers.erase(it);
         }
     });
@@ -1798,7 +1871,7 @@ int wxl_handler_unlinked(wxl_handle id) {
 int wxl_link_handlers(wxl_handle id, wxl_handle peer_id, int previous) {
     return status([&] {
         ready();
-        require_dispatch_entry();
+        require_dispatch_entry(true);
         auto* source = standalone_handler(id);
         validate_chain_neighbors(source);
         if (!peer_id) {
@@ -1832,7 +1905,7 @@ int wxl_link_handlers(wxl_handle id, wxl_handle peer_id, int previous) {
 int wxl_unlink_handler(wxl_handle id) {
     return status([&] {
         ready();
-        require_dispatch_entry();
+        require_dispatch_entry(true);
         auto* source = standalone_handler(id);
         validate_chain_neighbors(source);
         source->Unlink();
@@ -2173,7 +2246,7 @@ int wxl_dispatch_owned(wxl_handle receiver_id, wxl_handle event_id, int mode, in
 int wxl_delete_pending_events(wxl_handle id) {
     return status([&] {
         ready();
-        require_dispatch_entry();
+        require_dispatch_entry(true);
         auto* receiver = event_handler(id);
         require(id != application_handle, "Cannot discard the application handler's deferred cleanup queue");
         receiver->DeletePendingEvents();
@@ -2195,7 +2268,7 @@ int wxl_window_handler(wxl_handle window_id, wxl_handle* handler_id) {
 }
 int wxl_push_handler(wxl_handle window_id, wxl_handle handler_id) {
     return status([&] {
-        ready(); require_dispatch_entry();
+        ready(); require_dispatch_entry(true);
         auto* owner = window(window_id);
         auto* handler = standalone_handler(handler_id);
         validate_window_stack(owner);
@@ -2210,7 +2283,7 @@ int wxl_push_handler(wxl_handle window_id, wxl_handle handler_id) {
 }
 int wxl_pop_handler(wxl_handle window_id, int destroy, wxl_handle* handler_id) {
     return status([&] {
-        ready(); require_dispatch_entry();
+        ready(); require_dispatch_entry(true);
         require(handler_id != nullptr, "Missing popped handler output");
         auto* owner = window(window_id);
         validate_window_stack(owner);
@@ -2228,7 +2301,7 @@ int wxl_pop_handler(wxl_handle window_id, int destroy, wxl_handle* handler_id) {
 }
 int wxl_remove_handler(wxl_handle window_id, wxl_handle handler_id) {
     return boolean_result([&] {
-        ready(); require_dispatch_entry();
+        ready(); require_dispatch_entry(true);
         auto* owner = window(window_id);
         auto* handler = event_handler(handler_id);
         require(owned_handlers.count(handler_id), "Window stacks require owned handlers");
@@ -2271,7 +2344,7 @@ wxl_handle wxl_splitter(wxl_handle parent, int orientation, int position, int mi
 }
 int wxl_splitter_attach(wxl_handle id, wxl_handle first_id, wxl_handle second_id) {
     return status([&] {
-        ready(); require(!running && !pumping && callback_depth == 0, "Attach splitter panes outside RUN, pumps and callbacks");
+        ready(); require_dispatch_entry(true);
         auto* splitter = as<FixedSplitter>(id); auto* first = as<wxPanel>(first_id); auto* second = as<wxPanel>(second_id);
         require(!splitter->GetWindow1() && !splitter->GetWindow2(), "Splitter panes are already attached");
         require(first != second && first->GetParent() == splitter && second->GetParent() == splitter &&
@@ -2554,7 +2627,7 @@ wxl_handle wxl_notebook(wxl_handle parent) {
 int wxl_notebook_add(wxl_handle id, wxl_handle page_id, const char* label, size_t length, int select) {
     return status([&] {
         ready();
-        require(!running && !pumping && callback_depth == 0, "Add notebook pages outside RUN, pumps and callbacks");
+        require_dispatch_entry(true);
         auto* book = as<wxNotebook>(id);
         auto* page = as<wxPanel>(page_id);
         require(select == 0 || select == 1, "Invalid notebook select flag");
@@ -2866,10 +2939,10 @@ int wxl_destroy(wxl_handle id) {
         if (dynamic_cast<wxToolBar*>(object)) {
             // OSX Destroy() uninstalls native chrome and can defer deletion.
             // Delete synchronously while quiescent, before allowing replacement.
-            require_dispatch_entry(); delete object; return;
+            require_dispatch_entry(true); delete object; return;
         }
         if (auto* bar = dynamic_cast<wxStatusBar*>(object)) {
-            require_dispatch_entry(); auto* frame = dynamic_cast<wxFrame*>(bar->GetParent());
+            require_dispatch_entry(true); auto* frame = dynamic_cast<wxFrame*>(bar->GetParent());
             if (frame && frame->GetStatusBar() == bar) frame->SetStatusBar(nullptr);
             delete bar; return;
         }

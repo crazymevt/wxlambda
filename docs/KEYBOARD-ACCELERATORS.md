@@ -78,9 +78,9 @@ callbacks and synthetic menu events. Destruction/close of those windows rejects;
 modal dialogs, clipboard and nested dispatch/pump entry also reject for the
 callback duration. Property writes such as status feedback remain available.
 Table changes already require quiescence. Defer destructive/modal/clipboard
-work until after callback return (for example an application-owned idle action).
-This slice does not add a deferred-action queue or claim modal Open/Save shortcuts
-are complete. Clearing all explicit tables restores the previous menu callback
+work until after callback return (for example DEFER-UI-ACTION).
+ABI43 adds a deferred-action queue for these requests; see the safe boundary
+below. The keyboard-only slice does not itself perform file IO. Clearing all explicit tables restores the previous menu callback
 policy. Existing toolbar/navigation guards continue to apply independently.
 
 ## Example and verification
@@ -102,3 +102,12 @@ Physical keyboard input/focus, accessibility, alternate layouts/input methods,
 reserved-key conflicts, hosted Windows/Linux translation and graphical Cadre
 remain unverified. See [frame actions](FRAME-ACTIONS.md),
 [coverage](WXWIDGETS-COVERAGE.md) and [Cadre installation](DOCSET.md).
+
+## Safe deferred structural boundary (ABI43)
+
+[Deferred UI actions](DEFERRED-UI-ACTIONS.md) run after native callbacks and
+operations return. Their outer action body is an explicit safe structural
+boundary even under RUN/full polling; the quiescent structural operations in
+this guide can run there. Nested event callbacks retain their existing guards,
+and nested RUN/pumps/finish remain forbidden. Optional owner/cancel/error rules
+are documented in that guide.

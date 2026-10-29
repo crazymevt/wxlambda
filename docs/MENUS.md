@@ -117,3 +117,12 @@ own evidence. The native inventory remains partial and records additional menu
 APIs without making all of them release prerequisites. Continue the representative form/editor workflow through the bounded
 [standard-dialog interface](STANDARD-DIALOGS.md); message/file families still
 need safe platform cancellation.
+
+## Safe deferred structural boundary (ABI43)
+
+[Deferred UI actions](DEFERRED-UI-ACTIONS.md) run after native callbacks and
+operations return. Their outer action body is an explicit safe structural
+boundary even under RUN/full polling; the quiescent structural operations in
+this guide can run there. Nested event callbacks retain their existing guards,
+and nested RUN/pumps/finish remain forbidden. Optional owner/cancel/error rules
+are documented in that guide.

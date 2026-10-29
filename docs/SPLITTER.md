@@ -53,3 +53,12 @@ Supported native scope: wxWidgets 3.2.12 wxSplitterWindow and wxSplitterEvent.
 Single-pane Initialize, Unsplit, ReplaceWindow, dynamic orientation/styles,
 resize/double-click/unsplit event bindings and complete native parity are deferred.
 See [coverage](WXWIDGETS-COVERAGE.md) and [Cadre installation](DOCSET.md).
+
+## Safe deferred structural boundary (ABI43)
+
+[Deferred UI actions](DEFERRED-UI-ACTIONS.md) run after native callbacks and
+operations return. Their outer action body is an explicit safe structural
+boundary even under RUN/full polling; the quiescent structural operations in
+this guide can run there. Nested event callbacks retain their existing guards,
+and nested RUN/pumps/finish remain forbidden. Optional owner/cancel/error rules
+are documented in that guide.

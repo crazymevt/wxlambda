@@ -98,6 +98,10 @@
   (tree-item-value nil :read-only t)
   (sash-position-value nil :read-only t))
 
+(defstruct (ui-action (:constructor %make-ui-action (token)))
+  "Immutable session-owned deferred-action identity; closures are rooted separately."
+  (token 0 :type (unsigned-byte 64) :read-only t))
+(defvar *ui-actions* nil)
 (defstruct (event-binding (:constructor %make-event-binding (source kind token)))
   (source nil :read-only t) (kind nil :read-only t) (token 0 :read-only t))
 (defvar *registered-event-types* nil)
@@ -172,6 +176,57 @@
       (unless (and *in-notifying-setter* (= *notifying-modal-depth* (%dialog-depth)))
         (unless (plusp (%dialog-abort)) (%stop))))))
 
+(cffi:defcallback dispatch-ui-action :void ((token :uint64) (execute :int))
+  ;; Native code removes pending identity before entry. Keep the closure in a
+  ;; local root across modal callbacks/GC and release the queue root immediately.
+  (let ((function (gethash token *ui-actions*)))
+    (remhash token *ui-actions*)
+    (when (and function (not (zerop execute)) (not *callback-error*))
+      (let ((*callback-user-data* nil) (*in-notifying-setter* nil) (*notifying-modal-depth* 0))
+        (handler-case
+            (let ((returned nil) (failed nil))
+              (unwind-protect
+                   (handler-case
+                       (progn (funcall function) (setf returned t))
+                     (error (condition) (setf failed t) (error condition)))
+                (unless (or returned failed)
+                  (error "Deferred UI actions must return normally; nonlocal exit rejected"))))
+          (error (condition)
+            (unless *callback-error* (setf *callback-error* condition))
+            (%callback-error-pending 1)
+            (unless (plusp (%dialog-abort)) (%stop))))))))
+
+(defun reap-ui-actions ()
+  (when (and *active* *ui-actions*)
+    (let (expired)
+      (maphash (lambda (token function)
+                 (declare (ignore function))
+                 (unless (boolean-result (%ui-action-pending token)) (push token expired))) *ui-actions*)
+      (dolist (token expired) (remhash token *ui-actions*)))))
+
+(defun defer-ui-action (function &key owner)
+  "Queue FUNCTION (no arguments) at a safe idle boundary; optional OWNER must remain live."
+  (require-active-application)
+  (boolean-result (%ui-action-pending 0)) ; Reject foreign threads before touching session roots.
+  (check-type function function) (check-type owner (or null window))
+  (reap-ui-actions)
+  (let* ((token (incf *next-token*)) (ticket (%make-ui-action token)) (complete nil))
+    (setf (gethash token *ui-actions*) function)
+    (unwind-protect
+         (progn (check-status (%defer-ui-action token (if owner (handle owner) 0)))
+                (setf complete t) ticket)
+      (unless complete (remhash token *ui-actions*)))))
+(defgeneric cancel-ui-action (action))
+(defmethod cancel-ui-action ((action ui-action))
+  (require-active-application)
+  (let ((canceled (boolean-result (%cancel-ui-action (ui-action-token action)))))
+    (remhash (ui-action-token action) *ui-actions*) canceled))
+(defgeneric ui-action-pending-p (action))
+(defmethod ui-action-pending-p ((action ui-action))
+  (require-active-application)
+  (let ((pending (boolean-result (%ui-action-pending (ui-action-token action)))))
+    (unless pending (remhash (ui-action-token action) *ui-actions*)) pending))
+
 (defun reap-client-data-roots ()
   ;; Native destruction can precede Lisp wrapper cleanup (notably child windows).
   ;; Only numeric identities cross the FFI; native storage never holds Lisp data.
@@ -201,7 +256,7 @@
 
 (defun check-callback-error ()
   ;; Preserve an escaping user condition if cleanup itself encounters an error.
-  (flet ((cleanup () (reap-event-bindings) (reap-tree-items)))
+  (flet ((cleanup () (reap-event-bindings) (reap-tree-items) (reap-ui-actions)))
     (if *callback-error* (ignore-errors (cleanup)) (cleanup)))
   (when *callback-error*
     (let ((condition *callback-error*))
@@ -216,12 +271,13 @@ Run explicitly with RUN. Only one session per process is currently supported."
   (load-native-library)
   (let ((*tree-item-objects* (make-hash-table)) (*tree-item-revision* 0)
         (*active* t) (*application-handler* nil) (*standalone-handler-objects* (make-hash-table)) (*handlers* (make-hash-table)) (*event-bindings* (make-hash-table)) (*callback-error* nil)
-        (*handler-client-data-roots* (make-hash-table))
+        (*handler-client-data-roots* (make-hash-table)) (*ui-actions* (make-hash-table))
         (*registered-event-types* (make-hash-table)) (*registered-event-kinds* (make-hash-table))
         (*registered-event-families* (make-hash-table)))
-    (check-status (%start (cffi:callback dispatch-event)))
+    (check-status (%start (cffi:callback dispatch-event) (cffi:callback dispatch-ui-action)))
     (unwind-protect (funcall function)
       (unwind-protect (check-status (%finish))
+        (clrhash *ui-actions*)
         (clrhash *handler-client-data-roots*)
         (clrhash *tree-item-objects*)))))
 
@@ -399,7 +455,8 @@ RETURN-TO-APPLICATION-REPL restart. Setup errors propagate to the caller."
         (remhash (slot-value object 'handle) *standalone-handler-objects*))
       (setf (slot-value object 'handle) nil)))
   (ignore-errors (reap-client-data-roots))
-  (ignore-errors (reap-tree-items)))
+  (ignore-errors (reap-tree-items))
+  (ignore-errors (reap-ui-actions)))
 
 (defmethod initialize-instance :around ((object event-handler) &rest initargs)
   (declare (ignore initargs))

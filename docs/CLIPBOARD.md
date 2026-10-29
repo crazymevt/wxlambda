@@ -80,3 +80,7 @@ existing clipboard content/formats are neither read nor replaced. Actual externa
 application interoperability, live writes and exit persistence remain manual checks;
 do not infer them from the isolated test double. See [coverage](WXWIDGETS-COVERAGE.md)
 and [Cadre installation](DOCSET.md).
+
+ABI43 [deferred UI actions](DEFERRED-UI-ACTIONS.md) provide safe FIFO work after
+callbacks, including modal/clipboard/destructive requests. Existing nested event
+callback guards still apply; pending-only dispatch does not run the action queue.

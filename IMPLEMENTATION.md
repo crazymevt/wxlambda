@@ -2209,3 +2209,86 @@ This packages the existing form executable; the keyboard-actions example and
 new guide remain repository/docset deliverables. Docset is rebuilt/checked and
 installed to an isolated destination after these final evidence notes; see
 docs/DOCSET.md for the standard Cadre installation path. Graphical Cadre unrun.
+
+## Deferred UI actions (2026-10-28, bounded safe scheduling)
+
+ABI43 adds opaque immutable UI-ACTION tickets/predicate, DEFER-UI-ACTION, generic
+CANCEL-UI-ACTION and UI-ACTION-PENDING-P. Session roots retain zero-argument Lisp
+functions; native FIFO entries contain only numeric tokens and optional checked
+weak window owners. Max1024 pending entries. Scheduling never calls inline;
+cancel removes queued work once, execution removes identity before invocation,
+and active work cannot cancel/interrupt itself. Dead/pending owner or ancestor
+suppresses delivery; roots retire when expiry is queried/reaped/delivered, not
+synchronously in a native destructor. Session finish clears native work before
+window/toolkit teardown and clears Lisp roots on exit.
+
+Managed App::ProcessIdle calls the toolkit base first, then delivers at most one
+action per safe idle iteration. RUN/full polling drive work; pending-only event
+processing does not. Multiple iterations/actions can occur in one full poll.
+Native-entry depth (thread-local), driver baseline, idle recursion, borrowed
+context/callback, modal/dialog/clipboard, navigation/tool/accelerator, active
+action, error and shutdown gates prevent early/reentrant delivery. wxWakeUpIdle
+requests progress without busy requeueing during blocked modal loops. The
+ProcessIdle override is present in native headers but omitted from pinned
+interface declarations; wxApp and wxWakeUpIdle partial scope maps record the
+internal prerequisite without inventing an inventory entry. No CallAfter/worker/
+timer/public native virtual-hook parity is claimed.
+
+A narrow action-phase exception permits structural operations inside RUN/poll:
+menus, frame bars, table replacement, notebook/splitter attachment and managed
+handler structures/pending-event removal. Normal nested event callback guards
+remain; recursive RUN/pumps/finish reject. Modal/clipboard/destructive work is
+safe in the outer action; current modal callbacks still use END-MODAL directly
+since deferred actions wait until a modal exits. Action errors preserve the
+original condition, pause later queued work and rethrow at outer RUN/poll.
+Following work remains pending for recovery within the session. Nonlocal exits
+are converted to contained errors before crossing the FFI boundary.
+
+Example: examples/deferred-actions.lisp queues shared menu/tool/keyboard file
+selection, text copy and confirmed close. It reports a selected path without
+file IO; automatic EXERCISE injects chooser/clipboard/confirmation functions.
+Separate tests use actual generic message/file dialogs with cancellation, test
+sequential modal non-reentrancy, safe structural operations under RUN and polling,
+FIFO, cancellation, owner/root expiry, stale contexts, error-pump/error-RUN,
+nonlocal exit and shutdown. Native tests force idle in callbacks/synchronous
+operations/modal loops, verify queue capacity, pending-error pause and cleanup,
+and transfer UTF-8 through an isolated MemoryClipboard fixture. System clipboard
+text remains untouched by automatic tests; live queries are availability only.
+
+Independent implementation/documentation review found one threading defect:
+central status() incremented a global native-entry counter before rejecting
+wrong-thread calls. It is now thread-local; concurrent rejected worker probes
+verify GUI counter isolation. DEFER validates native main-thread entry before
+mutating Lisp roots. Enqueue wakes before publishing its record, so failed wake/
+allocation cannot leave orphan work. Review wording fixes clarify modal actions
+are allowed, owner pruning is observed, and structural SETF sections name the
+safe-phase exception. No remaining actionable findings.
+
+Counts: 231 exports, 167 named generics, 52 SETF generics, 20 window wrappers
+(18 concrete+2 abstract), borrowed TREE-ITEM and immutable UI-ACTION ticket,
+64 GUI scenarios (four deferred-action modes), 42 examples, 316 docset entries.
+Focused normal both-Lisp tests pass (quiet-run.vVzXbIrn); initial native probes
+and both-Lisp error-pump/error-RUN/nonlocal modes pass (quiet-run.5mzzVu9q).
+Main/native rebuild, reviewed TLS/worker/isolated clipboard native probes,
+regenerated inventory+14 coverage checks, 16 Python checks and zero-problem
+316-entry docset pass (quiet-run.Tv4bdjcR).
+
+Session handoff: broad GUI coverage with selective depth remains the goal.
+Next selected slice: compose deferred Open/Save/Copy/Paste/close requests into
+the persistent document form with toolbar and keyboard action entry points.
+No background workers, timers/deadlines, promise/future or transactional rollback
+API. Physical input, hosted Windows/Linux GUI/clipboard interoperability,
+arbitrary allocation/IO-race injection and graphical Cadre remain unverified.
+
+Final reviewed native build/probes and all64 GUI scenarios pass on SBCL+CCL
+(quiet-run.zf8ajJSU); fresh evidence:
+evidence/deferred-actions/{sbcl,ccl}-20261028-reviewed/. Both-Lisp actual231-export/
+class/SETF coverage, runtime counts, 316-entry zero-problem docset, isolated
+install/discovery/symbol lookup and guide/example access pass after documentation
+review fixes (quiet-run.iqV75sWj). Five isolated package checks pass
+(quiet-run.rEEbiJ7F); package dist/wxlambda-form-deferred-actions, evidence
+evidence/packaging/deferred-actions-20261028/. This remains the existing packaged
+form executable; the new deferred-action example/guide are separate repository/
+docset deliverables. Rebuild/check/install docset after final evidence notes;
+standard Cadre install instructions remain docs/DOCSET.md. Manual/hosted checks
+listed above were not run and no physical clipboard/interoperability claim is made.

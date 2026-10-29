@@ -110,3 +110,7 @@ See the [borrowed application-handler view](APPLICATION-HANDLER.md) for managed 
 consuming native transfer, local copy processing and non-application target
 cancellation. Per-handler pending processing and application-wide cancellation
 remain unbound.
+
+ABI43 [deferred UI actions](DEFERRED-UI-ACTIONS.md) provide safe FIFO work after
+callbacks, including modal/clipboard/destructive requests. Existing nested event
+callback guards still apply; pending-only dispatch does not run the action queue.

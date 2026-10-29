@@ -200,3 +200,11 @@ checks, quiescent table writes, subtree registry teardown and conservative
 all-MENU callback guards while explicit tables are installed. Native keyboard
 commands vary by port in origin/checked/menu enabled behavior; shared actions
 use the Lisp model. See docs/KEYBOARD-ACCELERATORS.md. wxUSE_ACCEL is a build prerequisite.
+
+ABI43 deferred UI actions run only at a safe outer native idle boundary under
+RUN/full polling. Preserve FIFO/one-per-idle, weak-owner/cancel/root/shutdown
+semantics, pending-error pause, nonlocal-exit containment, native-entry TLS and
+modal/operation/action-depth gates. The action body is a safe structural phase;
+nested event callbacks retain guards, and nested RUN/pumps/finish must reject.
+Never read/overwrite the system clipboard in automatic transfer tests; use the
+in-memory native fixture. See docs/DEFERRED-UI-ACTIONS.md.

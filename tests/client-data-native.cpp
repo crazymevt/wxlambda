@@ -35,7 +35,9 @@ void inspect_binding(uint64_t token, const wxl_event* event) {
     saved_context = event->context;
     binding_called = true;
 }
-std::function<void(uint64_t, const wxl_event*)> notebook_probe, list_probe, tree_probe, splitter_probe, toolbar_probe, accelerator_probe;
+std::function<void(uint64_t, const wxl_event*)> notebook_probe, list_probe, tree_probe, splitter_probe, toolbar_probe, accelerator_probe, deferred_event_probe;
+std::function<void(uint64_t,int)> ui_action_probe;
+void ignore_ui_action(uint64_t token, int execute) { if (ui_action_probe) ui_action_probe(token, execute); }
 void ignore_event(uint64_t token, const wxl_event* event) {
     if ((token == 904 || token == 905) && notebook_probe) notebook_probe(token, event);
     if (token >= 906 && token <= 908 && list_probe) list_probe(token, event);
@@ -43,6 +45,7 @@ void ignore_event(uint64_t token, const wxl_event* event) {
     if ((token == 911 || token == 912) && splitter_probe) splitter_probe(token, event);
     if ((token == 913 || token == 914) && toolbar_probe) toolbar_probe(token, event);
     if ((token == 915 || token == 916) && accelerator_probe) accelerator_probe(token, event);
+    if (token == 917 && deferred_event_probe) deferred_event_probe(token, event);
     if (token == 901) inspect_binding(token, event);
     if (token == 903) { ++menu_calls; menu_checked_payload = event->checked; menu_integer_payload = event->integer; menu_origin = event->origin_id; }
 }
@@ -802,6 +805,102 @@ struct SplitterProbe : FixedSplitter {
     using FixedSplitter::FixedSplitter;
     using wxSplitterWindow::SetSashPositionAndNotify;
 };
+void exercise_deferred_actions() {
+#if wxUSE_CLIPBOARD
+    MemoryClipboard memory;
+    auto* previous_clipboard=test_clipboard; test_clipboard=&memory;
+    struct RestoreDeferredClipboard { wxClipboardBase* previous; ~RestoreDeferredClipboard() { test_clipboard=previous; } } restore_clipboard{previous_clipboard};
+#endif
+    const auto frame=wxl_frame("Deferred",640,360), child=wxl_panel(frame);
+    const int key[]={1001}, mods[]={0}, command[]={32301};
+    expect(wxl_set_frame_accelerators(frame,key,mods,command,1)==0,"Deferred test accelerator");
+    const auto dialog=wxl_message_dialog(frame,"Deferred modal",14,"Probe",5,0,0);
+    const auto gui_entry_depth=native_entry_depth;
+    std::vector<std::thread> wrong_threads;
+    for (unsigned worker=0; worker<4; ++worker) wrong_threads.emplace_back([] {
+        for (unsigned attempt=0; attempt<16; ++attempt)
+            expect(wxl_defer_ui_action(9000,0)==-1 && native_entry_depth==0,"Wrong-thread UI queue call rejected without corrupting entry depth");
+    });
+    for (auto& worker:wrong_threads) worker.join();
+    expect(native_entry_depth==gui_entry_depth,"GUI native-entry depth is thread-local");
+    unsigned calls=0; bool in_origin=false, in_action=false, modal_seen=false, dropped=false;
+    std::vector<uint64_t> order;
+    as<wxDialog>(dialog)->Bind(wxEVT_SHOW,[&](wxShowEvent& event) {
+        if (event.IsShown()) {
+            modal_seen=true; expect(in_action && calls==1,"Modal phase before following action");
+            wxTheApp->ProcessIdle();
+            expect(calls==1 && wxl_ui_action_pending(2002)==1,"Modal idle must not reenter deferred queue");
+            wxl_dialog_abort();
+        }
+        event.Skip();
+    });
+    ui_action_probe=[&](uint64_t token,int execute) {
+        expect(ui_action_running && !callback_depth && EventScope::stack.empty() && !in_origin && !in_action,"Safe action entry");
+        expect(wxl_ui_action_pending(token)==0 && wxl_cancel_ui_action(token)==0,"Remove pending identity before entry");
+        if (!execute) { expect(token==2005,"Unexpected dropped token"); dropped=true; return; }
+        in_action=true; ++calls; order.push_back(token);
+        expect(wxl_poll()==-1 && wxl_process_pending_events()==-1 && wxl_run()==-1 && wxl_finish()==-1,"No action-phase loop/finish recursion");
+        if (token==2001) {
+            expect(wxl_defer_ui_action(2001,0)==-1 && wxl_defer_ui_action(2003,frame)==0,"Active token rejection and nested enqueue");
+            int result=-1;
+            expect(wxl_dialog_show(dialog,&result)==0 && result==1,"Deferred modal cancellation");
+            expect(wxl_clipboard_text_available()>=0,"Deferred clipboard availability");
+#if wxUSE_CLIPBOARD
+            const char text[]=u8"Deferred λ 日本語 😀";
+            expect(wxl_set_clipboard_text(text,sizeof(text)-1)==0,"Deferred isolated clipboard write");
+            size_t length=0; int available=0;
+            const auto* copied=wxl_clipboard_text(&length,&available);
+            expect(copied && available==1 && length==sizeof(text)-1 && std::memcmp(text,copied,length)==0,"Deferred isolated clipboard read");
+#endif
+            const auto bar=wxl_toolbar(frame), status=wxl_status_bar(frame,1), book=wxl_notebook(frame), page=wxl_panel(book);
+            expect(bar && status && book && page && wxl_notebook_add(book,page,"Page",4,0)==0,"Deferred structural construction");
+            expect(wxl_add_tool(bar,1,"Tool",4,6,0,nullptr,0)==0 && wxl_realize_toolbar(bar)==0,"Deferred toolbar realization");
+            expect(wxl_destroy(bar)==0 && wxl_destroy(status)==0 && wxl_destroy(book)==0,"Deferred structural deletion");
+            expect(wxl_set_frame_accelerators(frame,key,mods,command,1)==0,"Deferred table replacement");
+        }
+        if (token==2006) expect(wxl_callback_error_pending(1)==0,"Pause deferred queue for error");
+        in_action=false;
+    };
+    deferred_event_probe=[&](uint64_t,const wxl_event*) {
+        in_origin=true;
+        expect(wxl_defer_ui_action(2001,frame)==0 && wxl_defer_ui_action(2002,frame)==0,"Callback scheduling");
+        wxTheApp->ProcessPendingEvents(); wxTheApp->ProcessIdle();
+        expect(calls==0,"No callback/nested-pump delivery"); in_origin=false;
+    };
+    expect(wxl_bind(frame,WXL_EVENT_MENU,917,32301,32301,1,0)==0,"Deferred source binding");
+    wxCommandEvent event(wxEVT_MENU,32301); as<wxFrame>(frame)->HandleWindowEvent(event);
+    expect(calls==0 && wxl_process_pending_events()==0 && calls==0,"Pending-only never delivers UI actions");
+    expect(wxl_unbind(917)==1,"Unbind deferred source"); deferred_event_probe={};
+    // Even after callback_depth clears, a still-running synchronous bridge
+    // operation may force idle. Driver/entry depths postpone until it returns.
+    wxTheApp->CallAfter([&] {
+        in_origin=true;
+        expect(status([&] { wxTheApp->ProcessIdle(); })==0,"Nested native operation idle");
+        expect(calls==0,"No delivery before originating native operation returns"); in_origin=false;
+    });
+    for (int attempt=0; calls<3 && attempt<20; ++attempt) expect(wxl_poll()==0,"Drain deferred actions");
+    expect(calls==3 && modal_seen && order==std::vector<uint64_t>({2001,2002,2003}),"FIFO/nonrecursive delivery");
+    expect(wxl_defer_ui_action(0,0)==-1 && wxl_defer_ui_action(2004,frame)==0 && wxl_defer_ui_action(2004,frame)==-1 && wxl_cancel_ui_action(2004)==1 && wxl_cancel_ui_action(2004)==0,"Token/cancel validation");
+    const auto dead=wxl_panel(frame);
+    expect(wxl_defer_ui_action(2004,dead)==0,"Queue pending-owner test");
+    expect(wxl_destroy(dead)==0 && wxl_ui_action_pending(2004)==0,"Pending/destroyed owner pruning");
+    const auto expired=wxl_panel(frame);
+    expect(wxl_defer_ui_action(2005,expired)==0,"Queue owner-expiry callback"); delete window(expired);
+    for (int attempt=0; !dropped && attempt<20; ++attempt) expect(wxl_poll()==0,"Drop expired owner");
+    expect(dropped,"Dead owner releases root without executing closure");
+    expect(wxl_defer_ui_action(2006,0)==0 && wxl_defer_ui_action(2007,0)==0,"Queue error/following work");
+    for (int attempt=0; calls<4 && attempt<20; ++attempt) expect(wxl_poll()==0,"Deliver pending error");
+    expect(calls==4 && wxl_ui_action_pending(2007)==1,"Pending callback error pauses later work");
+    expect(wxl_callback_error_pending(0)==0,"Recover callback error");
+    for (int attempt=0; calls<5 && attempt<20; ++attempt) expect(wxl_poll()==0,"Resume queue");
+    expect(calls==5,"Recovered queue resumes once");
+    for (uint64_t token=3000; token<4024; ++token) expect(wxl_defer_ui_action(token,0)==0,"Queue capacity fill");
+    expect(wxl_defer_ui_action(4024,0)==-1,"Queue capacity bound");
+    for (uint64_t token=3000; token<4024; ++token) expect(wxl_cancel_ui_action(token)==1,"Queue capacity cancel");
+    delete window(frame); expect(ui_actions.empty(),"Deferred tests leave queue empty");
+    ui_action_probe={};
+}
+
 void exercise_accelerators() {
     const auto frame=wxl_frame("Accelerators",640,360), child=wxl_panel(frame);
     const int keys[]={'A',1012,'0'}, flags[]={1,0,4}, ids[]={3201,32767,3202};
@@ -1003,7 +1102,7 @@ int main() {
     bool active = false;
     try {
         wxIdleEvent::SetMode(wxIDLE_PROCESS_ALL);
-        expect(wxl_start(ignore_event) == 0, "Application startup failed");
+        expect(wxl_start(ignore_event, ignore_ui_action) == 0, "Application startup failed");
         active = true;
         exercise_client_data(foreign_destroyed);
         exercise_binding_data();
@@ -1021,8 +1120,13 @@ int main() {
 #if wxUSE_CLIPBOARD
         exercise_clipboard();
 #endif
+        exercise_deferred_actions();
+        bool shutdown_ran=false;
+        ui_action_probe=[&](uint64_t,int) { shutdown_ran=true; };
+        expect(wxl_defer_ui_action(5000,0)==0,"Queue shutdown action");
         expect(wxl_finish() == 0, "Application cleanup failed");
         active = false;
+        expect(!shutdown_ran && ui_actions.empty() && !ui_dispatch,"Shutdown cancels pending actions before cleanup"); ui_action_probe={};
         expect(wxIdleEvent::GetMode() == wxIDLE_PROCESS_ALL, "Finish did not restore pre-session idle mode");
         expect(wxl_idle_mode() == -1 && wxl_wake_up_idle() == -1, "Inactive idle APIs must reject");
         expect(wxl_clipboard_text_available() == -1 && wxl_flush_clipboard() == -1 &&

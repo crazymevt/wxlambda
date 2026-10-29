@@ -263,3 +263,7 @@ fixed normal/check/separator tools with stock art and :menu action routing, sile
 tool state and application-owned indexed status fields. See
 [supported scope, backend policy and example](FRAME-ACTIONS.md). Native Cocoa
 toolbar chrome, dynamic tools and status widths/stacks remain deferred.
+
+ABI43 [deferred UI actions](DEFERRED-UI-ACTIONS.md) provide safe FIFO work after
+callbacks, including modal/clipboard/destructive requests. Existing nested event
+callback guards still apply; pending-only dispatch does not run the action queue.

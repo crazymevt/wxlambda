@@ -222,7 +222,7 @@
     "arguments": "WINDOW is live.",
     "returns": "T after the destruction request.",
     "description": "Request destruction; first explicitly unbind handlers to release Lisp closures. Child handles become invalid when native destruction occurs. During native-to-Lisp callbacks the target becomes invalid immediately and native destruction is deferred using application CallAfter so dispatch/setter stacks can return safely. Generic bindings are reaped at Lisp boundaries; control-specific closures still require explicit unbinding or session cleanup.",
-    "scope": "Requires an active GUI session on the process main thread. Invalid/destroyed handles or unsupported native arguments signal NATIVE-ERROR; Lisp argument/type errors remain Lisp conditions. One GUI session per process. Widget behavior uses CLOS generic dispatch. Wrong receiver types signal Lisp dispatch conditions; native handle/state failures signal NATIVE-ERROR. The active modal dialog and all its ancestors cannot be destroyed until SHOW-MODAL returns, even after END-MODAL reports native nonmodal state.",
+    "scope": "Requires an active GUI session on the process main thread. Invalid/destroyed handles or unsupported native arguments signal NATIVE-ERROR; Lisp argument/type errors remain Lisp conditions. One GUI session per process. Widget behavior uses CLOS generic dispatch. Wrong receiver types signal Lisp dispatch conditions; native handle/state failures signal NATIVE-ERROR. The active modal dialog and all its ancestors cannot be destroyed until SHOW-MODAL returns, even after END-MODAL reports native nonmodal state. ABI43 safe deferred UI actions are explicit structural boundaries even under RUN/poll; nested RUN/pumps remain rejected. See docs/DEFERRED-UI-ACTIONS.md.",
     "wxwidgets": "wxWindow::Destroy"
   },
   {
@@ -1190,7 +1190,7 @@
     "arguments": "HANDLER is a live non-application EVENT-HANDLER/window.",
     "returns": "T after deleting the target queue, including an empty queue.",
     "description": "Delete queued native events without invoking callbacks; bindings and other handler queues remain intact. Synchronize wxApp pending-handler membership after deletion. Transferred input wrappers remain consumed; later queueing/posting still works.",
-    "scope": "Active main-thread GUI session at a non-dispatch boundary required. Borrowed APPLICATION-HANDLER, RUN/pump/callback use and invalid/stale receivers reject. No application-wide deletion, count, cancellation rollback or per-handler pending query/processing is supplied.",
+    "scope": "Active main-thread GUI session at a non-dispatch boundary required. Borrowed APPLICATION-HANDLER, RUN/pump/callback use and invalid/stale receivers reject. No application-wide deletion, count, cancellation rollback or per-handler pending query/processing is supplied. ABI43 safe deferred UI actions are explicit structural boundaries even under RUN/poll; nested RUN/pumps remain rejected. See docs/DEFERRED-UI-ACTIONS.md.",
     "wxwidgets": "wxEvtHandler::DeletePendingEvents plus native pending-handler-list synchronization (wxWidgets 3.2.12 baseline)."
   },
   {
@@ -1200,11 +1200,11 @@
     "arguments": "HANDLER is a live owned standalone EVENT-HANDLER/subclass. SETF PEER is another owned standalone handler or NIL.",
     "returns": "The EQ canonical managed next wrapper or NIL; SETF returns PEER.",
     "description": "Read the native next link through the session canonical wrapper map. SETF joins reciprocal vacant source-next/peer-previous endpoints, including existing segments, or detaches one reciprocal edge for NIL. Repeating an existing pair is idempotent; self/cycle/conflicting occupied endpoints reject before mutation.",
-    "scope": "Active main-thread session and valid standalone handles required. Reads are permitted in callbacks; SETF rejects RUN/pump/callback use. Window/application sources and peers reject. Wrappers are strongly rooted until destruction/rollback/session end; no ownership transfer, raw pointer or GC finalizer. Attached pushed nodes reject both peer reads and writes; use WINDOW-EVENT-HANDLER/POP/REMOVE so the standalone protocol cannot expose the borrowed window tail.",
+    "scope": "Active main-thread session and valid standalone handles required. Reads are permitted in callbacks; SETF rejects RUN/pump/callback use. Window/application sources and peers reject. Wrappers are strongly rooted until destruction/rollback/session end; no ownership transfer, raw pointer or GC finalizer. Attached pushed nodes reject both peer reads and writes; use WINDOW-EVENT-HANDLER/POP/REMOVE so the standalone protocol cannot expose the borrowed window tail. ABI43 safe deferred UI actions are explicit structural boundaries even under RUN/poll; nested RUN/pumps remain rejected. See docs/DEFERRED-UI-ACTIONS.md.",
     "wxwidgets": "wxEvtHandler::GetNextHandler / SetNextHandler with managed reciprocal SetPreviousHandler (wxWidgets 3.2.12 baseline).",
     "setf": {
       "syntax": "(setf (wxlambda:next-handler handler) peer-or-nil)",
-      "description": "Join vacant reciprocal endpoints after cycle/ownership validation, or split one edge for NIL. Return supplied peer/NIL. Does not destroy handlers, reparent native ownership or permit in-dispatch structural edits."
+      "description": "Join vacant reciprocal endpoints after cycle/ownership validation, or split one edge for NIL. Return supplied peer/NIL. Does not destroy handlers, reparent native ownership or permit in-dispatch structural edits. ABI43 also permits this operation inside a safe deferred UI action under RUN/poll; nested event callback guards remain."
     }
   },
   {
@@ -1214,11 +1214,11 @@
     "arguments": "HANDLER is a live owned standalone EVENT-HANDLER/subclass. SETF PEER is another owned standalone handler or NIL.",
     "returns": "The EQ canonical managed previous wrapper or NIL; SETF returns PEER.",
     "description": "Read the native previous link. SETF mirrors NEXT-HANDLER, joining vacant source-previous/peer-next endpoints reciprocally or detaching one edge for NIL. Self/cycle/conflicting occupied endpoints reject before mutation; an existing reciprocal pair is idempotent.",
-    "scope": "Active main-thread session and valid owned standalone handles. Reads are permitted during callbacks; SETF rejects RUN/pump/callback use. Borrowed window/application sources and peers reject. Strong canonical roots preserve wrapper/subclass identity, not new native ownership. Attached pushed nodes reject both peer reads and writes; use WINDOW-EVENT-HANDLER/POP/REMOVE so the standalone protocol cannot expose the borrowed window tail.",
+    "scope": "Active main-thread session and valid owned standalone handles. Reads are permitted during callbacks; SETF rejects RUN/pump/callback use. Borrowed window/application sources and peers reject. Strong canonical roots preserve wrapper/subclass identity, not new native ownership. Attached pushed nodes reject both peer reads and writes; use WINDOW-EVENT-HANDLER/POP/REMOVE so the standalone protocol cannot expose the borrowed window tail. ABI43 safe deferred UI actions are explicit structural boundaries even under RUN/poll; nested RUN/pumps remain rejected. See docs/DEFERRED-UI-ACTIONS.md.",
     "wxwidgets": "wxEvtHandler::GetPreviousHandler / SetPreviousHandler with managed reciprocal SetNextHandler (wxWidgets 3.2.12 baseline).",
     "setf": {
       "syntax": "(setf (wxlambda:previous-handler handler) peer-or-nil)",
-      "description": "Join or split a reciprocal previous edge at a non-dispatch boundary; return PEER/NIL. Same lifetime, cycle and endpoint validation as NEXT-HANDLER."
+      "description": "Join or split a reciprocal previous edge at a non-dispatch boundary; return PEER/NIL. Same lifetime, cycle and endpoint validation as NEXT-HANDLER. ABI43 also permits this operation inside a safe deferred UI action under RUN/poll; nested event callback guards remain."
     }
   },
   {
@@ -1258,7 +1258,7 @@
     "arguments": "WINDOW is bridge-managed; HANDLER is a live unlinked standalone owned EVENT-HANDLER/subclass, not already attached.",
     "returns": "HANDLER after managed push.",
     "description": "Push above the existing stack top while keeping native ownership in the bridge registry. Reject linked/attached or borrowed window/app peers, active session bindings and queued session events before mutation.",
-    "scope": "Active main-thread non-dispatch boundary; RUN/pump/callback use rejects. Canonical wrapper rooting continues. No raw native adoption or window ownership transfer.",
+    "scope": "Active main-thread non-dispatch boundary; RUN/pump/callback use rejects. Canonical wrapper rooting continues. No raw native adoption or window ownership transfer. ABI43 safe deferred UI actions are explicit structural boundaries even under RUN/poll; nested RUN/pumps remain rejected. See docs/DEFERRED-UI-ACTIONS.md.",
     "wxwidgets": "wxWindow::PushEventHandler with managed ownership/session guards (wxWidgets 3.2.12 baseline)."
   },
   {
@@ -1268,7 +1268,7 @@
     "arguments": "WINDOW is bridge-managed with a nonempty managed stack. DELETE defaults NIL; true requests native deletion.",
     "returns": "Popped canonical handler, alive/unlinked, or NIL when DELETE is true.",
     "description": "Detach the top entry. Default preserves native owned registry/root; DELETE true releases bridge ownership before native PopEventHandler deletion and clears canonical roots/bindings. Empty stacks reject instead of invoking native assertions.",
-    "scope": "Active main-thread non-dispatch boundary; RUN/pump/callback use rejects. Consumed/deleted wrappers reject later native access. No deletion of the base window or arbitrary native stack entry.",
+    "scope": "Active main-thread non-dispatch boundary; RUN/pump/callback use rejects. Consumed/deleted wrappers reject later native access. No deletion of the base window or arbitrary native stack entry. ABI43 safe deferred UI actions are explicit structural boundaries even under RUN/poll; nested RUN/pumps remain rejected. See docs/DEFERRED-UI-ACTIONS.md.",
     "wxwidgets": "wxWindow::PopEventHandler(bool) (wxWidgets 3.2.12 baseline)."
   },
   {
@@ -1278,7 +1278,7 @@
     "arguments": "WINDOW is bridge-managed; HANDLER is a live owned standalone handler.",
     "returns": "T if removed from this window; NIL for a valid nonmember.",
     "description": "Preflight membership and detach without deletion. A live detached handler or handler belonging to another window returns NIL unchanged; only present entries reach native RemoveEventHandler, avoiding its absent-entry assertion.",
-    "scope": "Active main-thread non-dispatch boundary; RUN/pump/callback use, stale peers and borrowed window/application peers reject. Own pending queue and native ownership survive; other stack entries remain intact.",
+    "scope": "Active main-thread non-dispatch boundary; RUN/pump/callback use, stale peers and borrowed window/application peers reject. Own pending queue and native ownership survive; other stack entries remain intact. ABI43 safe deferred UI actions are explicit structural boundaries even under RUN/poll; nested RUN/pumps remain rejected. See docs/DEFERRED-UI-ACTIONS.md.",
     "wxwidgets": "wxWindow::RemoveEventHandler with safe managed membership probe (wxWidgets 3.2.12 baseline)."
   },
   {
@@ -1463,7 +1463,7 @@
     "arguments": "FRAME is live; :CLASS defaults to MENU-BAR. Remaining constructor and subclass initargs are forwarded.",
     "returns": "New instance of the selected concrete subclass.",
     "description": "Thin MAKE-INSTANCE factory with validated subclass support; same ownership, defaults and validation as MENU-BAR.",
-    "scope": "Requires an active main-thread GUI session and a live managed resource. Native resource/type/state failures signal NATIVE-ERROR; invalid Lisp types and CLOS receivers signal Lisp conditions. Structural operations reject during callbacks, pumps and RUN. Ownership stays in the frame/bar/menu native hierarchy; no raw pointer adoption or GC finalizer.",
+    "scope": "Requires an active main-thread GUI session and a live managed resource. Native resource/type/state failures signal NATIVE-ERROR; invalid Lisp types and CLOS receivers signal Lisp conditions. Structural operations reject during callbacks, pumps and RUN. Ownership stays in the frame/bar/menu native hierarchy; no raw pointer adoption or GC finalizer. ABI43 safe deferred UI actions are explicit structural boundaries even under RUN/poll; nested RUN/pumps remain rejected. See docs/DEFERRED-UI-ACTIONS.md.",
     "wxwidgets": "wxMenuBar and wxFrame::SetMenuBar"
   },
   {
@@ -1472,7 +1472,7 @@
     "arguments": "MENU-BAR is live; :CLASS defaults to MENU. Remaining constructor and subclass initargs are forwarded.",
     "returns": "New instance of the selected concrete subclass.",
     "description": "Thin MAKE-INSTANCE factory with validated subclass support; same ownership, defaults and validation as MENU.",
-    "scope": "Requires an active main-thread GUI session and a live managed resource. Native resource/type/state failures signal NATIVE-ERROR; invalid Lisp types and CLOS receivers signal Lisp conditions. Structural operations reject during callbacks, pumps and RUN. Ownership stays in the frame/bar/menu native hierarchy; no raw pointer adoption or GC finalizer.",
+    "scope": "Requires an active main-thread GUI session and a live managed resource. Native resource/type/state failures signal NATIVE-ERROR; invalid Lisp types and CLOS receivers signal Lisp conditions. Structural operations reject during callbacks, pumps and RUN. Ownership stays in the frame/bar/menu native hierarchy; no raw pointer adoption or GC finalizer. ABI43 safe deferred UI actions are explicit structural boundaries even under RUN/poll; nested RUN/pumps remain rejected. See docs/DEFERRED-UI-ACTIONS.md.",
     "wxwidgets": "wxMenu and wxMenuBar::Append"
   },
   {
@@ -1481,7 +1481,7 @@
     "arguments": "MENU is live; :CLASS defaults to MENU-ITEM. Remaining constructor and subclass initargs are forwarded.",
     "returns": "New instance of the selected concrete subclass.",
     "description": "Thin MAKE-INSTANCE factory with validated subclass support; same ownership, defaults and validation as MENU-ITEM.",
-    "scope": "Requires an active main-thread GUI session and a live managed resource. Native resource/type/state failures signal NATIVE-ERROR; invalid Lisp types and CLOS receivers signal Lisp conditions. Structural operations reject during callbacks, pumps and RUN. Ownership stays in the frame/bar/menu native hierarchy; no raw pointer adoption or GC finalizer.",
+    "scope": "Requires an active main-thread GUI session and a live managed resource. Native resource/type/state failures signal NATIVE-ERROR; invalid Lisp types and CLOS receivers signal Lisp conditions. Structural operations reject during callbacks, pumps and RUN. Ownership stays in the frame/bar/menu native hierarchy; no raw pointer adoption or GC finalizer. ABI43 safe deferred UI actions are explicit structural boundaries even under RUN/poll; nested RUN/pumps remain rejected. See docs/DEFERRED-UI-ACTIONS.md.",
     "wxwidgets": "wxMenuItem and wxMenu::Append"
   },
   {
@@ -1549,7 +1549,7 @@
     "arguments": "RESOURCE is live.",
     "returns": "T on successful explicit destruction.",
     "description": "Delete a resource through its native owner, invalidating descendants and wrapper handles. Menu/bar deletion removes it from its parent; frame lifetime also cleans remaining descendants. Structural callback/pump/RUN deletion rejects.",
-    "scope": "Requires an active main-thread GUI session and a live managed resource. Native resource/type/state failures signal NATIVE-ERROR; invalid Lisp types and CLOS receivers signal Lisp conditions. Structural operations reject during callbacks, pumps and RUN. Ownership stays in the frame/bar/menu native hierarchy; no raw pointer adoption or GC finalizer.",
+    "scope": "Requires an active main-thread GUI session and a live managed resource. Native resource/type/state failures signal NATIVE-ERROR; invalid Lisp types and CLOS receivers signal Lisp conditions. Structural operations reject during callbacks, pumps and RUN. Ownership stays in the frame/bar/menu native hierarchy; no raw pointer adoption or GC finalizer. ABI43 safe deferred UI actions are explicit structural boundaries even under RUN/poll; nested RUN/pumps remain rejected. See docs/DEFERRED-UI-ACTIONS.md.",
     "wxwidgets": "wxFrame::SetMenuBar / wxMenuBar::Remove / wxMenu::Destroy and destructors"
   },
   {
@@ -1933,7 +1933,7 @@
     "arguments": "BOOK notebook, PAGE fully initialized panel parented directly to BOOK; :LABEL defaults empty, :SELECT defaults NIL.",
     "returns": "The supplied PAGE wrapper.",
     "description": "Setup-time AddPage, outside RUN/pumps/callbacks. Reject duplicate membership, wrong parent/type, containing sizer and incomplete page initialization. Pre-root canonical wrapper before publication; callback errors after adoption do not remove a successful page. Direct attached-page destruction is forbidden; destroy notebook/ancestor instead. First-page selection/callback count and native caption processing are port-specific.",
-    "scope": "Active main-thread session; NOTEBOOK receivers and fixed setup-time PANEL pages only. Invalid handles/indices/ownership signal. No removal, reordering, reparenting, icons, arbitrary styles or other book controls.",
+    "scope": "Active main-thread session; NOTEBOOK receivers and fixed setup-time PANEL pages only. Invalid handles/indices/ownership signal. No removal, reordering, reparenting, icons, arbitrary styles or other book controls. ABI43 safe deferred UI actions are explicit structural boundaries even under RUN/poll; nested RUN/pumps remain rejected. See docs/DEFERRED-UI-ACTIONS.md.",
     "wxwidgets": "wxBookCtrlBase::AddPage, wxNotebook native implementation (wxWidgets 3.2.12)."
   },
   {
@@ -2204,7 +2204,7 @@
     "arguments": "SPLITTER FIRST SECOND: attach distinct fully initialized panel children once, outside RUN/pumps/callbacks. Returns T.",
     "returns": "See arguments and supported behavior.",
     "description": "SPLITTER FIRST SECOND: attach distinct fully initialized panel children once, outside RUN/pumps/callbacks. Returns T.",
-    "scope": "Fixed panes; guarded lifetimes and callback reentry. Invalid/native stale operations signal NATIVE-ERROR; Lisp type/range errors remain Lisp conditions. CHANGING must be handled to honor edits/veto; CHANGED is observational. See docs/SPLITTER.md for full scope.",
+    "scope": "Fixed panes; guarded lifetimes and callback reentry. Invalid/native stale operations signal NATIVE-ERROR; Lisp type/range errors remain Lisp conditions. CHANGING must be handled to honor edits/veto; CHANGED is observational. See docs/SPLITTER.md for full scope. ABI43 safe deferred UI actions are explicit structural boundaries even under RUN/poll; nested RUN/pumps remain rejected. See docs/DEFERRED-UI-ACTIONS.md.",
     "wxwidgets": "wxSplitterWindow / wxSplitterEvent, wxWidgets 3.2.12.",
     "syntax": "(wxlambda:split-window ...)"
   },
@@ -2328,7 +2328,7 @@
     "arguments": "FRAME and forwarded initargs, including validated :class subclass.",
     "returns": "New native-backed toolbar.",
     "description": "FRAME and forwarded initargs, including validated :class subclass.",
-    "scope": "Quiescent construction; one toolbar per frame. Native errors signal NATIVE-ERROR; Lisp type/range errors remain Lisp conditions. See docs/FRAME-ACTIONS.md for backend, ownership and complete supported scope.",
+    "scope": "Quiescent construction; one toolbar per frame. Native errors signal NATIVE-ERROR; Lisp type/range errors remain Lisp conditions. See docs/FRAME-ACTIONS.md for backend, ownership and complete supported scope. ABI43 safe deferred UI actions are explicit structural boundaries even under RUN/poll; nested RUN/pumps remain rejected. See docs/DEFERRED-UI-ACTIONS.md.",
     "wxwidgets": "wxToolBar / wxFrame::SetToolBar (wxWidgets 3.2.12)."
   },
   {
@@ -2337,7 +2337,7 @@
     "arguments": "FRAME and forwarded :fields/:class initargs.",
     "returns": "New native-backed status bar.",
     "description": "FRAME and forwarded :fields/:class initargs.",
-    "scope": "Quiescent construction; one status bar per frame. Native errors signal NATIVE-ERROR; Lisp type/range errors remain Lisp conditions. See docs/FRAME-ACTIONS.md for backend, ownership and complete supported scope.",
+    "scope": "Quiescent construction; one status bar per frame. Native errors signal NATIVE-ERROR; Lisp type/range errors remain Lisp conditions. See docs/FRAME-ACTIONS.md for backend, ownership and complete supported scope. ABI43 safe deferred UI actions are explicit structural boundaries even under RUN/poll; nested RUN/pumps remain rejected. See docs/DEFERRED-UI-ACTIONS.md.",
     "wxwidgets": "wxStatusBar / wxFrame::SetStatusBar (wxWidgets 3.2.12)."
   },
   {
@@ -2346,7 +2346,7 @@
     "arguments": "TOOLBAR ID LABEL; :art (:information default), :kind (:normal default) and :help (empty default).",
     "returns": "The supplied positive ID.",
     "description": "TOOLBAR ID LABEL; :art (:information default), :kind (:normal default) and :help (empty default).",
-    "scope": "Quiescent, before realization. IDs unique within toolbar; normal/check tools only. Seven stock art choices; UTF-8/NUL validation. Native errors signal NATIVE-ERROR; Lisp type/range errors remain Lisp conditions. See docs/FRAME-ACTIONS.md for backend, ownership and complete supported scope.",
+    "scope": "Quiescent, before realization. IDs unique within toolbar; normal/check tools only. Seven stock art choices; UTF-8/NUL validation. Native errors signal NATIVE-ERROR; Lisp type/range errors remain Lisp conditions. See docs/FRAME-ACTIONS.md for backend, ownership and complete supported scope. ABI43 safe deferred UI actions are explicit structural boundaries even under RUN/poll; nested RUN/pumps remain rejected. See docs/DEFERRED-UI-ACTIONS.md.",
     "wxwidgets": "wxToolBar::AddTool / wxArtProvider::GetBitmap (wxWidgets 3.2.12)."
   },
   {
@@ -2355,7 +2355,7 @@
     "arguments": "TOOLBAR. No action ID or state.",
     "returns": "T after addition.",
     "description": "TOOLBAR. No action ID or state.",
-    "scope": "Quiescent, before realization. Native errors signal NATIVE-ERROR; Lisp type/range errors remain Lisp conditions. See docs/FRAME-ACTIONS.md for backend, ownership and complete supported scope.",
+    "scope": "Quiescent, before realization. Native errors signal NATIVE-ERROR; Lisp type/range errors remain Lisp conditions. See docs/FRAME-ACTIONS.md for backend, ownership and complete supported scope. ABI43 safe deferred UI actions are explicit structural boundaries even under RUN/poll; nested RUN/pumps remain rejected. See docs/DEFERRED-UI-ACTIONS.md.",
     "wxwidgets": "wxToolBar::AddSeparator (wxWidgets 3.2.12)."
   },
   {
@@ -2364,7 +2364,7 @@
     "arguments": "TOOLBAR with at least one tool or separator.",
     "returns": "T after native successful realization.",
     "description": "TOOLBAR with at least one tool or separator.",
-    "scope": "Quiescent; exactly one successful call. Fixes tool collection. Native errors signal NATIVE-ERROR; Lisp type/range errors remain Lisp conditions. See docs/FRAME-ACTIONS.md for backend, ownership and complete supported scope.",
+    "scope": "Quiescent; exactly one successful call. Fixes tool collection. Native errors signal NATIVE-ERROR; Lisp type/range errors remain Lisp conditions. See docs/FRAME-ACTIONS.md for backend, ownership and complete supported scope. ABI43 safe deferred UI actions are explicit structural boundaries even under RUN/poll; nested RUN/pumps remain rejected. See docs/DEFERRED-UI-ACTIONS.md.",
     "wxwidgets": "wxToolBar::Realize (wxWidgets 3.2.12)."
   },
   {
@@ -2439,11 +2439,62 @@
     "arguments": "FRAME. Entries are (KEY ID &rest MODIFIERS): ASCII letters/digits or :F1..:F12, ID1..32767, :CTRL/:SHIFT/:ALT/:RAW-CTRL. Maximum256; modified letters/digits only.",
     "returns": "Fresh normalized nested lists. Generic SETF returns original supplied list; NIL clears the explicit table.",
     "description": "Read/replace a copied native frame accelerator table for shared :MENU action IDs. Native menu enable/check and origin/metadata behavior vary by port; use a Lisp action model.",
-    "scope": "Active live frame. Quiescent whole-table replacement, duplicate effective chords and invalid/cyclic input reject without replacing the prior table. While tables are nonempty all managed :MENU callbacks conservatively protect installed-frame subtrees and reject modal/clipboard/nested dispatch entry. Native errors signal NATIVE-ERROR; Lisp validation errors remain Lisp conditions. See docs/KEYBOARD-ACCELERATORS.md.",
+    "scope": "Active live frame. Quiescent whole-table replacement, duplicate effective chords and invalid/cyclic input reject without replacing the prior table. While tables are nonempty all managed :MENU callbacks conservatively protect installed-frame subtrees and reject modal/clipboard/nested dispatch entry. Native errors signal NATIVE-ERROR; Lisp validation errors remain Lisp conditions. See docs/KEYBOARD-ACCELERATORS.md. ABI43 safe deferred UI actions are explicit structural boundaries even under RUN/poll; nested RUN/pumps remain rejected. See docs/DEFERRED-UI-ACTIONS.md.",
     "wxwidgets": "wxAcceleratorEntry, wxAcceleratorTable, wxWindow::SetAcceleratorTable (wxWidgets3.2.12); wxUSE_ACCEL required.",
     "setf": {
       "syntax": "(setf (wxlambda:frame-accelerators frame) entries)",
-      "description": "Replace/clear only outside RUN, pumps, callbacks and modal loops. Copies entries, canonicalizes keys/modifiers, bounds count/ID and rejects duplicate native chords."
+      "description": "Replace/clear only outside RUN, pumps, callbacks and modal loops. Copies entries, canonicalizes keys/modifiers, bounds count/ID and rejects duplicate native chords. ABI43 also permits this operation inside a safe deferred UI action under RUN/poll; nested event callback guards remain."
     }
+  },
+  {
+    "name": "ui-action",
+    "kind": "class",
+    "syntax": "wxlambda:ui-action",
+    "arguments": "Immutable deferred UI action identity returned by DEFER-UI-ACTION.",
+    "returns": "An opaque session-owned ticket; it does not keep its owner native widget alive.",
+    "description": "Separate closure roots live in the session queue, not the immutable ticket. No public token accessor or direct resource constructor.",
+    "scope": "Main-thread active session. FIFO safe idle delivery via RUN/full event polling only; no recursive action delivery during modal loops; nested RUN/pumps reject. Optional weak owner drops stale/pending-destruction work. Errors pause retained following work and re-signal at outer RUN/poll. At most1024 pending actions. See docs/DEFERRED-UI-ACTIONS.md for safe structural exception, cancellation, root release and supported scope.",
+    "wxwidgets": "Bridge-specific identity, wxWidgets3.2.12 idle scheduling.",
+    "construction": {
+      "syntax": "(wxlambda:defer-ui-action function :owner window)",
+      "description": "Obtain only through DEFER-UI-ACTION. No supported direct MAKE-INSTANCE/MAKE-UI-ACTION or subclass resource construction."
+    }
+  },
+  {
+    "name": "ui-action-p",
+    "kind": "function",
+    "syntax": "(wxlambda:ui-action-p object)",
+    "arguments": "Any OBJECT.",
+    "returns": "Boolean ticket type predicate, independent of pending/completed state.",
+    "description": "May be used outside a session; does not query native liveness.",
+    "scope": "Immutable structure predicate. No session required.",
+    "wxwidgets": "Lisp-only predicate."
+  },
+  {
+    "name": "defer-ui-action",
+    "kind": "function",
+    "arguments": "FUNCTION of no arguments and optional :OWNER window (default NIL, session-owned).",
+    "returns": "An immutable UI-ACTION ticket. Function return values are ignored.",
+    "description": "Queue strongly rooted work without inline execution. One action per safe native idle iteration after callback/native stacks return. Captured borrowed event contexts expire; capture snapshots/values instead.",
+    "scope": "Main-thread active session. FIFO safe idle delivery via RUN/full event polling only; no recursive action delivery during modal loops; nested RUN/pumps reject. Optional weak owner drops stale/pending-destruction work. Errors pause retained following work and re-signal at outer RUN/poll. At most1024 pending actions. See docs/DEFERRED-UI-ACTIONS.md for safe structural exception, cancellation, root release and supported scope. Lisp function/owner type errors and native queue/lifecycle errors reject; failed enqueue removes its Lisp root.",
+    "wxwidgets": "wxWakeUpIdle / managed wxApp::ProcessIdle safe point, wxWidgets3.2.12."
+  },
+  {
+    "name": "cancel-ui-action",
+    "kind": "generic-function",
+    "arguments": "UI-ACTION ticket.",
+    "returns": "T if a queued entry was removed, NIL if not pending/executing/completed/already removed.",
+    "description": "Remove queued work and release its Lisp closure root. Cannot interrupt active work; owner expiry may already have pruned it.",
+    "scope": "Main-thread active session. FIFO safe idle delivery via RUN/full event polling only; no recursive action delivery during modal loops; nested RUN/pumps reject. Optional weak owner drops stale/pending-destruction work. Errors pause retained following work and re-signal at outer RUN/poll. At most1024 pending actions. See docs/DEFERRED-UI-ACTIONS.md for safe structural exception, cancellation, root release and supported scope.",
+    "wxwidgets": "Bridge-specific queue removal."
+  },
+  {
+    "name": "ui-action-pending-p",
+    "kind": "generic-function",
+    "arguments": "UI-ACTION ticket.",
+    "returns": "T while queued with a live owner, NIL during execution or after delivery/cancel/owner expiry.",
+    "description": "Checks native owner liveness including pending ancestor deletion; observed expiry removes queued work and releases the Lisp root.",
+    "scope": "Main-thread active session. FIFO safe idle delivery via RUN/full event polling only; no recursive action delivery during modal loops; nested RUN/pumps reject. Optional weak owner drops stale/pending-destruction work. Errors pause retained following work and re-signal at outer RUN/poll. At most1024 pending actions. See docs/DEFERRED-UI-ACTIONS.md for safe structural exception, cancellation, root release and supported scope.",
+    "wxwidgets": "Bridge queue / wxWeakRef / pending native destruction checks."
   }
 ]

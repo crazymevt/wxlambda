@@ -227,6 +227,13 @@ class CoverageInventoryChecks(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'Duplicate status'):
             self.build()
 
+    def test_deferred_actions_have_persistent_scope(self):
+        self.assertTrue({'ui-action', 'ui-action-p', 'defer-ui-action', 'cancel-ui-action', 'ui-action-pending-p'} <= set(self.status['classes']['wxApp']['lisp']))
+        wake = next(record for record in self.status['declarations'] if record['symbol'] == 'wxWakeUpIdle')
+        self.assertIn('defer-ui-action', wake['lisp'])
+        self.assertIn('wxl_defer_ui_action', wake['native'])
+        self.assertIn('ProcessIdle', self.status['classes']['wxApp']['scope'])
+
     def test_missing_class_is_rejected(self):
         self.status['classes']['wxNotARealClass'] = self.status['classes']['wxButton']
         self.save_status()

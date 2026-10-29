@@ -46,6 +46,9 @@ typedef struct wxl_event {
 /* The record and its text are borrowed only until this callback returns.
    Callbacks must never unwind across this boundary. */
 typedef void (*wxl_callback)(uint64_t token, const wxl_event *event);
+/* Separate safe-idle action callback: execute=0 releases a dead-owner root.
+   Never unwind across this boundary. No borrowed event context is active. */
+typedef void (*wxl_ui_callback)(uint64_t token, int execute);
 WXL_API int wxl_abi_version(void);
 /* Error text is borrowed until the next bridge call on this thread. */
 WXL_API const char *wxl_last_error(void);
@@ -57,7 +60,10 @@ WXL_API int wxl_clipboard_text_available(void);
 WXL_API const char* wxl_clipboard_text(size_t* length, int* available);
 WXL_API int wxl_set_clipboard_text(const char* value, size_t length);
 WXL_API int wxl_flush_clipboard(void);
-WXL_API int wxl_start(wxl_callback callback);
+WXL_API int wxl_start(wxl_callback callback, wxl_ui_callback ui_callback);
+WXL_API int wxl_defer_ui_action(uint64_t token, wxl_handle owner);
+WXL_API int wxl_cancel_ui_action(uint64_t token);
+WXL_API int wxl_ui_action_pending(uint64_t token);
 WXL_API int wxl_run(void);
 /* GUI dispatch is forbidden inside run, a pump or any Lisp callback. */
 WXL_API int wxl_poll(void);

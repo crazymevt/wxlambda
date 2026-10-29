@@ -151,3 +151,7 @@ keeping file-content IO and the document model Lisp-native. Graphical platform
 conventions, actual user acceptance, overwrite/browser operations and hosted
 Linux/Windows behavior require their own evidence. The earlier native OS probe
 remains an explicit gap rather than a claim that every standard dialog is done.
+
+ABI43 [deferred UI actions](DEFERRED-UI-ACTIONS.md) provide safe FIFO work after
+callbacks, including modal/clipboard/destructive requests. Existing nested event
+callback guards still apply; pending-only dispatch does not run the action queue.

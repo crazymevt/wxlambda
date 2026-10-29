@@ -797,3 +797,9 @@ tables to shared Lisp actions; see [keyboard-actions.lisp](examples/keyboard-act
 CMake requires wxWidgets wxUSE_ACCEL=1. Physical keyboard input and hosted OS
 translation remain unverified; conservative menu callback guards require modal/
 clipboard/destructive actions to run after callback return.
+
+[Deferred UI actions](docs/DEFERRED-UI-ACTIONS.md) allow shared menu/tool/keyboard
+callbacks to request modal, clipboard and destructive work after native stacks
+return. [deferred-actions.lisp](examples/deferred-actions.lisp) demonstrates file
+selection, text copying and confirmed close, with owner-bound cancellation tickets.
+RUN/full polling drives the FIFO idle queue; pending-only dispatch does not.

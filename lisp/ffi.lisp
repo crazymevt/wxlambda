@@ -32,7 +32,7 @@
 
 (cffi:defcfun ("wxl_abi_version" %abi-version) :int)
 (cffi:defcfun ("wxl_last_error" %last-error) :string)
-(cffi:defcfun ("wxl_start" %start) :int (callback :pointer))
+(cffi:defcfun ("wxl_start" %start) :int (callback :pointer) (ui-callback :pointer))
 (cffi:defcfun ("wxl_run" %run) :int)
 (cffi:defcfun ("wxl_poll" %poll) :int)
 (cffi:defcfun ("wxl_main_loop_running" %main-loop-running) :int)
@@ -95,7 +95,7 @@
           (if (probe-file local)
               (cffi:load-foreign-library local)
               (cffi:use-foreign-library wxlambda-native))))
-    (unless (= 42 (%abi-version)) (error "Unsupported wxlambda native ABI"))
+    (unless (= 43 (%abi-version)) (error "Unsupported wxlambda native ABI"))
     (setf *native-loaded* t))
   t)
 
@@ -314,3 +314,7 @@
 (cffi:defcfun ("wxl_set_frame_accelerators" %set-frame-accelerators) :int (frame :uint64) (keys :pointer) (flags :pointer) (commands :pointer) (count :size))
 (cffi:defcfun ("wxl_frame_accelerator_count" %frame-accelerator-count) :int (frame :uint64))
 (cffi:defcfun ("wxl_frame_accelerator_entry" %frame-accelerator-entry) :int (frame :uint64) (index :int) (key :pointer) (flags :pointer) (command :pointer))
+
+(cffi:defcfun ("wxl_defer_ui_action" %defer-ui-action) :int (token :uint64) (owner :uint64))
+(cffi:defcfun ("wxl_cancel_ui_action" %cancel-ui-action) :int (token :uint64))
+(cffi:defcfun ("wxl_ui_action_pending" %ui-action-pending) :int (token :uint64))

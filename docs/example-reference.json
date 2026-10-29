@@ -162,5 +162,9 @@
   "keyboard-actions.lisp": {
     "description": "Shared model actions reached by menu, toolbar and frame accelerator IDs; enable/check policy ignores platform-specific native metadata. EXERCISE uses synthetic action commands, separate native tests verify actual key translation.",
     "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/keyboard-actions.lisp --eval '(wxlambda-keyboard-actions:start)'"
+  },
+  "deferred-actions.lisp": {
+    "description": "Queue shared menu/tool/keyboard requests for choosing a path, copying editor text and confirmed close. START interactive; EXERCISE injects deterministic chooser/clipboard/confirmation functions without touching system clipboard text.",
+    "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/deferred-actions.lisp --eval '(wxlambda-deferred-actions:start)'"
   }
 }

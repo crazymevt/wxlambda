@@ -521,5 +521,16 @@ modified ASCII keys/F1..F12 and shared Lisp model actions. Native command
 metadata/menu-state handling varies by port; all MENU callbacks conservatively
 guard installed frame subtrees. No physical keyboard/layout/platform completeness
 claim. Native arbitrary key/parser/resource and global hotkey APIs remain pending.
-Next selected slice: deferred UI actions for safe modal/clipboard/destructive
-work after menu/tool/accelerator callbacks, before claiming complete Open/Save shortcuts.
+Deferred UI actions now provide safe modal/clipboard/destructive work after
+menu/tool/accelerator callbacks; file IO remains composed by the Lisp application.
+
+## Deferred UI actions
+
+[Deferred UI actions](DEFERRED-UI-ACTIONS.md) add a bounded session FIFO, opaque
+tickets, optional weak owner, cancellation, safe idle delivery and error/root
+lifecycle. The managed App::ProcessIdle override is an internal prerequisite
+verified against native headers, omitted by the pinned interface inventory;
+wxWakeUpIdle and the partial wxApp mapping record the implemented scope. No
+CallAfter, timer, worker-thread, transaction or public native virtual-hook parity
+claim. Next selected slice: integrate deferred Open/Save/Copy/Paste/close requests
+into the persistent document form with toolbar/accelerator entry points.

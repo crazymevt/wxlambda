@@ -111,3 +111,7 @@ Build/check with `python3 tools/docset.py build` and `check`; install with
 (default `~/.local/share/docsets/wxlambda/`) for Cadre discovery and lookup.
 See [owned events](OWNED-EVENTS.md), [event contexts](EVENT-CONTEXTS.md),
 [pending dispatch](PENDING-EVENTS.md) and [docset installation](DOCSET.md).
+
+ABI43 [deferred UI actions](DEFERRED-UI-ACTIONS.md) provide safe FIFO work after
+callbacks, including modal/clipboard/destructive requests. Existing nested event
+callback guards still apply; pending-only dispatch does not run the action queue.
