@@ -2181,21 +2181,21 @@
   {
     "name": "splitter-window",
     "kind": "class",
-    "arguments": "Native-backed fixed two-panel window; :parent, :orientation, :sash-position, :minimum-pane-size and :sash-gravity initargs.",
+    "arguments": "Native-backed fixed two-panel window; :parent, :orientation, :sash-position, :minimum-pane-size and :sash-gravity initargs. :SASH-STYLE is :DEFAULT (native 3D) or :FLAT (thin native sash, no outer border).",
     "returns": "See arguments and supported behavior.",
     "description": "Native-backed fixed two-panel window; :parent, :orientation, :sash-position, :minimum-pane-size and :sash-gravity initargs.",
     "scope": "Fixed panes; guarded lifetimes and callback reentry. Invalid/native stale operations signal NATIVE-ERROR; Lisp type/range errors remain Lisp conditions. CHANGING must be handled to honor edits/veto; CHANGED is observational. See docs/SPLITTER.md for full scope.",
     "wxwidgets": "wxSplitterWindow / wxSplitterEvent, wxWidgets 3.2.12.",
     "syntax": "wxlambda:splitter-window",
     "construction": {
-      "syntax": "(make-instance 'wxlambda:splitter-window :parent parent :orientation :vertical :sash-position 0 :minimum-pane-size 20 :sash-gravity 0.5d0)",
+      "syntax": "(make-instance 'wxlambda:splitter-window :parent parent :orientation :vertical :sash-position 0 :minimum-pane-size 20 :sash-gravity 0.5d0 :sash-style :flat)",
       "description": "Supports subclass slots/default initargs and AFTER hooks with managed rollback."
     }
   },
   {
     "name": "make-splitter-window",
     "kind": "generic-function",
-    "arguments": "PARENT and forwarded initargs, including validated :class subclass.",
+    "arguments": "PARENT and forwarded initargs, including validated :class subclass. :SASH-STYLE is :DEFAULT (native 3D) or :FLAT (thin native sash, no outer border).",
     "returns": "See arguments and supported behavior.",
     "description": "PARENT and forwarded initargs, including validated :class subclass.",
     "scope": "Fixed panes; guarded lifetimes and callback reentry. Invalid/native stale operations signal NATIVE-ERROR; Lisp type/range errors remain Lisp conditions. CHANGING must be handled to honor edits/veto; CHANGED is observational. See docs/SPLITTER.md for full scope.",
@@ -5736,7 +5736,7 @@
     "kind": "generic-function",
     "arguments": "AUI-NOTEBOOK; SETF takes NIL or (base-RGB24 active-RGB24).",
     "returns": "Last explicitly configured pair, or NIL.",
-    "description": "Install owned wxAuiGenericTabArt with copied colors; NIL restores default art. Text contrast follows the generic art algorithm. Close/scroll glyphs and other native chrome still follow system appearance. Preserves pages and selection. Replacement art receives current sizing in every private tab group without requiring a resize, keeping captions visible.",
+    "description": "Install owned flat wxAuiGenericTabArt subclass with copied colors; NIL restores default art. Solid rectangular surfaces and contrast-aware text/close glyphs replace gradients/bevels. A thin selected edge marks the active tab. Scroll/list glyphs and other native chrome follow system appearance. Preserves pages and selection. Replacement art receives current sizing in every private tab group without requiring a resize, keeping captions visible.",
     "scope": "Main-thread active session; reads are callback-safe, writes reject callbacks and use the existing native operation/lifetime guards. Native decoration support varies by platform.",
     "wxwidgets": "wxAuiNotebook::SetArtProvider / wxAuiTabArt::SetColour / SetActiveColour",
     "setf": {

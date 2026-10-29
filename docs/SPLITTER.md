@@ -98,3 +98,13 @@ boundary even under RUN/full polling; the quiescent structural operations in
 this guide can run there. Nested event callbacks retain their existing guards,
 and nested RUN/pumps/finish remain forbidden. Optional owner/cancel/error rules
 are documented in that guide.
+
+### Flat workspace dividers
+
+Construction accepts `:sash-style :flat` for wxSP_THIN_SASH with no outer border
+or 3D bevel. The native renderer determines the thin sash width. Dragging, live
+resize, minimum sizes, gravity and hide/restore semantics are retained.
+`:sash-style :default` preserves the previous native 3D style. The choice is a
+construction option, not a public mutable style property.
+
+Flat-style construction must run outside native callbacks; defer it to the safe UI phase.

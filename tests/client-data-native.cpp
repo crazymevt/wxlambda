@@ -1328,6 +1328,13 @@ void exercise_splitter() {
            wxl_splitter_pane(regular, 0, nullptr) == -1 && wxl_splitter_gravity(regular, nullptr) == -1 &&
            wxl_set_splitter_gravity(regular, 2) == -1 && wxl_set_splitter_gravity(regular, std::numeric_limits<double>::infinity()) == -1,
            "Splitter raw field/output checks failed");
+    auto* flat=as<FixedSplitter>(regular);
+    expect(wxl_set_splitter_int(regular,2,1)==0 && !(flat->GetWindowStyleFlag()&wxSP_3D) &&
+           flat->GetBorderSize()==0 && flat->GetSashSize()<=3,
+           "Flat splitter removes bevel/border and uses a narrow native sash");
+    expect(flat->GetWindow1()==window(first) && flat->GetWindow2()==window(second),"Flat sash retains pane identity");
+    expect(wxl_set_splitter_int(regular,2,2)==-1,"Reject unknown sash style");
+    { CallbackScope callback; expect(wxl_set_splitter_int(regular,2,0)==-1,"Sash style rejects callback writes"); }
     auto* probe = new ManagedWindow<SplitterProbe>(window(frame), wxID_ANY, wxDefaultPosition, wxSize(600,400), wxSP_3D | wxSP_LIVE_UPDATE);
     probe->SetMinimumPaneSize(20); probe->SetSplitMode(wxSPLIT_VERTICAL);
     const auto splitter = track(probe); splitter_owners.insert(probe);

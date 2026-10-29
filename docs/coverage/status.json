@@ -5227,7 +5227,7 @@
         "wxl_event_sash",
         "wxl_set_event_sash"
       ],
-      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
+      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md. :sash-style :flat opts into wxSP_THIN_SASH with no outer 3D border; native drag/lifetime semantics retained."
     },
     {
       "header": "wx/splitter.h",
@@ -5258,7 +5258,7 @@
         "wxl_event_sash",
         "wxl_set_event_sash"
       ],
-      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
+      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md. :sash-style :flat opts into wxSP_THIN_SASH with no outer 3D border; native drag/lifetime semantics retained."
     },
     {
       "header": "wx/splitter.h",
@@ -5289,7 +5289,7 @@
         "wxl_event_sash",
         "wxl_set_event_sash"
       ],
-      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
+      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md. :sash-style :flat opts into wxSP_THIN_SASH with no outer 3D border; native drag/lifetime semantics retained."
     },
     {
       "header": "wx/splitter.h",
@@ -5320,7 +5320,7 @@
         "wxl_event_sash",
         "wxl_set_event_sash"
       ],
-      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
+      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md. :sash-style :flat opts into wxSP_THIN_SASH with no outer 3D border; native drag/lifetime semantics retained."
     },
     {
       "header": "wx/splitter.h",
@@ -5351,7 +5351,7 @@
         "wxl_event_sash",
         "wxl_set_event_sash"
       ],
-      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
+      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md. :sash-style :flat opts into wxSP_THIN_SASH with no outer 3D border; native drag/lifetime semantics retained."
     },
     {
       "header": "wx/splitter.h",
@@ -5382,7 +5382,7 @@
         "wxl_event_sash",
         "wxl_set_event_sash"
       ],
-      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
+      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md. :sash-style :flat opts into wxSP_THIN_SASH with no outer 3D border; native drag/lifetime semantics retained."
     },
     {
       "header": "wx/splitter.h",
@@ -5413,7 +5413,7 @@
         "wxl_event_sash",
         "wxl_set_event_sash"
       ],
-      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
+      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md. :sash-style :flat opts into wxSP_THIN_SASH with no outer 3D border; native drag/lifetime semantics retained."
     },
     {
       "header": "wx/splitter.h",
@@ -5444,7 +5444,7 @@
         "wxl_event_sash",
         "wxl_set_event_sash"
       ],
-      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
+      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md. :sash-style :flat opts into wxSP_THIN_SASH with no outer 3D border; native drag/lifetime semantics retained."
     },
     {
       "header": "wx/splitter.h",
@@ -5475,7 +5475,7 @@
         "wxl_event_sash",
         "wxl_set_event_sash"
       ],
-      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
+      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md. :sash-style :flat opts into wxSP_THIN_SASH with no outer 3D border; native drag/lifetime semantics retained."
     },
     {
       "header": "wx/splitter.h",
@@ -5506,7 +5506,7 @@
         "wxl_event_sash",
         "wxl_set_event_sash"
       ],
-      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
+      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md. :sash-style :flat opts into wxSP_THIN_SASH with no outer 3D border; native drag/lifetime semantics retained."
     },
     {
       "header": "wx/splitter.h",
@@ -5537,7 +5537,7 @@
         "wxl_event_sash",
         "wxl_set_event_sash"
       ],
-      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
+      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md. :sash-style :flat opts into wxSP_THIN_SASH with no outer 3D border; native drag/lifetime semantics retained."
     },
     {
       "header": "wx/splitter.h",
@@ -5568,7 +5568,7 @@
         "wxl_event_sash",
         "wxl_set_event_sash"
       ],
-      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
+      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md. :sash-style :flat opts into wxSP_THIN_SASH with no outer 3D border; native drag/lifetime semantics retained."
     },
     {
       "header": "wx/splitter.h",
@@ -5599,7 +5599,7 @@
         "wxl_event_sash",
         "wxl_set_event_sash"
       ],
-      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
+      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md. :sash-style :flat opts into wxSP_THIN_SASH with no outer 3D border; native drag/lifetime semantics retained."
     },
     {
       "header": "wx/splitter.h",
@@ -5630,7 +5630,7 @@
         "wxl_event_sash",
         "wxl_set_event_sash"
       ],
-      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
+      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md. :sash-style :flat opts into wxSP_THIN_SASH with no outer 3D border; native drag/lifetime semantics retained."
     },
     {
       "header": "wx/splitter.h",
@@ -5661,7 +5661,7 @@
         "wxl_event_sash",
         "wxl_set_event_sash"
       ],
-      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
+      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md. :sash-style :flat opts into wxSP_THIN_SASH with no outer 3D border; native drag/lifetime semantics retained."
     },
     {
       "header": "wx/splitter.h",
@@ -5692,7 +5692,7 @@
         "wxl_event_sash",
         "wxl_set_event_sash"
       ],
-      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
+      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md. :sash-style :flat opts into wxSP_THIN_SASH with no outer 3D border; native drag/lifetime semantics retained."
     },
     {
       "header": "wx/splitter.h",
@@ -5723,7 +5723,7 @@
         "wxl_event_sash",
         "wxl_set_event_sash"
       ],
-      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
+      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md. :sash-style :flat opts into wxSP_THIN_SASH with no outer 3D border; native drag/lifetime semantics retained."
     },
     {
       "header": "wx/splitter.h",
@@ -5754,7 +5754,7 @@
         "wxl_event_sash",
         "wxl_set_event_sash"
       ],
-      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
+      "scope": "Fixed two-panel attachment outside RUN/pumps/callbacks; bounded positive minimum, guarded lifetime and synchronous sash events. No Initialize/Unsplit/Replace or full parity. CHANGING edits/veto require handling; CHANGED observational. See docs/SPLITTER.md. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md. :sash-style :flat opts into wxSP_THIN_SASH with no outer 3D border; native drag/lifetime semantics retained."
     },
     {
       "header": "wx/toolbar.h",
@@ -17869,7 +17869,7 @@
       "native": [
         "wxl_aui_tab_colours"
       ],
-      "scope": "Bounded copied theme colors, callback-safe reads and guarded writes; no raw ownership or full class parity. See docs/THEME-COLOURS.md. Replacement art clones receive immediate private-tab sizing, including unchanged-height and split groups."
+      "scope": "Bounded copied theme colors, callback-safe reads and guarded writes; no raw ownership or full class parity. See docs/THEME-COLOURS.md. Replacement art clones receive immediate private-tab sizing, including unchanged-height and split groups. Themed art is a flat generic subclass with solid surfaces, contrast-aware captions/close glyphs and no outer border."
     },
     {
       "header": "wx/aui/auibook.h",
@@ -17883,7 +17883,7 @@
       "native": [
         "wxl_aui_tab_colours"
       ],
-      "scope": "Bounded copied theme colors, callback-safe reads and guarded writes; no raw ownership or full class parity. See docs/THEME-COLOURS.md. Replacement art clones receive immediate private-tab sizing, including unchanged-height and split groups."
+      "scope": "Bounded copied theme colors, callback-safe reads and guarded writes; no raw ownership or full class parity. See docs/THEME-COLOURS.md. Replacement art clones receive immediate private-tab sizing, including unchanged-height and split groups. Themed art is a flat generic subclass with solid surfaces, contrast-aware captions/close glyphs and no outer border."
     },
     {
       "header": "wx/stc/stc.h",

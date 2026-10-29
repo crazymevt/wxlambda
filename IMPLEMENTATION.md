@@ -3674,3 +3674,21 @@ checks pass with the rebuilt bridge. Pinned coverage consistency and docset
 build/check, actual SBCL/CCL reader and isolated install pass. Independent review
 caught the initial SetRect overload mismatch, corrected before verification;
 no remaining findings. Windows/Linux rendering was not run.
+
+## Flat workspace styling (2026-10-29)
+
+Themed AUI art now draws solid rectangular tabs, contrasting text/close glyphs
+and a thin selected edge without gradients or bevels. Preserves copied palettes,
+clone sizing, normal AUI hit testing and guarded parent ownership. Splitters gain
+construction-only :sash-style :flat (thin native sash, no outer border); default
+style is unchanged. ABI signatures and export set are unchanged. KryptonEdit
+opts into flat dividers for both sidebars. Native tests cover flat interior pixels,
+border metrics, sizing across split tab groups and retained pane identities.
+
+Verification: macOS build/native invariant fixture pass, including no-gradient
+flat tab samples, no outer tab border, narrow sash metrics, retained panes and
+callback refusal for style changes. Native tab PNG inspected visually. Theme
+example/tests pass on SBCL/CCL; existing SBCL splitter tests and KryptonEdit478
+UI checks pass. Pinned coverage test and docset build/check, SBCL/CCL actual reader
+and isolated install pass. Independent review found no actionable issues. Native
+Windows/Linux rendering and physical keyboard focus remain unverified.

@@ -49,6 +49,14 @@ void exercise_aui_notebook() {
                    "Themed tab artwork and caption stay inside the tab strip");
             expect(close.width>0 && close.height>0 && close.y>=0 && close.y+close.width<=size.y,
                    "Themed square close glyph remains inside the tab strip");
+            expect(dynamic_cast<FlatAuiTabArt*>(tabs->GetArtProvider()) && tabs->GetArtProvider()->GetBorderWidth(tabs)==0,
+                   "Themed tabs use borderless flat art");
+            // Solid interior samples prove the bevel/gradient is absent.
+            const auto pixels=bitmap.ConvertToImage();
+            const int sample_x=tab.x+1, upper=tab.y+4, lower=tab.GetBottom()-3;
+            expect(pixels.GetRed(sample_x,upper)==pixels.GetRed(sample_x,lower) &&
+                   pixels.GetGreen(sample_x,upper)==pixels.GetGreen(sample_x,lower) &&
+                   pixels.GetBlue(sample_x,upper)==pixels.GetBlue(sample_x,lower),"Flat tab surface has no vertical gradient");
             dc.SelectObject(wxNullBitmap);
             if (pass==0 && tabs==left) {
                 const auto image=publish_image(bitmap.ConvertToImage());

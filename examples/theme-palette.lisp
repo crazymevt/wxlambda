@@ -5,13 +5,16 @@
 (in-package #:wxlambda-theme-palette)
 (defun exercise ()
   (let* ((frame (wxlambda:make-frame :title "Theme palette"))
-         (panel (wxlambda:make-panel frame))
+         (splitter (wxlambda:make-splitter-window frame :sash-style :flat))
+         (panel (wxlambda:make-panel splitter))
+         (sidebar (wxlambda:make-panel splitter))
          (book (wxlambda:make-aui-notebook panel))
          (page (wxlambda:make-panel book))
          (editor (wxlambda:make-styled-text-control page)))
     (unwind-protect
          (progn
-           (wxlambda:make-column frame) (wxlambda:add-child frame panel :proportion 1)
+           (wxlambda:make-column frame) (wxlambda:add-child frame splitter :proportion 1)
+           (wxlambda:split-window splitter panel sidebar)
            (wxlambda:make-column panel) (wxlambda:add-child panel book :proportion 1)
            (wxlambda:make-column page) (wxlambda:add-child page editor :proportion 1)
            (wxlambda:add-notebook-page book page :label "Palette")

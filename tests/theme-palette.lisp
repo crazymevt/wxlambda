@@ -1,6 +1,12 @@
 (load (merge-pathnames "../examples/theme-palette.lisp" *load-truename*))
 (wxlambda:with-application ()
   (assert (wxlambda-theme-palette:exercise))
+  (let ((parent (wxlambda:make-frame)))
+    (unwind-protect
+         (progn
+           (assert (typep (make-instance 'wxlambda:splitter-window :parent parent :sash-style :flat) 'wxlambda:splitter-window))
+           (assert (handler-case (progn (wxlambda:make-splitter-window parent :sash-style :unknown) nil) (error () t))))
+      (wxlambda:destroy-window parent)))
   (let* ((frame (wxlambda:make-frame))
          (book (wxlambda:make-aui-notebook frame))
          (editor (wxlambda:make-styled-text-control frame))

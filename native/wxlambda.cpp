@@ -2738,9 +2738,20 @@ int wxl_splitter_int(wxl_handle id, int field, int* result) {
 }
 int wxl_set_splitter_int(wxl_handle id, int field, int value) {
     return status([&] {
-        require(field == 0 || field == 1, "Invalid mutable splitter integer property"); splitter_pixel(value, field == 1);
+        require(field >= 0 && field <= 2, "Invalid mutable splitter integer property");
+        if (field==2) {
+            require(value==0 || value==1,"Invalid splitter sash style");
+            require(callback_depth==0,"Defer splitter sash style changes until callbacks return");
+        } else splitter_pixel(value, field==1);
         auto* splitter = as<FixedSplitter>(id); SplitterOperation operation(splitter);
-        if (field == 0) { splitter->requested_position = value; splitter->SetSashPosition(value); } else splitter->SetMinimumPaneSize(value);
+        if (field == 0) { splitter->requested_position = value; splitter->SetSashPosition(value); }
+        else if (field==1) splitter->SetMinimumPaneSize(value);
+        else {
+            const long previous=splitter->GetWindowStyleFlag();
+            splitter->SetWindowStyleFlag((previous & ~(wxSP_3D|wxSP_THIN_SASH|wxBORDER_MASK)) |
+                                        (value ? wxSP_THIN_SASH|wxBORDER_NONE : wxSP_3D));
+            splitter->UpdateSize(); splitter->Refresh();
+        }
     });
 }
 int wxl_splitter_gravity(wxl_handle id, double* gravity) {

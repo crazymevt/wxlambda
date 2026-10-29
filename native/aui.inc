@@ -1,4 +1,62 @@
 // Include at the ABI implementation tail, outside an extern-C block.
+// Flat themed art retains wxAUI sizing, page hit testing and native events.
+class FlatAuiTabArt : public wxAuiGenericTabArt {
+public:
+    wxAuiTabArt* Clone() override { return new FlatAuiTabArt(*this); }
+    int GetBorderWidth(wxWindow*) override { return 0; }
+    void DrawBorder(wxDC&,wxWindow*,const wxRect&) override { }
+    void DrawBackground(wxDC& dc,wxWindow*,const wxRect& rect) override {
+        dc.SetPen(*wxTRANSPARENT_PEN); dc.SetBrush(wxBrush(m_baseColour)); dc.DrawRectangle(rect);
+    }
+    void DrawTab(wxDC& dc,wxWindow* wnd,const wxAuiNotebookPage& page,const wxRect& area,
+                 int close_state,wxRect* tab_rect,wxRect* close_rect,int* extent) override {
+        const auto measured=GetTabSize(dc,wnd,page.caption,page.bitmap,page.active,close_state,extent);
+        const wxRect tab(area.x,area.y,measured.x,area.height);
+        *tab_rect=tab; *close_rect=wxRect();
+        if (tab.width<=0 || tab.height<=0) return;
+        const auto background=page.active ? m_activeColour : m_baseColour;
+        auto linear=[](unsigned char channel) { const double c=channel/255.0; return c<=0.04045 ? c/12.92 : std::pow((c+0.055)/1.055,2.4); };
+        const double luminance=.2126*linear(background.Red())+.7152*linear(background.Green())+.0722*linear(background.Blue());
+        const wxColour foreground=luminance<.179 ? *wxWHITE : *wxBLACK;
+        dc.SetClippingRegion(tab.Intersect(area));
+        dc.SetPen(*wxTRANSPARENT_PEN); dc.SetBrush(wxBrush(background)); dc.DrawRectangle(tab);
+        const int padding=wnd->FromDIP(8), gap=wnd->FromDIP(4);
+        int left=tab.x+padding, right=tab.GetRight()-padding;
+        if (page.bitmap.IsOk()) {
+            const auto bitmap=page.bitmap.GetBitmapFor(wnd);
+            dc.DrawBitmap(bitmap,left,tab.y+(tab.height-bitmap.GetLogicalHeight())/2,true);
+            left+=bitmap.GetLogicalWidth()+gap;
+        }
+        if (close_state!=wxAUI_BUTTON_STATE_HIDDEN) {
+            const int size=wnd->FromDIP(16);
+            *close_rect=wxRect(tab.GetRight()-size-gap,tab.y+(tab.height-size)/2,size,size);
+            right=close_rect->x-gap;
+            if (close_state==wxAUI_BUTTON_STATE_HOVER || close_state==wxAUI_BUTTON_STATE_PRESSED) {
+                dc.SetBrush(wxBrush(background.ChangeLightness(luminance<.179 ? 145 : 90)));
+                dc.DrawRectangle(*close_rect);
+            }
+            dc.SetPen(wxPen(foreground,wnd->FromDIP(1)));
+            const int inset=wnd->FromDIP(5);
+            dc.DrawLine(close_rect->x+inset,close_rect->y+inset,close_rect->GetRight()-inset,close_rect->GetBottom()-inset);
+            dc.DrawLine(close_rect->GetRight()-inset,close_rect->y+inset,close_rect->x+inset,close_rect->GetBottom()-inset);
+        }
+        dc.SetFont(page.active ? m_selectedFont : m_normalFont); dc.SetTextForeground(foreground);
+        wxString text=page.caption;
+        const int available=std::max(0,right-left);
+        if (dc.GetTextExtent(text).x>available) {
+            const wxString suffix=wxS("\u2026");
+            while (!text.empty() && dc.GetTextExtent(text+suffix).x>available) text.RemoveLast();
+            text=dc.GetTextExtent(suffix).x<=available ? text+suffix : wxString();
+        }
+        dc.DrawText(text,left,tab.y+(tab.height-dc.GetTextExtent(text).y)/2);
+        if (page.active) {
+            dc.SetPen(wxPen(foreground,wnd->FromDIP(2)));
+            dc.DrawLine(tab.x,tab.y+wnd->FromDIP(1),tab.GetRight(),tab.y+wnd->FromDIP(1));
+        }
+        dc.DestroyClippingRegion();
+    }
+};
+
 class DynamicAuiNotebook : public wxAuiNotebook {
 public:
     int first_tab_id=0;
@@ -152,7 +210,7 @@ int wxl_aui_tab_colours(wxl_handle id,int write,int reset,int64_t* base,int64_t*
         std::unique_ptr<wxAuiTabArt> art;
         if (reset) art=std::make_unique<wxAuiDefaultTabArt>();
         else {
-            auto custom=std::make_unique<wxAuiGenericTabArt>();
+            auto custom=std::make_unique<FlatAuiTabArt>();
             custom->SetColour(stc_unpack_colour(*base)); custom->SetActiveColour(stc_unpack_colour(*active)); art=std::move(custom);
         }
         book->SetArtProvider(art.release());
