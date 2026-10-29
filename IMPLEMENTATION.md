@@ -2844,3 +2844,85 @@ Next selected slice: bounded date-picker controls for dated form fields, includi
 native feature/component selection and a copied Gregorian date adapter as needed
 prerequisites. Preserve explicit date/value semantics, CLOS/SETF and callback/
 lifetime protections, independent review and aligned examples/docs/docset/coverage.
+
+## Required calendar date pickers (2026-10-29)
+
+ABI52 adds native-backed DATE-PICKER, generic MAKE-DATE-PICKER, CALENDAR-DATE/SETF
+and read-only EVENT-DATE. Exact copied (year month day) lists support Gregorian
+dates1900..2100, required valid days, default2000-01-01 (not today's clock).
+CLOS :parent/:date construction supports subclasses/defaults/native-ready AFTER
+hooks, one native kind per ancestry, validated :class factories and managed
+failure/root rollback. Native style wxDP_DEFAULT|wxDP_SHOWCENTURY and fixed
+inclusive1900-01-01..2100-12-31 range; construction checks native range/value
+readback before publication. No nullable/style/editor-text/mutable range/time/
+timezone/standalone wxDateTime resource API. Native local-date construction must
+roundtrip the requested date, including historical timezone anomalies; no UTC/
+Unix/universal-time contract. Process timezone changes during sessions unsupported.
+
+Default SETF is silent under a native blocker; :notify emits exactly1 native
+wxDateEvent after committed readback, even unchanged. :DATE-CHANGE is command
+family/no veto, event date independent of control value and raw integer/text.
+Appended immutable packed native/Lisp snapshot metadata returns fresh tuples;
+invalid/out-of-scope native date payloads map NIL. Snapshot date survives session;
+current innermost contexts retain expiry/isolation. No EVENT-DATE SETF, native
+owned/synthetic/date clones, time-change/calendar event families. Actual source,
+propagated and composite-child TEXT paths retain Input guards, ancestor lifetime,
+modal/clipboard/GUI/safe-idle exclusion and silent cross-picker synchronization.
+Original callback conditions re-signal at the Lisp boundary with committed date.
+
+Independent review identified generic picker Destroy deleting its combo before
+its base marks deletion. Added date-specific ManagedWindow::Destroy early input
+suppression, with weak-ref guard restoration on native refusal/exception; native
+base/destructor paths retain existing suppression. Constructor range readback
+and non-date context probes were also added. Final code/test/docs review has no
+remaining actionable findings; corrected error-boundary wording in the guide.
+Source audits: pinned OSX/Cocoa date/time picker, MSW date and generic date control
+sources in /private/tmp/wxl-date-source. Generic GTK/Qt controls use native generic
+logic, but runtime host remains macOS wxWidgets3.2.12 only; Qt-specific date
+source/header paths do not exist in this pinned release. Existing wxQt tree gate
+remains unchanged. adv component is now selected explicitly, despite interface
+header's core library label; requires wxUSE_DATEPICKCTRL and wxUSE_DATETIME.
+Negative CMake gate probe passes (quiet-run.fxpiP7ZS); actual disabled-feature
+wxWidgets build was not produced.
+
+Main/native builds pass (quiet-run.nmyEhX5i/P2Fyt9PN), focused SBCL/CCL example/
+tests pass (quiet-run.GwpquW1J/RZKUxDTS). Final native harness has zero assertions
+(quiet-run.xl10gReB), including native-origin events outside setter guards,
+propagation, composite-child TEXT, invalid/out-of-scope event dates, non-date/
+expired/read-only context, native range endpoints, same-date explicit notify,
+silence, raw validation, early Destroy refusal restoration and suppressed early
+teardown events. Lisp tests cover leap years/centuries/endpoints, copied tuples,
+class/default/factory/rollback, context expiry/post-session snapshot, callback
+condition identity/committed state. examples/date-picker.lisp is a due-date form
+with native change feedback and an owner-bound deferred Reset action.
+
+Full77 GUI scenarios plus preflight pass on SBCL2.6.9 and CCL1.13
+(quiet-run.RidHE5Vr/SnMcfEO9), evidence/date-picker/{sbcl,ccl}-20261029/.
+Physical date editing/calendar/spin input, locale display, accessibility,
+historical timezone combinations, hosted Windows/Linux/Qt and graphical Cadre
+remain unverified. Generic early teardown is injected on macOS rather than a
+hosted generic GUI proof. No automatic system clipboard content reads/writes.
+ASDF cache uses /private/tmp.
+
+Pinned coverage regeneration/14 checks,16 Python checks and zero-problem docset
+pass (quiet-run.juLHkDvK). Initial coverage checks exposed a class/declaration
+metadata mismatch plus the stale reviewed-class fixture; both corrected before
+final regeneration/checks. wxDatePickerCtrl/wxDateEvent and wxDateTime tuple
+adapter remain partial, not native parity. Counts:263 exports,189 named generics,
+58 SETF generics,27 window wrappers (25 concrete+2 abstract),51 examples and366
+docset entries. Both-Lisp actual public-export/class/SETF coverage and isolated
+install/discovery/symbol/guide/example access pass (quiet-run.hwUMGKGW).
+Install root /private/tmp/wxlambda-date-docsets/wxlambda; normal Cadre installation
+under $XDG_DATA_HOME/docsets/wxlambda (default ~/.local/share/docsets/wxlambda/)
+is documented in docs/DOCSET.md. Package dist/wxlambda-form-date-picker remains
+the established form binary, with transitive dependencies bundled; date example
+is separate repository/docset content. All five package isolation checks pass
+(quiet-run.j5EMHRiq), evidence/packaging/date-picker-20261029/. Final docset
+build/check/install follows these handoff notes.
+
+Session handoff: broad GUI coverage with selective depth remains the objective.
+Next selected slice: bounded time-picker controls for time-of-day form fields,
+reusing the native feature/component and Input foundation with an explicit copied
+hour/minute/second adapter. Preserve local-time/value semantics, CLOS/SETF and
+callback/lifetime protections, independent review and aligned examples/docs/
+docset/coverage; do not drain unrelated wxDateTime APIs.

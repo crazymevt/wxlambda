@@ -35,7 +35,7 @@ void inspect_binding(uint64_t token, const wxl_event* event) {
     saved_context = event->context;
     binding_called = true;
 }
-std::function<void(uint64_t, const wxl_event*)> notebook_probe, list_probe, tree_probe, splitter_probe, toolbar_probe, accelerator_probe, deferred_event_probe, numeric_probe, radio_probe, toggle_probe, combo_probe, scroll_probe, tooltip_probe;
+std::function<void(uint64_t, const wxl_event*)> notebook_probe, list_probe, tree_probe, splitter_probe, toolbar_probe, accelerator_probe, deferred_event_probe, numeric_probe, radio_probe, toggle_probe, combo_probe, scroll_probe, tooltip_probe, date_probe;
 std::function<void(uint64_t,int)> ui_action_probe;
 void ignore_ui_action(uint64_t token, int execute) { if (ui_action_probe) ui_action_probe(token, execute); }
 void ignore_event(uint64_t token, const wxl_event* event) {
@@ -52,6 +52,7 @@ void ignore_event(uint64_t token, const wxl_event* event) {
     if (token>=925 && token<=927 && combo_probe) combo_probe(token,event);
     if (token==928 && scroll_probe) scroll_probe(token,event);
     if (token==929 && tooltip_probe) tooltip_probe(token,event);
+    if ((token==930 || token==931 || token==932) && date_probe) date_probe(token,event);
     if (token == 901) inspect_binding(token, event);
     if (token == 903) { ++menu_calls; menu_checked_payload = event->checked; menu_integer_payload = event->integer; menu_origin = event->origin_id; }
 }
@@ -1485,6 +1486,97 @@ void exercise_tooltips() {
            wxl_set_tooltip_text(target,"stale",5,1)==-1,"Window teardown owns tooltip and invalidates handles");
 }
 
+class EarlyDateDestroyProbe : public wxDatePickerCtrl {
+public:
+    using wxDatePickerCtrl::wxDatePickerCtrl;
+    std::function<void()> during_destroy;
+    bool refuse=false;
+    bool Destroy() override {
+        if (during_destroy) during_destroy();
+        return refuse ? false : wxDatePickerCtrl::Destroy();
+    }
+};
+void exercise_date_picker() {
+    const auto frame=wxl_frame("Dates",460,240), panel=wxl_panel(frame);
+    unsigned calls=0; bool constructing=true;
+    date_probe=[&](uint64_t,const wxl_event*) { ++calls; expect(!constructing,"Date constructor callbacks suppressed"); };
+    expect(wxl_bind(frame,WXL_EVENT_DATE_CHANGE,930,wxID_ANY,wxID_ANY,1,0)==0 &&
+           wxl_bind(frame,WXL_EVENT_TEXT_CHANGE,932,wxID_ANY,wxID_ANY,1,0)==0,"Observe date creation");
+    const auto picker=wxl_date_picker(panel,2000,2,29), other=wxl_date_picker(panel,2024,1,1);
+    expect(picker && other && !calls,"Date construction silence"); constructing=false;
+    expect(wxl_unbind(930)==1 && wxl_unbind(932)==1,"Date construction probe unbind");
+    int code=0;
+    expect(wxl_calendar_date(picker,&code)==0 && code==20000229,"Initial native date");
+    wxDateTime lower,upper;
+    expect(as<wxDatePickerCtrl>(picker)->GetRange(&lower,&upper) && calendar_code(lower)==19000101 && calendar_code(upper)==21001231,"Inclusive fixed native date range");
+    expect(!wxl_date_picker(panel,1900,2,29) && !wxl_date_picker(panel,2100,2,29) &&
+           !wxl_date_picker(panel,2000,2,30) && !wxl_date_picker(panel,1899,1,1) &&
+           !wxl_date_picker(panel,2000,0,1) && wxl_set_calendar_date(picker,2101,1,1,0)==-1 &&
+           wxl_set_calendar_date(picker,2000,2,29,2)==-1 && wxl_calendar_date(frame,&code)==-1 &&
+           wxl_calendar_date(picker,nullptr)==-1,"Raw Gregorian/type/output validation");
+    expect(wxl_set_calendar_date(picker,1900,1,1,0)==0 && wxl_calendar_date(picker,&code)==0 && code==19000101 &&
+           wxl_set_calendar_date(picker,2100,12,31,0)==0 && wxl_calendar_date(picker,&code)==0 && code==21001231,"Native date boundaries");
+    const auto dialog=wxl_message_dialog(frame,"Date",4,"Probe",5,0,0);
+    uint64_t expired=0;
+    int expected=20240229;
+    date_probe=[&](uint64_t token,const wxl_event* event) {
+        ++calls; expired=event->context;
+        expect(event->origin_id==picker && event->family==WXL_FAMILY_COMMAND,"Date native origin/family");
+        expect(event->date_code==expected && event->integer==0 && !event->can_veto && !event->text,"Independent date payload");
+        expect(wxl_set_calendar_date(picker,2024,1,1,0)==-1 && wxl_destroy(picker)==-1 &&
+               wxl_destroy(panel)==-1 && wxl_close(frame,1)==-1,"Actual date source/ancestor guard");
+        int result=-1;
+        expect(wxl_poll()==-1 && wxl_clipboard_text_available()==-1 && wxl_dialog_show(dialog,&result)==-1,"Date native-entry protection");
+        expect(wxl_set_calendar_date(other,2025,1,1,0)==0,"Silent cross-date synchronization");
+        int64_t captured=-1;
+        expect(wxl_event_field(event->context,1,19,&captured)==0 && captured==expected &&
+               wxl_set_event_field(event->context,1,19,20240101)==-1 && !wxl_clone_event(event->context,1),"Scoped read-only date/no detached clone");
+        if (token==930) expect(wxl_context_set_skipped(event->context,1)==0,"Date propagation");
+    };
+    expect(wxl_bind(picker,WXL_EVENT_DATE_CHANGE,930,wxID_ANY,wxID_ANY,1,0)==0 &&
+           wxl_bind(frame,WXL_EVENT_DATE_CHANGE,931,wxID_ANY,wxID_ANY,1,0)==0,"Date native bindings");
+    // Actual native date event outside bridge setters: payload may differ from current control.
+    wxDateEvent native(window(picker),calendar_value(2024,2,29),wxEVT_DATE_CHANGED);
+    window(picker)->HandleWindowEvent(native);
+    expect(calls==2 && input_operations.empty(),"Actual date callback and propagation guards");
+    int64_t captured=-1;
+    expect(wxl_event_field(expired,1,19,&captured)==-1,"Date context expires");
+    expect(wxl_set_calendar_date(picker,2024,2,29,0)==0 && calls==2,"Silent native date write");
+    expect(wxl_set_calendar_date(picker,2024,2,29,1)==0 && calls==4,"Single explicit date event even unchanged");
+    expected=0;
+    wxDateEvent invalid(window(picker),wxInvalidDateTime,wxEVT_DATE_CHANGED);
+    window(picker)->HandleWindowEvent(invalid);
+    wxDateEvent outside(window(picker),wxDateTime(1,wxDateTime::Jan,1800),wxEVT_DATE_CHANGED);
+    window(picker)->HandleWindowEvent(outside);
+    expect(calls==8,"Invalid/out-of-scope native event dates produce absent date metadata");
+    expect(!wxl_owned_event(WXL_EVENT_DATE_CHANGE,1,nullptr,0,0,0,0,0),"Owned date events reject");
+    expect(wxl_unbind(930)==1 && wxl_unbind(931)==1,"Date binding cleanup");
+    // Child-origin native TEXT callbacks must protect their owning composite date picker.
+    const auto child=wxl_text(picker,"child",5,0,1);
+    date_probe=[&](uint64_t,const wxl_event* event) {
+        ++calls;
+        expect(wxl_set_calendar_date(picker,2024,1,1,0)==-1 && wxl_destroy(picker)==-1,"Date composite-child input guard");
+        int64_t date=-1; expect(wxl_event_field(expired,1,19,&date)==-1,"Old date context remains expired");
+        expect(wxl_event_field(event->context,1,19,&date)==-1,"Non-date context rejects date metadata");
+    };
+    expect(wxl_bind(frame,WXL_EVENT_TEXT_CHANGE,932,wxID_ANY,wxID_ANY,1,0)==0,"Date composite TEXT bind");
+    wxCommandEvent text(wxEVT_TEXT,window(child)->GetId()); text.SetEventObject(window(child)); text.SetString("child"); window(child)->HandleWindowEvent(text);
+    expect(calls==9 && wxl_unbind(932)==1,"Date child-origin text guard");
+    // Equivalent early native generic Destroy phase, injected before its base.
+    auto* teardown=new ManagedWindow<EarlyDateDestroyProbe>(window(panel),wxID_ANY,calendar_value(2024,1,1));
+    const auto teardown_id=track(teardown); input_owners.emplace(teardown,false);
+    unsigned teardown_callbacks=0;
+    date_probe=[&](uint64_t,const wxl_event*) { ++teardown_callbacks; };
+    expect(wxl_bind(frame,WXL_EVENT_DATE_CHANGE,930,wxID_ANY,wxID_ANY,1,0)==0,"Early date teardown binding");
+    teardown->during_destroy=[&] { wxDateEvent event(teardown,calendar_value(2024,1,1),wxEVT_DATE_CHANGED); teardown->HandleWindowEvent(event); };
+    teardown->refuse=true;
+    expect(!teardown->Destroy() && !input_owners.at(teardown) && !teardown_callbacks,"Failed Destroy restores date input guard");
+    teardown->refuse=false;
+    expect(wxl_destroy(teardown_id)==0 && !teardown_callbacks && wxl_unbind(930)==1,"Early composite Destroy suppresses date callbacks");
+    date_probe={}; delete window(frame);
+    expect(wxl_calendar_date(picker,&code)==-1 && wxl_set_calendar_date(picker,2024,1,1,0)==-1,"Date teardown stale handles");
+}
+
 int main() {
     std::thread([] { std::this_thread::sleep_for(std::chrono::seconds(10)); std::_Exit(124); }).detach();
     auto old_assert_handler = wxSetAssertHandler(capture_assert);
@@ -1519,6 +1611,7 @@ int main() {
         exercise_scrolling_panels();
         exercise_focus_navigation();
         exercise_tooltips();
+        exercise_date_picker();
         bool shutdown_ran=false;
         ui_action_probe=[&](uint64_t,int) { shutdown_ran=true; };
         expect(wxl_defer_ui_action(5000,0)==0 && wxl_start_ui_timer(5001,1,0,0)==0,"Queue shutdown action/timer");

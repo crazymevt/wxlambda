@@ -17,7 +17,7 @@ class or constructor does not imply full upstream coverage.
 
 ## Current coverage and remaining work
 
-7 implemented; 106 partial; 5179 pending; 26 context entries. Native gaps stay visible; feature priority is separate.
+7 implemented; 111 partial; 5174 pending; 26 context entries. Native gaps stay visible; feature priority is separate.
 
 Counts describe inventory entries, not distinct APIs or percent completion.
 See the [coverage summary](README.md) for phase/header comparisons.
@@ -682,9 +682,9 @@ See the [coverage summary](README.md) for phase/header comparisons.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/datetime.h)
 
-0 implemented; 0 partial; 253 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
+0 implemented; 5 partial; 248 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
 
-- [ ] [L76](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/datetime.h#L76) `class wxDateTime {`
+- [~] [L76](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/datetime.h#L76) `class wxDateTime {` — **Partial**: `calendar-date`, `event-date`; ABI: `wxl_date_picker`, `wxl_calendar_date`, `wxl_set_calendar_date`. Copied Gregorian tuple adapter only through DATE-PICKER/CALENDAR-DATE/EVENT-DATE, required dates1900..2100, local civil calendar roundtrip, no time-of-day/timezone/Unix/universal-time or standalone wxDateTime objects. Constructor uses midnight native local representation and rejects failed date roundtrip; native event invalid/out-of-scope dates map NIL. See docs/DATE-PICKER.md.
 - [ ] [L86](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/datetime.h#L86) `typedef unsigned short wxDateTime_t;`
 - [ ] [L92](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/datetime.h#L92) `enum TZ {`
 - [ ] [L95](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/datetime.h#L95) `Local, GMT_12, GMT_11, GMT_10, GMT_9, GMT_8, GMT_7, GMT_6, GMT_5, GMT_4, GMT_3, GMT_2, GMT_1, GMT0, GMT1, GMT2, GMT3, GMT4, GMT5, GMT6, GMT7, GMT8, GMT9, GMT10, GMT11, GMT12, GMT13, WET = GMT0, WEST = GMT1, CET = GMT1, CEST = GMT2, EET = GMT2, EEST = GMT3, MSK = GMT3, MSD = GMT4, AST = GMT_4, ADT = GMT_3, EST = GMT_5, EDT = GMT_4, CST = GMT_6, CDT = GMT_5, MST = GMT_7, MDT = GMT_6, PST = GMT_8, PDT = GMT_7, HST = GMT_10, AKST = GMT_9, AKDT = GMT_8, A_WST = GMT8, A_CST = GMT13 + 1, A_EST = GMT10, A_ESST = GMT11, NZST = GMT12, NZDT = GMT13, UTC = GMT0 }`
@@ -720,7 +720,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [ ] [L335](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/datetime.h#L335) `wxDateTime(const struct tm& tm);`
 - [ ] [L339](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/datetime.h#L339) `wxDateTime(double jdn);`
 - [ ] [L343](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/datetime.h#L343) `wxDateTime(wxDateTime_t hour, wxDateTime_t minute = 0, wxDateTime_t second = 0, wxDateTime_t millisec = 0);`
-- [ ] [L348](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/datetime.h#L348) `wxDateTime(wxDateTime_t day, Month month, int year = Inv_Year, wxDateTime_t hour = 0, wxDateTime_t minute = 0, wxDateTime_t second = 0, wxDateTime_t millisec = 0);`
+- [~] [L348](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/datetime.h#L348) `wxDateTime(wxDateTime_t day, Month month, int year = Inv_Year, wxDateTime_t hour = 0, wxDateTime_t minute = 0, wxDateTime_t second = 0, wxDateTime_t millisec = 0);` — **Partial**: `calendar-date`, `event-date`; ABI: `wxl_date_picker`, `wxl_calendar_date`, `wxl_set_calendar_date`. Copied Gregorian tuple adapter only through DATE-PICKER/CALENDAR-DATE/EVENT-DATE, required dates1900..2100, local civil calendar roundtrip, no time-of-day/timezone/Unix/universal-time or standalone wxDateTime objects. Constructor uses midnight native local representation and rejects failed date roundtrip; native event invalid/out-of-scope dates map NIL. See docs/DATE-PICKER.md.
 - [ ] [L362](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/datetime.h#L362) `wxDateTime(const struct _SYSTEMTIME& st);`
 - [ ] [L368](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/datetime.h#L368) `wxDateTime& ResetTime();`
 - [ ] [L377](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/datetime.h#L377) `wxDateTime& Set(time_t timet);`
@@ -745,12 +745,12 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [ ] [L518](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/datetime.h#L518) `void GetAsMSWSysTime(struct _SYSTEMTIME* st) const;`
 - [ ] [L523](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/datetime.h#L523) `int GetCentury(const TimeZone& tz = Local) const;`
 - [ ] [L533](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/datetime.h#L533) `wxDateTime GetDateOnly() const;`
-- [ ] [L538](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/datetime.h#L538) `unsigned short GetDay(const TimeZone& tz = Local) const;`
+- [~] [L538](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/datetime.h#L538) `unsigned short GetDay(const TimeZone& tz = Local) const;` — **Partial**: `calendar-date`, `event-date`; ABI: `wxl_date_picker`, `wxl_calendar_date`, `wxl_set_calendar_date`. Copied Gregorian tuple adapter only through DATE-PICKER/CALENDAR-DATE/EVENT-DATE, required dates1900..2100, local civil calendar roundtrip, no time-of-day/timezone/Unix/universal-time or standalone wxDateTime objects. Constructor uses midnight native local representation and rejects failed date roundtrip; native event invalid/out-of-scope dates map NIL. See docs/DATE-PICKER.md.
 - [ ] [L544](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/datetime.h#L544) `unsigned short GetDayOfYear(const TimeZone& tz = Local) const;`
 - [ ] [L549](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/datetime.h#L549) `unsigned short GetHour(const TimeZone& tz = Local) const;`
 - [ ] [L554](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/datetime.h#L554) `unsigned short GetMillisecond(const TimeZone& tz = Local) const;`
 - [ ] [L559](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/datetime.h#L559) `unsigned short GetMinute(const TimeZone& tz = Local) const;`
-- [ ] [L564](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/datetime.h#L564) `Month GetMonth(const TimeZone& tz = Local) const;`
+- [~] [L564](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/datetime.h#L564) `Month GetMonth(const TimeZone& tz = Local) const;` — **Partial**: `calendar-date`, `event-date`; ABI: `wxl_date_picker`, `wxl_calendar_date`, `wxl_set_calendar_date`. Copied Gregorian tuple adapter only through DATE-PICKER/CALENDAR-DATE/EVENT-DATE, required dates1900..2100, local civil calendar roundtrip, no time-of-day/timezone/Unix/universal-time or standalone wxDateTime objects. Constructor uses midnight native local representation and rejects failed date roundtrip; native event invalid/out-of-scope dates map NIL. See docs/DATE-PICKER.md.
 - [ ] [L569](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/datetime.h#L569) `unsigned short GetSecond(const TimeZone& tz = Local) const;`
 - [ ] [L586](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/datetime.h#L586) `time_t GetTicks() const;`
 - [ ] [L595](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/datetime.h#L595) `wxLongLong GetValue() const;`
@@ -759,7 +759,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [ ] [L624](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/datetime.h#L624) `int GetWeekBasedYear(const TimeZone& tz) const;`
 - [ ] [L632](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/datetime.h#L632) `wxDateTime_t GetWeekOfMonth(WeekFlags flags = Monday_First, const TimeZone& tz = Local) const;`
 - [ ] [L650](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/datetime.h#L650) `wxDateTime_t GetWeekOfYear(WeekFlags flags = Monday_First, const TimeZone& tz = Local) const;`
-- [ ] [L656](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/datetime.h#L656) `int GetYear(const TimeZone& tz = Local) const;`
+- [~] [L656](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/datetime.h#L656) `int GetYear(const TimeZone& tz = Local) const;` — **Partial**: `calendar-date`, `event-date`; ABI: `wxl_date_picker`, `wxl_calendar_date`, `wxl_set_calendar_date`. Copied Gregorian tuple adapter only through DATE-PICKER/CALENDAR-DATE/EVENT-DATE, required dates1900..2100, local civil calendar roundtrip, no time-of-day/timezone/Unix/universal-time or standalone wxDateTime objects. Constructor uses midnight native local representation and rejects failed date roundtrip; native event invalid/out-of-scope dates map NIL. See docs/DATE-PICKER.md.
 - [ ] [L661](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/datetime.h#L661) `bool IsValid() const;`
 - [ ] [L666](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/datetime.h#L666) `bool IsWorkDay(Country country = Country_Default) const;`
 - [ ] [L690](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/datetime.h#L690) `bool IsEarlierThan(const wxDateTime& datetime) const;`

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 project(wxlambda VERSION 0.1.0 LANGUAGES CXX)
-find_package(wxWidgets 3.2 REQUIRED COMPONENTS core base)
+find_package(wxWidgets 3.2 REQUIRED COMPONENTS core base adv)
 include(${wxWidgets_USE_FILE})
 include(CheckCXXSourceCompiles)
 include(CMakePushCheckState)
@@ -26,6 +26,11 @@ check_cxx_source_compiles("#include <wx/setup.h>
 #error wxUSE_TOOLTIPS is required
 #endif
 int main() { return 0; }" WXLAMBDA_HAS_TOOLTIPS)
+check_cxx_source_compiles("#include <wx/setup.h>
+#if !wxUSE_DATEPICKCTRL || !wxUSE_DATETIME
+#error Date picker and datetime support are required
+#endif
+int main() { return 0; }" WXLAMBDA_HAS_DATE_PICKER)
 cmake_pop_check_state()
 if(NOT WXLAMBDA_HAS_ACCELERATORS)
   message(FATAL_ERROR "wxlambda requires wxWidgets built with wxUSE_ACCEL=1")
@@ -38,6 +43,9 @@ if(NOT WXLAMBDA_HAS_SCROLLING_CONTROLS)
 endif()
 if(NOT WXLAMBDA_HAS_TOOLTIPS)
   message(FATAL_ERROR "wxlambda requires wxWidgets built with wxUSE_TOOLTIPS=1")
+endif()
+if(NOT WXLAMBDA_HAS_DATE_PICKER)
+  message(FATAL_ERROR "wxlambda requires wxUSE_DATEPICKCTRL=1 and wxUSE_DATETIME=1 (wxWidgets adv)")
 endif()
 add_library(wxlambda SHARED native/wxlambda.cpp)
 target_compile_features(wxlambda PRIVATE cxx_std_17)

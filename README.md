@@ -833,3 +833,5 @@ run `examples/radio-groups.lisp` for export-format selection.
 [Focus navigation](docs/FOCUS-NAVIGATION.md) adds guarded focus requests and forward/backward form traversal; run `examples/focus-navigation.lisp`.
 
 [Window tooltips](docs/TOOLTIPS.md) add copied contextual form guidance with explicit removal; run `examples/tooltips.lisp`.
+
+[Date pickers](docs/DATE-PICKER.md) add required calendar dates with copied Gregorian tuples; run `examples/date-picker.lisp`. CMake links wxWidgets adv and requires wxUSE_DATEPICKCTRL/wxUSE_DATETIME.

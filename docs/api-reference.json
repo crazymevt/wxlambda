@@ -2805,5 +2805,52 @@
       "syntax": "(setf (wxlambda:tooltip-text window) \"Enter your name\")",
       "description": "NIL calls UnsetToolTip; strings including empty call SetToolTip. Copies the input; rejects NUL and >4096 UTF-8 bytes before mutation. No notify option or synthetic event. Native-ready subclass AFTER hooks can set the property with ordinary construction rollback."
     }
+  },
+  {
+    "name": "date-picker",
+    "kind": "class",
+    "syntax": "wxlambda:date-picker",
+    "arguments": "Required :parent WINDOW; optional :date exact (year month day) defaults (2000 1 1), plus subclass initargs.",
+    "returns": "Native-backed DATE-PICKER WINDOW subtype.",
+    "description": "Required date control with native wxDP_DEFAULT|wxDP_SHOWCENTURY formatting/presentation. No raw adoption or uncreated wrapper.",
+    "scope": "Active GUI thread/session, live native lifetime, Gregorian dates1900..2100 and representable native local calendar dates only. Fixed inclusive1900-01-01..2100-12-31 range; native range/value readback required. Default native date editor style; no NIL/time/timezone/range/style APIs. Input callback/composite-child/propagation guards and early generic Destroy suppression. Requires core/base/adv, wxUSE_DATEPICKCTRL and wxUSE_DATETIME. See docs/DATE-PICKER.md.",
+    "wxwidgets": "wxDatePickerCtrl::Create/SetRange, wxWidgets3.2.12; installed native component adv.",
+    "construction": {
+      "syntax": "(make-instance 'wxlambda:date-picker :parent parent :date '(2028 2 29))",
+      "description": "Direct subclasses/default initargs and native-ready AFTER hooks with managed failure/root rollback; one concrete native kind per ancestry."
+    }
+  },
+  {
+    "name": "make-date-picker",
+    "kind": "generic-function",
+    "arguments": "PARENT and forwarded :date/:class/subclass initargs.",
+    "returns": "New DATE-PICKER or validated subclass.",
+    "description": "Thin native-backed CLOS factory. DATE defaults to (2000 1 1), not today.",
+    "scope": "Active GUI thread/session, live native lifetime, Gregorian dates1900..2100 and representable native local calendar dates only. Fixed inclusive1900-01-01..2100-12-31 range; native range/value readback required. Default native date editor style; no NIL/time/timezone/range/style APIs. Input callback/composite-child/propagation guards and early generic Destroy suppression. Requires core/base/adv, wxUSE_DATEPICKCTRL and wxUSE_DATETIME. See docs/DATE-PICKER.md.",
+    "wxwidgets": "wxDatePickerCtrl::Create, wxWidgets3.2.12."
+  },
+  {
+    "name": "calendar-date",
+    "kind": "generic-function",
+    "syntax": "(wxlambda:calendar-date picker)",
+    "arguments": "DATE-PICKER; SETF exact (year month day), optional :notify generalized boolean defaults NIL. Reader accepts/ignores :notify for SETF protocol.",
+    "returns": "Fresh native committed date tuple; writer returns supplied list.",
+    "description": "Local civil date without exposed time-of-day/timezone/Unix/universal-time. Gregorian leap/day/range validation; native construction/readback must preserve requested date. Native getter with no supported committed date signals NATIVE-ERROR.",
+    "scope": "Active GUI thread/session, live native lifetime, Gregorian dates1900..2100 and representable native local calendar dates only. Fixed inclusive1900-01-01..2100-12-31 range; native range/value readback required. Default native date editor style; no NIL/time/timezone/range/style APIs. Input callback/composite-child/propagation guards and early generic Destroy suppression. Requires core/base/adv, wxUSE_DATEPICKCTRL and wxUSE_DATETIME. See docs/DATE-PICKER.md.",
+    "wxwidgets": "wxDatePickerCtrl::GetValue/SetValue and bounded wxDateTime date adapter, wxWidgets3.2.12.",
+    "setf": {
+      "syntax": "(setf (wxlambda:calendar-date picker :notify t) '(2030 12 31))",
+      "description": "Silent by default; explicit notify emits exactly one native date-change event even unchanged. Same-picker callback writes reject; silent cross-picker synchronization allowed. Callback errors re-signal with committed state retained. List not retained."
+    }
+  },
+  {
+    "name": "event-date",
+    "kind": "generic-function",
+    "syntax": "(wxlambda:event-date event)",
+    "arguments": "Immutable EVENT snapshot or current innermost borrowed EVENT-CONTEXT.",
+    "returns": "Fresh supported (year month day) date tuple, or NIL for non-date snapshots or invalid/out-of-scope native date payloads.",
+    "description": "Read captured or current native wxDateEvent date payload, independent of current picker value. Non-date contexts reject; snapshots survive callback/session. No writer, synthetic/owned events or detached clones.",
+    "scope": "Native :date-change command family only. Context lifetime isolation applies; snapshot raw text/integer metadata is not a date encoding. Time-change/calendar event families remain unbound. See docs/DATE-PICKER.md.",
+    "wxwidgets": "wxDateEvent::GetDate and wxEVT_DATE_CHANGED, wxWidgets3.2.12."
   }
 ]

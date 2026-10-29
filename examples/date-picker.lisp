@@ -1,0 +1,38 @@
+;;; A required due date with a copied calendar tuple and native change snapshots.
+(require :asdf)
+(load (merge-pathnames "../wxlambda.asd" *load-truename*))
+(asdf:load-system "wxlambda")
+(defpackage #:wxlambda-date-picker (:use #:cl) (:export #:start #:exercise))
+(in-package #:wxlambda-date-picker)
+(defun date-label (date)
+  (if date (format nil "Due: ~4,'0D-~2,'0D-~2,'0D" (first date) (second date) (third date)) "No supported event date"))
+(defun build-window ()
+  (let* ((frame (wxlambda:make-frame :title "Due date λ" :width 440 :height 230))
+         (panel (wxlambda:make-panel frame))
+         (picker (wxlambda:make-date-picker panel :date '(2028 2 29)))
+         (feedback (wxlambda:make-label panel :label (date-label (wxlambda:calendar-date picker))))
+         (reset (wxlambda:make-button panel :label "Reset due date")))
+    (wxlambda:make-column panel)
+    (dolist (child (list picker feedback reset)) (wxlambda:add-child panel child :border 8))
+    (setf (wxlambda:tooltip-text picker) "Choose a due date between 1900 and 2100.")
+    (wxlambda:bind-event picker :date-change
+      (lambda (event) (setf (wxlambda:label-text feedback) (date-label (wxlambda:event-date event)))))
+    (wxlambda:on-click reset
+      (lambda () (wxlambda:defer-ui-action
+                   (lambda () (setf (wxlambda:calendar-date picker :notify t) '(2028 2 29))) :owner picker)))
+    (values frame picker feedback reset)))
+(defun exercise ()
+  (multiple-value-bind (frame picker feedback reset) (build-window)
+    (unwind-protect
+         (progn
+           (wxlambda:show-window frame) (wxlambda:process-events)
+           (setf (wxlambda:calendar-date picker :notify t) '(2030 12 31))
+           (assert (string= "Due: 2030-12-31" (wxlambda:label-text feedback)))
+           (wxlambda:queue-click reset)
+           (loop repeat 30 until (equal '(2028 2 29) (wxlambda:calendar-date picker)) do (wxlambda:process-events))
+           (assert (equal '(2028 2 29) (wxlambda:calendar-date picker)))
+           (assert (string= "Due: 2028-02-29" (wxlambda:label-text feedback))) t)
+      (wxlambda:destroy-window frame) (wxlambda:process-events))))
+(defun start ()
+  (wxlambda:with-application ()
+    (let ((frame (build-window))) (wxlambda:show-window frame) (wxlambda:run))))

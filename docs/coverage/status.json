@@ -7944,6 +7944,269 @@
         "wxl_set_tooltip_text"
       ],
       "scope": "TOOLTIP-TEXT generic on managed WINDOW receivers; copied text/NIL for absent, SETF string0..4096 UTF-8 bytes/NIL removal, NUL rejection, GUI thread and callback deferral, synchronous Input lifetime/reentry guards. Window-owned resource; no raw pointer/tooltip class/global policy. Native text/presentation can vary by port; docs/TOOLTIPS.md."
+    },
+    {
+      "header": "wx/datectrl.h",
+      "line": 83,
+      "declaration": "class wxDatePickerCtrl : public wxControl {",
+      "status": "~",
+      "symbol": "wxDatePickerCtrl",
+      "lisp": [
+        "date-picker",
+        "make-date-picker",
+        "calendar-date",
+        "event-date"
+      ],
+      "native": [
+        "wxl_date_picker",
+        "wxl_calendar_date",
+        "wxl_set_calendar_date"
+      ],
+      "scope": "Bounded required DATE-PICKER WINDOW and copied Gregorian (year month day) adapter1900..2100; default native style, fixed range and default2000-01-01. Native-backed CLOS, silent SETF/explicit native date event, immutable copied event date/current contexts, actual/propagated/composite Input guards and early Destroy suppression. No raw date/window adoption, time, nullable/style/range APIs, synthetic/owned/date clones or full parity. See docs/DATE-PICKER.md."
+    },
+    {
+      "header": "wx/datectrl.h",
+      "line": 89,
+      "declaration": "wxDatePickerCtrl();",
+      "status": "~",
+      "symbol": "wxDatePickerCtrl::wxDatePickerCtrl",
+      "lisp": [
+        "date-picker",
+        "make-date-picker",
+        "calendar-date",
+        "event-date"
+      ],
+      "native": [
+        "wxl_date_picker",
+        "wxl_calendar_date",
+        "wxl_set_calendar_date"
+      ],
+      "scope": "Bounded required DATE-PICKER WINDOW and copied Gregorian (year month day) adapter1900..2100; default native style, fixed range and default2000-01-01. Native-backed CLOS, silent SETF/explicit native date event, immutable copied event date/current contexts, actual/propagated/composite Input guards and early Destroy suppression. No raw date/window adoption, time, nullable/style/range APIs, synthetic/owned/date clones or full parity. See docs/DATE-PICKER.md."
+    },
+    {
+      "header": "wx/datectrl.h",
+      "line": 94,
+      "declaration": "wxDatePickerCtrl(wxWindow* parent, wxWindowID id, const wxDateTime& dt = wxDefaultDateTime, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDP_DEFAULT | wxDP_SHOWCENTURY, const wxValidator& validator = wxDefaultValidator, const wxString& name = \"datectrl\");",
+      "status": "~",
+      "symbol": "wxDatePickerCtrl::wxDatePickerCtrl",
+      "lisp": [
+        "date-picker",
+        "make-date-picker",
+        "calendar-date",
+        "event-date"
+      ],
+      "native": [
+        "wxl_date_picker",
+        "wxl_calendar_date",
+        "wxl_set_calendar_date"
+      ],
+      "scope": "Bounded required DATE-PICKER WINDOW and copied Gregorian (year month day) adapter1900..2100; default native style, fixed range and default2000-01-01. Native-backed CLOS, silent SETF/explicit native date event, immutable copied event date/current contexts, actual/propagated/composite Input guards and early Destroy suppression. No raw date/window adoption, time, nullable/style/range APIs, synthetic/owned/date clones or full parity. See docs/DATE-PICKER.md."
+    },
+    {
+      "header": "wx/datectrl.h",
+      "line": 132,
+      "declaration": "bool Create(wxWindow* parent, wxWindowID id, const wxDateTime& dt = wxDefaultDateTime, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDP_DEFAULT | wxDP_SHOWCENTURY, const wxValidator& validator = wxDefaultValidator, const wxString& name = \"datectrl\");",
+      "status": "~",
+      "symbol": "wxDatePickerCtrl::Create",
+      "lisp": [
+        "date-picker",
+        "make-date-picker",
+        "calendar-date",
+        "event-date"
+      ],
+      "native": [
+        "wxl_date_picker",
+        "wxl_calendar_date",
+        "wxl_set_calendar_date"
+      ],
+      "scope": "Bounded required DATE-PICKER WINDOW and copied Gregorian (year month day) adapter1900..2100; default native style, fixed range and default2000-01-01. Native-backed CLOS, silent SETF/explicit native date event, immutable copied event date/current contexts, actual/propagated/composite Input guards and early Destroy suppression. No raw date/window adoption, time, nullable/style/range APIs, synthetic/owned/date clones or full parity. See docs/DATE-PICKER.md."
+    },
+    {
+      "header": "wx/datectrl.h",
+      "line": 169,
+      "declaration": "virtual wxDateTime GetValue() const;",
+      "status": "~",
+      "symbol": "wxDatePickerCtrl::GetValue",
+      "lisp": [
+        "date-picker",
+        "make-date-picker",
+        "calendar-date",
+        "event-date"
+      ],
+      "native": [
+        "wxl_date_picker",
+        "wxl_calendar_date",
+        "wxl_set_calendar_date"
+      ],
+      "scope": "Bounded required DATE-PICKER WINDOW and copied Gregorian (year month day) adapter1900..2100; default native style, fixed range and default2000-01-01. Native-backed CLOS, silent SETF/explicit native date event, immutable copied event date/current contexts, actual/propagated/composite Input guards and early Destroy suppression. No raw date/window adoption, time, nullable/style/range APIs, synthetic/owned/date clones or full parity. See docs/DATE-PICKER.md."
+    },
+    {
+      "header": "wx/datectrl.h",
+      "line": 210,
+      "declaration": "virtual void SetValue(const wxDateTime& dt);",
+      "status": "~",
+      "symbol": "wxDatePickerCtrl::SetValue",
+      "lisp": [
+        "date-picker",
+        "make-date-picker",
+        "calendar-date",
+        "event-date"
+      ],
+      "native": [
+        "wxl_date_picker",
+        "wxl_calendar_date",
+        "wxl_set_calendar_date"
+      ],
+      "scope": "Bounded required DATE-PICKER WINDOW and copied Gregorian (year month day) adapter1900..2100; default native style, fixed range and default2000-01-01. Native-backed CLOS, silent SETF/explicit native date event, immutable copied event date/current contexts, actual/propagated/composite Input guards and early Destroy suppression. No raw date/window adoption, time, nullable/style/range APIs, synthetic/owned/date clones or full parity. See docs/DATE-PICKER.md."
+    },
+    {
+      "header": "wx/datectrl.h",
+      "line": 72,
+      "declaration": "documented event: EVT_DATE_CHANGED(id, func)",
+      "status": "~",
+      "symbol": "EVT_DATE_CHANGED",
+      "lisp": [
+        "date-picker",
+        "make-date-picker",
+        "calendar-date",
+        "event-date"
+      ],
+      "native": [
+        "wxl_date_picker",
+        "wxl_calendar_date",
+        "wxl_set_calendar_date"
+      ],
+      "scope": "Bounded required DATE-PICKER WINDOW and copied Gregorian (year month day) adapter1900..2100; default native style, fixed range and default2000-01-01. Native-backed CLOS, silent SETF/explicit native date event, immutable copied event date/current contexts, actual/propagated/composite Input guards and early Destroy suppression. No raw date/window adoption, time, nullable/style/range APIs, synthetic/owned/date clones or full parity. See docs/DATE-PICKER.md."
+    },
+    {
+      "header": "wx/dateevt.h",
+      "line": 18,
+      "declaration": "class wxDateEvent : public wxCommandEvent {",
+      "status": "~",
+      "symbol": "wxDateEvent",
+      "lisp": [
+        "event-date"
+      ],
+      "native": [
+        "wxl_set_calendar_date",
+        "wxl_event_field"
+      ],
+      "scope": "Native date-change read-only copied date snapshots and current borrowed contexts only; invalid/out-of-scope dates yield NIL. No setters, time-change, detached construction or cloning. Bounded required DATE-PICKER WINDOW and copied Gregorian (year month day) adapter1900..2100; default native style, fixed range and default2000-01-01. Native-backed CLOS, silent SETF/explicit native date event, immutable copied event date/current contexts, actual/propagated/composite Input guards and early Destroy suppression. No raw date/window adoption, time, nullable/style/range APIs, synthetic/owned/date clones or full parity. See docs/DATE-PICKER.md."
+    },
+    {
+      "header": "wx/dateevt.h",
+      "line": 27,
+      "declaration": "const wxDateTime& GetDate() const;",
+      "status": "~",
+      "symbol": "wxDateEvent::GetDate",
+      "lisp": [
+        "event-date"
+      ],
+      "native": [
+        "wxl_set_calendar_date",
+        "wxl_event_field"
+      ],
+      "scope": "Native date-change read-only copied date snapshots and current borrowed contexts only; invalid/out-of-scope dates yield NIL. No setters, time-change, detached construction or cloning. Bounded required DATE-PICKER WINDOW and copied Gregorian (year month day) adapter1900..2100; default native style, fixed range and default2000-01-01. Native-backed CLOS, silent SETF/explicit native date event, immutable copied event date/current contexts, actual/propagated/composite Input guards and early Destroy suppression. No raw date/window adoption, time, nullable/style/range APIs, synthetic/owned/date clones or full parity. See docs/DATE-PICKER.md."
+    },
+    {
+      "header": "wx/dateevt.h",
+      "line": 36,
+      "declaration": "wxEventType wxEVT_DATE_CHANGED;",
+      "status": "~",
+      "symbol": "wxEVT_DATE_CHANGED",
+      "lisp": [
+        "event-date"
+      ],
+      "native": [
+        "wxl_set_calendar_date",
+        "wxl_event_field"
+      ],
+      "scope": "Native date-change read-only copied date snapshots and current borrowed contexts only; invalid/out-of-scope dates yield NIL. No setters, time-change, detached construction or cloning. Bounded required DATE-PICKER WINDOW and copied Gregorian (year month day) adapter1900..2100; default native style, fixed range and default2000-01-01. Native-backed CLOS, silent SETF/explicit native date event, immutable copied event date/current contexts, actual/propagated/composite Input guards and early Destroy suppression. No raw date/window adoption, time, nullable/style/range APIs, synthetic/owned/date clones or full parity. See docs/DATE-PICKER.md."
+    },
+    {
+      "header": "wx/datetime.h",
+      "line": 76,
+      "declaration": "class wxDateTime {",
+      "status": "~",
+      "symbol": "wxDateTime",
+      "lisp": [
+        "calendar-date",
+        "event-date"
+      ],
+      "native": [
+        "wxl_date_picker",
+        "wxl_calendar_date",
+        "wxl_set_calendar_date"
+      ],
+      "scope": "Copied Gregorian tuple adapter only through DATE-PICKER/CALENDAR-DATE/EVENT-DATE, required dates1900..2100, local civil calendar roundtrip, no time-of-day/timezone/Unix/universal-time or standalone wxDateTime objects. Constructor uses midnight native local representation and rejects failed date roundtrip; native event invalid/out-of-scope dates map NIL. See docs/DATE-PICKER.md."
+    },
+    {
+      "header": "wx/datetime.h",
+      "line": 348,
+      "declaration": "wxDateTime(wxDateTime_t day, Month month, int year = Inv_Year, wxDateTime_t hour = 0, wxDateTime_t minute = 0, wxDateTime_t second = 0, wxDateTime_t millisec = 0);",
+      "status": "~",
+      "symbol": "wxDateTime::wxDateTime",
+      "lisp": [
+        "calendar-date",
+        "event-date"
+      ],
+      "native": [
+        "wxl_date_picker",
+        "wxl_calendar_date",
+        "wxl_set_calendar_date"
+      ],
+      "scope": "Copied Gregorian tuple adapter only through DATE-PICKER/CALENDAR-DATE/EVENT-DATE, required dates1900..2100, local civil calendar roundtrip, no time-of-day/timezone/Unix/universal-time or standalone wxDateTime objects. Constructor uses midnight native local representation and rejects failed date roundtrip; native event invalid/out-of-scope dates map NIL. See docs/DATE-PICKER.md."
+    },
+    {
+      "header": "wx/datetime.h",
+      "line": 538,
+      "declaration": "unsigned short GetDay(const TimeZone& tz = Local) const;",
+      "status": "~",
+      "symbol": "wxDateTime::GetDay",
+      "lisp": [
+        "calendar-date",
+        "event-date"
+      ],
+      "native": [
+        "wxl_date_picker",
+        "wxl_calendar_date",
+        "wxl_set_calendar_date"
+      ],
+      "scope": "Copied Gregorian tuple adapter only through DATE-PICKER/CALENDAR-DATE/EVENT-DATE, required dates1900..2100, local civil calendar roundtrip, no time-of-day/timezone/Unix/universal-time or standalone wxDateTime objects. Constructor uses midnight native local representation and rejects failed date roundtrip; native event invalid/out-of-scope dates map NIL. See docs/DATE-PICKER.md."
+    },
+    {
+      "header": "wx/datetime.h",
+      "line": 564,
+      "declaration": "Month GetMonth(const TimeZone& tz = Local) const;",
+      "status": "~",
+      "symbol": "wxDateTime::GetMonth",
+      "lisp": [
+        "calendar-date",
+        "event-date"
+      ],
+      "native": [
+        "wxl_date_picker",
+        "wxl_calendar_date",
+        "wxl_set_calendar_date"
+      ],
+      "scope": "Copied Gregorian tuple adapter only through DATE-PICKER/CALENDAR-DATE/EVENT-DATE, required dates1900..2100, local civil calendar roundtrip, no time-of-day/timezone/Unix/universal-time or standalone wxDateTime objects. Constructor uses midnight native local representation and rejects failed date roundtrip; native event invalid/out-of-scope dates map NIL. See docs/DATE-PICKER.md."
+    },
+    {
+      "header": "wx/datetime.h",
+      "line": 656,
+      "declaration": "int GetYear(const TimeZone& tz = Local) const;",
+      "status": "~",
+      "symbol": "wxDateTime::GetYear",
+      "lisp": [
+        "calendar-date",
+        "event-date"
+      ],
+      "native": [
+        "wxl_date_picker",
+        "wxl_calendar_date",
+        "wxl_set_calendar_date"
+      ],
+      "scope": "Copied Gregorian tuple adapter only through DATE-PICKER/CALENDAR-DATE/EVENT-DATE, required dates1900..2100, local civil calendar roundtrip, no time-of-day/timezone/Unix/universal-time or standalone wxDateTime objects. Constructor uses midnight native local representation and rejects failed date roundtrip; native event invalid/out-of-scope dates map NIL. See docs/DATE-PICKER.md."
     }
   ],
   "classes": {
@@ -9224,6 +9487,45 @@
         "wxl_fit_scroll_content"
       ],
       "scope": "Bounded wxScrolled<wxPanel> specialization only (wxScrolledWindow alias), native-backed child container, sizer fit/current virtual extent, rate0..256 and position0..1000000 pairs. Supported pixel extent<=1000000 checked at explicit mutation; inherited/native layout not globally constrained. Protected synchronous native operations and callback-time mutation deferral. Private helper retained; no managed stack APIs, drawing/target/coordinate/scroll events, raw adoption or full class parity. See docs/SCROLLING-PANELS.md."
+    },
+    "wxDatePickerCtrl": {
+      "status": "~",
+      "lisp": [
+        "date-picker",
+        "make-date-picker",
+        "calendar-date",
+        "event-date"
+      ],
+      "native": [
+        "wxl_date_picker",
+        "wxl_calendar_date",
+        "wxl_set_calendar_date"
+      ],
+      "scope": "Bounded required DATE-PICKER WINDOW and copied Gregorian (year month day) adapter1900..2100; default native style, fixed range and default2000-01-01. Native-backed CLOS, silent SETF/explicit native date event, immutable copied event date/current contexts, actual/propagated/composite Input guards and early Destroy suppression. No raw date/window adoption, time, nullable/style/range APIs, synthetic/owned/date clones or full parity. See docs/DATE-PICKER.md."
+    },
+    "wxDateEvent": {
+      "status": "~",
+      "lisp": [
+        "event-date"
+      ],
+      "native": [
+        "wxl_set_calendar_date",
+        "wxl_event_field"
+      ],
+      "scope": "Native date-change read-only copied date snapshots and current borrowed contexts only; invalid/out-of-scope dates yield NIL. No setters, time-change, detached construction or cloning. Bounded required DATE-PICKER WINDOW and copied Gregorian (year month day) adapter1900..2100; default native style, fixed range and default2000-01-01. Native-backed CLOS, silent SETF/explicit native date event, immutable copied event date/current contexts, actual/propagated/composite Input guards and early Destroy suppression. No raw date/window adoption, time, nullable/style/range APIs, synthetic/owned/date clones or full parity. See docs/DATE-PICKER.md."
+    },
+    "wxDateTime": {
+      "status": "~",
+      "lisp": [
+        "calendar-date",
+        "event-date"
+      ],
+      "native": [
+        "wxl_date_picker",
+        "wxl_calendar_date",
+        "wxl_set_calendar_date"
+      ],
+      "scope": "Copied Gregorian tuple adapter only through DATE-PICKER/CALENDAR-DATE/EVENT-DATE, required dates1900..2100, local civil calendar roundtrip, no time-of-day/timezone/Unix/universal-time or standalone wxDateTime objects. Constructor uses midnight native local representation and rejects failed date roundtrip; native event invalid/out-of-scope dates map NIL. See docs/DATE-PICKER.md."
     }
   }
 }

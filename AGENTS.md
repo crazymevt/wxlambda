@@ -120,7 +120,7 @@ session ownership; actual native window destruction pops managed stacks without
 deleting those handlers. Explicit stack-aware processing differs from generic
 window receiver dispatch, which retains native stack bypass. Public window wrapper
 classes are `window` (abstract), `frame`, `panel`, `scrolled-panel`, `button`,
-`text-control`, `label`, `checkbox`, `choice`, `gauge`, `combo-box`, `toggle-button`, `radio-box`, `slider`, `spin-control`, `notebook`, `list-box`, `tree-control`, `splitter-window`, `toolbar` and `status-bar` (plus the
+`text-control`, `label`, `checkbox`, `choice`, `gauge`, `combo-box`, `date-picker`, `toggle-button`, `radio-box`, `slider`, `spin-control`, `notebook`, `list-box`, `tree-control`, `splitter-window`, `toolbar` and `status-bar` (plus the
 DIALOG hierarchy described below). Lisp subclassing does not imply
 native C++ subclassing or virtual-method callbacks; those need separate bridge
 support. See `docs/CLOS-API.md`.
@@ -256,3 +256,13 @@ UTF-8 bytes. Preserve the source wxString through ToUTF8 buffer copying. Reads
 are callback-safe; mutation/removal defers and shares Input operation guards.
 No raw tooltip adoption/global policy or tooltip constructor initarg is exposed.
 Requires wxUSE_TOOLTIPS=1; see `docs/TOOLTIPS.md`.
+
+ABI52 DATE-PICKER has required copied Gregorian (year month day) values1900..2100,
+default2000-01-01, fixed verified native range and silent/explicit-notify SETF.
+EVENT-DATE snapshots retain immutable packed metadata and return fresh tuples;
+contexts use current innermost lifetime. Preserve actual/propagated/composite
+Input guards, early generic Destroy suppression (and refusal/exception guard
+restoration), CLOS rollback and native local-date roundtrip checks. No nullable,
+time/timezone, mutable range, owned/synthetic/cloned date events or raw native
+date resources. Requires wxUSE_DATEPICKCTRL/wxUSE_DATETIME and adv; see
+`docs/DATE-PICKER.md`.

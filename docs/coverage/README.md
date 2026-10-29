@@ -18,18 +18,18 @@ and verify platforms when selected features or completeness claims require it.
 
 | Category | Headers | Tasks | Implemented | Partial | Pending | Context |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| [C1: Foundation, values, application, events, and base utilities](phase-c1.md) | 119 | 5292 | 7 | 106 | 5179 | 26 |
-| [C2: Windows, layout, basic controls, and input](phase-c2.md) | 82 | 2862 | 28 | 171 | 2663 | 0 |
+| [C1: Foundation, values, application, events, and base utilities](phase-c1.md) | 119 | 5292 | 7 | 111 | 5174 | 26 |
+| [C2: Windows, layout, basic controls, and input](phase-c2.md) | 82 | 2862 | 28 | 181 | 2653 | 0 |
 | [C3: Dialogs, navigation, menus, and application services](phase-c3.md) | 57 | 1875 | 0 | 118 | 1757 | 0 |
 | [C4: Models, complex controls, and document frameworks](phase-c4.md) | 20 | 2328 | 0 | 24 | 2304 | 4 |
 | [C5: Drawing, images, graphics, and printing](phase-c5.md) | 52 | 2245 | 0 | 0 | 2245 | 0 |
 | [C6: Optional libraries, rich content, and integration](phase-c6.md) | 57 | 8912 | 0 | 0 | 8912 | 380 |
 | [C7: Platform extensions and remaining portability APIs](phase-c7.md) | 11 | 279 | 0 | 0 | 279 | 3 |
-| Total | 398 | 23793 | 35 | 419 | 23339 | 413 |
+| Total | 398 | 23793 | 35 | 434 | 23324 | 413 |
 
 ## Classes and widgets
 
-1016 class/struct definitions: 0 complete; 56 partial; 960 pending.
+1016 class/struct definitions: 0 complete; 59 partial; 957 pending.
 
 See the [complete class/widget index](classes.md) for partial scopes and missing
 types. An implemented constructor does not complete a class or its inherited API.
@@ -59,7 +59,7 @@ unreviewed inherited/platform behavior.
 | [wx/config.h](phase-c1.md#wxconfigh) | 0 | 0 | 70 | 0 |
 | [wx/convauto.h](phase-c1.md#wxconvautoh) | 0 | 0 | 12 | 0 |
 | [wx/cpp.h](phase-c1.md#wxcpph) | 0 | 0 | 7 | 0 |
-| [wx/datetime.h](phase-c1.md#wxdatetimeh) | 0 | 0 | 253 | 0 |
+| [wx/datetime.h](phase-c1.md#wxdatetimeh) | 0 | 5 | 248 | 0 |
 | [wx/datstrm.h](phase-c1.md#wxdatstrmh) | 0 | 0 | 42 | 0 |
 | [wx/debug.h](phase-c1.md#wxdebugh) | 0 | 0 | 26 | 0 |
 | [wx/debugrpt.h](phase-c1.md#wxdebugrpth) | 0 | 0 | 41 | 0 |
@@ -192,8 +192,8 @@ unreviewed inherited/platform behavior.
 | [wx/ctrlsub.h](phase-c2.md#wxctrlsubh) | 0 | 10 | 42 | 0 |
 | [wx/cursor.h](phase-c2.md#wxcursorh) | 0 | 0 | 16 | 0 |
 | [wx/custombgwin.h](phase-c2.md#wxcustombgwinh) | 0 | 0 | 3 | 0 |
-| [wx/datectrl.h](phase-c2.md#wxdatectrlh) | 0 | 0 | 17 | 0 |
-| [wx/dateevt.h](phase-c2.md#wxdateevth) | 0 | 0 | 7 | 0 |
+| [wx/datectrl.h](phase-c2.md#wxdatectrlh) | 0 | 7 | 10 | 0 |
+| [wx/dateevt.h](phase-c2.md#wxdateevth) | 0 | 3 | 4 | 0 |
 | [wx/editlbox.h](phase-c2.md#wxeditlboxh) | 0 | 0 | 17 | 0 |
 | [wx/filepicker.h](phase-c2.md#wxfilepickerh) | 0 | 0 | 55 | 0 |
 | [wx/fontpicker.h](phase-c2.md#wxfontpickerh) | 0 | 0 | 28 | 0 |

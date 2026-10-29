@@ -20,7 +20,7 @@ the coverage target, regenerate and review the inventory delta explicitly.
 
 The authoritative inventory is upstream's
 [`v3.2.12/interface/wx`](https://github.com/wxWidgets/wxWidgets/tree/v3.2.12/interface/wx),
-not just the `core` and `base` components currently linked by this bridge.
+not just the `core`, `base` and `adv` components currently linked by this bridge.
 Extracted declarations retain the upstream [wxWindows Library Licence](coverage/UPSTREAM-LICENCE.txt)
 and its [GNU Library GPL terms](coverage/UPSTREAM-LGPL.txt).
 The checked-in [manifest](coverage/manifest.json) records every header's SHA-256,

@@ -198,5 +198,9 @@
   "tooltips.lisp": {
     "description": "Form name guidance with a deferred Toggle guidance action. EXERCISE verifies Unicode text and remove/restore via queued commands without simulating hover or asserting popup presentation.",
     "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/tooltips.lisp --eval '(wxlambda-tooltips:start)'"
+  },
+  "date-picker.lisp": {
+    "description": "Required due date with leap-day initialization, copied native change snapshots and an owner-bound deferred Reset action. EXERCISE checks explicit-notify label updates and reset without simulating physical date input.",
+    "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/date-picker.lisp --eval '(wxlambda-date-picker:start)'"
   }
 }

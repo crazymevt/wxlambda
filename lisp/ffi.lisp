@@ -28,7 +28,8 @@
   (user-data-token :uint64)
   (more-requested :int)
   (tree-item :uint64)
-  (sash-position :int))
+  (sash-position :int)
+  (date-code :int))
 
 (cffi:defcfun ("wxl_abi_version" %abi-version) :int)
 (cffi:defcfun ("wxl_last_error" %last-error) :string)
@@ -95,7 +96,7 @@
           (if (probe-file local)
               (cffi:load-foreign-library local)
               (cffi:use-foreign-library wxlambda-native))))
-    (unless (= 51 (%abi-version)) (error "Unsupported wxlambda native ABI"))
+    (unless (= 52 (%abi-version)) (error "Unsupported wxlambda native ABI"))
     (setf *native-loaded* t))
   t)
 
@@ -356,3 +357,7 @@
 
 (cffi:defcfun ("wxl_tooltip_text" %tooltip-text) :pointer (window :uint64) (length :pointer) (present :pointer))
 (cffi:defcfun ("wxl_set_tooltip_text" %set-tooltip-text) :int (window :uint64) (value :pointer) (length :size) (present :int))
+
+(cffi:defcfun ("wxl_date_picker" %date-picker) :uint64 (parent :uint64) (year :int) (month :int) (day :int))
+(cffi:defcfun ("wxl_calendar_date" %calendar-date) :int (control :uint64) (code :pointer))
+(cffi:defcfun ("wxl_set_calendar_date" %set-calendar-date) :int (control :uint64) (year :int) (month :int) (day :int) (notify :int))

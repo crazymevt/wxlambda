@@ -170,3 +170,5 @@ retain numeric lifetime/reentry guards.
 `:toggle-button-change` exposes copied/current checked metadata and native text (normally empty); semantic EVENT-CHECKED-P SETF and owned/synthetic/cloning reject. Source/ancestor Input guards apply to native and propagated callbacks. See [toggle buttons](TOGGLE-BUTTONS.md).
 
 `:combo-selection` observes a native list index/text; semantic selection SETF and owned/synthetic/cloning reject for this kind. Existing :text-change remains shared command support. Both combo-origin families retain Input guards; physical selection may send COMBO then TEXT. See [combo boxes](COMBO-BOXES.md).
+
+`:date-change` is a native command-family date-picker event. `event-date` reads a copied supported Gregorian tuple from the snapshot or current innermost context, independently of current control value; invalid/out-of-scope native event dates yield NIL. Non-date contexts and expired contexts reject. Date payload SETF, owned/synthetic date events and detached clones are unbound. Native/propagated/composite TEXT callbacks retain Input lifetime/reentry guards. See [date pickers](DATE-PICKER.md).

@@ -17,6 +17,8 @@
 #include <wx/accel.h>
 #include <wx/timer.h>
 #include <wx/tooltip.h>
+#include <wx/datectrl.h>
+#include <wx/dateevt.h>
 #include <chrono>
 #include <wx/notebook.h>
 #include <wx/listbox.h>
@@ -34,6 +36,7 @@
 #include <wx/dataobj.h>
 #include <memory>
 #include <typeinfo>
+#include <type_traits>
 #include <unordered_set>
 #include <vector>
 #include <deque>
@@ -181,7 +184,7 @@ public: using wxMenuItem::wxMenuItem; wxl_handle identity = 0;
 };
 struct RegisteredEvent { wxEventType type; int family; };
 std::unordered_map<int, RegisteredEvent> registered_events;
-constexpr int first_registered_event_kind = WXL_EVENT_COMBO_SELECTION + 1;
+constexpr int first_registered_event_kind = WXL_EVENT_DATE_CHANGE + 1;
 int next_event_kind = first_registered_event_kind;
 wxWeakRef<wxDialog> active_modal;
 std::unordered_map<wxWindow*, size_t> dialog_choice_counts;
@@ -417,6 +420,24 @@ void remove_pushed_handler(wxl_handle id) {
 template<class T> class ManagedWindow final : public T, public ClientDataAccess {
 public:
     using T::T;
+    bool Destroy() override {
+        if constexpr (std::is_base_of_v<wxDatePickerCtrl,T>) {
+            // The generic picker destroys composite children before its own base
+            // enters deletion. Suppress source/child input before that virtual call.
+            wxWeakRef<wxWindow> weak(this);
+            const auto found=input_owners.find(this);
+            const bool tracked=found!=input_owners.end(), previous=tracked && found->second;
+            if (tracked) found->second=true;
+            const auto restore=[&] {
+                if (weak.get() && tracked) {
+                    const auto current=input_owners.find(weak.get());
+                    if (current!=input_owners.end()) current->second=previous;
+                }
+            };
+            try { const bool accepted=T::Destroy(); if (!accepted) restore(); return accepted; }
+            catch (...) { restore(); throw; }
+        } else return T::Destroy();
+    }
     wxClientDataType ClientStorageKind() const override { return this->m_clientDataType; }
     ~ManagedWindow() override { if (auto found = input_owners.find(this); found != input_owners.end()) found->second = true; frame_accelerators.erase(this); toolbar_owners.erase(this); realized_toolbars.erase(this); splitter_owners.erase(this); forget_tree_nodes(this); dialog_choice_counts.erase(this); dialog_message_buttons.erase(this); dialog_file_filters.erase(this); detach_window_stack(this); }
 };
@@ -656,7 +677,7 @@ bool input_origin_contains(wxWindow* object, const wxObject* origin) {
 struct InputCallbackOperation {
     bool added = false, allow = true;
     explicit InputCallbackOperation(wxEvent& event) {
-        if (event.GetEventType() != wxEVT_COMBOBOX && event.GetEventType() != wxEVT_TOGGLEBUTTON && event.GetEventType() != wxEVT_RADIOBOX && event.GetEventType() != wxEVT_SLIDER && event.GetEventType() != wxEVT_SPINCTRL && event.GetEventType() != wxEVT_TEXT) return;
+        if (event.GetEventType() != wxEVT_DATE_CHANGED && event.GetEventType() != wxEVT_COMBOBOX && event.GetEventType() != wxEVT_TOGGLEBUTTON && event.GetEventType() != wxEVT_RADIOBOX && event.GetEventType() != wxEVT_SLIDER && event.GetEventType() != wxEVT_SPINCTRL && event.GetEventType() != wxEVT_TEXT) return;
         if (input_creation_depth) { allow = false; return; }
         // Composite input base destruction can emit composite-child text callbacks.
         for (const auto& entry : input_owners) if (entry.second) { allow = false; return; }
@@ -673,6 +694,25 @@ struct InputCallbackOperation {
     }
     ~InputCallbackOperation() { if (added) input_operations.pop_back(); }
 };
+// Calendar values are local civil dates, never Unix times or universal-time.
+int calendar_code(const wxDateTime& value) {
+    if (!value.IsValid()) return 0;
+    const int year=value.GetYear(), month=static_cast<int>(value.GetMonth())+1, day=value.GetDay();
+    if (year<1900 || year>2100) return 0;
+    return year*10000+month*100+day;
+}
+wxDateTime calendar_value(int year, int month, int day) {
+    require(year>=1900 && year<=2100 && month>=1 && month<=12, "Date requires year1900..2100 and month1..12");
+    const auto native_month=static_cast<wxDateTime::Month>(month-1);
+    require(day>=1 && day<=wxDateTime::GetNumberOfDays(native_month,year), "Invalid Gregorian day");
+    const wxDateTime value(static_cast<wxDateTime::wxDateTime_t>(day),native_month,year);
+    require(calendar_code(value)==year*10000+month*100+day, "Date is not representable in the native local calendar");
+    return value;
+}
+int event_calendar_code(wxEvent& event) {
+    auto* date=dynamic_cast<wxDateEvent*>(&event);
+    return date && event.GetEventType()==wxEVT_DATE_CHANGED ? calendar_code(date->GetDate()) : 0;
+}
 void numeric_bounds(int minimum, int maximum) {
     require(minimum >= -1000000 && maximum <= 1000000 && minimum < maximum, "Numeric range requires -1000000 <= minimum < maximum <= 1000000");
 }
@@ -748,6 +788,7 @@ wxEventTypeTag<wxEvent> native_event_type(int kind) {
         case WXL_EVENT_TREE_CHANGED: return wxEventTypeTag<wxEvent>(wxEVT_TREE_SEL_CHANGED);
         case WXL_EVENT_SPLITTER_CHANGING: return wxEventTypeTag<wxEvent>(wxEVT_SPLITTER_SASH_POS_CHANGING);
         case WXL_EVENT_SLIDER_CHANGE: return wxEventTypeTag<wxEvent>(wxEVT_SLIDER);
+        case WXL_EVENT_DATE_CHANGE: return wxEventTypeTag<wxEvent>(wxEVT_DATE_CHANGED);
         case WXL_EVENT_COMBO_SELECTION: return wxEventTypeTag<wxEvent>(wxEVT_COMBOBOX);
         case WXL_EVENT_TOGGLE_BUTTON_CHANGE: return wxEventTypeTag<wxEvent>(wxEVT_TOGGLEBUTTON);
         case WXL_EVENT_RADIO_SELECTION: return wxEventTypeTag<wxEvent>(wxEVT_RADIOBOX);
@@ -764,7 +805,7 @@ int native_event_family(int kind) {
     if (kind >= WXL_EVENT_CLICK && kind <= WXL_EVENT_SELECTION) return WXL_FAMILY_COMMAND;
     if (kind >= WXL_EVENT_CLOSE && kind <= WXL_EVENT_END_SESSION) return WXL_FAMILY_CLOSE;
     if (kind == WXL_EVENT_IDLE) return WXL_FAMILY_IDLE;
-    if (kind == WXL_EVENT_COMBO_SELECTION || kind == WXL_EVENT_TOGGLE_BUTTON_CHANGE || kind == WXL_EVENT_RADIO_SELECTION || kind == WXL_EVENT_SLIDER_CHANGE || kind == WXL_EVENT_MENU || kind == WXL_EVENT_LISTBOX_SELECTION || kind == WXL_EVENT_LISTBOX_DOUBLE_CLICK) return WXL_FAMILY_COMMAND;
+    if (kind == WXL_EVENT_DATE_CHANGE || kind == WXL_EVENT_COMBO_SELECTION || kind == WXL_EVENT_TOGGLE_BUTTON_CHANGE || kind == WXL_EVENT_RADIO_SELECTION || kind == WXL_EVENT_SLIDER_CHANGE || kind == WXL_EVENT_MENU || kind == WXL_EVENT_LISTBOX_SELECTION || kind == WXL_EVENT_LISTBOX_DOUBLE_CLICK) return WXL_FAMILY_COMMAND;
     if (kind == WXL_EVENT_SPIN_CHANGE || kind == WXL_EVENT_NOTEBOOK_CHANGING || kind == WXL_EVENT_NOTEBOOK_CHANGED || kind == WXL_EVENT_TREE_CHANGING || kind == WXL_EVENT_TREE_CHANGED || kind == WXL_EVENT_SPLITTER_CHANGING || kind == WXL_EVENT_SPLITTER_CHANGED) return WXL_FAMILY_NOTIFY;
     const auto it = registered_events.find(kind);
     require(it != registered_events.end(), "Unsupported event kind");
@@ -782,7 +823,7 @@ bool event_vetoed(wxEvent& event) {
 std::unique_ptr<wxEvent> synthetic_event(wxEvtHandler* receiver, int kind, int event_id,
                                        const char* text, size_t length, int value,
                                        int can_veto, int vetoed, int logging_off) {
-    require(kind != WXL_EVENT_COMBO_SELECTION && kind != WXL_EVENT_TOGGLE_BUTTON_CHANGE && kind != WXL_EVENT_RADIO_SELECTION && kind != WXL_EVENT_SLIDER_CHANGE && kind != WXL_EVENT_SPIN_CHANGE && kind != WXL_EVENT_NOTEBOOK_CHANGING && kind != WXL_EVENT_NOTEBOOK_CHANGED && kind != WXL_EVENT_TREE_CHANGING && kind != WXL_EVENT_TREE_CHANGED && kind != WXL_EVENT_SPLITTER_CHANGING && kind != WXL_EVENT_SPLITTER_CHANGED,
+    require(kind != WXL_EVENT_DATE_CHANGE && kind != WXL_EVENT_COMBO_SELECTION && kind != WXL_EVENT_TOGGLE_BUTTON_CHANGE && kind != WXL_EVENT_RADIO_SELECTION && kind != WXL_EVENT_SLIDER_CHANGE && kind != WXL_EVENT_SPIN_CHANGE && kind != WXL_EVENT_NOTEBOOK_CHANGING && kind != WXL_EVENT_NOTEBOOK_CHANGED && kind != WXL_EVENT_TREE_CHANGING && kind != WXL_EVENT_TREE_CHANGED && kind != WXL_EVENT_SPLITTER_CHANGING && kind != WXL_EVENT_SPLITTER_CHANGED,
             "Derived navigation events require native interaction; synthetic construction is unsupported");
     const auto type = native_event_type(kind);
     const int family = native_event_family(kind);
@@ -820,7 +861,7 @@ std::unique_ptr<wxEvent> synthetic_event(wxEvtHandler* receiver, int kind, int e
     return event;
 }
 int kind_of(wxEvent& event) {
-    for (int kind = WXL_EVENT_CLICK; kind <= WXL_EVENT_COMBO_SELECTION; ++kind)
+    for (int kind = WXL_EVENT_CLICK; kind <= WXL_EVENT_DATE_CHANGE; ++kind)
         if (native_event_type(kind) == event.GetEventType()) return kind;
     for (const auto& item : registered_events)
         if (item.second.type == event.GetEventType()) return item.first;
@@ -836,7 +877,7 @@ std::unique_ptr<wxEvent> detached_clone(wxEvent& event) {
     require(typeid(event) == typeid(wxCommandEvent) || typeid(event) == typeid(wxNotifyEvent) ||
             typeid(event) == typeid(wxCloseEvent) || typeid(event) == typeid(wxIdleEvent), "Cloning this native event class is not supported");
     const auto kind = kind_of(event);
-    require(kind != WXL_EVENT_COMBO_SELECTION && kind != WXL_EVENT_TOGGLE_BUTTON_CHANGE && kind != WXL_EVENT_RADIO_SELECTION && kind != WXL_EVENT_SLIDER_CHANGE && kind != WXL_EVENT_SPIN_CHANGE, "Bounded input control events cannot be detached/cloned");
+    require(kind != WXL_EVENT_DATE_CHANGE && kind != WXL_EVENT_COMBO_SELECTION && kind != WXL_EVENT_TOGGLE_BUTTON_CHANGE && kind != WXL_EVENT_RADIO_SELECTION && kind != WXL_EVENT_SLIDER_CHANGE && kind != WXL_EVENT_SPIN_CHANGE, "Bounded input control events cannot be detached/cloned");
     require(event.GetEventUserData() == nullptr, "Cannot clone borrowed event userData");
     if (auto* command = dynamic_cast<wxCommandEvent*>(&event))
         require(!command->GetClientData() && !command->GetClientObject(), "Cannot clone borrowed command client data");
@@ -872,6 +913,9 @@ int64_t read_event_field(wxEvent& event, int field) {
         case 16: return selected_event_index(event);
         case 17: return command && command->IsSelection();
         case 18: { auto* idle = dynamic_cast<wxIdleEvent*>(&event); return idle && idle->MoreRequested(); }
+        case 19:
+            require(event.GetEventType()==wxEVT_DATE_CHANGED && dynamic_cast<wxDateEvent*>(&event), "Date metadata requires a native date-change context");
+            return event_calendar_code(event);
         default: throw std::runtime_error("Unknown event field");
     }
 }
@@ -981,6 +1025,7 @@ struct Binding {
                                      user_data && event.GetEventUserData() == user_data ? token : 0,
                                      dynamic_cast<wxIdleEvent*>(&event) && static_cast<wxIdleEvent&>(event).MoreRequested() ? 1 : 0,
                                      event_tree_token(event), event_sash_value(event)};
+            snapshot.date_code = event_calendar_code(event);
             if (with_context) {
                 event.Skip(false);
                 EventScope scope(event, snapshot.user_data);
@@ -1319,7 +1364,7 @@ bool process_deferred_ui_action() {
 
 }
 extern "C" {
-int wxl_abi_version() { return 51; }
+int wxl_abi_version() { return 52; }
 const char* wxl_last_error() { return error.c_str(); }
 int wxl_clipboard_text_available() {
     return boolean_result([&] {
@@ -2895,6 +2940,36 @@ const char* wxl_get_label(wxl_handle id) {
     });
     return result == 0 ? label_result.c_str() : nullptr;
 }
+wxl_handle wxl_date_picker(wxl_handle parent_id, int year, int month, int day) {
+    return create([&] {
+        auto* parent=window(parent_id); const auto value=calendar_value(year,month,day);
+        const auto lower=calendar_value(1900,1,1), upper=calendar_value(2100,12,31);
+        struct CreationScope { CreationScope() { ++input_creation_depth; } ~CreationScope() { --input_creation_depth; } } creation;
+        auto object=std::make_unique<ManagedWindow<wxDatePickerCtrl>>();
+        { wxEventBlocker blocker(object.get());
+          require(object->Create(parent,wxID_ANY,value,wxDefaultPosition,wxDefaultSize,wxDP_DEFAULT|wxDP_SHOWCENTURY), "Native date picker creation failed");
+          object->SetRange(lower,upper);
+          wxDateTime actual_lower,actual_upper;
+          require(object->GetRange(&actual_lower,&actual_upper) && calendar_code(actual_lower)==19000101 && calendar_code(actual_upper)==21001231,
+                  "Native date picker did not accept the supported range");
+          object->SetValue(value);
+          require(calendar_code(object->GetValue())==calendar_code(value), "Native date picker did not accept the initial date"); }
+        const auto id=track(object.get()); input_owners.emplace(object.get(),false); object.release(); return id;
+    });
+}
+int wxl_calendar_date(wxl_handle id, int* code) { return status([&] {
+    require(code, "Missing calendar date output");
+    const auto result=calendar_code(as<wxDatePickerCtrl>(id)->GetValue());
+    require(result!=0,"Native date picker has no supported committed date"); *code=result;
+}); }
+int wxl_set_calendar_date(wxl_handle id, int year, int month, int day, int notify) { return status([&] {
+    auto* object=as<wxDatePickerCtrl>(id); const auto value=calendar_value(year,month,day);
+    require(notify==0 || notify==1,"Invalid date notification flag"); InputOperation operation(object);
+    { wxEventBlocker blocker(object); object->SetValue(value); }
+    const auto accepted=object->GetValue();
+    require(calendar_code(accepted)==calendar_code(value),"Native date picker did not accept the date");
+    if (notify) { wxDateEvent event(object,accepted,wxEVT_DATE_CHANGED); object->HandleWindowEvent(event); }
+}); }
 // Tooltip storage belongs to wxWindow; only copied UTF-8 text crosses the ABI.
 const char* wxl_tooltip_text(wxl_handle id, size_t* length, int* present) {
     const int result = status([&] {

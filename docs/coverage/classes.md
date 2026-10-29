@@ -11,7 +11,7 @@ not a delivery sequence. This native-status index is not a feature-priority or r
 
 ## C1: Foundation, values, application, events, and base utilities
 
-Class/struct definitions: 0 complete; 11 partial; 291 pending. Partial and pending classes remain open.
+Class/struct definitions: 0 complete; 12 partial; 290 pending. Partial and pending classes remain open.
 
 [Declaration counts and remaining work](README.md).
 
@@ -45,7 +45,7 @@ Class/struct definitions: 0 complete; 11 partial; 291 pending. Partial and pendi
 - [ ] `wxConfigBase` — [`wx/config.h`](phase-c1.md), upstream line 259.
 - [ ] `wxConfigPathChanger` — [`wx/config.h`](phase-c1.md), upstream line 980.
 - [ ] `wxConvAuto` — [`wx/convauto.h`](phase-c1.md), upstream line 111.
-- [ ] `wxDateTime` — [`wx/datetime.h`](phase-c1.md), upstream line 76.
+- [~] `wxDateTime` — [`wx/datetime.h`](phase-c1.md), upstream line 76. — **Partial**: `calendar-date`, `event-date`; ABI: `wxl_date_picker`, `wxl_calendar_date`, `wxl_set_calendar_date`. Copied Gregorian tuple adapter only through DATE-PICKER/CALENDAR-DATE/EVENT-DATE, required dates1900..2100, local civil calendar roundtrip, no time-of-day/timezone/Unix/universal-time or standalone wxDateTime objects. Constructor uses midnight native local representation and rejects failed date roundtrip; native event invalid/out-of-scope dates map NIL. See docs/DATE-PICKER.md.
 - [ ] `wxDateTimeWorkDays` — [`wx/datetime.h`](phase-c1.md), upstream line 1605.
 - [ ] `wxDateSpan` — [`wx/datetime.h`](phase-c1.md), upstream line 1654.
 - [ ] `wxTimeSpan` — [`wx/datetime.h`](phase-c1.md), upstream line 1894.
@@ -320,7 +320,7 @@ Class/struct definitions: 0 complete; 11 partial; 291 pending. Partial and pendi
 
 ## C2: Windows, layout, basic controls, and input
 
-Class/struct definitions: 0 complete; 25 partial; 107 pending. Partial and pending classes remain open.
+Class/struct definitions: 0 complete; 27 partial; 105 pending. Partial and pending classes remain open.
 
 [Declaration counts and remaining work](README.md).
 
@@ -358,8 +358,8 @@ Class/struct definitions: 0 complete; 25 partial; 107 pending. Partial and pendi
 - [ ] `wxControlWithItems` — [`wx/ctrlsub.h`](phase-c2.md), upstream line 759.
 - [ ] `wxCursor` — [`wx/cursor.h`](phase-c2.md), upstream line 82.
 - [ ] `wxCustomBackgroundWindow` — [`wx/custombgwin.h`](phase-c2.md), upstream line 47.
-- [ ] `wxDatePickerCtrl` — [`wx/datectrl.h`](phase-c2.md), upstream line 83.
-- [ ] `wxDateEvent` — [`wx/dateevt.h`](phase-c2.md), upstream line 18.
+- [~] `wxDatePickerCtrl` — [`wx/datectrl.h`](phase-c2.md), upstream line 83. — **Partial**: `date-picker`, `make-date-picker`, `calendar-date`, `event-date`; ABI: `wxl_date_picker`, `wxl_calendar_date`, `wxl_set_calendar_date`. Bounded required DATE-PICKER WINDOW and copied Gregorian (year month day) adapter1900..2100; default native style, fixed range and default2000-01-01. Native-backed CLOS, silent SETF/explicit native date event, immutable copied event date/current contexts, actual/propagated/composite Input guards and early Destroy suppression. No raw date/window adoption, time, nullable/style/range APIs, synthetic/owned/date clones or full parity. See docs/DATE-PICKER.md.
+- [~] `wxDateEvent` — [`wx/dateevt.h`](phase-c2.md), upstream line 18. — **Partial**: `event-date`; ABI: `wxl_set_calendar_date`, `wxl_event_field`. Native date-change read-only copied date snapshots and current borrowed contexts only; invalid/out-of-scope dates yield NIL. No setters, time-change, detached construction or cloning. Bounded required DATE-PICKER WINDOW and copied Gregorian (year month day) adapter1900..2100; default native style, fixed range and default2000-01-01. Native-backed CLOS, silent SETF/explicit native date event, immutable copied event date/current contexts, actual/propagated/composite Input guards and early Destroy suppression. No raw date/window adoption, time, nullable/style/range APIs, synthetic/owned/date clones or full parity. See docs/DATE-PICKER.md.
 - [ ] `wxEditableListBox` — [`wx/editlbox.h`](phase-c2.md), upstream line 40.
 - [ ] `wxFilePickerCtrl` — [`wx/filepicker.h`](phase-c2.md), upstream line 82.
 - [ ] `wxDirPickerCtrl` — [`wx/filepicker.h`](phase-c2.md), upstream line 236.
