@@ -2547,5 +2547,95 @@
     "description": "Owner/ancestor expiry removes registration/root. Periodic activity persists through a function until cancel/expiry; escaping errors cancel the offending timer.",
     "scope": "Active main-thread session. Interval1..86400000ms, at most256 logical registrations; periodic default/optional one-shot, weak window owner or session lifetime. Coalesced safe-idle delivery under RUN/full polling, excluded from nested modal/native/callback/other safe work. wxUSE_TIMER required; OSX start currently verified only for wxWidgets3.2.12. See docs/UI-TIMERS.md.",
     "wxwidgets": "Bridge registry / wxWeakRef / native pending destruction checks; not a direct IsRunning view."
+  },
+  {
+    "name": "slider",
+    "kind": "class",
+    "arguments": "Native-backed slider, :parent required, :minimum0/:maximum100/:value0, :orientation :horizontal or :vertical.",
+    "returns": "Concrete native-backed widget.",
+    "description": "Native-backed slider, :parent required, :minimum0/:maximum100/:value0, :orientation :horizontal or :vertical.",
+    "scope": "Active main-thread session; native handle/type/lifetime checks. Supported endpoints±1000000 with minimum<maximum. Same-control numeric writes and protected lifetime/modal/clipboard/pump entry defer during source numeric/forwarded text callbacks. See docs/NUMERIC-INPUT.md for intermediate spin edits, supported scope and unverified ports.",
+    "wxwidgets": "wxSlider (wxWidgets3.2.12).",
+    "syntax": "wxlambda:slider",
+    "construction": {
+      "syntax": "(make-instance 'wxlambda:slider :parent parent :minimum 0 :maximum 100 :value 0)",
+      "description": "Supports subclass slot/default initargs, native-ready AFTER hooks and managed failure rollback. Parent and valid bounds/value required."
+    }
+  },
+  {
+    "name": "spin-control",
+    "kind": "class",
+    "arguments": "Native-backed decimal integer spin, :parent required, :minimum0/:maximum100/:value0.",
+    "returns": "Concrete native-backed widget with arrows and editable native text.",
+    "description": "Native-backed decimal integer spin, :parent required, :minimum0/:maximum100/:value0.",
+    "scope": "Active main-thread session; native handle/type/lifetime checks. Supported endpoints±1000000 with minimum<maximum. Same-control numeric writes and protected lifetime/modal/clipboard/pump entry defer during source numeric/forwarded text callbacks. See docs/NUMERIC-INPUT.md for intermediate spin edits, supported scope and unverified ports.",
+    "wxwidgets": "wxSpinCtrl (wxWidgets3.2.12).",
+    "syntax": "wxlambda:spin-control",
+    "construction": {
+      "syntax": "(make-instance 'wxlambda:spin-control :parent parent :minimum 0 :maximum 100 :value 0)",
+      "description": "Supports subclass slot/default initargs, native-ready AFTER hooks and managed failure rollback. Parent and valid bounds/value required."
+    }
+  },
+  {
+    "name": "make-slider",
+    "kind": "generic-function",
+    "arguments": "PARENT plus :class/:minimum/:maximum/:value/:orientation and subclass initargs.",
+    "returns": "New SLIDER/subclass.",
+    "description": "PARENT plus :class/:minimum/:maximum/:value/:orientation and subclass initargs.",
+    "scope": "Active main-thread session; native handle/type/lifetime checks. Supported endpoints±1000000 with minimum<maximum. Same-control numeric writes and protected lifetime/modal/clipboard/pump entry defer during source numeric/forwarded text callbacks. See docs/NUMERIC-INPUT.md for intermediate spin edits, supported scope and unverified ports.",
+    "wxwidgets": "wxSlider::Create (wxWidgets3.2.12)."
+  },
+  {
+    "name": "make-spin-control",
+    "kind": "generic-function",
+    "arguments": "PARENT plus :class/:minimum/:maximum/:value and subclass initargs.",
+    "returns": "New SPIN-CONTROL/subclass.",
+    "description": "PARENT plus :class/:minimum/:maximum/:value and subclass initargs.",
+    "scope": "Active main-thread session; native handle/type/lifetime checks. Supported endpoints±1000000 with minimum<maximum. Same-control numeric writes and protected lifetime/modal/clipboard/pump entry defer during source numeric/forwarded text callbacks. See docs/NUMERIC-INPUT.md for intermediate spin edits, supported scope and unverified ports.",
+    "wxwidgets": "wxSpinCtrl::Create (wxWidgets3.2.12)."
+  },
+  {
+    "name": "numeric-value",
+    "kind": "generic-function",
+    "arguments": "SLIDER or SPIN-CONTROL; :notify keyword for SETF (default NIL).",
+    "returns": "Bounded integer. SETF returns supplied integer.",
+    "description": "SLIDER or SPIN-CONTROL; :notify keyword for SETF (default NIL).",
+    "scope": "Active main-thread session; native handle/type/lifetime checks. Supported endpoints±1000000 with minimum<maximum. Same-control numeric writes and protected lifetime/modal/clipboard/pump entry defer during source numeric/forwarded text callbacks. See docs/NUMERIC-INPUT.md for intermediate spin edits, supported scope and unverified ports.",
+    "wxwidgets": "wxSlider::GetValue/SetValue / wxSpinCtrl::GetTextValue/GetValue/SetValue (wxWidgets3.2.12).",
+    "setf": {
+      "syntax": "(setf (wxlambda:numeric-value control :notify t) value)",
+      "description": "Default silent. Explicit notification commits then sends one native-class event even unchanged; no rollback on callback error. Invalid spin edit getter rejects, but integer write can recover it. Out-of-range values reject."
+    }
+  },
+  {
+    "name": "numeric-range",
+    "kind": "generic-function",
+    "arguments": "SLIDER or SPIN-CONTROL. SETF accepts exact two-element integer list (minimum maximum).",
+    "returns": "Fresh list of two bounds. SETF returns supplied list and silently clamps current value.",
+    "description": "SLIDER or SPIN-CONTROL. SETF accepts exact two-element integer list (minimum maximum).",
+    "scope": "Active main-thread session; native handle/type/lifetime checks. Supported endpoints±1000000 with minimum<maximum. Same-control numeric writes and protected lifetime/modal/clipboard/pump entry defer during source numeric/forwarded text callbacks. See docs/NUMERIC-INPUT.md for intermediate spin edits, supported scope and unverified ports.",
+    "wxwidgets": "wxSlider / wxSpinCtrl::GetMin/GetMax/SetRange (wxWidgets3.2.12).",
+    "setf": {
+      "syntax": "(setf (wxlambda:numeric-range control) (list minimum maximum))",
+      "description": "Validate strict bounded endpoints, read old numeric value, update silently and clamp to new range. Invalid intermediate spin edit may reject before mutation; supplied/result lists are not retained."
+    }
+  },
+  {
+    "name": "slider-orientation",
+    "kind": "generic-function",
+    "arguments": "SLIDER. Immutable constructor orientation.",
+    "returns": "Keyword :horizontal or :vertical.",
+    "description": "SLIDER. Immutable constructor orientation.",
+    "scope": "Active main-thread session; native handle/type/lifetime checks. Supported endpoints±1000000 with minimum<maximum. Same-control numeric writes and protected lifetime/modal/clipboard/pump entry defer during source numeric/forwarded text callbacks. See docs/NUMERIC-INPUT.md for intermediate spin edits, supported scope and unverified ports.",
+    "wxwidgets": "wxSlider style (wxWidgets3.2.12)."
+  },
+  {
+    "name": "event-numeric-value",
+    "kind": "generic-function",
+    "arguments": "Numeric EVENT snapshot or current EVENT-CONTEXT.",
+    "returns": "Integer payload for :slider-change/:spin-change; NIL for unrelated snapshot, NATIVE-ERROR for unrelated context.",
+    "description": "Numeric EVENT snapshot or current EVENT-CONTEXT.",
+    "scope": "Immutable copied EVENT snapshots remain readable after source destruction and session cleanup. Borrowed EVENT-CONTEXT requires its innermost current callback and native lifetime checks. Payload metadata is not constrained by the control endpoint bounds. Read-only; spin veto/payload edits are observational and do not write or roll back control state. No owned/synthetic/detached-clone numeric events. See docs/NUMERIC-INPUT.md.",
+    "wxwidgets": "wxCommandEvent::GetInt / wxSpinEvent integer position payload (wxWidgets3.2.12)."
   }
 ]

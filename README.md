@@ -815,3 +815,8 @@ with owner/session lifetime and cancellation; see
 [periodic-status.lisp](examples/periodic-status.lisp). CMake requires wxUSE_TIMER=1.
 macOS timers currently accept only verified wxWidgets3.2.12; newer version numbers
 do not establish safe queued-native cancellation. Hosted OS timing remains unverified.
+
+[Bounded numeric inputs](docs/NUMERIC-INPUT.md) add signed sliders/integer spin
+controls, generic value/range writes and immutable update snapshots. Run
+[numeric-input.lisp](examples/numeric-input.lisp) for silent cross-control
+synchronization. Physical and hosted OS input checks remain separate.

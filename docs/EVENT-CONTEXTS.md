@@ -158,3 +158,9 @@ bounded clear-only native origin detachment without retaining objects.
 :USER-DATA and read-only snapshot/context association access, distinct from
 handler client data and native command/client/item pointers. Borrowed native
 userdata still prevents owned cloning; no mutable association API is added.
+
+ABI45 [numeric controls](NUMERIC-INPUT.md) add read-only EVENT-NUMERIC-VALUE for
+slider/spin snapshots and current contexts. Spin updates are notify-derived but
+observational; veto/raw payload changes do not roll back widget state. Numeric
+event owned/synthetic/clone support is unbound; forwarded spin text callbacks
+retain numeric lifetime/reentry guards.

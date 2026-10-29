@@ -554,5 +554,16 @@ cancellation and error/root cleanup. Native wxTimer is partial: no public event
 receiver/native pointer adoption, restart/style/interval mutation or timing parity.
 OSX exact verified3.2.12 gate is explicit; hosted Windows/Linux GUI/timing remain
 unrun. Regenerated native checklist records only the actual private adapter scope.
-Next selected slice: bounded numeric input controls (slider/spin) for everyday forms,
-rather than exhaustive timer/event/clock parity.
+Bounded slider/spin numeric input now extends everyday forms; native timer/event/
+clock parity remains deferred.
+
+## Bounded numeric input
+
+[Sliders/integer spin controls](NUMERIC-INPUT.md) add native-backed CLOS widgets,
+signed value/range properties, silent clamp and bounded native numeric update
+snapshots. Raw spin edits are prevalidated before native getters; text callbacks
+retain numeric lifetime guards. Class/declaration statuses remain partial, with
+styles, double-spin, raw numeric event resources and complete scroll families
+unbound. Physical input and hosted GTK/MSW/Qt GUI remain unverified.
+Next selected slice: bounded radio-button groups for mutually exclusive form
+choices, rather than deeper numeric styles/event parity.

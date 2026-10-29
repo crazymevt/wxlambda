@@ -3,6 +3,8 @@
 #include <wx/thread.h>
 #include <wx/choice.h>
 #include <wx/gauge.h>
+#include <wx/slider.h>
+#include <wx/spinctrl.h>
 #include <wx/menu.h>
 #include <wx/toolbar.h>
 #include <wx/statusbr.h>
@@ -105,6 +107,8 @@ public:
 };
 struct AcceleratorSpec { int key, flags, command; };
 std::unordered_map<wxWindow*, std::vector<AcceleratorSpec>> frame_accelerators;
+unsigned numeric_creation_depth = 0;
+std::unordered_map<wxWindow*, bool> numeric_owners; // true during native-base teardown
 std::unordered_set<wxWindow*> toolbar_owners;
 std::unordered_set<wxWindow*> realized_toolbars;
 std::unordered_set<wxWindow*> splitter_owners;
@@ -172,7 +176,7 @@ public: using wxMenuItem::wxMenuItem; wxl_handle identity = 0;
 };
 struct RegisteredEvent { wxEventType type; int family; };
 std::unordered_map<int, RegisteredEvent> registered_events;
-constexpr int first_registered_event_kind = WXL_EVENT_SPLITTER_CHANGED + 1;
+constexpr int first_registered_event_kind = WXL_EVENT_SPIN_CHANGE + 1;
 int next_event_kind = first_registered_event_kind;
 wxWeakRef<wxDialog> active_modal;
 std::unordered_map<wxWindow*, size_t> dialog_choice_counts;
@@ -408,7 +412,7 @@ template<class T> class ManagedWindow final : public T, public ClientDataAccess 
 public:
     using T::T;
     wxClientDataType ClientStorageKind() const override { return this->m_clientDataType; }
-    ~ManagedWindow() override { frame_accelerators.erase(this); toolbar_owners.erase(this); realized_toolbars.erase(this); splitter_owners.erase(this); forget_tree_nodes(this); dialog_choice_counts.erase(this); dialog_message_buttons.erase(this); dialog_file_filters.erase(this); detach_window_stack(this); }
+    ~ManagedWindow() override { if (auto found = numeric_owners.find(this); found != numeric_owners.end()) found->second = true; frame_accelerators.erase(this); toolbar_owners.erase(this); realized_toolbars.erase(this); splitter_owners.erase(this); forget_tree_nodes(this); dialog_choice_counts.erase(this); dialog_message_buttons.erase(this); dialog_file_filters.erase(this); detach_window_stack(this); }
 };
 void set_registered_type(wxEvent& event, int type) {
         const RegisteredEvent* source = nullptr;
@@ -623,6 +627,70 @@ int accelerator_flags(int flags) {
     return ((flags & 1) ? wxACCEL_CTRL : 0) | ((flags & 2) ? wxACCEL_SHIFT : 0) |
            ((flags & 4) ? wxACCEL_ALT : 0) | ((flags & 8) ? wxACCEL_RAW_CTRL : 0);
 }
+std::vector<wxWeakRef<wxWindow>> numeric_operations;
+bool protected_numeric_ancestor(wxWindow* object) {
+    for (const auto& active : numeric_operations)
+        for (auto* node = active.get(); node; node = node->GetParent()) if (node == object) return true;
+    return false;
+}
+struct NumericOperation {
+    explicit NumericOperation(wxWindow* object) {
+        for (const auto& active : numeric_operations) require(active.get() != object, "Defer same-control numeric mutation until callback/operation returns");
+        numeric_operations.emplace_back(object);
+    }
+    ~NumericOperation() { numeric_operations.pop_back(); }
+};
+bool numeric_origin_contains(wxWindow* object, const wxObject* origin) {
+    if (origin == object) return true;
+    for (auto* child : object->GetChildren()) if (numeric_origin_contains(child, origin)) return true;
+    return false;
+}
+struct NumericCallbackOperation {
+    bool added = false, allow = true;
+    explicit NumericCallbackOperation(wxEvent& event) {
+        if (event.GetEventType() != wxEVT_SLIDER && event.GetEventType() != wxEVT_SPINCTRL && event.GetEventType() != wxEVT_TEXT) return;
+        if (numeric_creation_depth) { allow = false; return; }
+        // Numeric base destruction can emit composite-child text callbacks.
+        for (const auto& entry : numeric_owners) if (entry.second) { allow = false; return; }
+        wxWindow* object = nullptr;
+        for (const auto& entry : numeric_owners)
+            if (event.GetEventObject() == entry.first) { object = entry.first; break; }
+        if (!object) for (const auto& entry : numeric_owners) {
+            if (!window_destruction_pending(entry.first) && numeric_origin_contains(entry.first, event.GetEventObject())) { object = entry.first; break; }
+        }
+        if (!object) return;
+        if (window_destruction_pending(object)) { allow = false; return; }
+        for (const auto& active : numeric_operations) if (active.get() == object) return;
+        numeric_operations.emplace_back(object); added = true;
+    }
+    ~NumericCallbackOperation() { if (added) numeric_operations.pop_back(); }
+};
+void numeric_bounds(int minimum, int maximum) {
+    require(minimum >= -1000000 && maximum <= 1000000 && minimum < maximum, "Numeric range requires -1000000 <= minimum < maximum <= 1000000");
+}
+wxWindow* numeric_control(wxl_handle id) {
+    auto* object = window(id);
+    require(dynamic_cast<wxSlider*>(object) || dynamic_cast<wxSpinCtrl*>(object), "Expected slider or integer spin control"); return object;
+}
+int numeric_min(wxWindow* object) {
+    if (auto* slider = dynamic_cast<wxSlider*>(object)) return slider->GetMin();
+    return static_cast<wxSpinCtrl*>(object)->GetMin();
+}
+int numeric_max(wxWindow* object) {
+    if (auto* slider = dynamic_cast<wxSlider*>(object)) return slider->GetMax();
+    return static_cast<wxSpinCtrl*>(object)->GetMax();
+}
+int numeric_read(wxWindow* object) {
+    int value;
+    if (auto* slider = dynamic_cast<wxSlider*>(object)) value = slider->GetValue();
+    else {
+        auto* spin = static_cast<wxSpinCtrl*>(object); long long parsed;
+        // Do not feed NaN/overflowing raw edits to port-specific native parsers.
+        require(spin->GetTextValue().ToLongLong(&parsed, 10), "Spin edit is not currently a decimal integer");
+        value = spin->GetValue();
+    }
+    require(value >= numeric_min(object) && value <= numeric_max(object), "Native numeric value is outside its range"); return value;
+}
 int selected_event_index(wxEvent& event) {
     if (auto* book = dynamic_cast<wxBookCtrlEvent*>(&event)) return book->GetSelection();
     auto* command = dynamic_cast<wxCommandEvent*>(&event);
@@ -640,7 +708,7 @@ void invoke_callback(uint64_t token, const wxl_event& event) {
 }
 void require_dispatch_entry(bool structure = false) {
     require(!active_modal.get() && actual_modals.empty(), "Cannot enter structural dispatch during a modal dialog");
-    require(notebook_operations.empty() && list_callback_operations.empty() && tree_operations.empty() && splitter_operations.empty() && toolbar_operations.empty() && accelerator_action_frames.empty(), "Cannot enter structural dispatch during navigation callbacks");
+    require(notebook_operations.empty() && list_callback_operations.empty() && tree_operations.empty() && splitter_operations.empty() && toolbar_operations.empty() && accelerator_action_frames.empty() && numeric_operations.empty(), "Cannot enter structural dispatch during navigation callbacks");
     const bool safe_action = structure && ui_action_running;
     require(!ui_action_running || structure, "Nested RUN/pump/finish is forbidden in a deferred UI action");
     require(!running || safe_action, "Event loop is already running");
@@ -671,6 +739,8 @@ wxEventTypeTag<wxEvent> native_event_type(int kind) {
         case WXL_EVENT_TREE_CHANGING: return wxEventTypeTag<wxEvent>(wxEVT_TREE_SEL_CHANGING);
         case WXL_EVENT_TREE_CHANGED: return wxEventTypeTag<wxEvent>(wxEVT_TREE_SEL_CHANGED);
         case WXL_EVENT_SPLITTER_CHANGING: return wxEventTypeTag<wxEvent>(wxEVT_SPLITTER_SASH_POS_CHANGING);
+        case WXL_EVENT_SLIDER_CHANGE: return wxEventTypeTag<wxEvent>(wxEVT_SLIDER);
+        case WXL_EVENT_SPIN_CHANGE: return wxEventTypeTag<wxEvent>(wxEVT_SPINCTRL);
         case WXL_EVENT_SPLITTER_CHANGED: return wxEventTypeTag<wxEvent>(wxEVT_SPLITTER_SASH_POS_CHANGED);
         default: {
             const auto it = registered_events.find(kind);
@@ -683,8 +753,8 @@ int native_event_family(int kind) {
     if (kind >= WXL_EVENT_CLICK && kind <= WXL_EVENT_SELECTION) return WXL_FAMILY_COMMAND;
     if (kind >= WXL_EVENT_CLOSE && kind <= WXL_EVENT_END_SESSION) return WXL_FAMILY_CLOSE;
     if (kind == WXL_EVENT_IDLE) return WXL_FAMILY_IDLE;
-    if (kind == WXL_EVENT_MENU || kind == WXL_EVENT_LISTBOX_SELECTION || kind == WXL_EVENT_LISTBOX_DOUBLE_CLICK) return WXL_FAMILY_COMMAND;
-    if (kind == WXL_EVENT_NOTEBOOK_CHANGING || kind == WXL_EVENT_NOTEBOOK_CHANGED || kind == WXL_EVENT_TREE_CHANGING || kind == WXL_EVENT_TREE_CHANGED || kind == WXL_EVENT_SPLITTER_CHANGING || kind == WXL_EVENT_SPLITTER_CHANGED) return WXL_FAMILY_NOTIFY;
+    if (kind == WXL_EVENT_SLIDER_CHANGE || kind == WXL_EVENT_MENU || kind == WXL_EVENT_LISTBOX_SELECTION || kind == WXL_EVENT_LISTBOX_DOUBLE_CLICK) return WXL_FAMILY_COMMAND;
+    if (kind == WXL_EVENT_SPIN_CHANGE || kind == WXL_EVENT_NOTEBOOK_CHANGING || kind == WXL_EVENT_NOTEBOOK_CHANGED || kind == WXL_EVENT_TREE_CHANGING || kind == WXL_EVENT_TREE_CHANGED || kind == WXL_EVENT_SPLITTER_CHANGING || kind == WXL_EVENT_SPLITTER_CHANGED) return WXL_FAMILY_NOTIFY;
     const auto it = registered_events.find(kind);
     require(it != registered_events.end(), "Unsupported event kind");
     return it->second.family;
@@ -701,7 +771,7 @@ bool event_vetoed(wxEvent& event) {
 std::unique_ptr<wxEvent> synthetic_event(wxEvtHandler* receiver, int kind, int event_id,
                                        const char* text, size_t length, int value,
                                        int can_veto, int vetoed, int logging_off) {
-    require(kind != WXL_EVENT_NOTEBOOK_CHANGING && kind != WXL_EVENT_NOTEBOOK_CHANGED && kind != WXL_EVENT_TREE_CHANGING && kind != WXL_EVENT_TREE_CHANGED && kind != WXL_EVENT_SPLITTER_CHANGING && kind != WXL_EVENT_SPLITTER_CHANGED,
+    require(kind != WXL_EVENT_SLIDER_CHANGE && kind != WXL_EVENT_SPIN_CHANGE && kind != WXL_EVENT_NOTEBOOK_CHANGING && kind != WXL_EVENT_NOTEBOOK_CHANGED && kind != WXL_EVENT_TREE_CHANGING && kind != WXL_EVENT_TREE_CHANGED && kind != WXL_EVENT_SPLITTER_CHANGING && kind != WXL_EVENT_SPLITTER_CHANGED,
             "Derived navigation events require native interaction; synthetic construction is unsupported");
     const auto type = native_event_type(kind);
     const int family = native_event_family(kind);
@@ -739,7 +809,7 @@ std::unique_ptr<wxEvent> synthetic_event(wxEvtHandler* receiver, int kind, int e
     return event;
 }
 int kind_of(wxEvent& event) {
-    for (int kind = WXL_EVENT_CLICK; kind <= WXL_EVENT_SPLITTER_CHANGED; ++kind)
+    for (int kind = WXL_EVENT_CLICK; kind <= WXL_EVENT_SPIN_CHANGE; ++kind)
         if (native_event_type(kind) == event.GetEventType()) return kind;
     for (const auto& item : registered_events)
         if (item.second.type == event.GetEventType()) return item.first;
@@ -754,7 +824,8 @@ wxEvent& owned_event(wxl_handle id) {
 std::unique_ptr<wxEvent> detached_clone(wxEvent& event) {
     require(typeid(event) == typeid(wxCommandEvent) || typeid(event) == typeid(wxNotifyEvent) ||
             typeid(event) == typeid(wxCloseEvent) || typeid(event) == typeid(wxIdleEvent), "Cloning this native event class is not supported");
-    kind_of(event);
+    const auto kind = kind_of(event);
+    require(kind != WXL_EVENT_SLIDER_CHANGE && kind != WXL_EVENT_SPIN_CHANGE, "Numeric control events cannot be detached/cloned");
     require(event.GetEventUserData() == nullptr, "Cannot clone borrowed event userData");
     if (auto* command = dynamic_cast<wxCommandEvent*>(&event))
         require(!command->GetClientData() && !command->GetClientObject(), "Cannot clone borrowed command client data");
@@ -872,7 +943,8 @@ struct Binding {
         SplitterCallbackOperation splitter_guard(event);
         ToolbarCallbackOperation toolbar_guard(event);
         AcceleratorCallbackOperation accelerator_guard(event);
-        if (!notebook_guard.allow || !list_guard.allow || !tree_guard.allow || !splitter_guard.allow || !toolbar_guard.allow) { event.Skip(); return; }
+        NumericCallbackOperation numeric_guard(event);
+        if (!notebook_guard.allow || !list_guard.allow || !tree_guard.allow || !splitter_guard.allow || !toolbar_guard.allow || !numeric_guard.allow) { event.Skip(); return; }
         const auto found = bindings.find(token);
         if (found == bindings.end()) { event.Skip(); return; }
         // Keep the method receiver alive if this or another binding is removed.
@@ -927,6 +999,7 @@ wxl_handle track(wxWindow* object) {
     windows.emplace(id, object);
     object->Bind(wxEVT_DESTROY, [id, object](wxWindowDestroyEvent& event) {
         if (event.GetEventObject() == object) {
+            numeric_owners.erase(object);
             windows.erase(id);
             handlers.erase(id);
         }
@@ -1048,7 +1121,7 @@ protected:
     int Enter(wxDialog* object) override {
         // Lisp may defer rethrow until its nearest notifying operation returns.
         // Do not open a new native prompt while its callback error is pending.
-        if (pending_callback_error || !notebook_operations.empty() || !list_callback_operations.empty() || !tree_operations.empty() || !splitter_operations.empty() || !toolbar_operations.empty() || !accelerator_action_frames.empty()) return wxID_CANCEL;
+        if (pending_callback_error || !notebook_operations.empty() || !list_callback_operations.empty() || !tree_operations.empty() || !splitter_operations.empty() || !toolbar_operations.empty() || !accelerator_action_frames.empty() || !numeric_operations.empty()) return wxID_CANCEL;
         if (modal_cancel_requested && (active_modal.get() || !actual_modals.empty())) return wxID_CANCEL;
         // Native NSAlert modal loops cannot be aborted using wxDialog::EndModal.
         // Replace them before their platform ShowModal implementation is entered.
@@ -1153,7 +1226,7 @@ class ClipboardSession {
 public:
     ClipboardSession() {
         ready();
-        require(notebook_operations.empty() && list_callback_operations.empty() && tree_operations.empty() && splitter_operations.empty() && toolbar_operations.empty() && accelerator_action_frames.empty(), "Defer clipboard operations until navigation callbacks return");
+        require(notebook_operations.empty() && list_callback_operations.empty() && tree_operations.empty() && splitter_operations.empty() && toolbar_operations.empty() && accelerator_action_frames.empty() && numeric_operations.empty(), "Defer clipboard operations until navigation callbacks return");
         require(!clipboard_busy, "Clipboard operation is already in progress");
 #ifdef WXLAMBDA_NATIVE_TESTS
         clipboard = test_clipboard ? test_clipboard : wxTheClipboard;
@@ -1189,11 +1262,11 @@ bool ui_action_owner_live(const UiAction& action) {
 }
 bool ui_action_ready() {
     return started && !finishing && ui_dispatch && !ui_action_running && !pending_callback_error &&
-           callback_depth == 0 && timer_notify_depth == 0 && EventScope::stack.empty() &&
+           callback_depth == 0 && timer_notify_depth == 0 && numeric_creation_depth == 0 && EventScope::stack.empty() &&
            ui_driver_depth != 0 && native_entry_depth == ui_driver_depth && idle_processing_depth == 1 &&
            !active_modal.get() && actual_modals.empty() && dialog_operation_windows.empty() && !clipboard_busy &&
            notebook_operations.empty() && list_callback_operations.empty() && tree_operations.empty() &&
-           splitter_operations.empty() && toolbar_operations.empty() && accelerator_action_frames.empty();
+           splitter_operations.empty() && toolbar_operations.empty() && accelerator_action_frames.empty() && numeric_operations.empty();
 }
 bool ui_timer_owner_live(const UiTimer& timer) {
     return !timer.retired && (!timer.owner_id || (timer.owner.get() && !window_destruction_pending(timer.owner.get())));
@@ -1235,7 +1308,7 @@ bool process_deferred_ui_action() {
 
 }
 extern "C" {
-int wxl_abi_version() { return 44; }
+int wxl_abi_version() { return 45; }
 const char* wxl_last_error() { return error.c_str(); }
 int wxl_clipboard_text_available() {
     return boolean_result([&] {
@@ -1543,7 +1616,7 @@ int wxl_dialog_show(wxl_handle id, int* code) {
     return status([&] {
         auto* object = as<wxDialog>(id);
         require(code, "Missing modal result output");
-        require(notebook_operations.empty() && list_callback_operations.empty() && tree_operations.empty() && splitter_operations.empty() && toolbar_operations.empty() && accelerator_action_frames.empty(), "Defer dialogs until navigation callbacks return");
+        require(notebook_operations.empty() && list_callback_operations.empty() && tree_operations.empty() && splitter_operations.empty() && toolbar_operations.empty() && accelerator_action_frames.empty() && numeric_operations.empty(), "Defer dialogs until navigation callbacks return");
         require(!active_modal.get() && actual_modals.empty(), "Nested modal dialogs are not supported");
         require(!object->IsShown() && !object->IsModal(), "Dialog is already shown");
         struct ModalScope {
@@ -2145,7 +2218,7 @@ int wxl_context_set_logging_off(uint64_t token, int value) {
     });
 }
 int wxl_close(wxl_handle id, int force) {
-    return boolean_result([&] { auto* object = as<wxFrame>(id); require(!protected_modal_ancestor(object), "Cannot close an active modal dialog ancestor"); require(!protected_notebook_ancestor(object) && !protected_list_ancestor(object) && !protected_tree_ancestor(object) && !protected_splitter_ancestor(object) && !protected_toolbar_ancestor(object) && !protected_accelerator_window(object), "Cannot close a navigation callback ancestor"); return object->Close(force != 0); });
+    return boolean_result([&] { auto* object = as<wxFrame>(id); require(!protected_modal_ancestor(object), "Cannot close an active modal dialog ancestor"); require(!protected_notebook_ancestor(object) && !protected_list_ancestor(object) && !protected_tree_ancestor(object) && !protected_splitter_ancestor(object) && !protected_toolbar_ancestor(object) && !protected_accelerator_window(object) && !protected_numeric_ancestor(object), "Cannot close a navigation callback ancestor"); return object->Close(force != 0); });
 }
 int wxl_context_resume_propagation(uint64_t token, int level) {
     return status([&] {
@@ -2811,6 +2884,52 @@ const char* wxl_get_label(wxl_handle id) {
     });
     return result == 0 ? label_result.c_str() : nullptr;
 }
+wxl_handle wxl_numeric(wxl_handle parent_id, int kind, int minimum, int maximum, int value, int vertical) {
+    return create([&] {
+        auto* parent = window(parent_id); numeric_bounds(minimum, maximum);
+        require(value >= minimum && value <= maximum && (kind == 0 || kind == 1) && (vertical == 0 || vertical == 1) && (kind == 0 || vertical == 0), "Invalid numeric constructor arguments");
+        struct CreationScope { CreationScope() { ++numeric_creation_depth; } ~CreationScope() { --numeric_creation_depth; } } creation;
+        std::unique_ptr<wxWindow> object;
+        if (kind == 0) {
+            auto slider = std::make_unique<ManagedWindow<wxSlider>>();
+            { wxEventBlocker blocker(slider.get());
+              require(slider->Create(parent, wxID_ANY, value, minimum, maximum, wxDefaultPosition, wxDefaultSize, vertical ? wxSL_VERTICAL : wxSL_HORIZONTAL), "Native slider creation failed"); }
+            object = std::move(slider);
+        } else {
+            auto spin = std::make_unique<ManagedWindow<wxSpinCtrl>>();
+            { wxEventBlocker blocker(spin.get());
+              require(spin->Create(parent, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, minimum, maximum, value), "Native spin creation failed");
+              require(spin->SetBase(10), "Native decimal spin base unavailable"); spin->SetValue(value); }
+            object = std::move(spin);
+        }
+        const auto id = track(object.get()); numeric_owners.emplace(object.get(), false); object.release(); return id;
+    });
+}
+int wxl_numeric_field(wxl_handle id, int field, int* value) { return status([&] {
+    auto* object = numeric_control(id); require(value, "Missing numeric output");
+    if (field == 0) *value = numeric_read(object);
+    else if (field == 1) *value = numeric_min(object);
+    else if (field == 2) *value = numeric_max(object);
+    else { require(field == 3 && dynamic_cast<wxSlider*>(object), "Invalid numeric field/receiver"); *value = object->HasFlag(wxSL_VERTICAL) ? 1 : 0; }
+}); }
+int wxl_set_numeric_value(wxl_handle id, int value, int notify) { return status([&] {
+    auto* object = numeric_control(id); require(notify == 0 || notify == 1, "Invalid numeric notification flag");
+    require(value >= numeric_min(object) && value <= numeric_max(object), "Numeric value out of range");
+    NumericOperation operation(object);
+    { wxEventBlocker blocker(object);
+      if (auto* slider = dynamic_cast<wxSlider*>(object)) slider->SetValue(value); else static_cast<wxSpinCtrl*>(object)->SetValue(value); }
+    if (notify) {
+        if (dynamic_cast<wxSlider*>(object)) { wxCommandEvent event(wxEVT_SLIDER, object->GetId()); event.SetEventObject(object); event.SetInt(value); object->HandleWindowEvent(event); }
+        else { wxSpinEvent event(wxEVT_SPINCTRL, object->GetId()); event.SetEventObject(object); event.SetPosition(value); object->HandleWindowEvent(event); }
+    }
+}); }
+int wxl_set_numeric_range(wxl_handle id, int minimum, int maximum) { return status([&] {
+    auto* object = numeric_control(id); numeric_bounds(minimum, maximum);
+    const auto value = std::clamp(numeric_read(object), minimum, maximum);
+    NumericOperation operation(object); wxEventBlocker blocker(object);
+    if (auto* slider = dynamic_cast<wxSlider*>(object)) { slider->SetRange(minimum, maximum); slider->SetValue(value); }
+    else { auto* spin = static_cast<wxSpinCtrl*>(object); spin->SetRange(minimum, maximum); spin->SetValue(value); }
+}); }
 wxl_handle wxl_gauge(wxl_handle parent, int range, int value, int vertical) {
     return create([&] {
         require(range > 0, "Gauge range must be positive");
@@ -3023,7 +3142,7 @@ int wxl_destroy(wxl_handle id) {
     return status([&] {
         auto* object = window(id);
         require(!protected_modal_ancestor(object), "Cannot destroy an active modal dialog or its ancestor");
-        require(!protected_notebook_ancestor(object) && !protected_list_ancestor(object) && !protected_tree_ancestor(object) && !protected_splitter_ancestor(object) && !protected_toolbar_ancestor(object) && !protected_accelerator_window(object), "Cannot destroy a navigation operation receiver or its ancestor");
+        require(!protected_notebook_ancestor(object) && !protected_list_ancestor(object) && !protected_tree_ancestor(object) && !protected_splitter_ancestor(object) && !protected_toolbar_ancestor(object) && !protected_accelerator_window(object) && !protected_numeric_ancestor(object), "Cannot destroy a navigation operation receiver or its ancestor");
         require(!attached_notebook_page(object) && !attached_splitter_pane(object), "Attached pages/panes are owned by their native container");
         if (dynamic_cast<wxToolBar*>(object)) {
             // OSX Destroy() uninstalls native chrome and can defer deletion.

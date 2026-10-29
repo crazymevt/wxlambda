@@ -170,5 +170,9 @@
   "periodic-status.lisp": {
     "description": "Real native periodic UI timer updates label/status text; Pause/Resume cancels/creates tickets. Active-session EXERCISE self-cancels after two real updates, without system clipboard transfers.",
     "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/periodic-status.lisp --eval '(wxlambda-periodic-status:start)'"
+  },
+  "numeric-input.lisp": {
+    "description": "Signed slider/integer spin synchronization through numeric snapshots with silent cross-control writes and range-clamping button. EXERCISE uses explicit notified setters, not hardware interaction.",
+    "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/numeric-input.lisp --eval '(wxlambda-numeric-input:start)'"
   }
 }

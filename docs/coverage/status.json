@@ -1302,14 +1302,15 @@
       "symbol": "wxCommandEvent::GetInt",
       "status": "~",
       "lisp": [
-        "event-integer"
+        "event-integer",
+        "event-numeric-value"
       ],
       "native": [
         "wxl_bind",
         "wxl_process_event",
         "wxl_event_field"
       ],
-      "scope": "Snapshots retain copied values. Owned/current command/notify values support generic event-integer reads; snapshots stay immutable. Signed32 integer or counted UTF-8 string transport; close-family reads are zero/NIL and writes reject. Native wxEVT_TEXT text-entry-origin SETF rejects; detached clones freeze effective native text. No client/userData ownership or arbitrary native classes."
+      "scope": "Snapshots retain copied values. Owned/current command/notify values support generic event-integer reads; snapshots stay immutable. Signed32 integer or counted UTF-8 string transport; close-family reads are zero/NIL and writes reject. Native wxEVT_TEXT text-entry-origin SETF rejects; detached clones freeze effective native text. No client/userData ownership or arbitrary native classes. Also reads native numeric slider/spin event payloads, observational and independent of control state."
     },
     {
       "header": "wx/event.h",
@@ -6678,6 +6679,462 @@
         "wxl_ui_timer_active"
       ],
       "scope": "Private wxTimer adapter for bounded safe-idle UI scheduler tickets only. Continuous native timers, bridge logical one-shots, coalesced due ticks, fair deferred-action ordering, owner/session/cancel/root/error cleanup.1..86400000ms/max256. No native timer event receiver/adoption, restart/interval setter or public Notify hook. OSX start exact verified3.2.12 gate; wxUSE_TIMER required. See docs/UI-TIMERS.md."
+    },
+    {
+      "header": "wx/slider.h",
+      "line": 158,
+      "declaration": "wxSlider();",
+      "status": "~",
+      "symbol": "wxSlider::wxSlider",
+      "lisp": [
+        "slider",
+        "spin-control",
+        "make-slider",
+        "make-spin-control",
+        "numeric-value",
+        "numeric-range",
+        "slider-orientation",
+        "event-numeric-value"
+      ],
+      "native": [
+        "wxl_numeric",
+        "wxl_numeric_field",
+        "wxl_set_numeric_value",
+        "wxl_set_numeric_range"
+      ],
+      "scope": "Native-backed SLIDER/SPIN-CONTROL slice only: signed endpoints\u00b11000000, strictmin<max, validated values, atomic two-bound property with silent clamp; optional explicit value notification, slider orientation, decimal integer spin/arrows. GetTextValue parse prevalidation before native numeric getter; invalid/intermediate edits reject. Actual numeric/forwarded text lifetime/reentry guards. No raw adoption, other styles, spin doubles, native owned/synthetic/clone numeric events or full class parity. Default native constructor/Create are internal managed initialization, no uncreated Lisp widget. See docs/NUMERIC-INPUT.md."
+    },
+    {
+      "header": "wx/slider.h",
+      "line": 227,
+      "declaration": "bool Create(wxWindow* parent, wxWindowID id, int value, int minValue, int maxValue, const wxPoint& point = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxSL_HORIZONTAL, const wxValidator& validator = wxDefaultValidator, const wxString& name = wxSliderNameStr);",
+      "status": "~",
+      "symbol": "wxSlider::Create",
+      "lisp": [
+        "slider",
+        "spin-control",
+        "make-slider",
+        "make-spin-control",
+        "numeric-value",
+        "numeric-range",
+        "slider-orientation",
+        "event-numeric-value"
+      ],
+      "native": [
+        "wxl_numeric",
+        "wxl_numeric_field",
+        "wxl_set_numeric_value",
+        "wxl_set_numeric_range"
+      ],
+      "scope": "Native-backed SLIDER/SPIN-CONTROL slice only: signed endpoints\u00b11000000, strictmin<max, validated values, atomic two-bound property with silent clamp; optional explicit value notification, slider orientation, decimal integer spin/arrows. GetTextValue parse prevalidation before native numeric getter; invalid/intermediate edits reject. Actual numeric/forwarded text lifetime/reentry guards. No raw adoption, other styles, spin doubles, native owned/synthetic/clone numeric events or full class parity. Default native constructor/Create are internal managed initialization, no uncreated Lisp widget. See docs/NUMERIC-INPUT.md."
+    },
+    {
+      "header": "wx/slider.h",
+      "line": 245,
+      "declaration": "virtual int GetMax() const;",
+      "status": "~",
+      "symbol": "wxSlider::GetMax",
+      "lisp": [
+        "slider",
+        "spin-control",
+        "make-slider",
+        "make-spin-control",
+        "numeric-value",
+        "numeric-range",
+        "slider-orientation",
+        "event-numeric-value"
+      ],
+      "native": [
+        "wxl_numeric",
+        "wxl_numeric_field",
+        "wxl_set_numeric_value",
+        "wxl_set_numeric_range"
+      ],
+      "scope": "Native-backed SLIDER/SPIN-CONTROL slice only: signed endpoints\u00b11000000, strictmin<max, validated values, atomic two-bound property with silent clamp; optional explicit value notification, slider orientation, decimal integer spin/arrows. GetTextValue parse prevalidation before native numeric getter; invalid/intermediate edits reject. Actual numeric/forwarded text lifetime/reentry guards. No raw adoption, other styles, spin doubles, native owned/synthetic/clone numeric events or full class parity. Default native constructor/Create are internal managed initialization, no uncreated Lisp widget. See docs/NUMERIC-INPUT.md."
+    },
+    {
+      "header": "wx/slider.h",
+      "line": 252,
+      "declaration": "virtual int GetMin() const;",
+      "status": "~",
+      "symbol": "wxSlider::GetMin",
+      "lisp": [
+        "slider",
+        "spin-control",
+        "make-slider",
+        "make-spin-control",
+        "numeric-value",
+        "numeric-range",
+        "slider-orientation",
+        "event-numeric-value"
+      ],
+      "native": [
+        "wxl_numeric",
+        "wxl_numeric_field",
+        "wxl_set_numeric_value",
+        "wxl_set_numeric_range"
+      ],
+      "scope": "Native-backed SLIDER/SPIN-CONTROL slice only: signed endpoints\u00b11000000, strictmin<max, validated values, atomic two-bound property with silent clamp; optional explicit value notification, slider orientation, decimal integer spin/arrows. GetTextValue parse prevalidation before native numeric getter; invalid/intermediate edits reject. Actual numeric/forwarded text lifetime/reentry guards. No raw adoption, other styles, spin doubles, native owned/synthetic/clone numeric events or full class parity. Default native constructor/Create are internal managed initialization, no uncreated Lisp widget. See docs/NUMERIC-INPUT.md."
+    },
+    {
+      "header": "wx/slider.h",
+      "line": 302,
+      "declaration": "virtual int GetValue() const;",
+      "status": "~",
+      "symbol": "wxSlider::GetValue",
+      "lisp": [
+        "slider",
+        "spin-control",
+        "make-slider",
+        "make-spin-control",
+        "numeric-value",
+        "numeric-range",
+        "slider-orientation",
+        "event-numeric-value"
+      ],
+      "native": [
+        "wxl_numeric",
+        "wxl_numeric_field",
+        "wxl_set_numeric_value",
+        "wxl_set_numeric_range"
+      ],
+      "scope": "Native-backed SLIDER/SPIN-CONTROL slice only: signed endpoints\u00b11000000, strictmin<max, validated values, atomic two-bound property with silent clamp; optional explicit value notification, slider orientation, decimal integer spin/arrows. GetTextValue parse prevalidation before native numeric getter; invalid/intermediate edits reject. Actual numeric/forwarded text lifetime/reentry guards. No raw adoption, other styles, spin doubles, native owned/synthetic/clone numeric events or full class parity. Default native constructor/Create are internal managed initialization, no uncreated Lisp widget. See docs/NUMERIC-INPUT.md."
+    },
+    {
+      "header": "wx/slider.h",
+      "line": 351,
+      "declaration": "virtual void SetRange(int minValue, int maxValue);",
+      "status": "~",
+      "symbol": "wxSlider::SetRange",
+      "lisp": [
+        "slider",
+        "spin-control",
+        "make-slider",
+        "make-spin-control",
+        "numeric-value",
+        "numeric-range",
+        "slider-orientation",
+        "event-numeric-value"
+      ],
+      "native": [
+        "wxl_numeric",
+        "wxl_numeric_field",
+        "wxl_set_numeric_value",
+        "wxl_set_numeric_range"
+      ],
+      "scope": "Native-backed SLIDER/SPIN-CONTROL slice only: signed endpoints\u00b11000000, strictmin<max, validated values, atomic two-bound property with silent clamp; optional explicit value notification, slider orientation, decimal integer spin/arrows. GetTextValue parse prevalidation before native numeric getter; invalid/intermediate edits reject. Actual numeric/forwarded text lifetime/reentry guards. No raw adoption, other styles, spin doubles, native owned/synthetic/clone numeric events or full class parity. Default native constructor/Create are internal managed initialization, no uncreated Lisp widget. See docs/NUMERIC-INPUT.md."
+    },
+    {
+      "header": "wx/slider.h",
+      "line": 410,
+      "declaration": "virtual void SetValue(int value);",
+      "status": "~",
+      "symbol": "wxSlider::SetValue",
+      "lisp": [
+        "slider",
+        "spin-control",
+        "make-slider",
+        "make-spin-control",
+        "numeric-value",
+        "numeric-range",
+        "slider-orientation",
+        "event-numeric-value"
+      ],
+      "native": [
+        "wxl_numeric",
+        "wxl_numeric_field",
+        "wxl_set_numeric_value",
+        "wxl_set_numeric_range"
+      ],
+      "scope": "Native-backed SLIDER/SPIN-CONTROL slice only: signed endpoints\u00b11000000, strictmin<max, validated values, atomic two-bound property with silent clamp; optional explicit value notification, slider orientation, decimal integer spin/arrows. GetTextValue parse prevalidation before native numeric getter; invalid/intermediate edits reject. Actual numeric/forwarded text lifetime/reentry guards. No raw adoption, other styles, spin doubles, native owned/synthetic/clone numeric events or full class parity. Default native constructor/Create are internal managed initialization, no uncreated Lisp widget. See docs/NUMERIC-INPUT.md."
+    },
+    {
+      "header": "wx/spinctrl.h",
+      "line": 59,
+      "declaration": "wxSpinCtrl();",
+      "status": "~",
+      "symbol": "wxSpinCtrl::wxSpinCtrl",
+      "lisp": [
+        "slider",
+        "spin-control",
+        "make-slider",
+        "make-spin-control",
+        "numeric-value",
+        "numeric-range",
+        "slider-orientation",
+        "event-numeric-value"
+      ],
+      "native": [
+        "wxl_numeric",
+        "wxl_numeric_field",
+        "wxl_set_numeric_value",
+        "wxl_set_numeric_range"
+      ],
+      "scope": "Native-backed SLIDER/SPIN-CONTROL slice only: signed endpoints\u00b11000000, strictmin<max, validated values, atomic two-bound property with silent clamp; optional explicit value notification, slider orientation, decimal integer spin/arrows. GetTextValue parse prevalidation before native numeric getter; invalid/intermediate edits reject. Actual numeric/forwarded text lifetime/reentry guards. No raw adoption, other styles, spin doubles, native owned/synthetic/clone numeric events or full class parity. Default native constructor/Create are internal managed initialization, no uncreated Lisp widget. See docs/NUMERIC-INPUT.md."
+    },
+    {
+      "header": "wx/spinctrl.h",
+      "line": 109,
+      "declaration": "bool Create(wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& value = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxSP_ARROW_KEYS, int min = 0, int max = 100, int initial = 0, const wxString& name = \"wxSpinCtrl\");",
+      "status": "~",
+      "symbol": "wxSpinCtrl::Create",
+      "lisp": [
+        "slider",
+        "spin-control",
+        "make-slider",
+        "make-spin-control",
+        "numeric-value",
+        "numeric-range",
+        "slider-orientation",
+        "event-numeric-value"
+      ],
+      "native": [
+        "wxl_numeric",
+        "wxl_numeric_field",
+        "wxl_set_numeric_value",
+        "wxl_set_numeric_range"
+      ],
+      "scope": "Native-backed SLIDER/SPIN-CONTROL slice only: signed endpoints\u00b11000000, strictmin<max, validated values, atomic two-bound property with silent clamp; optional explicit value notification, slider orientation, decimal integer spin/arrows. GetTextValue parse prevalidation before native numeric getter; invalid/intermediate edits reject. Actual numeric/forwarded text lifetime/reentry guards. No raw adoption, other styles, spin doubles, native owned/synthetic/clone numeric events or full class parity. Default native constructor/Create are internal managed initialization, no uncreated Lisp widget. See docs/NUMERIC-INPUT.md."
+    },
+    {
+      "header": "wx/spinctrl.h",
+      "line": 129,
+      "declaration": "int GetMax() const;",
+      "status": "~",
+      "symbol": "wxSpinCtrl::GetMax",
+      "lisp": [
+        "slider",
+        "spin-control",
+        "make-slider",
+        "make-spin-control",
+        "numeric-value",
+        "numeric-range",
+        "slider-orientation",
+        "event-numeric-value"
+      ],
+      "native": [
+        "wxl_numeric",
+        "wxl_numeric_field",
+        "wxl_set_numeric_value",
+        "wxl_set_numeric_range"
+      ],
+      "scope": "Native-backed SLIDER/SPIN-CONTROL slice only: signed endpoints\u00b11000000, strictmin<max, validated values, atomic two-bound property with silent clamp; optional explicit value notification, slider orientation, decimal integer spin/arrows. GetTextValue parse prevalidation before native numeric getter; invalid/intermediate edits reject. Actual numeric/forwarded text lifetime/reentry guards. No raw adoption, other styles, spin doubles, native owned/synthetic/clone numeric events or full class parity. Default native constructor/Create are internal managed initialization, no uncreated Lisp widget. See docs/NUMERIC-INPUT.md."
+    },
+    {
+      "header": "wx/spinctrl.h",
+      "line": 134,
+      "declaration": "int GetMin() const;",
+      "status": "~",
+      "symbol": "wxSpinCtrl::GetMin",
+      "lisp": [
+        "slider",
+        "spin-control",
+        "make-slider",
+        "make-spin-control",
+        "numeric-value",
+        "numeric-range",
+        "slider-orientation",
+        "event-numeric-value"
+      ],
+      "native": [
+        "wxl_numeric",
+        "wxl_numeric_field",
+        "wxl_set_numeric_value",
+        "wxl_set_numeric_range"
+      ],
+      "scope": "Native-backed SLIDER/SPIN-CONTROL slice only: signed endpoints\u00b11000000, strictmin<max, validated values, atomic two-bound property with silent clamp; optional explicit value notification, slider orientation, decimal integer spin/arrows. GetTextValue parse prevalidation before native numeric getter; invalid/intermediate edits reject. Actual numeric/forwarded text lifetime/reentry guards. No raw adoption, other styles, spin doubles, native owned/synthetic/clone numeric events or full class parity. Default native constructor/Create are internal managed initialization, no uncreated Lisp widget. See docs/NUMERIC-INPUT.md."
+    },
+    {
+      "header": "wx/spinctrl.h",
+      "line": 141,
+      "declaration": "wxString GetTextValue() const;",
+      "status": "~",
+      "symbol": "wxSpinCtrl::GetTextValue",
+      "lisp": [
+        "slider",
+        "spin-control",
+        "make-slider",
+        "make-spin-control",
+        "numeric-value",
+        "numeric-range",
+        "slider-orientation",
+        "event-numeric-value"
+      ],
+      "native": [
+        "wxl_numeric",
+        "wxl_numeric_field",
+        "wxl_set_numeric_value",
+        "wxl_set_numeric_range"
+      ],
+      "scope": "Native-backed SLIDER/SPIN-CONTROL slice only: signed endpoints\u00b11000000, strictmin<max, validated values, atomic two-bound property with silent clamp; optional explicit value notification, slider orientation, decimal integer spin/arrows. GetTextValue parse prevalidation before native numeric getter; invalid/intermediate edits reject. Actual numeric/forwarded text lifetime/reentry guards. No raw adoption, other styles, spin doubles, native owned/synthetic/clone numeric events or full class parity. Default native constructor/Create are internal managed initialization, no uncreated Lisp widget. See docs/NUMERIC-INPUT.md."
+    },
+    {
+      "header": "wx/spinctrl.h",
+      "line": 146,
+      "declaration": "int GetValue() const;",
+      "status": "~",
+      "symbol": "wxSpinCtrl::GetValue",
+      "lisp": [
+        "slider",
+        "spin-control",
+        "make-slider",
+        "make-spin-control",
+        "numeric-value",
+        "numeric-range",
+        "slider-orientation",
+        "event-numeric-value"
+      ],
+      "native": [
+        "wxl_numeric",
+        "wxl_numeric_field",
+        "wxl_set_numeric_value",
+        "wxl_set_numeric_range"
+      ],
+      "scope": "Native-backed SLIDER/SPIN-CONTROL slice only: signed endpoints\u00b11000000, strictmin<max, validated values, atomic two-bound property with silent clamp; optional explicit value notification, slider orientation, decimal integer spin/arrows. GetTextValue parse prevalidation before native numeric getter; invalid/intermediate edits reject. Actual numeric/forwarded text lifetime/reentry guards. No raw adoption, other styles, spin doubles, native owned/synthetic/clone numeric events or full class parity. Default native constructor/Create are internal managed initialization, no uncreated Lisp widget. See docs/NUMERIC-INPUT.md."
+    },
+    {
+      "header": "wx/spinctrl.h",
+      "line": 180,
+      "declaration": "bool SetBase(int base);",
+      "status": "~",
+      "symbol": "wxSpinCtrl::SetBase",
+      "lisp": [
+        "slider",
+        "spin-control",
+        "make-slider",
+        "make-spin-control",
+        "numeric-value",
+        "numeric-range",
+        "slider-orientation",
+        "event-numeric-value"
+      ],
+      "native": [
+        "wxl_numeric",
+        "wxl_numeric_field",
+        "wxl_set_numeric_value",
+        "wxl_set_numeric_range"
+      ],
+      "scope": "Native-backed SLIDER/SPIN-CONTROL slice only: signed endpoints\u00b11000000, strictmin<max, validated values, atomic two-bound property with silent clamp; optional explicit value notification, slider orientation, decimal integer spin/arrows. GetTextValue parse prevalidation before native numeric getter; invalid/intermediate edits reject. Actual numeric/forwarded text lifetime/reentry guards. No raw adoption, other styles, spin doubles, native owned/synthetic/clone numeric events or full class parity. Default native constructor/Create are internal managed initialization, no uncreated Lisp widget. See docs/NUMERIC-INPUT.md."
+    },
+    {
+      "header": "wx/spinctrl.h",
+      "line": 193,
+      "declaration": "void SetRange(int minVal, int maxVal);",
+      "status": "~",
+      "symbol": "wxSpinCtrl::SetRange",
+      "lisp": [
+        "slider",
+        "spin-control",
+        "make-slider",
+        "make-spin-control",
+        "numeric-value",
+        "numeric-range",
+        "slider-orientation",
+        "event-numeric-value"
+      ],
+      "native": [
+        "wxl_numeric",
+        "wxl_numeric_field",
+        "wxl_set_numeric_value",
+        "wxl_set_numeric_range"
+      ],
+      "scope": "Native-backed SLIDER/SPIN-CONTROL slice only: signed endpoints\u00b11000000, strictmin<max, validated values, atomic two-bound property with silent clamp; optional explicit value notification, slider orientation, decimal integer spin/arrows. GetTextValue parse prevalidation before native numeric getter; invalid/intermediate edits reject. Actual numeric/forwarded text lifetime/reentry guards. No raw adoption, other styles, spin doubles, native owned/synthetic/clone numeric events or full class parity. Default native constructor/Create are internal managed initialization, no uncreated Lisp widget. See docs/NUMERIC-INPUT.md."
+    },
+    {
+      "header": "wx/spinctrl.h",
+      "line": 225,
+      "declaration": "void SetValue(int value);",
+      "status": "~",
+      "symbol": "wxSpinCtrl::SetValue",
+      "lisp": [
+        "slider",
+        "spin-control",
+        "make-slider",
+        "make-spin-control",
+        "numeric-value",
+        "numeric-range",
+        "slider-orientation",
+        "event-numeric-value"
+      ],
+      "native": [
+        "wxl_numeric",
+        "wxl_numeric_field",
+        "wxl_set_numeric_value",
+        "wxl_set_numeric_range"
+      ],
+      "scope": "Native-backed SLIDER/SPIN-CONTROL slice only: signed endpoints\u00b11000000, strictmin<max, validated values, atomic two-bound property with silent clamp; optional explicit value notification, slider orientation, decimal integer spin/arrows. GetTextValue parse prevalidation before native numeric getter; invalid/intermediate edits reject. Actual numeric/forwarded text lifetime/reentry guards. No raw adoption, other styles, spin doubles, native owned/synthetic/clone numeric events or full class parity. Default native constructor/Create are internal managed initialization, no uncreated Lisp widget. See docs/NUMERIC-INPUT.md."
+    },
+    {
+      "header": "wx/spinctrl.h",
+      "line": 478,
+      "declaration": "wxEventType wxEVT_SPINCTRL;",
+      "status": "~",
+      "symbol": "wxEVT_SPINCTRL",
+      "lisp": [
+        "slider",
+        "spin-control",
+        "make-slider",
+        "make-spin-control",
+        "numeric-value",
+        "numeric-range",
+        "slider-orientation",
+        "event-numeric-value"
+      ],
+      "native": [
+        "wxl_numeric",
+        "wxl_numeric_field",
+        "wxl_set_numeric_value",
+        "wxl_set_numeric_range"
+      ],
+      "scope": "Native-backed SLIDER/SPIN-CONTROL slice only: signed endpoints\u00b11000000, strictmin<max, validated values, atomic two-bound property with silent clamp; optional explicit value notification, slider orientation, decimal integer spin/arrows. GetTextValue parse prevalidation before native numeric getter; invalid/intermediate edits reject. Actual numeric/forwarded text lifetime/reentry guards. No raw adoption, other styles, spin doubles, native owned/synthetic/clone numeric events or full class parity. Default native constructor/Create are internal managed initialization, no uncreated Lisp widget. See docs/NUMERIC-INPUT.md."
+    },
+    {
+      "header": "wx/spinbutt.h",
+      "line": 47,
+      "declaration": "void SetPosition(int pos);",
+      "status": "~",
+      "symbol": "wxSpinEvent::SetPosition",
+      "lisp": [
+        "slider",
+        "spin-control",
+        "make-slider",
+        "make-spin-control",
+        "numeric-value",
+        "numeric-range",
+        "slider-orientation",
+        "event-numeric-value"
+      ],
+      "native": [
+        "wxl_numeric",
+        "wxl_numeric_field",
+        "wxl_set_numeric_value",
+        "wxl_set_numeric_range"
+      ],
+      "scope": "Native-backed SLIDER/SPIN-CONTROL slice only: signed endpoints\u00b11000000, strictmin<max, validated values, atomic two-bound property with silent clamp; optional explicit value notification, slider orientation, decimal integer spin/arrows. GetTextValue parse prevalidation before native numeric getter; invalid/intermediate edits reject. Actual numeric/forwarded text lifetime/reentry guards. No raw adoption, other styles, spin doubles, native owned/synthetic/clone numeric events or full class parity. Default native constructor/Create are internal managed initialization, no uncreated Lisp widget. See docs/NUMERIC-INPUT.md."
+    },
+    {
+      "header": "wx/event.h",
+      "line": 5161,
+      "declaration": "wxEventType wxEVT_SLIDER;",
+      "status": "~",
+      "symbol": "wxEVT_SLIDER",
+      "lisp": [
+        "slider",
+        "spin-control",
+        "make-slider",
+        "make-spin-control",
+        "numeric-value",
+        "numeric-range",
+        "slider-orientation",
+        "event-numeric-value"
+      ],
+      "native": [
+        "wxl_numeric",
+        "wxl_numeric_field",
+        "wxl_set_numeric_value",
+        "wxl_set_numeric_range"
+      ],
+      "scope": "Native-backed SLIDER/SPIN-CONTROL slice only: signed endpoints\u00b11000000, strictmin<max, validated values, atomic two-bound property with silent clamp; optional explicit value notification, slider orientation, decimal integer spin/arrows. GetTextValue parse prevalidation before native numeric getter; invalid/intermediate edits reject. Actual numeric/forwarded text lifetime/reentry guards. No raw adoption, other styles, spin doubles, native owned/synthetic/clone numeric events or full class parity. Default native constructor/Create are internal managed initialization, no uncreated Lisp widget. See docs/NUMERIC-INPUT.md."
     }
   ],
   "classes": {
@@ -7823,6 +8280,66 @@
         "wxl_ui_timer_active"
       ],
       "scope": "Private wxTimer adapter for bounded safe-idle UI scheduler tickets only. Continuous native timers, bridge logical one-shots, coalesced due ticks, fair deferred-action ordering, owner/session/cancel/root/error cleanup.1..86400000ms/max256. No native timer event receiver/adoption, restart/interval setter or public Notify hook. OSX start exact verified3.2.12 gate; wxUSE_TIMER required. See docs/UI-TIMERS.md."
+    },
+    "wxSlider": {
+      "status": "~",
+      "lisp": [
+        "slider",
+        "spin-control",
+        "make-slider",
+        "make-spin-control",
+        "numeric-value",
+        "numeric-range",
+        "slider-orientation",
+        "event-numeric-value"
+      ],
+      "native": [
+        "wxl_numeric",
+        "wxl_numeric_field",
+        "wxl_set_numeric_value",
+        "wxl_set_numeric_range"
+      ],
+      "scope": "Native-backed SLIDER/SPIN-CONTROL slice only: signed endpoints\u00b11000000, strictmin<max, validated values, atomic two-bound property with silent clamp; optional explicit value notification, slider orientation, decimal integer spin/arrows. GetTextValue parse prevalidation before native numeric getter; invalid/intermediate edits reject. Actual numeric/forwarded text lifetime/reentry guards. No raw adoption, other styles, spin doubles, native owned/synthetic/clone numeric events or full class parity. Default native constructor/Create are internal managed initialization, no uncreated Lisp widget. See docs/NUMERIC-INPUT.md."
+    },
+    "wxSpinCtrl": {
+      "status": "~",
+      "lisp": [
+        "slider",
+        "spin-control",
+        "make-slider",
+        "make-spin-control",
+        "numeric-value",
+        "numeric-range",
+        "slider-orientation",
+        "event-numeric-value"
+      ],
+      "native": [
+        "wxl_numeric",
+        "wxl_numeric_field",
+        "wxl_set_numeric_value",
+        "wxl_set_numeric_range"
+      ],
+      "scope": "Native-backed SLIDER/SPIN-CONTROL slice only: signed endpoints\u00b11000000, strictmin<max, validated values, atomic two-bound property with silent clamp; optional explicit value notification, slider orientation, decimal integer spin/arrows. GetTextValue parse prevalidation before native numeric getter; invalid/intermediate edits reject. Actual numeric/forwarded text lifetime/reentry guards. No raw adoption, other styles, spin doubles, native owned/synthetic/clone numeric events or full class parity. Default native constructor/Create are internal managed initialization, no uncreated Lisp widget. See docs/NUMERIC-INPUT.md."
+    },
+    "wxSpinEvent": {
+      "status": "~",
+      "lisp": [
+        "slider",
+        "spin-control",
+        "make-slider",
+        "make-spin-control",
+        "numeric-value",
+        "numeric-range",
+        "slider-orientation",
+        "event-numeric-value"
+      ],
+      "native": [
+        "wxl_numeric",
+        "wxl_numeric_field",
+        "wxl_set_numeric_value",
+        "wxl_set_numeric_range"
+      ],
+      "scope": "Native-backed SLIDER/SPIN-CONTROL slice only: signed endpoints\u00b11000000, strictmin<max, validated values, atomic two-bound property with silent clamp; optional explicit value notification, slider orientation, decimal integer spin/arrows. GetTextValue parse prevalidation before native numeric getter; invalid/intermediate edits reject. Actual numeric/forwarded text lifetime/reentry guards. No raw adoption, other styles, spin doubles, native owned/synthetic/clone numeric events or full class parity. Default native constructor/Create are internal managed initialization, no uncreated Lisp widget. See docs/NUMERIC-INPUT.md."
     }
   }
 }

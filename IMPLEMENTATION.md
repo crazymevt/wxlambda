@@ -2433,3 +2433,51 @@ periodic-status example and guide are repository/docset deliverables. Rebuild/
 check/install docset after final evidence notes; standard Cadre installation
 remains docs/DOCSET.md. No manual/hosted/timing-precision claims beyond the
 explicit verification above.
+
+## Bounded numeric input: sliders and spin controls (2026-10-28)
+
+Completed ABI45 native-backed SLIDER/SPIN-CONTROL construction, thin generic
+MAKE-SLIDER/MAKE-SPIN-CONTROL factories, NUMERIC-VALUE/NUMERIC-RANGE generic
+SETF properties, immutable slider orientation and copied/current EVENT-NUMERIC-VALUE.
+Strict integer endpoints -1000000..1000000, minimum<maximum and in-range initial/
+explicit values bound native arithmetic. Range changes silently clamp; value
+writes are silent unless :NOTIFY T requests exactly one native-class update.
+Spin scope is decimal integer/unit arrows without wrap, doubles or raw text APIs.
+Invalid transient spin edits reject before unsafe native integer conversion.
+
+Native numeric events remain observation/context only: no owned construction,
+clone or synthetic dispatch. Spin veto metadata does not undo committed values.
+Operation guards cover numeric and spin-forwarded TEXT callbacks, same-control
+writes, owner/ancestor teardown and unsafe nested GUI entry. Silent cross-control
+writes support synchronized forms. Creation/failure/teardown suppress callback
+delivery; direct source identity is matched before composite-child traversal.
+Independent review resolved numeric clone refusal and required wxUSE_SLIDER/
+SPINCTRL/SPINBTN configuration checks; no remaining code findings. Documentation review corrected snapshot persistence
+versus borrowed-context lifetime and event metadata bounds; no remaining findings.
+
+Example examples/numeric-input.lisp synchronizes signed slider/spin values and
+narrows both ranges. Native probes use actual slider/spin/text event classes,
+parent propagation, callback guards, invalid edit injection, teardown and clone
+refusal. Final main/native builds, zero-assertion native harness and focused
+both-Lisp example/tests pass (quiet-run.NpKIwS3a). All70 GUI scenarios plus
+preflight pass on SBCL2.6.9 and CCL1.13 (quiet-run.f88mbz2I), reports
+evidence/numeric-input/{sbcl,ccl}-20261028-final/. Runtime macOS wxWidgets3.2.12;
+GTK/MSW numeric paths source-reviewed, hosted GUI unrun. Physical dragging,
+arrow clicks, typed edits/IME and graphical Cadre remain unverified.
+
+Regenerated native inventory/14 checks and16 Python checks pass
+(quiet-run.7nq9pOZC). Both-Lisp actual public-export/class/SETF checks and counts:
+244 exports,175 named generics,54 SETF generics,22 window wrappers
+(20 concrete+2 abstract),44 examples,333 docset entries. Zero docset problems;
+isolated install/discovery/symbol lookup and guide/example access pass
+(quiet-run.6OmJ68Rm), installation docs/DOCSET.md. Five package isolation checks
+pass in evidence/packaging/numeric-input-20261028/, packaged
+dist/wxlambda-form-numeric-input. Package remains the established form binary;
+the numeric example is a separate repository/docset deliverable. Rebuild/check/
+install docset after final notes.
+
+Session handoff: broad GUI coverage with selective depth remains the objective.
+Next selected slice: bounded radio-button groups for mutually exclusive form
+choices. Continue concrete workflow breadth, independent review and aligned
+docs/examples/docset/coverage; do not infer full wxWidgets parity or hosted
+platform validation from inventory partial entries.

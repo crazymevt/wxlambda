@@ -2,7 +2,7 @@
 
 Widgets are native-backed CLOS instances. The public classes are `window`,
 `frame`, `toolbar`, `status-bar`, `panel`, `notebook`, `list-box`, `tree-control`, `splitter-window`, `button`, `text-control`, `label`, `checkbox`, `choice`,
-`gauge`, abstract `dialog`, and its `text-entry-dialog`, `single-choice-dialog`,
+`gauge`, `slider`, `spin-control`, abstract `dialog`, and its `text-entry-dialog`, `single-choice-dialog`,
 `message-dialog` and `file-dialog` concrete families.
 `window` inherits from `event-handler` and is abstract. Standalone `event-handler`
 instances are native-backed session-owned resources; window instances reuse their
@@ -41,6 +41,8 @@ Concrete native initargs are:
 
 - `frame`: `:title` (default "wxlambda"), `:width` (480), `:height` (240), `:accelerators` (NIL). See [keyboard actions](KEYBOARD-ACCELERATORS.md).
 - `panel`: required `:parent` window.
+- `slider`: required `:parent`; :minimum0/:maximum100/:value0, :orientation :horizontal.
+- `spin-control`: required `:parent`; :minimum0/:maximum100/:value0. Both numeric families use strict bounds within ±1000000; see [numeric input](NUMERIC-INPUT.md).
 - `toolbar`: required `:parent` frame; fixed tools after realization.
 - `status-bar`: required `:parent` frame, `:fields` (1, range 1..16). See [frame actions](FRAME-ACTIONS.md).
 - `button`: required `:parent`, `:label` ("Button").

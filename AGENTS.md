@@ -120,7 +120,7 @@ session ownership; actual native window destruction pops managed stacks without
 deleting those handlers. Explicit stack-aware processing differs from generic
 window receiver dispatch, which retains native stack bypass. Public window wrapper
 classes are `window` (abstract), `frame`, `panel`, `button`,
-`text-control`, `label`, `checkbox`, `choice`, `gauge`, `notebook`, `list-box`, `tree-control`, `splitter-window`, `toolbar` and `status-bar` (plus the
+`text-control`, `label`, `checkbox`, `choice`, `gauge`, `slider`, `spin-control`, `notebook`, `list-box`, `tree-control`, `splitter-window`, `toolbar` and `status-bar` (plus the
 DIALOG hierarchy described below). Lisp subclassing does not imply
 native C++ subclassing or virtual-method callbacks; those need separate bridge
 support. See `docs/CLOS-API.md`.
@@ -223,3 +223,11 @@ owner/session/root cleanup, count/interval bounds and no native pointer across
 Lisp delivery. macOS start is gated to verified3.2.12: newer branches can lack the
 queued-native cancellation validity check. Re-audit before widening this gate.
 See docs/UI-TIMERS.md; no public wxTimer event receiver/Notify hook is exposed.
+
+ABI45 numeric controls use native-backed SLIDER/SPIN-CONTROL CLOS construction,
+strict signed bounds±1000000 and generic value/range properties. Preserve silent
+programmatic/text suppression, explicit native-class notify, same-control write
+rejection with silent cross-control synchronization, origin/child/teardown
+lifetime guards and spin raw-text prevalidation before native GetValue. Spin
+notify veto is observational; both numeric kinds reject owned/synthetic/cloning.
+See docs/NUMERIC-INPUT.md. Required build features: SLIDER/SPINCTRL/SPINBTN.

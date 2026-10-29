@@ -17,7 +17,7 @@ extern "C" {
 typedef uint64_t wxl_handle;
 enum wxl_alignment { WXL_ALIGN_START = 0, WXL_ALIGN_CENTER = 1, WXL_ALIGN_END = 2 };
 enum wxl_event_family { WXL_FAMILY_COMMAND = 0, WXL_FAMILY_CLOSE = 1, WXL_FAMILY_NOTIFY = 2, WXL_FAMILY_IDLE = 3 };
-enum wxl_event_kind { WXL_EVENT_CLICK = 1, WXL_EVENT_TEXT_CHANGE = 2, WXL_EVENT_TOGGLE = 3, WXL_EVENT_SELECTION = 4, WXL_EVENT_CLOSE = 5, WXL_EVENT_QUERY_END_SESSION = 6, WXL_EVENT_END_SESSION = 7, WXL_EVENT_IDLE = 8, WXL_EVENT_MENU = 9, WXL_EVENT_NOTEBOOK_CHANGING = 10, WXL_EVENT_NOTEBOOK_CHANGED = 11, WXL_EVENT_LISTBOX_SELECTION = 12, WXL_EVENT_LISTBOX_DOUBLE_CLICK = 13, WXL_EVENT_TREE_CHANGING = 14, WXL_EVENT_TREE_CHANGED = 15, WXL_EVENT_SPLITTER_CHANGING = 16, WXL_EVENT_SPLITTER_CHANGED = 17 };
+enum wxl_event_kind { WXL_EVENT_CLICK = 1, WXL_EVENT_TEXT_CHANGE = 2, WXL_EVENT_TOGGLE = 3, WXL_EVENT_SELECTION = 4, WXL_EVENT_CLOSE = 5, WXL_EVENT_QUERY_END_SESSION = 6, WXL_EVENT_END_SESSION = 7, WXL_EVENT_IDLE = 8, WXL_EVENT_MENU = 9, WXL_EVENT_NOTEBOOK_CHANGING = 10, WXL_EVENT_NOTEBOOK_CHANGED = 11, WXL_EVENT_LISTBOX_SELECTION = 12, WXL_EVENT_LISTBOX_DOUBLE_CLICK = 13, WXL_EVENT_TREE_CHANGING = 14, WXL_EVENT_TREE_CHANGED = 15, WXL_EVENT_SPLITTER_CHANGING = 16, WXL_EVENT_SPLITTER_CHANGED = 17, WXL_EVENT_SLIDER_CHANGE = 18, WXL_EVENT_SPIN_CHANGE = 19 };
 typedef struct wxl_event {
     int kind;
     const char *text; /* UTF-8 for text changes, listbox events and registered command/notify tags. */
@@ -283,6 +283,12 @@ WXL_API int wxl_set_label(wxl_handle label, const char *value);
 /* Borrowed until the next wxl_get_label on this thread; NULL indicates failure. */
 WXL_API const char *wxl_get_label(wxl_handle label);
 /* Gauge getters return -1 on failure; values/ranges are nonnegative. */
+/* Numeric kind0 slider, kind1 integer spin; bounded min<max, endpoints +/-1000000.
+   Fields0 value,1 minimum,2 maximum,3 slider vertical; range writes clamp silently. */
+WXL_API wxl_handle wxl_numeric(wxl_handle parent, int kind, int minimum, int maximum, int value, int vertical);
+WXL_API int wxl_numeric_field(wxl_handle control, int field, int* value);
+WXL_API int wxl_set_numeric_value(wxl_handle control, int value, int notify);
+WXL_API int wxl_set_numeric_range(wxl_handle control, int minimum, int maximum);
 WXL_API wxl_handle wxl_gauge(wxl_handle parent, int range, int value, int vertical);
 WXL_API int wxl_gauge_value(wxl_handle gauge);
 WXL_API int wxl_gauge_range(wxl_handle gauge);

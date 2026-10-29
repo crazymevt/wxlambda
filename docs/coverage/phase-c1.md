@@ -17,7 +17,7 @@ class or constructor does not imply full upstream coverage.
 
 ## Current coverage and remaining work
 
-7 implemented; 103 partial; 5182 pending; 26 context entries. Native gaps stay visible; feature priority is separate.
+7 implemented; 104 partial; 5181 pending; 26 context entries. Native gaps stay visible; feature priority is separate.
 
 Counts describe inventory entries, not distinct APIs or percent completion.
 See the [coverage summary](README.md) for phase/header comparisons.
@@ -1476,7 +1476,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h)
 
-7 implemented; 75 partial; 578 pending; 16 context entries. Native gaps stay visible; feature priority is separate.
+7 implemented; 76 partial; 577 pending; 16 context entries. Native gaps stay visible; feature priority is separate.
 
 - **Context**: [L9](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L9) `#if wxUSE_BASE`
 - [ ] [L15](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L15) `enum wxEventPropagation {`
@@ -1654,7 +1654,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [ ] [L2064](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L2064) `void* GetClientData() const;`
 - [ ] [L2070](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L2070) `wxClientData* GetClientObject() const;`
 - [~] [L2081](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L2081) `long GetExtraLong() const;` — **Partial**: `event-extra-long`; ABI: `wxl_bind`, `wxl_event_field`. Saved/current/owned command and notify extra LONG reads, copied before callback; close-family reads zero. Signed native LONG widened at ABI. No derived control-state reconstruction or client/userData ownership.
-- [~] [L2092](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L2092) `int GetInt() const;` — **Partial**: `event-integer`; ABI: `wxl_bind`, `wxl_process_event`, `wxl_event_field`. Snapshots retain copied values. Owned/current command/notify values support generic event-integer reads; snapshots stay immutable. Signed32 integer or counted UTF-8 string transport; close-family reads are zero/NIL and writes reject. Native wxEVT_TEXT text-entry-origin SETF rejects; detached clones freeze effective native text. No client/userData ownership or arbitrary native classes.
+- [~] [L2092](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L2092) `int GetInt() const;` — **Partial**: `event-integer`, `event-numeric-value`; ABI: `wxl_bind`, `wxl_process_event`, `wxl_event_field`. Snapshots retain copied values. Owned/current command/notify values support generic event-integer reads; snapshots stay immutable. Signed32 integer or counted UTF-8 string transport; close-family reads are zero/NIL and writes reject. Native wxEVT_TEXT text-entry-origin SETF rejects; detached clones freeze effective native text. No client/userData ownership or arbitrary native classes. Also reads native numeric slider/spin event payloads, observational and independent of control state.
 - [~] [L2098](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L2098) `int GetSelection() const;` — **Partial**: `event-selection`; ABI: `wxl_bind`, `wxl_event_field`. Uniform saved/current/owned semantic view only for :SELECTION, otherwise NIL. Maps native -1 to NIL; other negative raw GetInt values remain visible. No item-list validation or control setter.
 - [~] [L2106](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L2106) `wxString GetString() const;` — **Partial**: `event-text`; ABI: `wxl_bind`, `wxl_event_text`. Snapshots retain copied values. Owned/current command/notify values support generic event-text reads; snapshots stay immutable. Signed32 integer or counted UTF-8 string transport; close-family reads are zero/NIL and writes reject. Native wxEVT_TEXT text-entry-origin SETF rejects; detached clones freeze effective native text. No client/userData ownership or arbitrary native classes.
 - [~] [L2116](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L2116) `bool IsChecked() const;` — **Partial**: `event-checked-p`; ABI: `wxl_bind`, `wxl_event_field`. Uniform saved/current/owned semantic checked view only for :TOGGLE; other kinds NIL. Native command integer nonzero reads true. Does not cover menu/checklist/other derived semantic classes.
@@ -2031,7 +2031,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [ ] [L5158](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L5158) `wxEventType wxEVT_LISTBOX_DCLICK;`
 - [ ] [L5159](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L5159) `wxEventType wxEVT_CHECKLISTBOX;`
 - [~] [L5160](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L5160) `wxEventType wxEVT_MENU;` — **Partial**: `bind-event`, `make-event`, `queue-event`, `process-event`, `event-checked-p`; ABI: `wxl_bind`, `wxl_owned_event`, `wxl_queue_event`, `wxl_process_event`. Built-in :MENU command routing with ID/ranges and bounded command payload; no menu-open/close/highlight event family. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting, popup/submenu/radio scope. Structural changes reject during callbacks/pumps/RUN.
-- [ ] [L5161](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L5161) `wxEventType wxEVT_SLIDER;`
+- [~] [L5161](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L5161) `wxEventType wxEVT_SLIDER;` — **Partial**: `slider`, `spin-control`, `make-slider`, `make-spin-control`, `numeric-value`, `numeric-range`, `slider-orientation`, `event-numeric-value`; ABI: `wxl_numeric`, `wxl_numeric_field`, `wxl_set_numeric_value`, `wxl_set_numeric_range`. Native-backed SLIDER/SPIN-CONTROL slice only: signed endpoints±1000000, strictmin<max, validated values, atomic two-bound property with silent clamp; optional explicit value notification, slider orientation, decimal integer spin/arrows. GetTextValue parse prevalidation before native numeric getter; invalid/intermediate edits reject. Actual numeric/forwarded text lifetime/reentry guards. No raw adoption, other styles, spin doubles, native owned/synthetic/clone numeric events or full class parity. Default native constructor/Create are internal managed initialization, no uncreated Lisp widget. See docs/NUMERIC-INPUT.md.
 - [ ] [L5162](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L5162) `wxEventType wxEVT_RADIOBOX;`
 - [ ] [L5163](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L5163) `wxEventType wxEVT_RADIOBUTTON;`
 - [ ] [L5164](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/event.h#L5164) `wxEventType wxEVT_SCROLLBAR;`

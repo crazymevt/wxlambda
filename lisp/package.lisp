@@ -47,6 +47,8 @@
            #:text #:on-click #:off-click #:queue-click #:native-error
            #:on-text-change #:off-text-change
            #:make-label #:label-text
+           #:slider #:spin-control #:make-slider #:make-spin-control
+           #:numeric-value #:numeric-range #:slider-orientation #:event-numeric-value
            #:gauge #:make-gauge #:gauge-value #:gauge-range #:gauge-vertical-p #:pulse-gauge
            #:make-checkbox #:checked-p #:on-toggle #:off-toggle
            #:make-choice #:selection #:on-selection #:off-selection

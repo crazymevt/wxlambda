@@ -16,12 +16,20 @@ check_cxx_source_compiles("#include <wx/setup.h>
 #error wxUSE_TIMER is required
 #endif
 int main() { return 0; }" WXLAMBDA_HAS_TIMERS)
+check_cxx_source_compiles("#include <wx/setup.h>
+#if !wxUSE_SLIDER || !wxUSE_SPINCTRL || !wxUSE_SPINBTN
+#error Numeric input controls are required
+#endif
+int main() { return 0; }" WXLAMBDA_HAS_NUMERIC_CONTROLS)
 cmake_pop_check_state()
 if(NOT WXLAMBDA_HAS_ACCELERATORS)
   message(FATAL_ERROR "wxlambda requires wxWidgets built with wxUSE_ACCEL=1")
 endif()
 if(NOT WXLAMBDA_HAS_TIMERS)
   message(FATAL_ERROR "wxlambda requires wxWidgets built with wxUSE_TIMER=1")
+endif()
+if(NOT WXLAMBDA_HAS_NUMERIC_CONTROLS)
+  message(FATAL_ERROR "wxlambda requires wxUSE_SLIDER=1, wxUSE_SPINCTRL=1 and wxUSE_SPINBTN=1")
 endif()
 add_library(wxlambda SHARED native/wxlambda.cpp)
 target_compile_features(wxlambda PRIVATE cxx_std_17)

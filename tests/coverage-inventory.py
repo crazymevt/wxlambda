@@ -158,7 +158,7 @@ class CoverageInventoryChecks(unittest.TestCase):
         required = {
             'wxFrame::wxFrame', 'wxPanel::wxPanel', 'wxButton::wxButton',
             'wxMessageDialog::wxMessageDialog', 'wxMessageDialog::GetMessage',
-            'wxTimer::wxTimer', 'wxTimer::Start', 'wxTimer::Stop', 'wxTimer::Notify', 'wxAcceleratorEntry::wxAcceleratorEntry', 'wxAcceleratorTable::wxAcceleratorTable', 'wxWindow::SetAcceleratorTable', 'wxToolBar::AddTool', 'wxStatusBar::SetStatusText', 'wxArtProvider::GetBitmap', 'wxSplitterWindow::wxSplitterWindow', 'wxSplitterEvent::GetSashPosition', 'wxTreeCtrl::wxTreeCtrl', 'wxTreeCtrl::AddRoot', 'wxTreeEvent::GetItem',
+            'wxSlider::Create', 'wxSpinCtrl::Create', 'wxSpinCtrl::GetTextValue', 'wxSpinEvent::SetPosition', 'wxEVT_SLIDER', 'wxEVT_SPINCTRL', 'wxTimer::wxTimer', 'wxTimer::Start', 'wxTimer::Stop', 'wxTimer::Notify', 'wxAcceleratorEntry::wxAcceleratorEntry', 'wxAcceleratorTable::wxAcceleratorTable', 'wxWindow::SetAcceleratorTable', 'wxToolBar::AddTool', 'wxStatusBar::SetStatusText', 'wxArtProvider::GetBitmap', 'wxSplitterWindow::wxSplitterWindow', 'wxSplitterEvent::GetSashPosition', 'wxTreeCtrl::wxTreeCtrl', 'wxTreeCtrl::AddRoot', 'wxTreeEvent::GetItem',
             'wxListBox::wxListBox', 'wxItemContainer::Append', 'wxItemContainer::Delete',
             'wxNotebook::wxNotebook', 'wxBookCtrlBase::AddPage', 'wxBookCtrlEvent::GetSelection',
             'wxTextEntry::Replace', 'wxTextEntry::GetSelection', 'wxTextEntry::SetSelection',
@@ -202,7 +202,7 @@ class CoverageInventoryChecks(unittest.TestCase):
         self.assertEqual(set(self.status['classes']), {
             'wxFrame', 'wxPanel', 'wxButton', 'wxTextCtrl', 'wxStaticText',
             'wxCheckBox', 'wxChoice', 'wxGauge', 'wxBoxSizer', 'wxWindow', 'wxTopLevelWindow',
-            'wxTimer', 'wxAcceleratorEntry', 'wxAcceleratorTable', 'wxToolBar', 'wxStatusBar', 'wxArtProvider', 'wxSplitterWindow', 'wxSplitterEvent', 'wxTreeCtrl', 'wxTreeItemId', 'wxTreeEvent', 'wxListBox', 'wxItemContainer', 'wxItemContainerImmutable', 'wxNotebook', 'wxBookCtrlBase', 'wxBookCtrlEvent', 'wxClipboard', 'wxTextDataObject', 'wxMessageDialog', 'wxFileDialog', 'wxModalDialogHook', 'wxDialog', 'wxTextEntryDialog', 'wxSingleChoiceDialog', 'wxMenuBar', 'wxMenu', 'wxMenuItem', 'wxAppConsole', 'wxApp', 'wxEvtHandler', 'wxClientData', 'wxObject', 'wxIdleEvent', 'wxEvent', 'wxCloseEvent', 'wxNotifyEvent', 'wxCommandEvent',
+            'wxSlider', 'wxSpinCtrl', 'wxSpinEvent', 'wxTimer', 'wxAcceleratorEntry', 'wxAcceleratorTable', 'wxToolBar', 'wxStatusBar', 'wxArtProvider', 'wxSplitterWindow', 'wxSplitterEvent', 'wxTreeCtrl', 'wxTreeItemId', 'wxTreeEvent', 'wxListBox', 'wxItemContainer', 'wxItemContainerImmutable', 'wxNotebook', 'wxBookCtrlBase', 'wxBookCtrlEvent', 'wxClipboard', 'wxTextDataObject', 'wxMessageDialog', 'wxFileDialog', 'wxModalDialogHook', 'wxDialog', 'wxTextEntryDialog', 'wxSingleChoiceDialog', 'wxMenuBar', 'wxMenu', 'wxMenuItem', 'wxAppConsole', 'wxApp', 'wxEvtHandler', 'wxClientData', 'wxObject', 'wxIdleEvent', 'wxEvent', 'wxCloseEvent', 'wxNotifyEvent', 'wxCommandEvent',
         })
 
     def test_compiler_scaffolding_is_context_but_public_macros_are_tasks(self):

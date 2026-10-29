@@ -35,7 +35,7 @@ void inspect_binding(uint64_t token, const wxl_event* event) {
     saved_context = event->context;
     binding_called = true;
 }
-std::function<void(uint64_t, const wxl_event*)> notebook_probe, list_probe, tree_probe, splitter_probe, toolbar_probe, accelerator_probe, deferred_event_probe;
+std::function<void(uint64_t, const wxl_event*)> notebook_probe, list_probe, tree_probe, splitter_probe, toolbar_probe, accelerator_probe, deferred_event_probe, numeric_probe;
 std::function<void(uint64_t,int)> ui_action_probe;
 void ignore_ui_action(uint64_t token, int execute) { if (ui_action_probe) ui_action_probe(token, execute); }
 void ignore_event(uint64_t token, const wxl_event* event) {
@@ -46,6 +46,7 @@ void ignore_event(uint64_t token, const wxl_event* event) {
     if ((token == 913 || token == 914) && toolbar_probe) toolbar_probe(token, event);
     if ((token == 915 || token == 916) && accelerator_probe) accelerator_probe(token, event);
     if (token == 917 && deferred_event_probe) deferred_event_probe(token, event);
+    if (token >= 918 && token <= 920 && numeric_probe) numeric_probe(token, event);
     if (token == 901) inspect_binding(token, event);
     if (token == 903) { ++menu_calls; menu_checked_payload = event->checked; menu_integer_payload = event->integer; menu_origin = event->origin_id; }
 }
@@ -805,6 +806,63 @@ struct SplitterProbe : FixedSplitter {
     using FixedSplitter::FixedSplitter;
     using wxSplitterWindow::SetSashPositionAndNotify;
 };
+void exercise_numeric_input() {
+    const auto frame=wxl_frame("Numeric",560,360), panel=wxl_panel(frame);
+    unsigned calls=0; bool construction=true;
+    numeric_probe=[&](uint64_t,const wxl_event*) { ++calls; expect(!construction,"Constructor must not deliver numeric/text callbacks"); };
+    expect(wxl_bind(frame,WXL_EVENT_TEXT_CHANGE,920,wxID_ANY,wxID_ANY,1,0)==0,"Observe constructor silence");
+    const auto slider=wxl_numeric(panel,0,-1000000,1000000,1000000,1), spin=wxl_numeric(panel,1,-1000000,1000000,-1000000,0);
+    expect(slider && spin && calls==0,"Create bounded signed numeric controls silently"); construction=false;
+    expect(wxl_unbind(920)==1,"Unbind constructor observer");
+    int value=0;
+    expect(wxl_numeric_field(slider,0,&value)==0 && value==1000000 && wxl_numeric_field(spin,0,&value)==0 && value==-1000000,"Endpoint round trips");
+    expect(wxl_numeric(panel,0,1,1,1,0)==0 && wxl_numeric(panel,1,-1000001,1,0,0)==0 && wxl_numeric(panel,1,0,10,0,1)==0,"Raw constructor range/style validation");
+    expect(wxl_set_numeric_value(slider,0,2)==-1 && wxl_set_numeric_range(spin,1,1)==-1 && wxl_numeric_field(frame,0,&value)==-1 && wxl_numeric_field(spin,3,&value)==-1 && wxl_numeric_field(slider,0,nullptr)==-1,"Raw operation validation");
+    expect(wxl_set_numeric_range(slider,0,10)==0 && wxl_numeric_field(slider,0,&value)==0 && value==10,"Silent upper clamp");
+    expect(wxl_set_numeric_range(spin,0,10)==0 && wxl_numeric_field(spin,0,&value)==0 && value==0,"Silent lower clamp");
+    expect(wxl_set_numeric_value(slider,7,0)==0 && wxl_set_numeric_value(spin,7,0)==0,"Set numeric fixtures");
+    const auto dialog=wxl_message_dialog(frame,"Numeric",7,"Probe",5,0,0);
+    wxl_handle current=slider, other=spin;
+    numeric_probe=[&](uint64_t token,const wxl_event* event) {
+        ++calls;
+        expect(wxl_destroy(current)==-1 && wxl_destroy(panel)==-1 && wxl_close(frame,1)==-1,"Native numeric source/ancestor guard");
+        expect(wxl_set_numeric_value(current,3,0)==-1 && wxl_set_numeric_range(current,0,5)==-1,"Same numeric callback write rejection");
+        expect(wxl_set_numeric_value(other,7,0)==0,"Silent cross-control synchronization");
+        int result=-1;
+        expect(wxl_dialog_show(dialog,&result)==-1 && wxl_clipboard_text_available()==-1 && wxl_poll()==-1,"Numeric modal/clipboard/pump gate");
+        if (event->kind==WXL_EVENT_SLIDER_CHANGE || event->kind==WXL_EVENT_SPIN_CHANGE) {
+            expect(event->integer==7 && event->origin_id==current && !wxl_clone_event(event->context,1),"Native numeric payload/origin/no clone");
+            if (event->kind==WXL_EVENT_SPIN_CHANGE) expect(wxl_context_set_vetoed(event->context,1)==0,"Spin notify metadata veto");
+        }
+        if (token==918) expect(wxl_context_set_skipped(event->context,1)==0,"Numeric propagation");
+    };
+    auto send=[&](int kind) {
+        const auto object=current;
+        expect(wxl_bind(current,kind,918,wxID_ANY,wxID_ANY,1,0)==0 && wxl_bind(frame,kind,919,wxID_ANY,wxID_ANY,1,0)==0,"Numeric binding pair");
+        if (kind==WXL_EVENT_SPIN_CHANGE) {
+            wxSpinEvent event(wxEVT_SPINCTRL,window(object)->GetId()); event.SetEventObject(window(object)); event.SetPosition(7);
+            window(object)->HandleWindowEvent(event);
+        } else {
+            wxCommandEvent event(kind==WXL_EVENT_SLIDER_CHANGE ? wxEVT_SLIDER : wxEVT_TEXT,window(object)->GetId());
+            event.SetEventObject(window(object)); event.SetInt(7); event.SetString("7"); window(object)->HandleWindowEvent(event);
+        }
+        expect(wxl_unbind(918)==1 && wxl_unbind(919)==1,"Unbind numeric pair");
+    };
+    send(WXL_EVENT_SLIDER_CHANGE);
+    current=spin; other=slider; send(WXL_EVENT_SPIN_CHANGE); send(WXL_EVENT_TEXT_CHANGE);
+    expect(calls==6 && numeric_operations.empty(),"Native numeric/forwarded text propagation guards");
+    numeric_probe={};
+    // Raw native edit injection is test-only; public setters accept integers only.
+    for (const auto& text : {"-", "NaN", "999999999999999999999999999999999999"}) {
+        { wxEventBlocker blocker(window(spin)); as<wxSpinCtrl>(spin)->SetValue(wxString::FromUTF8(text)); }
+        expect(wxl_numeric_field(spin,0,&value)==-1,"Invalid/intermediate spin edit rejected before native numeric parsing");
+        expect(wxl_set_numeric_value(spin,7,0)==0 && wxl_numeric_field(spin,0,&value)==0 && value==7,"Integer setter recovers spin edit");
+    }
+    expect(wxl_event_type(WXL_EVENT_SLIDER_CHANGE)==wxEVT_SLIDER && wxl_event_type(WXL_EVENT_SPIN_CHANGE)==wxEVT_SPINCTRL,"New native event tags");
+    delete window(frame); expect(numeric_owners.empty() && numeric_operations.empty(),"Numeric native teardown registry cleanup");
+    expect(wxl_numeric_field(slider,0,&value)==-1,"Stale numeric query rejects");
+}
+
 void exercise_ui_timers() {
     const auto frame=wxl_frame("UI timers",500,300), child=wxl_panel(frame);
     expect(wxl_start_ui_timer(0,1,0,0)==-1 && wxl_start_ui_timer(6000,0,0,0)==-1 && wxl_start_ui_timer(6000,86400001,0,0)==-1 && wxl_start_ui_timer(6000,1,2,0)==-1,"Timer raw validation");
@@ -1167,6 +1225,7 @@ int main() {
 #endif
         exercise_deferred_actions();
         exercise_ui_timers();
+        exercise_numeric_input();
         bool shutdown_ran=false;
         ui_action_probe=[&](uint64_t,int) { shutdown_ran=true; };
         expect(wxl_defer_ui_action(5000,0)==0 && wxl_start_ui_timer(5001,1,0,0)==0,"Queue shutdown action/timer");

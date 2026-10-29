@@ -95,7 +95,7 @@
           (if (probe-file local)
               (cffi:load-foreign-library local)
               (cffi:use-foreign-library wxlambda-native))))
-    (unless (= 44 (%abi-version)) (error "Unsupported wxlambda native ABI"))
+    (unless (= 45 (%abi-version)) (error "Unsupported wxlambda native ABI"))
     (setf *native-loaded* t))
   t)
 
@@ -322,3 +322,8 @@
 (cffi:defcfun ("wxl_start_ui_timer" %start-ui-timer) :int (token :uint64) (milliseconds :int) (one-shot :int) (owner :uint64))
 (cffi:defcfun ("wxl_cancel_ui_timer" %cancel-ui-timer) :int (token :uint64))
 (cffi:defcfun ("wxl_ui_timer_active" %ui-timer-active) :int (token :uint64))
+
+(cffi:defcfun ("wxl_numeric" %numeric) :uint64 (parent :uint64) (kind :int) (minimum :int) (maximum :int) (value :int) (vertical :int))
+(cffi:defcfun ("wxl_numeric_field" %numeric-field) :int (control :uint64) (field :int) (value :pointer))
+(cffi:defcfun ("wxl_set_numeric_value" %set-numeric-value) :int (control :uint64) (value :int) (notify :int))
+(cffi:defcfun ("wxl_set_numeric_range" %set-numeric-range) :int (control :uint64) (minimum :int) (maximum :int))
