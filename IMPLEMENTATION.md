@@ -7,6 +7,17 @@ factual discovery records, not a required sequence or release gate.
 
 ## Session handoff: broad GUI coverage
 
+The user has explicitly requested the general-purpose native capabilities in
+[the KryptonEdit survey](docs/KRYPTONEDIT-COVERAGE.md), superseding the prior
+“no next batch” handoff for that application-driven scope. Preserve ABI56 grid/
+WebView and the completed MVP checkpoint. Prioritize STC, native input and dynamic
+tabs/splits before secondary views/tables/images/background delivery. Do not add
+editor models, parsing/language behavior or terminal emulation to wxLambda.
+ABI57 implements the priority STC/input/AUI/splitter batch. Final evidence is
+recorded in the checkpoint below. Worker delivery, scalable views/tree/table depth
+and public graphics resources remain subsequent selected work.
+
+
 ABI56 adds the user's requested wxGrid and interactive JavaScript WebView
 extension after MVP acceptance. Both are implemented in bounded documented scope;
 WebView construction remains gated to verified macOS wxWidgets3.2.12 WKWebView.
@@ -3259,3 +3270,62 @@ remain native and physically untested. Hosted platforms/other wx versions,
 physical input/IME/accessibility, every OS permission/auth/certificate/upload path,
 external network flows, DevTools and graphical Cadre remain unverified. No next
 required batch; further work follows an explicit application need.
+
+
+## ABI57: KryptonEdit priority native bindings (2026-10-29)
+
+Preserved the clean ABI56 baseline371edbe and added general-purpose
+STYLED-TEXT-CONTROL, raw native input, AUI-NOTEBOOK and dynamic splitter APIs.
+See docs/KRYPTONEDIT-COVERAGE.md for baseline inventory, dependencies, remaining
+capabilities, AuiManager/HtmlWindow surveys and terminal integration boundary.
+No application editor/document/language-service abstractions were added.
+
+STC fixes UTF-8 codepage/container styling and explicit-length NUL text. Native
+positions/selection/modification ranges are bytes, validated at codepoint
+boundaries. Supports undo groups/save points/read-only, multiple/rectangular
+selections, styles/indicators/margins/markers/folding, coordinate/scroll/assist
+operations and copied kind-checked native events. Only the innermost same-control
+STYLENEEDED callback permits synchronous styling. Independent review found
+shadow styling state unsafe after document edits; both SetStyling/SetStyleBytes
+now bound against native GetEndStyled, with regression coverage.
+
+Input preserves observer Skip and scoped consumption/propagation, CHAR_HOOK
+AllowNextKeyEvent and native CmdDown/RawControlDown distinction. No synthesized
+IME text. Universal managed retirement suppresses raw callbacks before native
+Destroy/base teardown; weak states survive DESTROY notification and prune safely,
+including deterministic address reuse, failed Destroy and unrelated future focus.
+AUI audits private local/global page indices, private-ID exhaustion, native close
+and PAGE_CLOSED stale indices. Managed pages retain canonical roots, RemovePage
+leaves hidden live children, DeletePage destroys. Programmatic splitting is bound;
+physical splitting/external transfer disabled, multi-group physical movement
+restricted. Splitter Initialize/Unsplit/Replace/Resplit and orientation SETF
+preserve explicit hidden retained pane ownership and safe structural phases.
+
+Independent native/source reviews resolved actionable lifetime, ID/teardown,
+AUI cache and STC styling findings. Full87 GUI scenarios plus preflight pass on
+SBCL2.6.9 and CCL1.13 (quiet-run.eKkVjtAX), reports
+evidence/krypton-priority/{sbcl,ccl}-final-20261029/. Latest styling fix and example
+pass both Lisps plus native fixture (quiet-run.UBUcmovt); native zero assertions
+include early Destroy/base teardown, stale callbacks/address reuse, AUI close/veto
+and split groups. Missing STC/AUI feature gate rejects as intended
+(quiet-run.B4JGnfef). All14 pinned inventory tests pass (quiet-run.btyBSSHk).
+
+Final package dist/wxlambda-krypton-priority-final includes recursively relocated
+STC/AUI libraries; build and all5 isolation checks pass
+(quiet-run.nXUnlIuE/s9QC8ufv), evidence/packaging/krypton-priority-final-20261029/.
+The styling frontier fix is included in refreshed package
+dist/wxlambda-krypton-priority-frontier; all5 checks pass (quiet-run.fgZuLTwc),
+report evidence/packaging/krypton-priority-frontier-20261029/. Docset572 entries:447 public exports,365 named generics,
+106 SETF generics,35 WINDOW wrapper classes,61 examples and64 guides. Both-Lisp
+actual-export/class/SETF coverage and zero-problem format1 checks passed
+(quiet-run.btyBSSHk); final handoff regeneration/install passed (quiet-run.LMEsogql), including all16
+Python checks. Final source/docset alignment follows this record.
+Install under $XDG_DATA_HOME/docsets/wxlambda (default
+~/.local/share/docsets/wxlambda/), see docs/DOCSET.md. Isolated discovery/lookup/
+guide/example access verifies Cadre format, not graphical Cadre operation.
+
+Local macOS wxWidgets3.2.12 evidence does not verify physical IME/keyboard/mouse/
+drag/accessibility or hosted platforms. Existing WebView remains macOS-gated.
+No system clipboard transfer in automatic tests. Primary KryptonEdit scope is
+not complete: next integrate staged worker delivery, then scalable views/tree/grid
+depth and public graphics/image facilities, keeping focused reviewed commits.

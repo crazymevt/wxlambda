@@ -1,4 +1,5 @@
 (in-package #:wxlambda)
+(defvar *extension-event-kinds* nil)
 
 (define-condition native-error (error)
   ((message :initarg :message :reader native-error-message))
@@ -82,7 +83,7 @@
 (defclass checkbox (window)
   ((handler-token :initform nil :accessor handler-token)))
 
-(defstruct (event (:constructor %make-event (kind-value source payload-text checked-value selection-value identifier native-type-code can-veto veto family-code payload-integer logging-off time-stamp command origin-code category-code extra-long-data selection-action user-data-value more-requested tree-item-value sash-position-value date-code-value time-code-value)))
+(defstruct (event (:constructor %make-event (kind-value source payload-text checked-value selection-value identifier native-type-code can-veto veto family-code payload-integer logging-off time-stamp command origin-code category-code extra-long-data selection-action user-data-value more-requested tree-item-value sash-position-value date-code-value time-code-value &optional details)))
   "A Lisp-owned snapshot. Slots are read-only; TEXT is an independent string."
   (kind-value nil :read-only t)
   (source nil :read-only t)
@@ -107,7 +108,8 @@
   (tree-item-value nil :read-only t)
   (sash-position-value nil :read-only t)
   (date-code-value 0 :read-only t)
-  (time-code-value 0 :read-only t))
+  (time-code-value 0 :read-only t)
+  (details nil :read-only t))
 
 (defstruct (ui-action (:constructor %make-ui-action (token)))
   "Immutable session-owned deferred-action identity; closures are rooted separately."
@@ -154,12 +156,21 @@
   ;; Copy borrowed payloads before user code, including reentrant native calls.
   ;; Unwinding through C++ is unsafe. Re-signal after the native call returns.
   (handler-case
+      (progn
+        ;; Native page-cache cleanup precedes both consumption and a pending user error.
+        (unless (cffi:null-pointer-p payload)
+          (let ((native-kind (cffi:foreign-slot-value payload '(:struct native-event) 'kind))
+                (origin (cffi:foreign-slot-value payload '(:struct native-event) 'origin-id)))
+            (when (and (= native-kind 103) (fboundp 'prune-aui-closed-event))
+              (if *callback-error* (ignore-errors (prune-aui-closed-event origin))
+                  (prune-aui-closed-event origin)))))
       (unless *callback-error*
         (let ((handler (gethash token *handlers*)))
           (when handler
             (when (cffi:null-pointer-p payload) (error "Missing event payload"))
             (cffi:with-foreign-slots ((kind text checked selection id text-length context native-type can-veto vetoed family integer logging-off timestamp command origin-id category extra-long selection-action user-data-token more-requested tree-item sash-position date-code time-code) payload (:struct native-event))
               (let* ((event-kind (or (case kind (1 :click) (2 :text-change) (3 :toggle) (4 :selection) (5 :close) (6 :query-end-session) (7 :end-session) (8 :idle) (9 :menu) (10 :notebook-page-changing) (11 :notebook-page-changed) (12 :listbox-selection) (13 :listbox-double-click) (14 :tree-selection-changing) (15 :tree-selection-changed) (16 :splitter-sash-changing) (17 :splitter-sash-changed) (18 :slider-change) (19 :spin-change) (20 :radio-selection) (21 :toggle-button-change) (22 :combo-selection) (23 :date-change) (24 :time-change) (25 :search) (26 :search-cancel) (27 :web-message) (28 :web-script-result) (29 :web-loaded) (30 :web-error))
+                                     (cdr (assoc kind *extension-event-kinds*))
                                      (gethash kind *registered-event-kinds*)
                                      (error "Unregistered native event kind ~S" kind)))
                      (user-data (unless (zerop user-data-token)
@@ -176,11 +187,13 @@
                                 (cffi:foreign-string-to-lisp text :count text-length :encoding :utf-8))))
                      (checked-p (and (member kind '(3 9 21)) (not (zerop checked))))
                      (event (%make-event event-kind (handler-source handler) value checked-p
-                                         (when (member kind '(4 10 11 12 13 20 22)) (unless (= selection -1) selection)) id native-type
-                                         (not (zerop can-veto)) (not (zerop vetoed)) family integer (not (zerop logging-off)) timestamp (not (zerop command)) origin-id category extra-long (not (zerop selection-action)) user-data (not (zerop more-requested)) (canonical-tree-item tree-item) (when (member kind '(16 17)) sash-position) date-code time-code)))
+                                         (when (member kind '(4 10 11 12 13 20 22 100 101 102 103 104)) (unless (= selection -1) selection)) id native-type
+                                         (not (zerop can-veto)) (not (zerop vetoed)) family integer (not (zerop logging-off)) timestamp (not (zerop command)) origin-id category extra-long (not (zerop selection-action)) user-data (not (zerop more-requested)) (canonical-tree-item tree-item) (when (member kind '(16 17)) sash-position) date-code time-code
+                                         (let ((pointer (cffi:foreign-slot-pointer payload '(:struct native-event) 'detail)))
+                                           (map-into (make-array 24) (let ((i -1)) (lambda () (cffi:mem-aref pointer :int64 (incf i)))))))))
                 (if (handler-with-context handler)
                     (funcall (handler-function handler) event (%make-event-context context))
-                    (funcall (handler-function handler) event)))))))
+                    (funcall (handler-function handler) event))))))))
     (error (condition)
       (unless *callback-error* (setf *callback-error* condition))
       ;; Native code must not open another prompt before the nearer Lisp
@@ -522,7 +535,7 @@ RETURN-TO-APPLICATION-REPL restart. Setup errors propagate to the caller."
     (error "APPLICATION-HANDLER is borrowed; use CURRENT-APPLICATION-HANDLER"))
   (when (and (typep object 'window)
              (/= 1 (count-if (lambda (kind) (typep object kind))
-                         '(frame toolbar status-bar panel scrolled-panel notebook list-box tree-control splitter-window button text-control label checkbox choice gauge slider spin-control radio-box toggle-button combo-box date-picker time-picker search-control drawing-canvas activity-indicator grid web-view text-entry-dialog single-choice-dialog message-dialog file-dialog))))
+                         '(frame toolbar status-bar panel scrolled-panel notebook list-box tree-control splitter-window button text-control label checkbox choice gauge slider spin-control radio-box toggle-button combo-box date-picker time-picker search-control drawing-canvas activity-indicator grid web-view styled-text-control aui-notebook text-entry-dialog single-choice-dialog message-dialog file-dialog))))
     (error "~A must inherit exactly one concrete wxlambda widget class; WINDOW is abstract"
            (class-name (class-of object))))
   (unless *active*
@@ -991,7 +1004,7 @@ live checkbox, including when called from inside its handler."
   t)
 
 (defun builtin-event-kind (kind)
-  (case kind (:click 1) (:text-change 2) (:toggle 3) (:selection 4) (:close 5) (:query-end-session 6) (:end-session 7) (:idle 8) (:menu 9) (:notebook-page-changing 10) (:notebook-page-changed 11) (:listbox-selection 12) (:listbox-double-click 13) (:tree-selection-changing 14) (:tree-selection-changed 15) (:splitter-sash-changing 16) (:splitter-sash-changed 17) (:slider-change 18) (:spin-change 19) (:radio-selection 20) (:toggle-button-change 21) (:combo-selection 22) (:date-change 23) (:time-change 24) (:search 25) (:search-cancel 26) (:web-message 27) (:web-script-result 28) (:web-loaded 29) (:web-error 30)))
+  (case kind (:click 1) (:text-change 2) (:toggle 3) (:selection 4) (:close 5) (:query-end-session 6) (:end-session 7) (:idle 8) (:menu 9) (:notebook-page-changing 10) (:notebook-page-changed 11) (:listbox-selection 12) (:listbox-double-click 13) (:tree-selection-changing 14) (:tree-selection-changed 15) (:splitter-sash-changing 16) (:splitter-sash-changed 17) (:slider-change 18) (:spin-change 19) (:radio-selection 20) (:toggle-button-change 21) (:combo-selection 22) (:date-change 23) (:time-change 24) (:search 25) (:search-cancel 26) (:web-message 27) (:web-script-result 28) (:web-loaded 29) (:web-error 30) (otherwise (car (rassoc kind *extension-event-kinds*)))))
 (defun native-event-kind (kind)
   (or (builtin-event-kind kind)
       (and *registered-event-types* (gethash kind *registered-event-types*))
@@ -1138,7 +1151,7 @@ live checkbox, including when called from inside its handler."
 
 (defgeneric event-family (event))
 (defmethod event-family ((event event))
-  (ecase (event-family-code event) (0 :command) (1 :close) (2 :notify) (3 :idle)))
+  (ecase (event-family-code event) (0 :command) (1 :close) (2 :notify) (3 :idle) (4 :base)))
 (defgeneric event-can-veto-p (event)
   (:documentation "Read captured or current close/notify veto capability."))
 (defmethod event-can-veto-p ((event event)) (event-can-veto event))
@@ -1343,15 +1356,16 @@ live checkbox, including when called from inside its handler."
 (defun keyword-event-kind (code)
   (or (case code (1 :click) (2 :text-change) (3 :toggle) (4 :selection) (5 :close)
                 (6 :query-end-session) (7 :end-session) (8 :idle) (9 :menu) (10 :notebook-page-changing) (11 :notebook-page-changed) (12 :listbox-selection) (13 :listbox-double-click) (14 :tree-selection-changing) (15 :tree-selection-changed) (16 :splitter-sash-changing) (17 :splitter-sash-changed) (18 :slider-change) (19 :spin-change) (20 :radio-selection) (21 :toggle-button-change) (22 :combo-selection) (23 :date-change) (24 :time-change) (25 :search) (26 :search-cancel) (27 :web-message) (28 :web-script-result) (29 :web-loaded) (30 :web-error))
+      (cdr (assoc code *extension-event-kinds*))
       (gethash code *registered-event-kinds*) (error "Unknown native event kind ~S" code)))
 (defgeneric event-kind (event))
 (defmethod event-kind ((event event)) (event-kind-value event))
 (defmethod event-kind ((event owned-event)) (keyword-event-kind (read-event-field event 0)))
 (defmethod event-kind ((event event-context)) (keyword-event-kind (read-event-field event 0)))
 (defmethod event-family ((event owned-event))
-  (ecase (read-event-field event 12) (0 :command) (1 :close) (2 :notify) (3 :idle)))
+  (ecase (read-event-field event 12) (0 :command) (1 :close) (2 :notify) (3 :idle) (4 :base)))
 (defmethod event-family ((event event-context))
-  (ecase (read-event-field event 12) (0 :command) (1 :close) (2 :notify) (3 :idle)))
+  (ecase (read-event-field event 12) (0 :command) (1 :close) (2 :notify) (3 :idle) (4 :base)))
 (defmacro define-owned-reader (name field &optional boolean)
   `(defmethod ,name ((event owned-event))
      ,(if boolean `(not (zerop (read-event-field event ,field))) `(read-event-field event ,field))))

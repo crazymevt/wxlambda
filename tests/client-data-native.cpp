@@ -35,7 +35,7 @@ void inspect_binding(uint64_t token, const wxl_event* event) {
     saved_context = event->context;
     binding_called = true;
 }
-std::function<void(uint64_t, const wxl_event*)> notebook_probe, list_probe, tree_probe, splitter_probe, toolbar_probe, accelerator_probe, deferred_event_probe, numeric_probe, radio_probe, toggle_probe, combo_probe, scroll_probe, tooltip_probe, date_probe, time_probe, search_probe, canvas_probe, grid_probe;
+std::function<void(uint64_t, const wxl_event*)> notebook_probe, list_probe, tree_probe, splitter_probe, toolbar_probe, accelerator_probe, deferred_event_probe, numeric_probe, radio_probe, toggle_probe, combo_probe, scroll_probe, tooltip_probe, date_probe, time_probe, search_probe, canvas_probe, grid_probe, aui_probe;
 std::function<void(uint64_t,int)> ui_action_probe;
 void ignore_ui_action(uint64_t token, int execute) { if (ui_action_probe) ui_action_probe(token, execute); }
 void ignore_event(uint64_t token, const wxl_event* event) {
@@ -57,6 +57,7 @@ void ignore_event(uint64_t token, const wxl_event* event) {
     if ((token==936 || token==937 || token==938) && search_probe) search_probe(token,event);
     if (token==939 && canvas_probe) canvas_probe(token,event);
     if (token==940 && grid_probe) grid_probe(token,event);
+    if ((token==950 || token==951) && aui_probe) aui_probe(token,event);
     if (token == 901) inspect_binding(token, event);
     if (token == 903) { ++menu_calls; menu_checked_payload = event->checked; menu_integer_payload = event->integer; menu_origin = event->origin_id; }
 }
@@ -1790,6 +1791,9 @@ void exercise_search_controls() {
 #include "canvas-native.inc"
 #include "grid-native.inc"
 #include "webview-native.inc"
+#include "aui-native.inc"
+#include "input-native.inc"
+#include "styled-text-native.inc"
 
 int main() {
     std::thread([] { std::this_thread::sleep_for(std::chrono::seconds(10)); std::_Exit(124); }).detach();
@@ -1832,6 +1836,9 @@ int main() {
         exercise_drawing_canvas();
         exercise_grid();
         exercise_web_view();
+        exercise_aui_notebook();
+        exercise_input_events();
+        exercise_styled_text();
         bool shutdown_ran=false;
         ui_action_probe=[&](uint64_t,int) { shutdown_ran=true; };
         expect(wxl_defer_ui_action(5000,0)==0 && wxl_start_ui_timer(5001,1,0,0)==0,"Queue shutdown action/timer");

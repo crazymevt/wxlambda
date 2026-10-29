@@ -18,18 +18,18 @@ and verify platforms when selected features or completeness claims require it.
 
 | Category | Headers | Tasks | Implemented | Partial | Pending | Context |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| [C1: Foundation, values, application, events, and base utilities](phase-c1.md) | 119 | 5292 | 7 | 114 | 5171 | 26 |
-| [C2: Windows, layout, basic controls, and input](phase-c2.md) | 82 | 2862 | 28 | 209 | 2625 | 0 |
-| [C3: Dialogs, navigation, menus, and application services](phase-c3.md) | 57 | 1875 | 0 | 118 | 1757 | 0 |
+| [C1: Foundation, values, application, events, and base utilities](phase-c1.md) | 119 | 5292 | 7 | 140 | 5145 | 26 |
+| [C2: Windows, layout, basic controls, and input](phase-c2.md) | 82 | 2862 | 28 | 225 | 2609 | 0 |
+| [C3: Dialogs, navigation, menus, and application services](phase-c3.md) | 57 | 1875 | 0 | 119 | 1756 | 0 |
 | [C4: Models, complex controls, and document frameworks](phase-c4.md) | 20 | 2328 | 0 | 39 | 2289 | 4 |
 | [C5: Drawing, images, graphics, and printing](phase-c5.md) | 52 | 2245 | 0 | 25 | 2220 | 0 |
-| [C6: Optional libraries, rich content, and integration](phase-c6.md) | 57 | 8912 | 0 | 12 | 8900 | 380 |
+| [C6: Optional libraries, rich content, and integration](phase-c6.md) | 57 | 8912 | 0 | 198 | 8714 | 380 |
 | [C7: Platform extensions and remaining portability APIs](phase-c7.md) | 11 | 279 | 0 | 0 | 279 | 3 |
-| Total | 398 | 23793 | 35 | 517 | 23241 | 413 |
+| Total | 398 | 23793 | 35 | 746 | 23012 | 413 |
 
 ## Classes and widgets
 
-1016 class/struct definitions: 0 complete; 73 partial; 943 pending.
+1016 class/struct definitions: 0 complete; 84 partial; 932 pending.
 
 See the [complete class/widget index](classes.md) for partial scopes and missing
 types. An implemented constructor does not complete a class or its inherited API.
@@ -68,7 +68,7 @@ unreviewed inherited/platform behavior.
 | [wx/dynarray.h](phase-c1.md#wxdynarrayh) | 0 | 0 | 58 | 0 |
 | [wx/dynlib.h](phase-c1.md#wxdynlibh) | 0 | 0 | 34 | 0 |
 | [wx/encconv.h](phase-c1.md#wxencconvh) | 0 | 0 | 13 | 0 |
-| [wx/event.h](phase-c1.md#wxeventh) | 7 | 78 | 575 | 16 |
+| [wx/event.h](phase-c1.md#wxeventh) | 7 | 104 | 549 | 16 |
 | [wx/eventfilter.h](phase-c1.md#wxeventfilterh) | 0 | 0 | 6 | 0 |
 | [wx/evtloop.h](phase-c1.md#wxevtlooph) | 0 | 0 | 26 | 0 |
 | [wx/ffile.h](phase-c1.md#wxffileh) | 0 | 0 | 37 | 0 |
@@ -202,12 +202,12 @@ unreviewed inherited/platform behavior.
 | [wx/gbsizer.h](phase-c2.md#wxgbsizerh) | 0 | 0 | 64 | 0 |
 | [wx/hyperlink.h](phase-c2.md#wxhyperlinkh) | 0 | 0 | 31 | 0 |
 | [wx/infobar.h](phase-c2.md#wxinfobarh) | 0 | 0 | 17 | 0 |
-| [wx/kbdstate.h](phase-c2.md#wxkbdstateh) | 0 | 0 | 16 | 0 |
+| [wx/kbdstate.h](phase-c2.md#wxkbdstateh) | 0 | 4 | 12 | 0 |
 | [wx/layout.h](phase-c2.md#wxlayouth) | 0 | 0 | 47 | 0 |
 | [wx/laywin.h](phase-c2.md#wxlaywinh) | 0 | 0 | 45 | 0 |
 | [wx/listbox.h](phase-c2.md#wxlistboxh) | 0 | 8 | 31 | 0 |
 | [wx/mousemanager.h](phase-c2.md#wxmousemanagerh) | 0 | 0 | 12 | 0 |
-| [wx/mousestate.h](phase-c2.md#wxmousestateh) | 0 | 0 | 22 | 0 |
+| [wx/mousestate.h](phase-c2.md#wxmousestateh) | 0 | 8 | 14 | 0 |
 | [wx/nonownedwnd.h](phase-c2.md#wxnonownedwndh) | 0 | 0 | 4 | 0 |
 | [wx/odcombo.h](phase-c2.md#wxodcomboh) | 0 | 0 | 24 | 0 |
 | [wx/panel.h](phase-c2.md#wxpanelh) | 1 | 3 | 8 | 0 |
@@ -222,7 +222,7 @@ unreviewed inherited/platform behavior.
 | [wx/slider.h](phase-c2.md#wxsliderh) | 0 | 8 | 66 | 0 |
 | [wx/spinbutt.h](phase-c2.md#wxspinbutth) | 0 | 2 | 24 | 0 |
 | [wx/spinctrl.h](phase-c2.md#wxspinctrlh) | 0 | 11 | 42 | 0 |
-| [wx/splitter.h](phase-c2.md#wxsplitterh) | 0 | 20 | 55 | 0 |
+| [wx/splitter.h](phase-c2.md#wxsplitterh) | 0 | 24 | 51 | 0 |
 | [wx/srchctrl.h](phase-c2.md#wxsrchctrlh) | 0 | 10 | 13 | 0 |
 | [wx/statbmp.h](phase-c2.md#wxstatbmph) | 0 | 0 | 12 | 0 |
 | [wx/statbox.h](phase-c2.md#wxstatboxh) | 0 | 0 | 8 | 0 |
@@ -258,7 +258,7 @@ unreviewed inherited/platform behavior.
 | [wx/aboutdlg.h](phase-c3.md#wxaboutdlgh) | 0 | 0 | 42 | 0 |
 | [wx/access.h](phase-c3.md#wxaccessh) | 0 | 0 | 103 | 0 |
 | [wx/artprov.h](phase-c3.md#wxartprovh) | 0 | 2 | 88 | 0 |
-| [wx/bookctrl.h](phase-c3.md#wxbookctrlh) | 0 | 12 | 29 | 0 |
+| [wx/bookctrl.h](phase-c3.md#wxbookctrlh) | 0 | 13 | 28 | 0 |
 | [wx/busyinfo.h](phase-c3.md#wxbusyinfoh) | 0 | 0 | 16 | 0 |
 | [wx/choicdlg.h](phase-c3.md#wxchoicdlgh) | 0 | 6 | 31 | 0 |
 | [wx/choicebk.h](phase-c3.md#wxchoicebkh) | 0 | 0 | 20 | 0 |
@@ -400,7 +400,7 @@ unreviewed inherited/platform behavior.
 | Header | Implemented | Partial | Pending | Context |
 | --- | ---: | ---: | ---: | ---: |
 | [wx/aui/auibar.h](phase-c6.md#wxauiauibarh) | 0 | 0 | 203 | 0 |
-| [wx/aui/auibook.h](phase-c6.md#wxauiauibookh) | 0 | 0 | 252 | 0 |
+| [wx/aui/auibook.h](phase-c6.md#wxauiauibookh) | 0 | 21 | 231 | 0 |
 | [wx/aui/dockart.h](phase-c6.md#wxauidockarth) | 0 | 0 | 72 | 0 |
 | [wx/aui/floatpane.h](phase-c6.md#wxauifloatpaneh) | 0 | 0 | 9 | 0 |
 | [wx/aui/framemanager.h](phase-c6.md#wxauiframemanagerh) | 0 | 0 | 214 | 0 |
@@ -449,7 +449,7 @@ unreviewed inherited/platform behavior.
 | [wx/richtext/richtextxml.h](phase-c6.md#wxrichtextrichtextxmlh) | 0 | 0 | 12 | 0 |
 | [wx/richtooltip.h](phase-c6.md#wxrichtooltiph) | 0 | 0 | 12 | 0 |
 | [wx/sound.h](phase-c6.md#wxsoundh) | 0 | 0 | 15 | 0 |
-| [wx/stc/stc.h](phase-c6.md#wxstcstch) | 0 | 0 | 3090 | 0 |
+| [wx/stc/stc.h](phase-c6.md#wxstcstch) | 0 | 165 | 2925 | 0 |
 | [wx/webview.h](phase-c6.md#wxwebviewh) | 0 | 12 | 126 | 0 |
 | [wx/webviewarchivehandler.h](phase-c6.md#wxwebviewarchivehandlerh) | 0 | 0 | 3 | 0 |
 | [wx/webviewfshandler.h](phase-c6.md#wxwebviewfshandlerh) | 0 | 0 | 3 | 0 |

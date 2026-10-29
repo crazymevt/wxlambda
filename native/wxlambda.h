@@ -16,7 +16,7 @@ extern "C" {
 #endif
 typedef uint64_t wxl_handle;
 enum wxl_alignment { WXL_ALIGN_START = 0, WXL_ALIGN_CENTER = 1, WXL_ALIGN_END = 2 };
-enum wxl_event_family { WXL_FAMILY_COMMAND = 0, WXL_FAMILY_CLOSE = 1, WXL_FAMILY_NOTIFY = 2, WXL_FAMILY_IDLE = 3 };
+enum wxl_event_family { WXL_FAMILY_COMMAND = 0, WXL_FAMILY_CLOSE = 1, WXL_FAMILY_NOTIFY = 2, WXL_FAMILY_IDLE = 3, WXL_FAMILY_BASE = 4 };
 enum wxl_event_kind { WXL_EVENT_CLICK = 1, WXL_EVENT_TEXT_CHANGE = 2, WXL_EVENT_TOGGLE = 3, WXL_EVENT_SELECTION = 4, WXL_EVENT_CLOSE = 5, WXL_EVENT_QUERY_END_SESSION = 6, WXL_EVENT_END_SESSION = 7, WXL_EVENT_IDLE = 8, WXL_EVENT_MENU = 9, WXL_EVENT_NOTEBOOK_CHANGING = 10, WXL_EVENT_NOTEBOOK_CHANGED = 11, WXL_EVENT_LISTBOX_SELECTION = 12, WXL_EVENT_LISTBOX_DOUBLE_CLICK = 13, WXL_EVENT_TREE_CHANGING = 14, WXL_EVENT_TREE_CHANGED = 15, WXL_EVENT_SPLITTER_CHANGING = 16, WXL_EVENT_SPLITTER_CHANGED = 17, WXL_EVENT_SLIDER_CHANGE = 18, WXL_EVENT_SPIN_CHANGE = 19, WXL_EVENT_RADIO_SELECTION = 20, WXL_EVENT_TOGGLE_BUTTON_CHANGE = 21, WXL_EVENT_COMBO_SELECTION = 22, WXL_EVENT_DATE_CHANGE = 23, WXL_EVENT_TIME_CHANGE = 24, WXL_EVENT_SEARCH = 25, WXL_EVENT_SEARCH_CANCEL = 26, WXL_EVENT_WEB_MESSAGE = 27, WXL_EVENT_WEB_SCRIPT_RESULT = 28, WXL_EVENT_WEB_LOADED = 29, WXL_EVENT_WEB_ERROR = 30 };
 typedef struct wxl_event {
     int kind;
@@ -44,6 +44,7 @@ typedef struct wxl_event {
     int sash_position; /* Native sash event position; meaningful only for splitter kinds. */
     int date_code; /* Copied YYYYMMDD for supported date events;0 for invalid/other. */
     int time_code; /* Copied1+seconds since midnight;0 for invalid/non-time. */
+    int64_t detail[24]; /* immutable kind-specific native snapshot fields */
 } wxl_event;
 /* The record and its text are borrowed only until this callback returns.
    Callbacks must never unwind across this boundary. */
@@ -57,6 +58,9 @@ WXL_API int wxl_abi_version(void);
 #include "activity-indicator-api.h"
 #include "grid-api.h"
 #include "webview-api.h"
+#include "stc-api.h"
+#include "input-events-api.h"
+#include "aui-api.h"
 /* Editable single-line search text/hint: explicit UTF-8 lengths, NUL/CR/LF reject.
    Field0=text,1=hint; setter notify is valid only for text (one TEXT event).
    Search/cancel are native-only command kinds; no widget menu/button policy API. */

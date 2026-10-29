@@ -37,6 +37,32 @@
       (when timer (wxlambda:cancel-ui-timer timer))
       (wxlambda:destroy-window frame))))
 
+(defun check-styled-workspace ()
+  (let* ((frame (wxlambda:make-frame :width 640 :height 420))
+         (book (wxlambda:make-aui-notebook frame))
+         (first (wxlambda:make-panel book))
+         (second (wxlambda:make-panel book))
+         (text (wxlambda:make-styled-text-control first :value "Styled λ 😀")))
+    (unwind-protect
+         (progn
+           (wxlambda:make-column first) (wxlambda:add-child first text :expand t :proportion 1)
+           (wxlambda:add-notebook-page book first :label "First")
+           (wxlambda:insert-notebook-page book second 0 :label "Second" :select t)
+           (assert (= 2 (wxlambda:notebook-page-count book)))
+           (wxlambda:move-notebook-page book 0 1)
+           (assert (eq second (wxlambda:notebook-page book 1)))
+           (wxlambda:remove-notebook-page book 1)
+           (assert (wxlambda:handler-alive-p second))
+           (wxlambda:show-window frame)
+           (wxlambda:replace-stc-range text 0 6 "Native")
+           (assert (string= "Native λ 😀" (wxlambda:stc-text text)))
+           (setf (wxlambda:stc-style-foreground text 1) #x3366cc)
+           (wxlambda:start-stc-styling text 0) (wxlambda:set-stc-styling text 6 1)
+           (assert (= 1 (wxlambda:stc-style-at text 0)))
+           (wxlambda:stc-undo text)
+           (assert (string= "Styled λ 😀" (wxlambda:stc-text text))))
+      (wxlambda:destroy-window frame))))
+
 (defun self-test ()
   "Exercise real GUI events, Unicode, recreation, and cleanup in the saved image."
   (let ((calls 0))
@@ -52,6 +78,7 @@
                  (wxlambda-form:set-submit-action #'submitted)
                  (wxlambda:queue-click wxlambda-form:*submit*))))
       (wxlambda:with-application ()
+        (check-styled-workspace)
         (check-web-grid)
         (let* ((frame (wxlambda:make-frame))
                (canvas (wxlambda:make-drawing-canvas frame
@@ -78,7 +105,7 @@
         (wxlambda:queue-click wxlambda-form:*submit*)
         (wxlambda:run)))
     (assert (= calls 2)))
-  (format t "PASS: packaged startup, Unicode callbacks, recreation, drawing PNG, activity, grid, JavaScript messaging, and cleanup~%"))
+  (format t "PASS: packaged startup, Unicode callbacks, recreation, drawing PNG, activity, grid, JavaScript messaging, styled text, dynamic tabs, and cleanup~%"))
 
 (defun main ()
   (handler-case

@@ -326,3 +326,20 @@ navigation and Promise objects are not awaited. See docs/WEB-VIEW.md.
 The user explicitly requested grid and interactive JavaScript WebView after the
 finite local MVP was accepted; this is an application-driven extension, not a
 resumption of exhaustive parity. Further expansion still requires a concrete need.
+
+ABI57 STYLED-TEXT-CONTROL fixes UTF-8 codepage/container styling; positions and
+lengths are bytes with checked codepoint boundaries. Preserve explicit-length NUL
+text, native GetEndStyled bounds for both styling writes, read-only checks, copied
+modification fields and the exact innermost same-control STYLENEEDED styling
+exception. Other callback mutations reject. No raw SendMsg/document ownership.
+See docs/STYLED-TEXT.md. Native input snapshots/context readers preserve default
+Skip, CHAR_HOOK AllowNextKeyEvent, CmdDown versus RawControlDown and native IME
+behavior; physical input/IME is unverified. Universal managed retirement must
+suppress raw callbacks before Destroy/base teardown and survive pointer reuse.
+See docs/INPUT-EVENTS.md. AUI-NOTEBOOK owns PANEL pages; removal retains hidden
+live children, deletion destroys. Preserve private group/global index separation,
+501 private-ID allocation budget, multi-group drag restrictions, close pre-dispatch
+cache pruning and readonly event ID/timestamp. Splitter Initialize/Unsplit/Replace/
+Resplit retain explicit pane ownership. See docs/AUI-NOTEBOOK.md and docs/SPLITTER.md.
+The selected KryptonEdit scope is in docs/KRYPTONEDIT-COVERAGE.md; worker delivery,
+views/table depth and graphics resources remain required selected batches.

@@ -21,6 +21,9 @@ def scenarios():
     yield "window-state", "window-state.lisp", {}
     yield "window-metadata", "window-metadata.lisp", {}
     yield "clos", "clos.lisp", {}
+    yield "styled-text", "styled-text.lisp", {}
+    yield "input-events", "input-events.lisp", {}
+    yield "aui-notebook", "aui-notebook.lisp", {}
     yield "grid", "grid.lisp", {}
     yield "webview", "webview.lisp", {}
     yield "activity-indicator", "activity-indicator.lisp", {}

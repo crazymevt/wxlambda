@@ -7,4 +7,7 @@
                (:file "lisp/drawing-canvas-ffi") (:file "lisp/drawing-canvas")
                (:file "lisp/activity-indicator-ffi") (:file "lisp/activity-indicator")
                (:file "lisp/grid-ffi") (:file "lisp/grid")
-               (:file "lisp/webview-ffi") (:file "lisp/webview")))
+               (:file "lisp/webview-ffi") (:file "lisp/webview")
+               (:file "lisp/stc-ffi") (:file "lisp/stc") (:file "lisp/stc-generated")
+               (:file "lisp/input-events-ffi") (:file "lisp/input-events")
+               (:file "lisp/aui-ffi") (:file "lisp/aui") (:file "lisp/splitter-extra")))

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 project(wxlambda VERSION 0.1.0 LANGUAGES CXX)
-find_package(wxWidgets 3.2 REQUIRED COMPONENTS core base adv webview)
+find_package(wxWidgets 3.2 REQUIRED COMPONENTS core base adv webview stc aui)
 include(${wxWidgets_USE_FILE})
 include(CheckCXXSourceCompiles)
 include(CMakePushCheckState)
@@ -47,13 +47,21 @@ check_cxx_source_compiles("#include <wx/setup.h>
 #endif
 int main() { return 0; }" WXLAMBDA_HAS_DRAWING_WORKFLOWS)
 check_cxx_source_compiles("#include <wx/setup.h>
-#if !wxUSE_GRID || !wxUSE_WEBVIEW
+#if !wxUSE_GRID || !wxUSE_WEBVIEW || !wxUSE_STC || !wxUSE_AUI
 #error Grid and WebView required
 #endif
 int main() { return 0; }" WXLAMBDA_HAS_GRID_WEBVIEW)
+check_cxx_source_compiles("#include <wx/setup.h>
+#if !wxUSE_STC || !wxUSE_AUI
+#error Styled text and AUI are required
+#endif
+int main() { return 0; }" WXLAMBDA_HAS_EDITOR_COMPONENTS)
 cmake_pop_check_state()
+if(NOT WXLAMBDA_HAS_EDITOR_COMPONENTS)
+  message(FATAL_ERROR "wxlambda requires wxUSE_STC=1, wxUSE_AUI=1 and stc/aui components")
+endif()
 if(NOT WXLAMBDA_HAS_GRID_WEBVIEW)
-  message(FATAL_ERROR "wxlambda requires wxUSE_GRID=1 and wxUSE_WEBVIEW=1 plus the webview component")
+  message(FATAL_ERROR "wxlambda requires wxUSE_GRID=1 and wxUSE_WEBVIEW=1 plus webview/stc/aui components and wxUSE_STC/wxUSE_AUI")
 endif()
 if(NOT WXLAMBDA_HAS_ACCELERATORS)
   message(FATAL_ERROR "wxlambda requires wxWidgets built with wxUSE_ACCEL=1")
@@ -94,7 +102,7 @@ if(APPLE)
 endif()
 set_target_properties(wxlambda PROPERTIES CXX_VISIBILITY_PRESET hidden VISIBILITY_INLINES_HIDDEN YES)
 install(TARGETS wxlambda LIBRARY DESTINATION lib RUNTIME DESTINATION bin ARCHIVE DESTINATION lib)
-install(FILES native/wxlambda.h native/drawing-canvas-api.h native/activity-indicator-api.h native/grid-api.h native/webview-api.h DESTINATION include)
+install(FILES native/wxlambda.h native/drawing-canvas-api.h native/activity-indicator-api.h native/grid-api.h native/webview-api.h native/stc-api.h native/input-events-api.h native/aui-api.h DESTINATION include)
 
 option(WXLAMBDA_BUILD_NATIVE_TESTS "Build native invariant regressions (GUI session required)" OFF)
 if(WXLAMBDA_BUILD_NATIVE_TESTS)

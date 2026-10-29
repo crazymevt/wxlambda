@@ -30,7 +30,9 @@ lifetime/weak invalidation rules.
 
 The [CLOS API](docs/CLOS-API.md) provides subclass initargs/defaults/AFTER hooks,
 thin :CLASS-validating factories and canonical generic SETF. The current public
-API has 300 exports, 220 named generic operations and 67 generic property writers.
+API has 447 exports, 365 named generic operations and 106 generic property writers.
+Styled text, native input, dynamic AUI tabs and splitter operations are documented in
+the [KryptonEdit coverage survey](docs/KRYPTONEDIT-COVERAGE.md).
 Native C++ virtual Lisp callbacks remain separate work. These counts describe
 public interfaces, not full native class coverage or completed platform validation.
 

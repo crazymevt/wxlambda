@@ -30,7 +30,8 @@
   (tree-item :uint64)
   (sash-position :int)
   (date-code :int)
-  (time-code :int))
+  (time-code :int)
+  (detail :int64 :count 24))
 
 (cffi:defcfun ("wxl_abi_version" %abi-version) :int)
 (cffi:defcfun ("wxl_last_error" %last-error) :string)
@@ -97,7 +98,7 @@
           (if (probe-file local)
               (cffi:load-foreign-library local)
               (cffi:use-foreign-library wxlambda-native))))
-    (unless (= 56 (%abi-version)) (error "Unsupported wxlambda native ABI"))
+    (unless (= 57 (%abi-version)) (error "Unsupported wxlambda native ABI"))
     (setf *native-loaded* t))
   t)
 

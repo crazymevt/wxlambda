@@ -1,7 +1,7 @@
 # CLOS widget API
 
 Widgets are native-backed CLOS instances. The public classes are `window`,
-`grid`, `web-view`, `drawing-canvas`, `activity-indicator`, `frame`, `toolbar`, `status-bar`, `panel`, `scrolled-panel`, `notebook`, `list-box`, `tree-control`, `splitter-window`, `button`, `text-control`, `label`, `checkbox`, `choice`,
+`styled-text-control`, `aui-notebook`, `grid`, `web-view`, `drawing-canvas`, `activity-indicator`, `frame`, `toolbar`, `status-bar`, `panel`, `scrolled-panel`, `notebook`, `list-box`, `tree-control`, `splitter-window`, `button`, `text-control`, `label`, `checkbox`, `choice`,
 `gauge`, `slider`, `spin-control`, `radio-box`, `toggle-button`, `combo-box`, `date-picker`, `time-picker`, `search-control`, abstract `dialog`, and its `text-entry-dialog`, `single-choice-dialog`,
 `message-dialog` and `file-dialog` concrete families.
 `window` inherits from `event-handler` and is abstract. Standalone `event-handler`
@@ -40,6 +40,8 @@ Use `make-instance` directly, including for your own subclasses:
 Concrete native initargs are:
 
 - `frame`: `:title` (default "wxlambda"), `:width` (480), `:height` (240), `:accelerators` (NIL). See [keyboard actions](KEYBOARD-ACCELERATORS.md).
+- `styled-text-control`: required `:parent`, `:value` defaults empty UTF-8 text. Native byte offsets and manual container styling; see [styled text](STYLED-TEXT.md).
+- `aui-notebook`: required `:parent`; dynamic native PANEL pages with removal/deletion distinction. See [AUI tabs](AUI-NOTEBOOK.md).
 - `grid`: required `:parent`; rows10/columns5/editable-pT defaults, fixed bounded shape. See [grid](GRID.md).
 - `web-view`: required `:parent`; initial about:blank, private WKWebView browser and asynchronous JavaScript. See [web development](WEB-VIEW.md).
 - `drawing-canvas`: required `:parent`; `:content` defaults to an empty white retained scene. See [drawing](DRAWING-CANVAS.md).

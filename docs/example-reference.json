@@ -230,5 +230,17 @@
   "webview.lisp": {
     "description": "Interactive trusted-development HTML/JavaScript WebView with asynchronous script tickets and JSON message bridge; no external network required by deterministic exercise. Known native popup/dialog/upload paths are suppressed; this is not a general security sandbox.",
     "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/webview.lisp --eval '(wxlambda-webview:start)'"
+  },
+  "input-events.lisp": {
+    "description": "Native input observer shows key/character/pointer/focus metadata while preserving native text editing through automatic Skip. EXERCISE observes native size delivery; deterministic native fixtures cover payloads/consumption, not physical input or IME.",
+    "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/input-events.lisp --eval '(wxlambda-input-events:start)'"
+  },
+  "aui-notebook.lisp": {
+    "description": "General dynamic panel workspace inside a splitter with deferred Add/Delete/Move/Split actions. Programmatic native tab groups preserve page ownership; mouse reorder is limited to one group. No editor abstraction.",
+    "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/aui-notebook.lisp --eval '(wxlambda-aui-notebook:start)'"
+  },
+  "styled-text.lisp": {
+    "description": "General native Scintilla text control with copied Unicode text, styling, margins, indicators, markers, grouped undo, multiple selections, autocomplete/call tip and synchronous same-control container styling; no application editor model.",
+    "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/styled-text.lisp --eval '(wxlambda-styled-text:start)'"
   }
 }

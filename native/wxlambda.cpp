@@ -22,6 +22,8 @@
 #include <wx/srchctrl.h>
 #include <wx/activityindicator.h>
 #include <wx/grid.h>
+#include <wx/stc/stc.h>
+#include <wx/aui/auibook.h>
 #include <wx/webview.h>
 #include "webview-cocoa.h"
 #include <wx/dcbuffer.h>
@@ -130,6 +132,8 @@ public:
 struct AcceleratorSpec { int key, flags, command; };
 std::unordered_map<wxWindow*, std::vector<AcceleratorSpec>> frame_accelerators;
 unsigned input_creation_depth = 0;
+struct ManagedWindowState { wxWeakRef<wxWindow> lifetime; bool retiring=false; };
+std::unordered_map<wxWindow*,ManagedWindowState> managed_window_states;
 std::unordered_set<wxWindow*> web_owners;
 std::unordered_map<wxWindow*, bool> input_owners; // true during native-base teardown
 std::unordered_set<wxWindow*> toolbar_owners;
@@ -202,7 +206,7 @@ std::unordered_map<int, RegisteredEvent> registered_events;
 const wxEventType web_event_types[] = {wxNewEventType(),wxNewEventType(),wxNewEventType(),wxNewEventType()};
 bool web_event_kind(int kind) { return kind>=WXL_EVENT_WEB_MESSAGE && kind<=WXL_EVENT_WEB_ERROR; }
 bool web_event_type(wxEventType type) { for (auto item:web_event_types) if (item==type) return true; return false; }
-constexpr int first_registered_event_kind = WXL_EVENT_WEB_ERROR + 1;
+constexpr int first_registered_event_kind = 256;
 int next_event_kind = first_registered_event_kind;
 wxWeakRef<wxDialog> active_modal;
 std::unordered_map<wxWindow*, size_t> dialog_choice_counts;
@@ -306,6 +310,8 @@ wxEvent& current_event(uint64_t token) {
 // deferred requests for the whole parent chain before any native access.
 bool window_destruction_pending(wxWindow* object) {
     for (auto* node = object; node; node = node->GetParent()) {
+        const auto managed=managed_window_states.find(node);
+        if (managed!=managed_window_states.end() && managed->second.lifetime.get()==node && managed->second.retiring) return true;
         if (node->IsBeingDeleted() || wxTheApp->IsScheduledForDestruction(node)) return true;
         for (const auto id : pending_destruction) {
             const auto found = windows.find(id);
@@ -401,6 +407,7 @@ wxl_handle find_owned_handler(wxEvtHandler* object) noexcept {
 }
 void validate_window_stack(wxWindow* owner) {
     require(!web_owners.count(owner), "WebViews retain private event delivery; managed window stacks are unsupported");
+    require(!dynamic_cast<wxAuiNotebook*>(owner) && !dynamic_cast<wxStyledTextCtrl*>(owner), "AUI/STC private native handlers cannot be replaced");
     require(!dynamic_cast<wxGrid*>(owner), "Grids retain private scroll handlers; managed window stacks are unsupported");
     require(!dynamic_cast<wxScrolledWindow*>(owner), "Scrolled panels retain a private native scroll helper; managed window stacks are unsupported");
     auto* node = owner->GetEventHandler();
@@ -441,25 +448,23 @@ template<class T> class ManagedWindow final : public T, public ClientDataAccess 
 public:
     using T::T;
     bool Destroy() override {
-        if constexpr (std::is_base_of_v<wxPanel,T> || std::is_base_of_v<wxGrid,T> || std::is_base_of_v<wxDatePickerCtrl,T> || std::is_base_of_v<wxTimePickerCtrl,T> || std::is_base_of_v<wxSearchCtrl,T>) {
-            // A generic input control can destroy composite children before its own base
-            // enters deletion. Suppress source/child input before that virtual call.
-            wxWeakRef<wxWindow> weak(this);
-            const auto found=input_owners.find(this);
-            const bool tracked=found!=input_owners.end(), previous=tracked && found->second;
-            if (tracked) found->second=true;
-            const auto restore=[&] {
-                if (weak.get() && tracked) {
-                    const auto current=input_owners.find(weak.get());
-                    if (current!=input_owners.end()) current->second=previous;
-                }
-            };
-            try { const bool accepted=T::Destroy(); if (!accepted) restore(); return accepted; }
-            catch (...) { restore(); throw; }
-        } else return T::Destroy();
+        wxWeakRef<wxWindow> weak(this);
+        const auto state=managed_window_states.find(this);
+        const bool managed=state!=managed_window_states.end(), retired=managed && state->second.retiring;
+        if (managed) state->second.retiring=true;
+        const auto owner=input_owners.find(this);
+        const bool tracked=owner!=input_owners.end(), previous=tracked && owner->second;
+        if (tracked) owner->second=true;
+        const auto restore=[&] {
+            if (!weak.get()) return;
+            if (managed) { const auto current=managed_window_states.find(weak.get()); if(current!=managed_window_states.end()) current->second.retiring=retired; }
+            if (tracked) { const auto current=input_owners.find(weak.get()); if(current!=input_owners.end()) current->second=previous; }
+        };
+        try { const bool accepted=T::Destroy(); if(!accepted) restore(); return accepted; }
+        catch (...) { restore(); throw; }
     }
     wxClientDataType ClientStorageKind() const override { return this->m_clientDataType; }
-    ~ManagedWindow() override { if (auto found = input_owners.find(this); found != input_owners.end()) found->second = true; frame_accelerators.erase(this); toolbar_owners.erase(this); realized_toolbars.erase(this); splitter_owners.erase(this); forget_tree_nodes(this); dialog_choice_counts.erase(this); dialog_message_buttons.erase(this); dialog_file_filters.erase(this); detach_window_stack(this); }
+    ~ManagedWindow() override { if(auto state=managed_window_states.find(this);state!=managed_window_states.end()) state->second.retiring=true; if (auto found = input_owners.find(this); found != input_owners.end()) found->second = true; frame_accelerators.erase(this); toolbar_owners.erase(this); realized_toolbars.erase(this); splitter_owners.erase(this); forget_tree_nodes(this); dialog_choice_counts.erase(this); dialog_message_buttons.erase(this); dialog_file_filters.erase(this); detach_window_stack(this); }
 };
 void set_registered_type(wxEvent& event, int type) {
         const RegisteredEvent* source = nullptr;
@@ -675,9 +680,10 @@ int accelerator_flags(int flags) {
            ((flags & 4) ? wxACCEL_ALT : 0) | ((flags & 8) ? wxACCEL_RAW_CTRL : 0);
 }
 unsigned focus_operation_depth = 0;
+unsigned unknown_input_callback_depth=0;
 std::vector<wxWeakRef<wxWindow>> input_operations;
 bool protected_input_ancestor(wxWindow* object) {
-    if (focus_operation_depth) return true; // Traversal may touch any sibling or old focus window.
+    if (focus_operation_depth || unknown_input_callback_depth) return true; // Traversal may touch any sibling or old focus window.
     for (const auto& active : input_operations)
         for (auto* node = active.get(); node; node = node->GetParent()) if (node == object) return true;
     return false;
@@ -694,25 +700,54 @@ bool input_origin_contains(wxWindow* object, const wxObject* origin) {
     for (auto* child : object->GetChildren()) if (input_origin_contains(child, origin)) return true;
     return false;
 }
+#include "stc-events.inc"
+#include "input-events.inc"
+#include "aui-events.inc"
 struct InputCallbackOperation {
-    bool added = false, allow = true;
-    explicit InputCallbackOperation(wxEvent& event) {
-        if (!web_event_type(event.GetEventType()) && event.GetEventType() != wxEVT_BUTTON && event.GetEventType() != wxEVT_SEARCH && event.GetEventType() != wxEVT_SEARCH_CANCEL && event.GetEventType() != wxEVT_TIME_CHANGED && event.GetEventType() != wxEVT_DATE_CHANGED && event.GetEventType() != wxEVT_COMBOBOX && event.GetEventType() != wxEVT_TOGGLEBUTTON && event.GetEventType() != wxEVT_RADIOBOX && event.GetEventType() != wxEVT_SLIDER && event.GetEventType() != wxEVT_SPINCTRL && event.GetEventType() != wxEVT_TEXT) return;
-        if (input_creation_depth) { allow = false; return; }
-        // Composite input base destruction can emit composite-child text callbacks.
-        for (const auto& entry : input_owners) if (entry.second) { allow = false; return; }
-        wxWindow* object = nullptr;
-        for (const auto& entry : input_owners)
-            if (event.GetEventObject() == entry.first) { object = entry.first; break; }
-        if (!object) for (const auto& entry : input_owners) {
-            if (!window_destruction_pending(entry.first) && input_origin_contains(entry.first, event.GetEventObject())) { object = entry.first; break; }
-        }
-        if (!object) return;
-        if (window_destruction_pending(object)) { allow = false; return; }
-        for (const auto& active : input_operations) if (active.get() == object) return;
-        input_operations.emplace_back(object); added = true;
+    size_t previous=input_operations.size();
+    bool allow=true,unknown=false;
+    void protect(wxWindow* object) {
+        if (window_destruction_pending(object)) { allow=false; return; }
+        for (const auto& active:input_operations) if (active.get()==object) return;
+        input_operations.emplace_back(object);
     }
-    ~InputCallbackOperation() { if (added) input_operations.pop_back(); }
+    explicit InputCallbackOperation(wxEvent& event) {
+        const bool raw=input_kind_for_type(event.GetEventType())!=0;
+        if (aui_kind_for_type(event.GetEventType()) && !aui_public_event(event)) { allow=false; return; }
+        if (!raw && !stc_kind_for_type(event.GetEventType()) && !aui_kind_for_type(event.GetEventType()) && !web_event_type(event.GetEventType()) && event.GetEventType()!=wxEVT_BUTTON && event.GetEventType()!=wxEVT_SEARCH && event.GetEventType()!=wxEVT_SEARCH_CANCEL && event.GetEventType()!=wxEVT_TIME_CHANGED && event.GetEventType()!=wxEVT_DATE_CHANGED && event.GetEventType()!=wxEVT_COMBOBOX && event.GetEventType()!=wxEVT_TOGGLEBUTTON && event.GetEventType()!=wxEVT_RADIOBOX && event.GetEventType()!=wxEVT_SLIDER && event.GetEventType()!=wxEVT_SPINCTRL && event.GetEventType()!=wxEVT_TEXT) return;
+        if (input_creation_depth) { allow=false; return; }
+        // DESTROY can be consumed/disabled. Weak lifetimes still invalidate both maps.
+        for (auto state=managed_window_states.begin();state!=managed_window_states.end();) {
+            if (!state->second.lifetime.get()) { input_owners.erase(state->first); state=managed_window_states.erase(state); }
+            else ++state;
+        }
+        for (const auto& entry:managed_window_states)
+            if (entry.second.retiring && entry.second.lifetime.get() &&
+                (!event.GetEventObject() || input_origin_contains(entry.first,event.GetEventObject()))) { allow=false; return; }
+        for (const auto& entry:input_owners) if (entry.second &&
+            (!event.GetEventObject() || input_origin_contains(entry.first,event.GetEventObject()))) { allow=false; return; }
+        wxWindow* composite=nullptr;
+        for (const auto& entry:input_owners) if (event.GetEventObject()==entry.first) { composite=entry.first; break; }
+        if (!composite) for (const auto& entry:input_owners)
+            if (!window_destruction_pending(entry.first) && input_origin_contains(entry.first,event.GetEventObject())) { composite=entry.first; break; }
+        if (composite) protect(composite);
+        if (raw) {
+            wxWindow* exact=nullptr;
+            for (const auto& entry:windows) if (entry.second.get() && entry.second.get()==event.GetEventObject()) { exact=entry.second.get(); break; }
+            if (exact) protect(exact);
+            else {
+                bool known=false;
+                // Compare the origin only. Never dereference an untracked/stale event pointer.
+                for (const auto& entry:windows) if (auto* owner=entry.second.get())
+                    if (!window_destruction_pending(owner) && input_origin_contains(owner,event.GetEventObject())) { protect(owner); known=true; }
+                if (!known && !composite) {
+                    ++unknown_input_callback_depth; unknown=true;
+                    input_operations.emplace_back(nullptr); // Gate nested GUI entry even without a known source.
+                }
+            }
+        }
+    }
+    ~InputCallbackOperation() { input_operations.resize(previous); if (unknown) --unknown_input_callback_depth; }
 };
 // Calendar values are local civil dates, never Unix times or universal-time.
 int calendar_code(const wxDateTime& value) {
@@ -780,6 +815,7 @@ int numeric_read(wxWindow* object) {
     require(value >= numeric_min(object) && value <= numeric_max(object), "Native numeric value is outside its range"); return value;
 }
 int selected_event_index(wxEvent& event) {
+    if (auto* aui=dynamic_cast<wxAuiNotebookEvent*>(&event)) return aui->GetSelection();
     if (auto* book = dynamic_cast<wxBookCtrlEvent*>(&event)) return book->GetSelection();
     auto* command = dynamic_cast<wxCommandEvent*>(&event);
     return command && (event.GetEventType() == wxEVT_COMBOBOX || event.GetEventType() == wxEVT_RADIOBOX || event.GetEventType() == wxEVT_CHOICE || event.GetEventType() == wxEVT_LISTBOX || event.GetEventType() == wxEVT_LISTBOX_DCLICK) ? command->GetSelection() : -1;
@@ -810,6 +846,9 @@ void emit_event(wxl_handle id, const wxl_event& event) {
     }
 }
 wxEventTypeTag<wxEvent> native_event_type(int kind) {
+    if (stc_event_kind(kind)) return wxEventTypeTag<wxEvent>(stc_event_type(kind));
+    if (input_event_kind(kind)) return wxEventTypeTag<wxEvent>(input_event_type(kind));
+    if (aui_event_kind(kind)) return wxEventTypeTag<wxEvent>(aui_event_type(kind));
     if (web_event_kind(kind)) return wxEventTypeTag<wxEvent>(web_event_types[kind-WXL_EVENT_WEB_MESSAGE]);
     switch (kind) {
         case WXL_EVENT_CLICK: return wxEventTypeTag<wxEvent>(wxEVT_BUTTON);
@@ -846,6 +885,9 @@ wxEventTypeTag<wxEvent> native_event_type(int kind) {
     }
 }
 int native_event_family(int kind) {
+    if (stc_event_kind(kind)) return WXL_FAMILY_COMMAND;
+    if (input_event_kind(kind)) return kind==70 ? WXL_FAMILY_COMMAND : WXL_FAMILY_BASE;
+    if (aui_event_kind(kind)) return WXL_FAMILY_NOTIFY;
     if (web_event_kind(kind)) return WXL_FAMILY_COMMAND;
     if (kind >= WXL_EVENT_CLICK && kind <= WXL_EVENT_SELECTION) return WXL_FAMILY_COMMAND;
     if (kind >= WXL_EVENT_CLOSE && kind <= WXL_EVENT_END_SESSION) return WXL_FAMILY_CLOSE;
@@ -868,7 +910,7 @@ bool event_vetoed(wxEvent& event) {
 std::unique_ptr<wxEvent> synthetic_event(wxEvtHandler* receiver, int kind, int event_id,
                                        const char* text, size_t length, int value,
                                        int can_veto, int vetoed, int logging_off) {
-    require(!web_event_kind(kind) && kind != WXL_EVENT_SEARCH && kind != WXL_EVENT_SEARCH_CANCEL && kind != WXL_EVENT_TIME_CHANGE && kind != WXL_EVENT_DATE_CHANGE && kind != WXL_EVENT_COMBO_SELECTION && kind != WXL_EVENT_TOGGLE_BUTTON_CHANGE && kind != WXL_EVENT_RADIO_SELECTION && kind != WXL_EVENT_SLIDER_CHANGE && kind != WXL_EVENT_SPIN_CHANGE && kind != WXL_EVENT_NOTEBOOK_CHANGING && kind != WXL_EVENT_NOTEBOOK_CHANGED && kind != WXL_EVENT_TREE_CHANGING && kind != WXL_EVENT_TREE_CHANGED && kind != WXL_EVENT_SPLITTER_CHANGING && kind != WXL_EVENT_SPLITTER_CHANGED,
+    require(!stc_event_kind(kind) && !input_event_kind(kind) && !aui_event_kind(kind) && !web_event_kind(kind) && kind != WXL_EVENT_SEARCH && kind != WXL_EVENT_SEARCH_CANCEL && kind != WXL_EVENT_TIME_CHANGE && kind != WXL_EVENT_DATE_CHANGE && kind != WXL_EVENT_COMBO_SELECTION && kind != WXL_EVENT_TOGGLE_BUTTON_CHANGE && kind != WXL_EVENT_RADIO_SELECTION && kind != WXL_EVENT_SLIDER_CHANGE && kind != WXL_EVENT_SPIN_CHANGE && kind != WXL_EVENT_NOTEBOOK_CHANGING && kind != WXL_EVENT_NOTEBOOK_CHANGED && kind != WXL_EVENT_TREE_CHANGING && kind != WXL_EVENT_TREE_CHANGED && kind != WXL_EVENT_SPLITTER_CHANGING && kind != WXL_EVENT_SPLITTER_CHANGED,
             "Derived navigation events require native interaction; synthetic construction is unsupported");
     const auto type = native_event_type(kind);
     const int family = native_event_family(kind);
@@ -906,6 +948,9 @@ std::unique_ptr<wxEvent> synthetic_event(wxEvtHandler* receiver, int kind, int e
     return event;
 }
 int kind_of(wxEvent& event) {
+    if (const auto kind=stc_kind_for_type(event.GetEventType())) return kind;
+    if (const auto kind=input_kind_for_type(event.GetEventType())) return kind;
+    if (const auto kind=aui_kind_for_type(event.GetEventType())) return kind;
     for (int kind = WXL_EVENT_CLICK; kind <= WXL_EVENT_WEB_ERROR; ++kind)
         if (native_event_type(kind) == event.GetEventType()) return kind;
     for (const auto& item : registered_events)
@@ -922,7 +967,7 @@ std::unique_ptr<wxEvent> detached_clone(wxEvent& event) {
     require(typeid(event) == typeid(wxCommandEvent) || typeid(event) == typeid(wxNotifyEvent) ||
             typeid(event) == typeid(wxCloseEvent) || typeid(event) == typeid(wxIdleEvent), "Cloning this native event class is not supported");
     const auto kind = kind_of(event);
-    require(!web_event_kind(kind) && kind != WXL_EVENT_SEARCH && kind != WXL_EVENT_SEARCH_CANCEL && kind != WXL_EVENT_TIME_CHANGE && kind != WXL_EVENT_DATE_CHANGE && kind != WXL_EVENT_COMBO_SELECTION && kind != WXL_EVENT_TOGGLE_BUTTON_CHANGE && kind != WXL_EVENT_RADIO_SELECTION && kind != WXL_EVENT_SLIDER_CHANGE && kind != WXL_EVENT_SPIN_CHANGE, "Bounded input control events cannot be detached/cloned");
+    require(!stc_event_kind(kind) && !input_event_kind(kind) && !aui_event_kind(kind) && !web_event_kind(kind) && kind != WXL_EVENT_SEARCH && kind != WXL_EVENT_SEARCH_CANCEL && kind != WXL_EVENT_TIME_CHANGE && kind != WXL_EVENT_DATE_CHANGE && kind != WXL_EVENT_COMBO_SELECTION && kind != WXL_EVENT_TOGGLE_BUTTON_CHANGE && kind != WXL_EVENT_RADIO_SELECTION && kind != WXL_EVENT_SLIDER_CHANGE && kind != WXL_EVENT_SPIN_CHANGE, "Bounded input control events cannot be detached/cloned");
     require(event.GetEventUserData() == nullptr, "Cannot clone borrowed event userData");
     if (auto* command = dynamic_cast<wxCommandEvent*>(&event))
         require(!command->GetClientData() && !command->GetClientObject(), "Cannot clone borrowed command client data");
@@ -968,7 +1013,7 @@ int64_t read_event_field(wxEvent& event, int field) {
     }
 }
 void write_event_field(wxEvent& event, int field, int64_t value) {
-    require(!web_event_type(event.GetEventType()), "Web event payload metadata is read-only");
+    require(!stc_payload_readonly(event.GetEventType()) && !input_payload_readonly(event.GetEventType()) && !aui_payload_readonly(event.GetEventType()) && !web_event_type(event.GetEventType()), "Web event payload metadata is read-only");
     auto* close = dynamic_cast<wxCloseEvent*>(&event);
     auto* notify = dynamic_cast<wxNotifyEvent*>(&event);
     auto* command = dynamic_cast<wxCommandEvent*>(&event);
@@ -1038,9 +1083,10 @@ struct Binding {
     bool live() const {
         auto* object = receiver.get();
         auto* widget = dynamic_cast<wxWindow*>(object);
-        return object && !pending_destruction.count(source) && (!widget || !widget->IsBeingDeleted());
+        return object && !pending_destruction.count(source) && (!widget || !window_destruction_pending(widget));
     }
     void on_event(wxEvent& event) {
+        StcCallbackScope stc_scope(event);
         NotebookCallbackOperation notebook_guard(event);
         ListCallbackOperation list_guard(event);
         TreeCallbackOperation tree_guard(event);
@@ -1059,7 +1105,7 @@ struct Binding {
             for (const auto& item : registered_events)
                 if (item.second.type == event.GetEventType()) { snapshot_kind = item.first; break; }
             const int family = native_event_family(snapshot_kind);
-            const bool carries_text = web_event_kind(snapshot_kind) || snapshot_kind == WXL_EVENT_SEARCH || snapshot_kind == WXL_EVENT_SEARCH_CANCEL || snapshot_kind == WXL_EVENT_COMBO_SELECTION || snapshot_kind == WXL_EVENT_TOGGLE_BUTTON_CHANGE || snapshot_kind == WXL_EVENT_RADIO_SELECTION || snapshot_kind == WXL_EVENT_TEXT_CHANGE || snapshot_kind == WXL_EVENT_LISTBOX_SELECTION || snapshot_kind == WXL_EVENT_LISTBOX_DOUBLE_CLICK || snapshot_kind >= first_registered_event_kind;
+            const bool carries_text = stc_event_kind(snapshot_kind) || web_event_kind(snapshot_kind) || snapshot_kind == WXL_EVENT_SEARCH || snapshot_kind == WXL_EVENT_SEARCH_CANCEL || snapshot_kind == WXL_EVENT_COMBO_SELECTION || snapshot_kind == WXL_EVENT_TOGGLE_BUTTON_CHANGE || snapshot_kind == WXL_EVENT_RADIO_SELECTION || snapshot_kind == WXL_EVENT_TEXT_CHANGE || snapshot_kind == WXL_EVENT_LISTBOX_SELECTION || snapshot_kind == WXL_EVENT_LISTBOX_DOUBLE_CLICK || snapshot_kind >= first_registered_event_kind;
             const auto text = command ? command->GetString() : wxString();
             const auto bytes = text.ToUTF8();
             wxl_event snapshot{snapshot_kind, carries_text ? (bytes.data() ? bytes.data() : "") : nullptr,
@@ -1076,6 +1122,7 @@ struct Binding {
                                      event_tree_token(event), event_sash_value(event)};
             snapshot.date_code = event_calendar_code(event);
             snapshot.time_code = event_clock_code(event);
+            fill_stc_detail(event,snapshot); fill_input_detail(event,snapshot); fill_aui_detail(event,snapshot);
             if (with_context) {
                 event.Skip(false);
                 EventScope scope(event, snapshot.user_data);
@@ -1102,9 +1149,15 @@ bool remove_binding(uint64_t token) {
 }
 wxl_handle track(wxWindow* object) {
     const auto id = next_handle++;
+    const auto previous=managed_window_states.find(object);
+    if (previous!=managed_window_states.end() && !previous->second.lifetime.get()) input_owners.erase(object);
     windows.emplace(id, object);
+    managed_window_states[object]=ManagedWindowState{object,false};
     object->Bind(wxEVT_DESTROY, [id, object](wxWindowDestroyEvent& event) {
         if (event.GetEventObject() == object) {
+            // Keep the weak retirement marker until final base teardown, even
+            // after DESTROY invalidates the public identity.
+            if (auto state=managed_window_states.find(object);state!=managed_window_states.end()) state->second.retiring=true;
             input_owners.erase(object);
             windows.erase(id);
             handlers.erase(id);
@@ -1414,7 +1467,7 @@ bool process_deferred_ui_action() {
 
 }
 extern "C" {
-int wxl_abi_version() { return 56; }
+int wxl_abi_version() { return 57; }
 const char* wxl_last_error() { return error.c_str(); }
 int wxl_clipboard_text_available() {
     return boolean_result([&] {
@@ -1615,7 +1668,7 @@ int wxl_finish() {
         wxTheApp->OnExit();
         workflow_modal_hook.reset();
         wxEntryCleanup();
-        windows.clear(); handlers.clear(); pending_destruction.clear(); registered_events.clear(); dispatch = nullptr; started = false; pending_callback_error = false;
+        managed_window_states.clear(); input_owners.clear(); windows.clear(); handlers.clear(); pending_destruction.clear(); registered_events.clear(); dispatch = nullptr; started = false; pending_callback_error = false;
     });
 }
 wxl_handle wxl_message_dialog(wxl_handle parent, const char* message, size_t message_length,
@@ -2271,7 +2324,8 @@ int wxl_context_id(uint64_t token, int* value) {
     });
 }
 int wxl_context_set_id(uint64_t token, int value) {
-    return status([&] { current_event(token).SetId(value); });
+    return status([&] { auto& event=current_event(token);
+        require(!aui_payload_readonly(event.GetEventType()) && !stc_payload_readonly(event.GetEventType()) && !input_payload_readonly(event.GetEventType()), "Native input/styled/AUI event IDs are read-only"); event.SetId(value); });
 }
 int wxl_context_timestamp(uint64_t token, int64_t* value) {
     return status([&] {
@@ -2282,6 +2336,7 @@ int wxl_context_timestamp(uint64_t token, int64_t* value) {
 int wxl_context_set_timestamp(uint64_t token, int64_t value) {
     return status([&] {
         auto& event = current_event(token);
+        require(!aui_payload_readonly(event.GetEventType()) && !stc_payload_readonly(event.GetEventType()) && !input_payload_readonly(event.GetEventType()), "Native input/styled/AUI event timestamps are read-only");
         require(value >= std::numeric_limits<long>::min() && value <= std::numeric_limits<long>::max(),
                 "Timestamp is outside the native long range");
         event.SetTimestamp(static_cast<long>(value));
@@ -2324,7 +2379,7 @@ int wxl_context_set_logging_off(uint64_t token, int value) {
     });
 }
 int wxl_close(wxl_handle id, int force) {
-    return boolean_result([&] { auto* object = as<wxFrame>(id); require(!protected_modal_ancestor(object), "Cannot close an active modal dialog ancestor"); require(!protected_notebook_ancestor(object) && !protected_list_ancestor(object) && !protected_tree_ancestor(object) && !protected_splitter_ancestor(object) && !protected_toolbar_ancestor(object) && !protected_accelerator_window(object) && !protected_input_ancestor(object), "Cannot close a navigation callback ancestor"); return object->Close(force != 0); });
+    return boolean_result([&] { auto* object = as<wxFrame>(id); require(!protected_modal_ancestor(object), "Cannot close an active modal dialog ancestor"); require(!protected_notebook_ancestor(object) && !protected_list_ancestor(object) && !protected_tree_ancestor(object) && !protected_splitter_ancestor(object) && !protected_toolbar_ancestor(object) && !protected_accelerator_window(object) && !protected_aui_ancestor(object) && !protected_input_ancestor(object), "Cannot close a navigation callback ancestor"); return object->Close(force != 0); });
 }
 int wxl_context_resume_propagation(uint64_t token, int level) {
     return status([&] {
@@ -2467,7 +2522,7 @@ int wxl_set_event_text(uint64_t source, int contextual, const char* text, size_t
             require(!window || !window->WXGetTextEntry(),
                     "Text-entry-origin text-change payloads are lazy and cannot be mutated");
         }
-        require(!web_event_type(event.GetEventType()), "Web event text is read-only");
+        require(!stc_payload_readonly(event.GetEventType()) && !input_payload_readonly(event.GetEventType()) && !aui_payload_readonly(event.GetEventType()) && !web_event_type(event.GetEventType()), "Web event text is read-only");
         require(text || length == 0, "Null event text");
         command->SetString(wxString::FromUTF8(text ? text : "", length));
     });
@@ -3546,8 +3601,8 @@ int wxl_destroy(wxl_handle id) {
     return status([&] {
         auto* object = window(id);
         require(!protected_modal_ancestor(object), "Cannot destroy an active modal dialog or its ancestor");
-        require(!protected_notebook_ancestor(object) && !protected_list_ancestor(object) && !protected_tree_ancestor(object) && !protected_splitter_ancestor(object) && !protected_toolbar_ancestor(object) && !protected_accelerator_window(object) && !protected_input_ancestor(object), "Cannot destroy a navigation operation receiver or its ancestor");
-        require(!attached_notebook_page(object) && !attached_splitter_pane(object), "Attached pages/panes are owned by their native container");
+        require(!protected_notebook_ancestor(object) && !protected_list_ancestor(object) && !protected_tree_ancestor(object) && !protected_splitter_ancestor(object) && !protected_toolbar_ancestor(object) && !protected_accelerator_window(object) && !protected_aui_ancestor(object) && !protected_input_ancestor(object), "Cannot destroy a navigation operation receiver or its ancestor");
+        require(!attached_aui_page(object) && !attached_notebook_page(object) && !attached_splitter_pane(object), "Attached pages/panes are owned by their native container");
         if (dynamic_cast<wxToolBar*>(object)) {
             // OSX Destroy() uninstalls native chrome and can defer deletion.
             // Delete synchronously while quiescent, before allowing replacement.
@@ -3664,3 +3719,15 @@ extern "C" {
 #include "grid.inc"
 }
 #include "webview.inc"
+
+#include "stc.inc"
+#include "aui.inc"
+extern "C" {
+#define WXL_INPUT_EVENT_EXPORTS
+#include "input-events.inc"
+#undef WXL_INPUT_EVENT_EXPORTS
+}
+
+extern "C" {
+#include "splitter-extra.inc"
+}
