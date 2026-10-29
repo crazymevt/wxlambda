@@ -17,3 +17,5 @@
 (cffi:defcfun ("wxl_splitter_replace" %splitter-replace) :int (splitter :uint64) (index :int) (pane :uint64))
 (cffi:defcfun ("wxl_splitter_resplit" %splitter-resplit) :int (splitter :uint64) (pane :uint64))
 (cffi:defcfun ("wxl_set_splitter_orientation" %set-splitter-orientation) :int (splitter :uint64) (orientation :int))
+
+(cffi:defcfun ("wxl_aui_tab_colours" %aui-tab-colours) :int (book :uint64) (write :int) (reset :int) (base :pointer) (active :pointer) (present :pointer))

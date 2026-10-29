@@ -28,3 +28,6 @@ WXL_API int wxl_stc_position(wxl_handle id,int x,int y,int* position);
 WXL_API int wxl_stc_detail(uint64_t token,int field,int64_t* result);
 
 WXL_API int wxl_stc_style_bytes(wxl_handle id,const unsigned char* bytes,size_t length);
+
+WXL_API int wxl_stc_caret_colour(wxl_handle id,int write,int64_t* colour);
+WXL_API int wxl_stc_selection_colours(wxl_handle id,int write,int reset,int64_t* foreground,int64_t* background,int* present);

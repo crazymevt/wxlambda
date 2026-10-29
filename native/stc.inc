@@ -3,6 +3,7 @@ constexpr int stc_document_limit=67108864;
 class StyledControl : public wxStyledTextCtrl {
 public:
     int undo_depth=0;
+    bool selection_colours_set=false; wxColour selection_foreground,selection_background;
 };
 void stc_validate(wxStyledTextCtrl* control,int64_t value,const char* domain) {
     const std::string type(domain);
@@ -133,3 +134,23 @@ extern "C" int wxl_stc_style_bytes(wxl_handle id,const unsigned char* bytes,size
     require(length<=static_cast<size_t>(control->GetLength()-control->GetEndStyled()),"Style bytes exceed document");
     if (length) { control->SetStyleBytes(static_cast<int>(length),reinterpret_cast<char*>(const_cast<unsigned char*>(bytes))); }
 }); }
+
+extern "C" {
+int wxl_stc_caret_colour(wxl_handle id,int write,int64_t* colour) { return status([&] {
+    auto* control=as<StyledControl>(id); require(colour && (write==0 || write==1),"Invalid caret colour arguments");
+    if (write) { stc_ready(control); const wxColour value=stc_unpack_colour(*colour); InputOperation operation(control); control->SetCaretForeground(value); }
+    *colour=stc_pack_colour(control->GetCaretForeground());
+}); }
+int wxl_stc_selection_colours(wxl_handle id,int write,int reset,int64_t* foreground,int64_t* background,int* present) { return status([&] {
+    auto* control=as<StyledControl>(id); require(foreground && background && present && (write==0 || write==1) && (reset==0 || reset==1),"Invalid selection colour arguments");
+    if (write) {
+        stc_ready(control); if (!reset) { stc_unpack_colour(*foreground); stc_unpack_colour(*background); }
+        InputOperation operation(control);
+        const wxColour fg=reset ? *wxBLACK : stc_unpack_colour(*foreground),bg=reset ? *wxWHITE : stc_unpack_colour(*background);
+        control->SetSelForeground(!reset,fg); control->SetSelBackground(!reset,bg);
+        control->selection_colours_set=!reset; control->selection_foreground=fg; control->selection_background=bg;
+    }
+    *present=control->selection_colours_set ? 1 : 0;
+    if (control->selection_colours_set) { *foreground=stc_pack_colour(control->selection_foreground); *background=stc_pack_colour(control->selection_background); }
+}); }
+}

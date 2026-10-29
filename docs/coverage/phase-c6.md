@@ -17,7 +17,7 @@ class or constructor does not imply full upstream coverage.
 
 ## Current coverage and remaining work
 
-0 implemented; 198 partial; 8714 pending; 380 context entries. Native gaps stay visible; feature priority is separate.
+0 implemented; 204 partial; 8708 pending; 380 context entries. Native gaps stay visible; feature priority is separate.
 
 Counts describe inventory entries, not distinct APIs or percent completion.
 See the [coverage summary](README.md) for phase/header comparisons.
@@ -236,7 +236,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/aui/auibook.h)
 
-0 implemented; 21 partial; 231 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
+0 implemented; 23 partial; 229 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
 
 - [ ] [L8](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/aui/auibook.h#L8) `enum wxAuiNotebookOption {`
 - [ ] [L10](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/aui/auibook.h#L10) `wxAUI_NB_TOP = 1 << 0, wxAUI_NB_LEFT = 1 << 1, wxAUI_NB_RIGHT = 1 << 2, wxAUI_NB_BOTTOM = 1 << 3, wxAUI_NB_TAB_SPLIT = 1 << 4, wxAUI_NB_TAB_MOVE = 1 << 5, wxAUI_NB_TAB_EXTERNAL_MOVE = 1 << 6, wxAUI_NB_TAB_FIXED_WIDTH = 1 << 7, wxAUI_NB_SCROLL_BUTTONS = 1 << 8, wxAUI_NB_WINDOWLIST_BUTTON = 1 << 9, wxAUI_NB_CLOSE_BUTTON = 1 << 10, wxAUI_NB_CLOSE_ON_ACTIVE_TAB = 1 << 11, wxAUI_NB_CLOSE_ON_ALL_TABS = 1 << 12, wxAUI_NB_MIDDLE_CLICK_CLOSE = 1 << 13, wxAUI_NB_DEFAULT_STYLE = wxAUI_NB_TOP | wxAUI_NB_TAB_SPLIT | wxAUI_NB_TAB_MOVE | wxAUI_NB_SCROLL_BUTTONS | wxAUI_NB_CLOSE_ON_ACTIVE_TAB | wxAUI_NB_MIDDLE_CLICK_CLOSE }`
@@ -292,7 +292,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [~] [L275](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/aui/auibook.h#L275) `bool InsertPage(size_t page_idx, wxWindow* page, const wxString& caption, bool select = false, const wxBitmapBundle& bitmap = wxBitmapBundle());` — **Partial**: `aui-notebook`, `make-aui-notebook`, `insert-notebook-page`, `remove-notebook-page`, `delete-notebook-page`, `move-notebook-page`, `notebook-page-index`, `event-old-selection`, `event-aui-page-id`, `add-notebook-page`, `notebook-page`, `notebook-page-count`, `notebook-page-label`, `selection`; ABI: `wxl_aui_notebook`, `wxl_aui_insert`, `wxl_aui_remove`, `wxl_aui_move`, `wxl_aui_page`, `wxl_aui_count`, `wxl_aui_page_index`, `wxl_aui_label`, `wxl_set_aui_label`, `wxl_aui_selection`, `wxl_set_aui_selection`, `wxl_aui_detail`. Active main-thread GUI session and checked native lifetimes. All AUI writes reject callbacks; structural edits require quiescence or owner-bound deferred action. Canonical PANEL roots precede publication; remove retains hidden same-parent child, delete invalidates by native destruction. Full native tab-event spans protect book/pages/ancestors and block nested GUI/modal/clipboard entry. Top tabs with native programmatic Split, one-group mouse movement and active close; external transfer, mouse drag splitting, icons/art providers and managed handler-stack access remain unbound. Requires wxUSE_AUI and aui component. See docs/AUI-NOTEBOOK.md.
 - [ ] [L301](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/aui/auibook.h#L301) `virtual bool InsertPage(size_t index, wxWindow *page, const wxString &text, bool select, int imageId);`
 - [~] [L307](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/aui/auibook.h#L307) `bool RemovePage(size_t page);` — **Partial**: `aui-notebook`, `make-aui-notebook`, `insert-notebook-page`, `remove-notebook-page`, `delete-notebook-page`, `move-notebook-page`, `notebook-page-index`, `event-old-selection`, `event-aui-page-id`, `add-notebook-page`, `notebook-page`, `notebook-page-count`, `notebook-page-label`, `selection`; ABI: `wxl_aui_notebook`, `wxl_aui_insert`, `wxl_aui_remove`, `wxl_aui_move`, `wxl_aui_page`, `wxl_aui_count`, `wxl_aui_page_index`, `wxl_aui_label`, `wxl_set_aui_label`, `wxl_aui_selection`, `wxl_set_aui_selection`, `wxl_aui_detail`. Active main-thread GUI session and checked native lifetimes. All AUI writes reject callbacks; structural edits require quiescence or owner-bound deferred action. Canonical PANEL roots precede publication; remove retains hidden same-parent child, delete invalidates by native destruction. Full native tab-event spans protect book/pages/ancestors and block nested GUI/modal/clipboard entry. Top tabs with native programmatic Split, one-group mouse movement and active close; external transfer, mouse drag splitting, icons/art providers and managed handler-stack access remain unbound. Requires wxUSE_AUI and aui component. See docs/AUI-NOTEBOOK.md.
-- [ ] [L312](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/aui/auibook.h#L312) `void SetArtProvider(wxAuiTabArt* art);`
+- [~] [L312](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/aui/auibook.h#L312) `void SetArtProvider(wxAuiTabArt* art);` — **Partial**: `notebook-tab-colours`; ABI: `wxl_aui_tab_colours`. Bounded copied theme colors, callback-safe reads and guarded writes; no raw ownership or full class parity. See docs/THEME-COLOURS.md.
 - [ ] [L318](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/aui/auibook.h#L318) `virtual bool SetFont(const wxFont& font);`
 - [ ] [L323](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/aui/auibook.h#L323) `void SetMeasuringFont(const wxFont& font);`
 - [ ] [L328](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/aui/auibook.h#L328) `void SetNormalFont(const wxFont& font);`
@@ -327,7 +327,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [ ] [L498](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/aui/auibook.h#L498) `class wxAuiTabContainer {`
 - [ ] [L505](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/aui/auibook.h#L505) `wxAuiTabContainer();`
 - [ ] [L510](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/aui/auibook.h#L510) `virtual ~wxAuiTabContainer();`
-- [ ] [L512](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/aui/auibook.h#L512) `void SetArtProvider(wxAuiTabArt* art);`
+- [~] [L512](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/aui/auibook.h#L512) `void SetArtProvider(wxAuiTabArt* art);` — **Partial**: `notebook-tab-colours`; ABI: `wxl_aui_tab_colours`. Bounded copied theme colors, callback-safe reads and guarded writes; no raw ownership or full class parity. See docs/THEME-COLOURS.md.
 - [ ] [L513](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/aui/auibook.h#L513) `wxAuiTabArt* GetArtProvider() const;`
 - [ ] [L515](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/aui/auibook.h#L515) `void SetFlags(unsigned int flags);`
 - [ ] [L516](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/aui/auibook.h#L516) `unsigned int GetFlags() const;`
@@ -6236,7 +6236,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/stc/stc.h)
 
-0 implemented; 165 partial; 2925 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
+0 implemented; 169 partial; 2921 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
 
 - [ ] [L17](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/stc/stc.h#L17) `#define wxSTC_INVALID_POSITION -1`
 - [ ] [L21](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/stc/stc.h#L21) `#define wxSTC_START 2000`
@@ -8718,20 +8718,20 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [ ] [L4491](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/stc/stc.h#L4491) `void StyleSetHotSpot(int style, bool hotspot);`
 - [ ] [L4496](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/stc/stc.h#L4496) `void StyleSetVisible(int style, bool visible);`
 - [ ] [L4502](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/stc/stc.h#L4502) `void StyleSetChangeable(int style, bool changeable);`
-- [ ] [L4514](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/stc/stc.h#L4514) `void SetSelForeground(bool useSetting, const wxColour& fore);`
-- [ ] [L4519](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/stc/stc.h#L4519) `void SetSelBackground(bool useSetting, const wxColour& back);`
+- [~] [L4514](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/stc/stc.h#L4514) `void SetSelForeground(bool useSetting, const wxColour& fore);` — **Partial**: `stc-selection-colours`; ABI: `wxl_stc_selection_colours`. Bounded copied theme colors, callback-safe reads and guarded writes; no raw ownership or full class parity. See docs/THEME-COLOURS.md.
+- [~] [L4519](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/stc/stc.h#L4519) `void SetSelBackground(bool useSetting, const wxColour& back);` — **Partial**: `stc-selection-colours`; ABI: `wxl_stc_selection_colours`. Bounded copied theme colors, callback-safe reads and guarded writes; no raw ownership or full class parity. See docs/THEME-COLOURS.md.
 - [ ] [L4524](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/stc/stc.h#L4524) `int GetSelAlpha() const;`
 - [ ] [L4529](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/stc/stc.h#L4529) `void SetSelAlpha(int alpha);`
 - [ ] [L4534](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/stc/stc.h#L4534) `bool GetSelEOLFilled() const;`
 - [ ] [L4539](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/stc/stc.h#L4539) `void SetSelEOLFilled(bool filled);`
-- [ ] [L4544](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/stc/stc.h#L4544) `void SetCaretForeground(const wxColour& fore);`
+- [~] [L4544](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/stc/stc.h#L4544) `void SetCaretForeground(const wxColour& fore);` — **Partial**: `stc-caret-colour`; ABI: `wxl_stc_caret_colour`. Bounded copied theme colors, callback-safe reads and guarded writes; no raw ownership or full class parity. See docs/THEME-COLOURS.md.
 - [ ] [L4549](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/stc/stc.h#L4549) `int GetCaretPeriod() const;`
 - [ ] [L4554](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/stc/stc.h#L4554) `void SetCaretPeriod(int periodMilliseconds);`
 - [ ] [L4559](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/stc/stc.h#L4559) `bool GetCaretLineVisible() const;`
 - [ ] [L4564](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/stc/stc.h#L4564) `void SetCaretLineVisible(bool show);`
 - [ ] [L4569](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/stc/stc.h#L4569) `wxColour GetCaretLineBackground() const;`
 - [ ] [L4574](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/stc/stc.h#L4574) `void SetCaretLineBackground(const wxColour& back);`
-- [ ] [L4579](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/stc/stc.h#L4579) `wxColour GetCaretForeground() const;`
+- [~] [L4579](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/stc/stc.h#L4579) `wxColour GetCaretForeground() const;` — **Partial**: `stc-caret-colour`; ABI: `wxl_stc_caret_colour`. Bounded copied theme colors, callback-safe reads and guarded writes; no raw ownership or full class parity. See docs/THEME-COLOURS.md.
 - [ ] [L4584](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/stc/stc.h#L4584) `void SetCaretWidth(int pixelWidth);`
 - [ ] [L4589](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/stc/stc.h#L4589) `int GetCaretWidth() const;`
 - [ ] [L4594](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/stc/stc.h#L4594) `void SetHotspotActiveForeground(bool useSetting, const wxColour& fore);`

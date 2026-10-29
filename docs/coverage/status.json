@@ -17814,6 +17814,132 @@
         "wxl_window_colours"
       ],
       "scope": "Read current native foreground/background as two copied RGB triples; invalid colours fall back to current system window text/button face. GUI/main-thread and checked window lifetime; no wxColour wrapper, alpha, setters, theme forcing or raw handles. See docs/BITMAP-TOGGLES.md."
+    },
+    {
+      "header": "wx/window.h",
+      "line": 2386,
+      "declaration": "virtual bool SetBackgroundColour(const wxColour& colour);",
+      "status": "~",
+      "symbol": "SetBackgroundColour",
+      "lisp": [
+        "window-colours"
+      ],
+      "native": [
+        "wxl_set_window_colours"
+      ],
+      "scope": "Bounded copied theme colors, callback-safe reads and guarded writes; no raw ownership or full class parity. See docs/THEME-COLOURS.md."
+    },
+    {
+      "header": "wx/window.h",
+      "line": 2510,
+      "declaration": "virtual bool SetForegroundColour(const wxColour& colour);",
+      "status": "~",
+      "symbol": "SetForegroundColour",
+      "lisp": [
+        "window-colours"
+      ],
+      "native": [
+        "wxl_set_window_colours"
+      ],
+      "scope": "Bounded copied theme colors, callback-safe reads and guarded writes; no raw ownership or full class parity. See docs/THEME-COLOURS.md."
+    },
+    {
+      "header": "wx/settings.h",
+      "line": 336,
+      "declaration": "static wxColour GetColour(wxSystemColour index);",
+      "status": "~",
+      "symbol": "GetColour",
+      "lisp": [
+        "system-colours"
+      ],
+      "native": [
+        "wxl_system_colours"
+      ],
+      "scope": "Bounded copied theme colors, callback-safe reads and guarded writes; no raw ownership or full class parity. See docs/THEME-COLOURS.md."
+    },
+    {
+      "header": "wx/aui/auibook.h",
+      "line": 312,
+      "declaration": "void SetArtProvider(wxAuiTabArt* art);",
+      "status": "~",
+      "symbol": "SetArtProvider",
+      "lisp": [
+        "notebook-tab-colours"
+      ],
+      "native": [
+        "wxl_aui_tab_colours"
+      ],
+      "scope": "Bounded copied theme colors, callback-safe reads and guarded writes; no raw ownership or full class parity. See docs/THEME-COLOURS.md."
+    },
+    {
+      "header": "wx/aui/auibook.h",
+      "line": 512,
+      "declaration": "void SetArtProvider(wxAuiTabArt* art);",
+      "status": "~",
+      "symbol": "SetArtProvider",
+      "lisp": [
+        "notebook-tab-colours"
+      ],
+      "native": [
+        "wxl_aui_tab_colours"
+      ],
+      "scope": "Bounded copied theme colors, callback-safe reads and guarded writes; no raw ownership or full class parity. See docs/THEME-COLOURS.md."
+    },
+    {
+      "header": "wx/stc/stc.h",
+      "line": 4514,
+      "declaration": "void SetSelForeground(bool useSetting, const wxColour& fore);",
+      "status": "~",
+      "symbol": "SetSelForeground",
+      "lisp": [
+        "stc-selection-colours"
+      ],
+      "native": [
+        "wxl_stc_selection_colours"
+      ],
+      "scope": "Bounded copied theme colors, callback-safe reads and guarded writes; no raw ownership or full class parity. See docs/THEME-COLOURS.md."
+    },
+    {
+      "header": "wx/stc/stc.h",
+      "line": 4519,
+      "declaration": "void SetSelBackground(bool useSetting, const wxColour& back);",
+      "status": "~",
+      "symbol": "SetSelBackground",
+      "lisp": [
+        "stc-selection-colours"
+      ],
+      "native": [
+        "wxl_stc_selection_colours"
+      ],
+      "scope": "Bounded copied theme colors, callback-safe reads and guarded writes; no raw ownership or full class parity. See docs/THEME-COLOURS.md."
+    },
+    {
+      "header": "wx/stc/stc.h",
+      "line": 4544,
+      "declaration": "void SetCaretForeground(const wxColour& fore);",
+      "status": "~",
+      "symbol": "SetCaretForeground",
+      "lisp": [
+        "stc-caret-colour"
+      ],
+      "native": [
+        "wxl_stc_caret_colour"
+      ],
+      "scope": "Bounded copied theme colors, callback-safe reads and guarded writes; no raw ownership or full class parity. See docs/THEME-COLOURS.md."
+    },
+    {
+      "header": "wx/stc/stc.h",
+      "line": 4579,
+      "declaration": "wxColour GetCaretForeground() const;",
+      "status": "~",
+      "symbol": "GetCaretForeground",
+      "lisp": [
+        "stc-caret-colour"
+      ],
+      "native": [
+        "wxl_stc_caret_colour"
+      ],
+      "scope": "Bounded copied theme colors, callback-safe reads and guarded writes; no raw ownership or full class parity. See docs/THEME-COLOURS.md."
     }
   ],
   "classes": {

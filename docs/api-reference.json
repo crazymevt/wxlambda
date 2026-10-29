@@ -5711,11 +5711,63 @@
   {
     "name": "window-colours",
     "kind": "generic-function",
-    "syntax": "(wxlambda:window-colours window)",
-    "arguments": "A live WINDOW in the current main-thread GUI session.",
+    "syntax": "(window-colours window) / (setf (window-colours window :recursive-p t) value)",
+    "arguments": "WINDOW; SETF VALUE is NIL or (foreground-RGB background-RGB), each RGB a three-byte list. SETF accepts :RECURSIVE-P.",
     "returns": "Two fresh lists (red green blue): native foreground, then background; channel integers0..255.",
-    "description": "Read wxWindow GetForegroundColour/GetBackgroundColour. Invalid native values use current system WINDOWTEXT/BTNFACE fallbacks. Suitable for sampling a native container palette; does not change or retain the theme.",
-    "scope": "Checked WINDOW lifetime and GUI thread; callback-safe read. No mutable wxColour resources, alpha, setters, screen pixel sampling or exact native paint/theme interpretation guarantee. See docs/BITMAP-TOGGLES.md.",
-    "wxwidgets": "wxWindow::GetForegroundColour/GetBackgroundColour and wxSystemSettings::GetColour fallbacks; wxWidgets3.2.12."
+    "description": "Read fresh effective native foreground/background RGB lists as two values. SETF copies explicit colors; NIL resets native inherited/default colors. Recursive writes snapshot the current native subtree, including toolkit children. Does not theme non-window drawing such as STC styles or AUI art.",
+    "scope": "Main-thread active session; reads are callback-safe, writes reject callbacks and use the existing native operation/lifetime guards. Native decoration support varies by platform.",
+    "wxwidgets": "wxWindow::GetForegroundColour/GetBackgroundColour and wxSystemSettings::GetColour fallbacks; wxWidgets3.2.12.",
+    "setf": {
+      "syntax": "(setf (wxlambda:window-colours window :recursive-p t) value)",
+      "description": "WINDOW; SETF VALUE is NIL or (foreground-RGB background-RGB), each RGB a three-byte list. SETF accepts :RECURSIVE-P. Returns supplied VALUE. Writes reject callbacks; defer them to a safe GUI boundary."
+    }
+  },
+  {
+    "name": "system-colours",
+    "kind": "function",
+    "arguments": "No arguments.",
+    "returns": "Two fresh RGB lists: window text and button face.",
+    "description": "Query current system defaults independently of application window overrides.",
+    "scope": "Main-thread active session; reads are callback-safe, writes reject callbacks and use the existing native operation/lifetime guards. Native decoration support varies by platform.",
+    "wxwidgets": "wxSystemSettings::GetColour"
+  },
+  {
+    "name": "notebook-tab-colours",
+    "kind": "generic-function",
+    "arguments": "AUI-NOTEBOOK; SETF takes NIL or (base-RGB24 active-RGB24).",
+    "returns": "Last explicitly configured pair, or NIL.",
+    "description": "Install owned wxAuiGenericTabArt with copied colors; NIL restores default art. Text contrast follows the generic art algorithm. Close/scroll glyphs and other native chrome still follow system appearance. Preserves pages and selection.",
+    "scope": "Main-thread active session; reads are callback-safe, writes reject callbacks and use the existing native operation/lifetime guards. Native decoration support varies by platform.",
+    "wxwidgets": "wxAuiNotebook::SetArtProvider / wxAuiTabArt::SetColour / SetActiveColour",
+    "setf": {
+      "syntax": "(setf (wxlambda:notebook-tab-colours window) value)",
+      "description": "AUI-NOTEBOOK; SETF takes NIL or (base-RGB24 active-RGB24). Returns supplied VALUE. Writes reject callbacks; defer them to a safe GUI boundary."
+    }
+  },
+  {
+    "name": "stc-caret-colour",
+    "kind": "generic-function",
+    "arguments": "STYLED-TEXT-CONTROL; SETF takes an RGB24 integer0..16777215.",
+    "returns": "Current native caret RGB24.",
+    "description": "Read/write caret color without changing text, selection, undo history or styling extents.",
+    "scope": "Main-thread active session; reads are callback-safe, writes reject callbacks and use the existing native operation/lifetime guards. Native decoration support varies by platform.",
+    "wxwidgets": "wxStyledTextCtrl::GetCaretForeground / SetCaretForeground",
+    "setf": {
+      "syntax": "(setf (wxlambda:stc-caret-colour window) value)",
+      "description": "STYLED-TEXT-CONTROL; SETF takes an RGB24 integer0..16777215. Returns supplied VALUE. Writes reject callbacks; defer them to a safe GUI boundary."
+    }
+  },
+  {
+    "name": "stc-selection-colours",
+    "kind": "generic-function",
+    "arguments": "STYLED-TEXT-CONTROL; SETF takes NIL or (foreground-RGB24 background-RGB24).",
+    "returns": "Last explicitly configured pair, or NIL.",
+    "description": "Copy selection colors; NIL disables overrides and restores toolkit selection defaults. Reader reports configured metadata, since wxSTC has no selected-color getter. Does not alter selected range or text.",
+    "scope": "Main-thread active session; reads are callback-safe, writes reject callbacks and use the existing native operation/lifetime guards. Native decoration support varies by platform.",
+    "wxwidgets": "wxStyledTextCtrl::SetSelForeground / SetSelBackground",
+    "setf": {
+      "syntax": "(setf (wxlambda:stc-selection-colours window) value)",
+      "description": "STYLED-TEXT-CONTROL; SETF takes NIL or (foreground-RGB24 background-RGB24). Returns supplied VALUE. Writes reject callbacks; defer them to a safe GUI boundary."
+    }
   }
 ]

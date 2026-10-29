@@ -17,7 +17,7 @@ class or constructor does not imply full upstream coverage.
 
 ## Current coverage and remaining work
 
-28 implemented; 245 partial; 2589 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
+28 implemented; 247 partial; 2587 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
 
 Counts describe inventory entries, not distinct APIs or percent completion.
 See the [coverage summary](README.md) for phase/header comparisons.
@@ -2995,7 +2995,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h)
 
-14 implemented; 32 partial; 340 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
+14 implemented; 34 partial; 338 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
 
 - [ ] [L12](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L12) `enum wxShowEffect {`
 - [ ] [L19](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L19) `wxSHOW_EFFECT_NONE, wxSHOW_EFFECT_ROLL_TO_LEFT, wxSHOW_EFFECT_ROLL_TO_RIGHT, wxSHOW_EFFECT_ROLL_TO_TOP, wxSHOW_EFFECT_ROLL_TO_BOTTOM, wxSHOW_EFFECT_SLIDE_TO_LEFT, wxSHOW_EFFECT_SLIDE_TO_RIGHT, wxSHOW_EFFECT_SLIDE_TO_TOP, wxSHOW_EFFECT_SLIDE_TO_BOTTOM, wxSHOW_EFFECT_BLEND, wxSHOW_EFFECT_EXPAND, wxSHOW_EFFECT_MAX }`
@@ -3223,11 +3223,11 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [ ] [L2314](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2314) `virtual void Refresh(bool eraseBackground = true, const wxRect* rect = NULL);`
 - [ ] [L2324](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2324) `void RefreshRect(const wxRect& rect, bool eraseBackground = true);`
 - [ ] [L2350](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2350) `virtual void Update();`
-- [ ] [L2386](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2386) `virtual bool SetBackgroundColour(const wxColour& colour);`
+- [~] [L2386](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2386) `virtual bool SetBackgroundColour(const wxColour& colour);` — **Partial**: `window-colours`; ABI: `wxl_set_window_colours`. Bounded copied theme colors, callback-safe reads and guarded writes; no raw ownership or full class parity. See docs/THEME-COLOURS.md.
 - [ ] [L2442](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2442) `virtual bool SetBackgroundStyle(wxBackgroundStyle style);`
 - [ ] [L2463](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2463) `virtual bool IsTransparentBackgroundSupported(wxString *reason = NULL) const;`
 - [ ] [L2486](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2486) `virtual bool SetFont(const wxFont& font);`
-- [ ] [L2510](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2510) `virtual bool SetForegroundColour(const wxColour& colour);`
+- [~] [L2510](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2510) `virtual bool SetForegroundColour(const wxColour& colour);` — **Partial**: `window-colours`; ABI: `wxl_set_window_colours`. Bounded copied theme colors, callback-safe reads and guarded writes; no raw ownership or full class parity. See docs/THEME-COLOURS.md.
 - [ ] [L2518](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2518) `void SetOwnBackgroundColour(const wxColour& colour);`
 - [ ] [L2525](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2525) `bool InheritsBackgroundColour() const;`
 - [ ] [L2530](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2530) `bool UseBgCol() const;`

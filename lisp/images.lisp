@@ -204,3 +204,24 @@
     (check-status (%window-colours (handle object) fg bg))
     (values (loop for i below 3 collect (cffi:mem-aref fg :uint8 i))
             (loop for i below 3 collect (cffi:mem-aref bg :uint8 i)))))
+
+(defun system-colours ()
+  "Return current system window-text/button-face RGB triples, independent of overrides."
+  (cffi:with-foreign-objects ((fg :uint8 3) (bg :uint8 3))
+    (check-status (%system-colours fg bg))
+    (values (loop for i below 3 collect (cffi:mem-aref fg :uint8 i))
+            (loop for i below 3 collect (cffi:mem-aref bg :uint8 i)))))
+(defgeneric (setf window-colours) (value window &key recursive-p))
+(defmethod (setf window-colours) (value (object window) &key recursive-p)
+  (when value
+    (unless (and (listp value) (= (length value) 2)
+                 (every (lambda (rgb) (and (listp rgb) (= (length rgb) 3)
+                                          (every (lambda (n) (typep n '(unsigned-byte 8))) rgb))) value))
+      (error 'type-error :datum value :expected-type 'list)))
+  (if value
+      (cffi:with-foreign-objects ((fg :uint8 3) (bg :uint8 3))
+        (loop for channel in (first value) for i from 0 do (setf (cffi:mem-aref fg :uint8 i) channel))
+        (loop for channel in (second value) for i from 0 do (setf (cffi:mem-aref bg :uint8 i) channel))
+        (call-setter (lambda () (%set-window-colours (handle object) fg bg (if recursive-p 1 0))) t))
+      (call-setter (lambda () (%set-window-colours (handle object) (cffi:null-pointer) (cffi:null-pointer) (if recursive-p 1 0))) t))
+  value)

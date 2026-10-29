@@ -2,6 +2,7 @@
 class DynamicAuiNotebook : public wxAuiNotebook {
 public:
     int first_tab_id=0;
+    bool themed_colours=false; wxColour theme_base,theme_active;
     bool Create(wxWindow* parent,wxWindowID id,const wxPoint& position=wxDefaultPosition,
                 const wxSize& size=wxDefaultSize,long style=wxAUI_NB_DEFAULT_STYLE) {
         const bool result=wxAuiNotebook::Create(parent,id,position,size,style);
@@ -138,5 +139,28 @@ int wxl_set_aui_selection(wxl_handle id,int index,int notify) { return status([&
     auto* book=as<DynamicAuiNotebook>(id); aui_mutation_ready(book); aui_index(book,index);
     require(notify==0 || notify==1,"Invalid AUI notification flag"); AuiOperation operation(book);
     if (notify) book->SetSelection(size_t(index)); else book->ChangeSelection(size_t(index));
+}); }
+}
+
+extern "C" {
+int wxl_aui_tab_colours(wxl_handle id,int write,int reset,int64_t* base,int64_t* active,int* present) { return status([&] {
+    auto* book=as<DynamicAuiNotebook>(id); require(base && active && present && (write==0 || write==1) && (reset==0 || reset==1),"Invalid tab colour arguments");
+    if (write) {
+        aui_mutation_ready(book,true);
+        if (!reset) { stc_unpack_colour(*base); stc_unpack_colour(*active); }
+        AuiOperation operation(book);
+        std::unique_ptr<wxAuiTabArt> art;
+        if (reset) art=std::make_unique<wxAuiDefaultTabArt>();
+        else {
+            auto custom=std::make_unique<wxAuiGenericTabArt>();
+            custom->SetColour(stc_unpack_colour(*base)); custom->SetActiveColour(stc_unpack_colour(*active)); art=std::move(custom);
+        }
+        book->SetArtProvider(art.release());
+        book->themed_colours=!reset;
+        if (!reset) { book->theme_base=stc_unpack_colour(*base); book->theme_active=stc_unpack_colour(*active); }
+        book->Refresh();
+    }
+    *present=book->themed_colours ? 1 : 0;
+    if (book->themed_colours) { *base=stc_pack_colour(book->theme_base); *active=stc_pack_colour(book->theme_active); }
 }); }
 }

@@ -12,3 +12,6 @@
 (cffi:defcfun ("wxl_stc_detail" %stc-detail) :int (token :uint64) (field :int) (result :pointer))
 
 (cffi:defcfun ("wxl_stc_style_bytes" %stc-style-bytes) :int (id :uint64) (bytes :pointer) (length :size))
+
+(cffi:defcfun ("wxl_stc_caret_colour" %stc-caret-colour) :int (id :uint64) (write :int) (colour :pointer))
+(cffi:defcfun ("wxl_stc_selection_colours" %stc-selection-colours) :int (id :uint64) (write :int) (reset :int) (foreground :pointer) (background :pointer) (present :pointer))

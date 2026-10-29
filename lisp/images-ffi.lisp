@@ -29,3 +29,6 @@
 (cffi:defcfun ("wxl_bitmap_toggle_set" %bitmap-toggle-set) :int (id :uint64) (bitmap :uint64))
 
 (cffi:defcfun ("wxl_window_colours" %window-colours) :int (id :uint64) (foreground :pointer) (background :pointer))
+
+(cffi:defcfun ("wxl_system_colours" %system-colours) :int (foreground :pointer) (background :pointer))
+(cffi:defcfun ("wxl_set_window_colours" %set-window-colours) :int (id :uint64) (foreground :pointer) (background :pointer) (recursive :int))

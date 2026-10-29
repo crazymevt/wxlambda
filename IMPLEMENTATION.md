@@ -3646,3 +3646,15 @@ The live native colour query reports foreground255/255/255 and background23/23/2
 in the local dark appearance. Dark/light icon contact-sheet rendering was
 inspected without changing the user's OS theme. Other ports and physical appearance/theme changes
 remain unverified.
+
+## ABI64 theme palette slice
+
+Copied window/system, AUI tab and STC caret/selection colors support KryptonEdit themes. See docs/THEME-COLOURS.md and examples/theme-palette.lisp. Native chrome can retain system appearance; Windows/Linux drawing remains unverified.
+
+ABI64 verification (2026-10-29, macOS): native bridge/fixture build and existing
+native invariants pass; theme-palette example/tests pass under SBCL2.6.9 and CCL;
+pinned3.2.12 coverage-inventory test passes. Docset build/check and isolated install
+pass; actual SBCL/CCL docset checks cover all public exports, SETF lookup and
+Cadre discovery. Independent review found no remaining binding issues; two app
+preview/timer lifecycle findings were corrected in KryptonEdit. Native decoration
+support still varies; Windows/Linux did not run. Next work is application-driven.

@@ -28,3 +28,6 @@ WXL_API wxl_handle wxl_bitmap_toggle_get(wxl_handle id);
 WXL_API int wxl_bitmap_toggle_set(wxl_handle id,wxl_handle bitmap);
 
 WXL_API int wxl_window_colours(wxl_handle id,unsigned char* foreground,unsigned char* background);
+
+WXL_API int wxl_system_colours(unsigned char* foreground,unsigned char* background);
+WXL_API int wxl_set_window_colours(wxl_handle id,const unsigned char* foreground,const unsigned char* background,int recursive);

@@ -17,7 +17,7 @@ class or constructor does not imply full upstream coverage.
 
 ## Current coverage and remaining work
 
-0 implemented; 126 partial; 1749 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
+0 implemented; 127 partial; 1748 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
 
 Counts describe inventory entries, not distinct APIs or percent completion.
 See the [coverage summary](README.md) for phase/header comparisons.
@@ -1700,7 +1700,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/settings.h)
 
-0 implemented; 0 partial; 23 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
+0 implemented; 1 partial; 22 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
 
 - [ ] [L16](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/settings.h#L16) `enum wxSystemFont {`
 - [ ] [L19](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/settings.h#L19) `wxSYS_OEM_FIXED_FONT = 10, wxSYS_ANSI_FIXED_FONT, wxSYS_ANSI_VAR_FONT, wxSYS_SYSTEM_FONT, wxSYS_DEVICE_DEFAULT_FONT, wxSYS_DEFAULT_GUI_FONT }`
@@ -1718,7 +1718,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [ ] [L299](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/settings.h#L299) `bool IsUsingDarkBackground() const;`
 - [ ] [L316](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/settings.h#L316) `class wxSystemSettings {`
 - [ ] [L325](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/settings.h#L325) `wxSystemSettings();`
-- [ ] [L336](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/settings.h#L336) `static wxColour GetColour(wxSystemColour index);`
+- [~] [L336](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/settings.h#L336) `static wxColour GetColour(wxSystemColour index);` — **Partial**: `system-colours`; ABI: `wxl_system_colours`. Bounded copied theme colors, callback-safe reads and guarded writes; no raw ownership or full class parity. See docs/THEME-COLOURS.md.
 - [ ] [L347](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/settings.h#L347) `static wxFont GetFont(wxSystemFont index);`
 - [ ] [L368](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/settings.h#L368) `static int GetMetric(wxSystemMetric index, wxWindow* win = NULL);`
 - [ ] [L374](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/settings.h#L374) `static wxSystemScreenType GetScreenType();`

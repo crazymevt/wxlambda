@@ -262,5 +262,9 @@
   "bitmap-toggles.lisp": {
     "description": "Font-independent native borderless bitmap toggle with alpha artwork, native window-colour query, copied ownership, checked events and EXERCISE coverage.",
     "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/bitmap-toggles.lisp --eval '(wxlambda-bitmap-toggles:start)'"
+  },
+  "theme-palette.lisp": {
+    "description": "Copied window, notebook and styled-editor palettes; runnable exercise verifies readback, defaults and unchanged text.",
+    "command": "sbcl --load ci/setup.lisp --load examples/theme-palette.lisp --eval \"(wxlambda-theme-palette:start)\""
   }
 }

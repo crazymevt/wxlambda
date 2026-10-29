@@ -180,3 +180,29 @@ int wxl_window_colours(wxl_handle id,unsigned char* foreground,unsigned char* ba
     background[0]=bg.Red(); background[1]=bg.Green(); background[2]=bg.Blue();
 }); }
 }
+
+extern "C" {
+int wxl_system_colours(unsigned char* foreground,unsigned char* background) { return status([&] {
+    ready(); require(foreground && background,"Missing system colour outputs");
+    const wxColour fg=wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT),bg=wxSystemSettings::GetColour(wxSYS_COLOUR_BTNFACE);
+    foreground[0]=fg.Red(); foreground[1]=fg.Green(); foreground[2]=fg.Blue();
+    background[0]=bg.Red(); background[1]=bg.Green(); background[2]=bg.Blue();
+}); }
+int wxl_set_window_colours(wxl_handle id,const unsigned char* foreground,const unsigned char* background,int recursive) { return status([&] {
+    auto* object=window(id); require(callback_depth==0,"Defer window colour writes until callbacks return");
+    require((recursive==0 || recursive==1) && bool(foreground)==bool(background),"Invalid window colour arguments");
+    const wxColour fg=foreground ? wxColour(foreground[0],foreground[1],foreground[2]) : wxNullColour;
+    const wxColour bg=background ? wxColour(background[0],background[1],background[2]) : wxNullColour;
+    InputOperation operation(object);
+    std::vector<wxWeakRef<wxWindow>> targets;
+    std::function<void(wxWindow*)> collect=[&](wxWindow* current) {
+        targets.emplace_back(current);
+        if (recursive) for (auto* child:current->GetChildren()) collect(child);
+    };
+    collect(object);
+    for (auto& target:targets) if (auto* current=target.get()) {
+        if (window_destruction_pending(current)) continue;
+        current->SetForegroundColour(fg); current->SetBackgroundColour(bg); current->Refresh();
+    }
+}); }
+}

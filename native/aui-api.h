@@ -25,3 +25,5 @@ WXL_API int wxl_splitter_unsplit(wxl_handle splitter,int index);
 WXL_API int wxl_splitter_replace(wxl_handle splitter,int index,wxl_handle pane);
 WXL_API int wxl_splitter_resplit(wxl_handle splitter,wxl_handle pane);
 WXL_API int wxl_set_splitter_orientation(wxl_handle splitter,int orientation);
+
+WXL_API int wxl_aui_tab_colours(wxl_handle book,int write,int reset,int64_t* base,int64_t* active,int* present);
