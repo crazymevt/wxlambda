@@ -21,15 +21,15 @@ and verify platforms when selected features or completeness claims require it.
 | [C1: Foundation, values, application, events, and base utilities](phase-c1.md) | 119 | 5292 | 7 | 144 | 5141 | 26 |
 | [C2: Windows, layout, basic controls, and input](phase-c2.md) | 82 | 2862 | 28 | 225 | 2609 | 0 |
 | [C3: Dialogs, navigation, menus, and application services](phase-c3.md) | 57 | 1875 | 0 | 119 | 1756 | 0 |
-| [C4: Models, complex controls, and document frameworks](phase-c4.md) | 20 | 2328 | 0 | 39 | 2289 | 4 |
+| [C4: Models, complex controls, and document frameworks](phase-c4.md) | 20 | 2328 | 0 | 80 | 2248 | 4 |
 | [C5: Drawing, images, graphics, and printing](phase-c5.md) | 52 | 2245 | 0 | 25 | 2220 | 0 |
 | [C6: Optional libraries, rich content, and integration](phase-c6.md) | 57 | 8912 | 0 | 198 | 8714 | 380 |
 | [C7: Platform extensions and remaining portability APIs](phase-c7.md) | 11 | 279 | 0 | 0 | 279 | 3 |
-| Total | 398 | 23793 | 35 | 750 | 23008 | 413 |
+| Total | 398 | 23793 | 35 | 791 | 22967 | 413 |
 
 ## Classes and widgets
 
-1016 class/struct definitions: 0 complete; 85 partial; 931 pending.
+1016 class/struct definitions: 0 complete; 87 partial; 929 pending.
 
 See the [complete class/widget index](classes.md) for partial scopes and missing
 types. An implemented constructor does not complete a class or its inherited API.
@@ -326,7 +326,7 @@ unreviewed inherited/platform behavior.
 | [wx/headerctrl.h](phase-c4.md#wxheaderctrlh) | 0 | 0 | 76 | 0 |
 | [wx/imaglist.h](phase-c4.md#wximaglisth) | 0 | 0 | 24 | 0 |
 | [wx/itemattr.h](phase-c4.md#wxitemattrh) | 0 | 0 | 16 | 0 |
-| [wx/listctrl.h](phase-c4.md#wxlistctrlh) | 0 | 0 | 301 | 0 |
+| [wx/listctrl.h](phase-c4.md#wxlistctrlh) | 0 | 26 | 275 | 0 |
 | [wx/persist/bookctrl.h](phase-c4.md#wxpersistbookctrlh) | 0 | 0 | 5 | 0 |
 | [wx/persist/combobox.h](phase-c4.md#wxpersistcomboboxh) | 0 | 0 | 5 | 0 |
 | [wx/persist/dataview.h](phase-c4.md#wxpersistdataviewh) | 0 | 0 | 5 | 0 |
@@ -335,7 +335,7 @@ unreviewed inherited/platform behavior.
 | [wx/persist/window.h](phase-c4.md#wxpersistwindowh) | 0 | 0 | 5 | 1 |
 | [wx/persist.h](phase-c4.md#wxpersisth) | 0 | 0 | 29 | 0 |
 | [wx/treebase.h](phase-c4.md#wxtreebaseh) | 0 | 2 | 42 | 0 |
-| [wx/treectrl.h](phase-c4.md#wxtreectrlh) | 0 | 22 | 154 | 0 |
+| [wx/treectrl.h](phase-c4.md#wxtreectrlh) | 0 | 37 | 139 | 0 |
 | [wx/treelist.h](phase-c4.md#wxtreelisth) | 0 | 0 | 92 | 0 |
 
 ### C5: Drawing, images, graphics, and printing

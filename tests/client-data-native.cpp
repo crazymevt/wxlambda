@@ -1795,6 +1795,7 @@ void exercise_search_controls() {
 #include "input-native.inc"
 #include "thread-native.inc"
 #include "styled-text-native.inc"
+#include "views-native.inc"
 
 int main() {
     std::thread([] { std::this_thread::sleep_for(std::chrono::seconds(10)); std::_Exit(124); }).detach();
@@ -1841,6 +1842,7 @@ int main() {
         exercise_input_events();
         exercise_thread_events();
         exercise_styled_text();
+        exercise_report_views();
         bool shutdown_ran=false;
         ui_action_probe=[&](uint64_t,int) { shutdown_ran=true; };
         expect(wxl_defer_ui_action(5000,0)==0 && wxl_start_ui_timer(5001,1,0,0)==0,"Queue shutdown action/timer");

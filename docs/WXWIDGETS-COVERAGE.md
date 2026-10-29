@@ -582,3 +582,14 @@ ownership and native synchronous repaint are guarded; managed stack APIs reject.
 Drawing/target/coordinate and scroll-event depth stay unbound. Next selected
 slice: bounded focus navigation for keyboard-driven forms. Physical input,
 painting fidelity and hosted platform GUI remain unverified.
+
+
+## Scalable report views and tree interaction
+
+[Report and tree views](REPORT-TREE-VIEWS.md) add bounded native wxListCtrl report
+and LC_VIRTUAL text-hook adapters, columns/cell/count/selection/cache/activation
+metadata, checked native tree interactions and simple decorations. Native classes
+remain partial; no DataView parity or editor/file model is implied. Virtual hooks
+are pure synchronous queries with copied replies and audited bounded container
+ancestry. Next selected dependencies are public image/bitmap/canvas resources and
+audited grid editing/dynamic shape. Native pending APIs remain factual backlog.

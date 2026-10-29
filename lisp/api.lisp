@@ -308,6 +308,7 @@
       (dolist (token expired) (remhash token *handler-client-data-roots*)))))
 
 (defun reap-event-bindings ()
+  (when (fboundp 'reap-list-provider-roots) (reap-list-provider-roots))
   (reap-client-data-roots)
   (when (and *active* *event-bindings*)
     (let (expired)
@@ -347,7 +348,8 @@ Run explicitly with RUN. Only one session per process is currently supported."
         (clrhash *ui-timers*)
         (clrhash *ui-actions*)
         (clrhash *handler-client-data-roots*)
-        (clrhash *tree-item-objects*)))))
+        (clrhash *tree-item-objects*)
+        (when (boundp '*list-provider-roots*) (setf (symbol-value '*list-provider-roots*) nil))))))
 
 (defun call-with-application (function)
   "Run FUNCTION in a main-thread GUI session, masking SBCL floating-point traps
@@ -525,7 +527,8 @@ RETURN-TO-APPLICATION-REPL restart. Setup errors propagate to the caller."
   (ignore-errors (reap-client-data-roots))
   (ignore-errors (reap-tree-items))
   (ignore-errors (reap-ui-actions))
-  (ignore-errors (reap-ui-timers)))
+  (ignore-errors (reap-ui-timers))
+  (when (fboundp 'reap-list-provider-roots) (ignore-errors (reap-list-provider-roots))))
 
 (defmethod initialize-instance :around ((object event-handler) &rest initargs)
   (declare (ignore initargs))
@@ -535,7 +538,7 @@ RETURN-TO-APPLICATION-REPL restart. Setup errors propagate to the caller."
     (error "APPLICATION-HANDLER is borrowed; use CURRENT-APPLICATION-HANDLER"))
   (when (and (typep object 'window)
              (/= 1 (count-if (lambda (kind) (typep object kind))
-                         '(frame toolbar status-bar panel scrolled-panel notebook list-box tree-control splitter-window button text-control label checkbox choice gauge slider spin-control radio-box toggle-button combo-box date-picker time-picker search-control drawing-canvas activity-indicator grid web-view styled-text-control aui-notebook text-entry-dialog single-choice-dialog message-dialog file-dialog))))
+                         '(frame toolbar status-bar panel scrolled-panel notebook list-box tree-control splitter-window button text-control label checkbox choice gauge slider spin-control radio-box toggle-button combo-box date-picker time-picker search-control drawing-canvas activity-indicator grid web-view styled-text-control aui-notebook list-control text-entry-dialog single-choice-dialog message-dialog file-dialog))))
     (error "~A must inherit exactly one concrete wxlambda widget class; WINDOW is abstract"
            (class-name (class-of object))))
   (unless *active*

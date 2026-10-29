@@ -14917,6 +14917,564 @@
         "wxl_queue_thread_event"
       ],
       "scope": "Private worker packet native SetString from a uniquified native string. Temporary aliases are destroyed before QueueEvent publication; actual GetString/Clone retain native payload semantics. No public mutable thread-event resource, arbitrary wxAny payload or user-owned native string adoption. See docs/THREAD-EVENTS.md."
+    },
+    {
+      "header": "wx/listctrl.h",
+      "line": 343,
+      "declaration": "wxListCtrl(wxWindow* parent, wxWindowID id, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxLC_ICON, const wxValidator& validator = wxDefaultValidator, const wxString& name = wxListCtrlNameStr);",
+      "status": "~",
+      "symbol": "wxListCtrl::wxListCtrl",
+      "lisp": [
+        "list-control"
+      ],
+      "native": [
+        "wxl_report_list_control"
+      ],
+      "scope": "Bounded report/virtual list or checked tree item adapter; A managed wxListCtrl report, fixed single selection; direct subclasses retain native-backed construction. Virtual lists support only registered frame/panel/scroll/drawing/web/notebook/AUI/splitter ancestor chains."
+    },
+    {
+      "header": "wx/listctrl.h",
+      "line": 1024,
+      "declaration": "bool IsVirtual() const;",
+      "status": "~",
+      "symbol": "wxListCtrl::IsVirtual",
+      "lisp": [
+        "list-virtual-p"
+      ],
+      "native": [
+        "wxl_report_list_property"
+      ],
+      "scope": "Bounded report/virtual list or checked tree item adapter; Return whether fixed native wxLC_VIRTUAL mode is enabled."
+    },
+    {
+      "header": "wx/listctrl.h",
+      "line": 583,
+      "declaration": "int GetColumnCount() const;",
+      "status": "~",
+      "symbol": "wxListCtrl::GetColumnCount",
+      "lisp": [
+        "list-column-count"
+      ],
+      "native": [
+        "wxl_report_list_property"
+      ],
+      "scope": "Bounded report/virtual list or checked tree item adapter; Return current native column count0..64."
+    },
+    {
+      "header": "wx/listctrl.h",
+      "line": 954,
+      "declaration": "long InsertColumn(long col, const wxString& heading, int format = wxLIST_FORMAT_LEFT, int width = wxLIST_AUTOSIZE);",
+      "status": "~",
+      "symbol": "wxListCtrl::InsertColumn",
+      "lisp": [
+        "insert-list-column"
+      ],
+      "native": [
+        "wxl_report_list_insert_column"
+      ],
+      "scope": "Bounded report/virtual list or checked tree item adapter; Insert left-aligned heading at zero-based index while item count0. NUL-free heading<=4096UTF8 bytes, width1..10000 pixels, max64 columns. Return CONTROL."
+    },
+    {
+      "header": "wx/listctrl.h",
+      "line": 436,
+      "declaration": "bool DeleteColumn(int col);",
+      "status": "~",
+      "symbol": "wxListCtrl::DeleteColumn",
+      "lisp": [
+        "delete-list-column"
+      ],
+      "native": [
+        "wxl_report_list_delete_column"
+      ],
+      "scope": "Bounded report/virtual list or checked tree item adapter; Delete an existing column while item count0; return CONTROL."
+    },
+    {
+      "header": "wx/listctrl.h",
+      "line": 573,
+      "declaration": "bool GetColumn(int col, wxListItem& item) const;",
+      "status": "~",
+      "symbol": "wxListCtrl::GetColumn",
+      "lisp": [
+        "list-column-label"
+      ],
+      "native": [
+        "wxl_report_list_column_text"
+      ],
+      "scope": "Bounded report/virtual list or checked tree item adapter; Read copied heading or silently set NUL-free heading<=4096UTF8 bytes; SETF returns value."
+    },
+    {
+      "header": "wx/listctrl.h",
+      "line": 1071,
+      "declaration": "bool SetColumn(int col, wxListItem& item);",
+      "status": "~",
+      "symbol": "wxListCtrl::SetColumn",
+      "lisp": [
+        "list-column-label"
+      ],
+      "native": [
+        "wxl_set_report_list_column_text"
+      ],
+      "scope": "Bounded report/virtual list or checked tree item adapter; Read copied heading or silently set NUL-free heading<=4096UTF8 bytes; SETF returns value."
+    },
+    {
+      "header": "wx/listctrl.h",
+      "line": 620,
+      "declaration": "int GetColumnWidth(int col) const;",
+      "status": "~",
+      "symbol": "wxListCtrl::GetColumnWidth",
+      "lisp": [
+        "list-column-width"
+      ],
+      "native": [
+        "wxl_report_list_column_width"
+      ],
+      "scope": "Bounded report/virtual list or checked tree item adapter; Read native pixel width or set1..10000 pixels; SETF returns value."
+    },
+    {
+      "header": "wx/listctrl.h",
+      "line": 1087,
+      "declaration": "bool SetColumnWidth(int col, int width);",
+      "status": "~",
+      "symbol": "wxListCtrl::SetColumnWidth",
+      "lisp": [
+        "list-column-width"
+      ],
+      "native": [
+        "wxl_set_report_list_column_width"
+      ],
+      "scope": "Bounded report/virtual list or checked tree item adapter; Read native pixel width or set1..10000 pixels; SETF returns value."
+    },
+    {
+      "header": "wx/listctrl.h",
+      "line": 744,
+      "declaration": "wxString GetItemText(long item, int col = 0) const;",
+      "status": "~",
+      "symbol": "wxListCtrl::GetItemText",
+      "lisp": [
+        "list-item-text"
+      ],
+      "native": [
+        "wxl_report_list_text"
+      ],
+      "scope": "Bounded report/virtual list or checked tree item adapter; Read copied native cell text. In virtual lists actual OnGetItemText calls this generic for subclasses or constructor function; provider must return NUL-free text<=65536UTF8 bytes, may read data and must not mutate source/ancestors or enter native loops. Errors/nonlocal exits contained at callback boundary. SETF silently writes stored lists only."
+    },
+    {
+      "header": "wx/listctrl.h",
+      "line": 1590,
+      "declaration": "virtual wxString OnGetItemText(long item, long column) const;",
+      "status": "~",
+      "symbol": "wxListCtrl::OnGetItemText",
+      "lisp": [
+        "list-item-text"
+      ],
+      "native": [
+        "wxl_report_list_text_reply"
+      ],
+      "scope": "Bounded report/virtual list or checked tree item adapter; Read copied native cell text. In virtual lists actual OnGetItemText calls this generic for subclasses or constructor function; provider must return NUL-free text<=65536UTF8 bytes, may read data and must not mutate source/ancestors or enter native loops. Errors/nonlocal exits contained at callback boundary. SETF silently writes stored lists only."
+    },
+    {
+      "header": "wx/listctrl.h",
+      "line": 1238,
+      "declaration": "void SetItemCount(long count);",
+      "status": "~",
+      "symbol": "wxListCtrl::SetItemCount",
+      "lisp": [
+        "item-count"
+      ],
+      "native": [
+        "wxl_set_report_list_count"
+      ],
+      "scope": "Bounded report/virtual list or checked tree item adapter; Existing generic gains report-list receiver. See docs/REPORT-TREE-VIEWS.md."
+    },
+    {
+      "header": "wx/listctrl.h",
+      "line": 1043,
+      "declaration": "void RefreshItems(long itemFrom, long itemTo);",
+      "status": "~",
+      "symbol": "wxListCtrl::RefreshItems",
+      "lisp": [
+        "refresh-list-items"
+      ],
+      "native": [
+        "wxl_report_list_refresh"
+      ],
+      "scope": "Bounded report/virtual list or checked tree item adapter; Invalidate inclusive native row range; provider data remains application-owned. Return CONTROL."
+    },
+    {
+      "header": "wx/treectrl.h",
+      "line": 878,
+      "declaration": "virtual void SetItemBold(const wxTreeItemId& item, bool bold = true);",
+      "status": "~",
+      "symbol": "wxTreeCtrl::SetItemBold",
+      "lisp": [
+        "tree-item-bold-p"
+      ],
+      "native": [
+        "wxl_set_tree_decoration"
+      ],
+      "scope": "Bounded report/virtual list or checked tree item adapter; Read native bold or set generalized boolean. Checked same-owner item; callback writes defer."
+    },
+    {
+      "header": "wx/treectrl.h",
+      "line": 756,
+      "declaration": "virtual bool IsBold(const wxTreeItemId& item) const;",
+      "status": "~",
+      "symbol": "wxTreeCtrl::IsBold",
+      "lisp": [
+        "tree-item-bold-p"
+      ],
+      "native": [
+        "wxl_tree_decoration"
+      ],
+      "scope": "Bounded report/virtual list or checked tree item adapter; Read native bold or set generalized boolean. Checked same-owner item; callback writes defer."
+    },
+    {
+      "header": "wx/treectrl.h",
+      "line": 950,
+      "declaration": "virtual void SetItemTextColour(const wxTreeItemId& item, const wxColour& col);",
+      "status": "~",
+      "symbol": "wxTreeCtrl::SetItemTextColour",
+      "lisp": [
+        "tree-item-foreground"
+      ],
+      "native": [
+        "wxl_set_tree_decoration"
+      ],
+      "scope": "Bounded report/virtual list or checked tree item adapter; Read native packed0xRRGGBB or NIL for invalid colour. SETF NIL resets native colour; port may report effective default RGB afterward."
+    },
+    {
+      "header": "wx/treectrl.h",
+      "line": 586,
+      "declaration": "virtual wxColour GetItemTextColour(const wxTreeItemId& item) const;",
+      "status": "~",
+      "symbol": "wxTreeCtrl::GetItemTextColour",
+      "lisp": [
+        "tree-item-foreground"
+      ],
+      "native": [
+        "wxl_tree_decoration"
+      ],
+      "scope": "Bounded report/virtual list or checked tree item adapter; Read native packed0xRRGGBB or NIL for invalid colour. SETF NIL resets native colour; port may report effective default RGB afterward."
+    },
+    {
+      "header": "wx/treectrl.h",
+      "line": 869,
+      "declaration": "virtual void SetItemBackgroundColour(const wxTreeItemId& item, const wxColour& col);",
+      "status": "~",
+      "symbol": "wxTreeCtrl::SetItemBackgroundColour",
+      "lisp": [
+        "tree-item-background"
+      ],
+      "native": [
+        "wxl_set_tree_decoration"
+      ],
+      "scope": "Bounded report/virtual list or checked tree item adapter; Read native packed0xRRGGBB or NIL; SETF NIL clears explicit colour, port may report effective default."
+    },
+    {
+      "header": "wx/treectrl.h",
+      "line": 527,
+      "declaration": "virtual wxColour GetItemBackgroundColour(const wxTreeItemId& item) const;",
+      "status": "~",
+      "symbol": "wxTreeCtrl::GetItemBackgroundColour",
+      "lisp": [
+        "tree-item-background"
+      ],
+      "native": [
+        "wxl_tree_decoration"
+      ],
+      "scope": "Bounded report/virtual list or checked tree item adapter; Read native packed0xRRGGBB or NIL; SETF NIL clears explicit colour, port may report effective default."
+    },
+    {
+      "header": "wx/treectrl.h",
+      "line": 783,
+      "declaration": "virtual bool ItemHasChildren(const wxTreeItemId& item) const;",
+      "status": "~",
+      "symbol": "wxTreeCtrl::ItemHasChildren",
+      "lisp": [
+        "tree-item-has-children-p"
+      ],
+      "native": [
+        "wxl_tree_decoration"
+      ],
+      "scope": "Bounded report/virtual list or checked tree item adapter; Read/set native potential-children hint, not child count; no children inserted/deleted. Supports deferred lazy-loading with existing expansion veto."
+    },
+    {
+      "header": "wx/treectrl.h",
+      "line": 922,
+      "declaration": "virtual void SetItemHasChildren(const wxTreeItemId& item, bool hasChildren = true);",
+      "status": "~",
+      "symbol": "wxTreeCtrl::SetItemHasChildren",
+      "lisp": [
+        "tree-item-has-children-p"
+      ],
+      "native": [
+        "wxl_set_tree_decoration"
+      ],
+      "scope": "Bounded report/virtual list or checked tree item adapter; Read/set native potential-children hint, not child count; no children inserted/deleted. Supports deferred lazy-loading with existing expansion veto."
+    },
+    {
+      "header": "wx/listctrl.h",
+      "line": 1709,
+      "declaration": "long GetIndex() const;",
+      "status": "~",
+      "symbol": "wxListEvent::GetIndex",
+      "lisp": [
+        "event-list-index"
+      ],
+      "native": [
+        "wxl_views_detail"
+      ],
+      "scope": "Readonly copied native report-list event metadata; supported event-kind-specific scope and current-innermost contexts. No arbitrary list item/event resource adoption."
+    },
+    {
+      "header": "wx/listctrl.h",
+      "line": 1694,
+      "declaration": "int GetColumn() const;",
+      "status": "~",
+      "symbol": "wxListEvent::GetColumn",
+      "lisp": [
+        "event-list-column"
+      ],
+      "native": [
+        "wxl_views_detail"
+      ],
+      "scope": "Readonly copied native report-list event metadata; supported event-kind-specific scope and current-innermost contexts. No arbitrary list item/event resource adoption."
+    },
+    {
+      "header": "wx/listctrl.h",
+      "line": 1679,
+      "declaration": "long GetCacheFrom() const;",
+      "status": "~",
+      "symbol": "wxListEvent::GetCacheFrom",
+      "lisp": [
+        "event-list-cache-range"
+      ],
+      "native": [
+        "wxl_views_detail"
+      ],
+      "scope": "Readonly copied native report-list event metadata; supported event-kind-specific scope and current-innermost contexts. No arbitrary list item/event resource adoption."
+    },
+    {
+      "header": "wx/listctrl.h",
+      "line": 1685,
+      "declaration": "long GetCacheTo() const;",
+      "status": "~",
+      "symbol": "wxListEvent::GetCacheTo",
+      "lisp": [
+        "event-list-cache-range"
+      ],
+      "native": [
+        "wxl_views_detail"
+      ],
+      "scope": "Readonly copied native report-list event metadata; supported event-kind-specific scope and current-innermost contexts. No arbitrary list item/event resource adoption."
+    },
+    {
+      "header": "wx/listctrl.h",
+      "line": 1734,
+      "declaration": "wxPoint GetPoint() const;",
+      "status": "~",
+      "symbol": "wxListEvent::GetPoint",
+      "lisp": [
+        "event-list-position"
+      ],
+      "native": [
+        "wxl_views_detail"
+      ],
+      "scope": "Readonly copied native report-list event metadata; supported event-kind-specific scope and current-innermost contexts. No arbitrary list item/event resource adoption."
+    },
+    {
+      "header": "wx/listctrl.h",
+      "line": 1796,
+      "declaration": "wxEventType wxEVT_LIST_ITEM_SELECTED;",
+      "status": "~",
+      "symbol": "wxEVT_LIST_ITEM_SELECTED",
+      "lisp": [
+        "bind-event"
+      ],
+      "native": [
+        "wxl_bind"
+      ],
+      "scope": "Native report list selection/activation/context/cache/column notify types only; fixed single-select report. Payload/ID/timestamp readonly; no owned/synthetic/cloning."
+    },
+    {
+      "header": "wx/listctrl.h",
+      "line": 1797,
+      "declaration": "wxEventType wxEVT_LIST_ITEM_DESELECTED;",
+      "status": "~",
+      "symbol": "wxEVT_LIST_ITEM_DESELECTED",
+      "lisp": [
+        "bind-event"
+      ],
+      "native": [
+        "wxl_bind"
+      ],
+      "scope": "Native report list selection/activation/context/cache/column notify types only; fixed single-select report. Payload/ID/timestamp readonly; no owned/synthetic/cloning."
+    },
+    {
+      "header": "wx/listctrl.h",
+      "line": 1800,
+      "declaration": "wxEventType wxEVT_LIST_COL_CLICK;",
+      "status": "~",
+      "symbol": "wxEVT_LIST_COL_CLICK",
+      "lisp": [
+        "bind-event"
+      ],
+      "native": [
+        "wxl_bind"
+      ],
+      "scope": "Native report list selection/activation/context/cache/column notify types only; fixed single-select report. Payload/ID/timestamp readonly; no owned/synthetic/cloning."
+    },
+    {
+      "header": "wx/listctrl.h",
+      "line": 1801,
+      "declaration": "wxEventType wxEVT_LIST_ITEM_RIGHT_CLICK;",
+      "status": "~",
+      "symbol": "wxEVT_LIST_ITEM_RIGHT_CLICK",
+      "lisp": [
+        "bind-event"
+      ],
+      "native": [
+        "wxl_bind"
+      ],
+      "scope": "Native report list selection/activation/context/cache/column notify types only; fixed single-select report. Payload/ID/timestamp readonly; no owned/synthetic/cloning."
+    },
+    {
+      "header": "wx/listctrl.h",
+      "line": 1803,
+      "declaration": "wxEventType wxEVT_LIST_ITEM_ACTIVATED;",
+      "status": "~",
+      "symbol": "wxEVT_LIST_ITEM_ACTIVATED",
+      "lisp": [
+        "bind-event"
+      ],
+      "native": [
+        "wxl_bind"
+      ],
+      "scope": "Native report list selection/activation/context/cache/column notify types only; fixed single-select report. Payload/ID/timestamp readonly; no owned/synthetic/cloning."
+    },
+    {
+      "header": "wx/listctrl.h",
+      "line": 1804,
+      "declaration": "wxEventType wxEVT_LIST_CACHE_HINT;",
+      "status": "~",
+      "symbol": "wxEVT_LIST_CACHE_HINT",
+      "lisp": [
+        "bind-event"
+      ],
+      "native": [
+        "wxl_bind"
+      ],
+      "scope": "Native report list selection/activation/context/cache/column notify types only; fixed single-select report. Payload/ID/timestamp readonly; no owned/synthetic/cloning."
+    },
+    {
+      "header": "wx/treectrl.h",
+      "line": 1169,
+      "declaration": "wxEventType wxEVT_TREE_ITEM_EXPANDED;",
+      "status": "~",
+      "symbol": "wxEVT_TREE_ITEM_EXPANDED",
+      "lisp": [
+        "bind-event",
+        "event-tree-item"
+      ],
+      "native": [
+        "wxl_bind",
+        "wxl_event_tree_item"
+      ],
+      "scope": "Checked same-owner native tree item tokens; readonly payload/ID/timestamp. Native before expansion/collapse events support scoped veto; no arbitrary item pointers, owned/synthetic/cloning; Qt remains gated."
+    },
+    {
+      "header": "wx/treectrl.h",
+      "line": 1170,
+      "declaration": "wxEventType wxEVT_TREE_ITEM_EXPANDING;",
+      "status": "~",
+      "symbol": "wxEVT_TREE_ITEM_EXPANDING",
+      "lisp": [
+        "bind-event",
+        "event-tree-item"
+      ],
+      "native": [
+        "wxl_bind",
+        "wxl_event_tree_item"
+      ],
+      "scope": "Checked same-owner native tree item tokens; readonly payload/ID/timestamp. Native before expansion/collapse events support scoped veto; no arbitrary item pointers, owned/synthetic/cloning; Qt remains gated."
+    },
+    {
+      "header": "wx/treectrl.h",
+      "line": 1171,
+      "declaration": "wxEventType wxEVT_TREE_ITEM_COLLAPSED;",
+      "status": "~",
+      "symbol": "wxEVT_TREE_ITEM_COLLAPSED",
+      "lisp": [
+        "bind-event",
+        "event-tree-item"
+      ],
+      "native": [
+        "wxl_bind",
+        "wxl_event_tree_item"
+      ],
+      "scope": "Checked same-owner native tree item tokens; readonly payload/ID/timestamp. Native before expansion/collapse events support scoped veto; no arbitrary item pointers, owned/synthetic/cloning; Qt remains gated."
+    },
+    {
+      "header": "wx/treectrl.h",
+      "line": 1172,
+      "declaration": "wxEventType wxEVT_TREE_ITEM_COLLAPSING;",
+      "status": "~",
+      "symbol": "wxEVT_TREE_ITEM_COLLAPSING",
+      "lisp": [
+        "bind-event",
+        "event-tree-item"
+      ],
+      "native": [
+        "wxl_bind",
+        "wxl_event_tree_item"
+      ],
+      "scope": "Checked same-owner native tree item tokens; readonly payload/ID/timestamp. Native before expansion/collapse events support scoped veto; no arbitrary item pointers, owned/synthetic/cloning; Qt remains gated."
+    },
+    {
+      "header": "wx/treectrl.h",
+      "line": 1176,
+      "declaration": "wxEventType wxEVT_TREE_ITEM_ACTIVATED;",
+      "status": "~",
+      "symbol": "wxEVT_TREE_ITEM_ACTIVATED",
+      "lisp": [
+        "bind-event",
+        "event-tree-item"
+      ],
+      "native": [
+        "wxl_bind",
+        "wxl_event_tree_item"
+      ],
+      "scope": "Checked same-owner native tree item tokens; readonly payload/ID/timestamp. Native before expansion/collapse events support scoped veto; no arbitrary item pointers, owned/synthetic/cloning; Qt remains gated."
+    },
+    {
+      "header": "wx/treectrl.h",
+      "line": 1182,
+      "declaration": "wxEventType wxEVT_TREE_ITEM_MENU;",
+      "status": "~",
+      "symbol": "wxEVT_TREE_ITEM_MENU",
+      "lisp": [
+        "bind-event",
+        "event-tree-item"
+      ],
+      "native": [
+        "wxl_bind",
+        "wxl_event_tree_item"
+      ],
+      "scope": "Checked same-owner native tree item tokens; readonly payload/ID/timestamp. Native before expansion/collapse events support scoped veto; no arbitrary item pointers, owned/synthetic/cloning; Qt remains gated."
+    },
+    {
+      "header": "wx/treectrl.h",
+      "line": 1146,
+      "declaration": "wxPoint GetPoint() const;",
+      "status": "~",
+      "symbol": "wxTreeEvent::GetPoint",
+      "lisp": [
+        "event-tree-position"
+      ],
+      "native": [
+        "wxl_views_detail"
+      ],
+      "scope": "Copied native tree-item-menu point only; immutable snapshots and current innermost contexts. No arbitrary native point/event adoption."
     }
   ],
   "classes": {
@@ -15839,7 +16397,11 @@
         "tree-item-expanded-p",
         "tree-item-alive-p",
         "delete-tree-item",
-        "selection"
+        "selection",
+        "tree-item-bold-p",
+        "tree-item-foreground",
+        "tree-item-background",
+        "tree-item-has-children-p"
       ],
       "native": [
         "wxl_tree",
@@ -15852,9 +16414,11 @@
         "wxl_set_tree_expanded",
         "wxl_tree_delete",
         "wxl_tree_select",
-        "wxl_tree_item_alive"
+        "wxl_tree_item_alive",
+        "wxl_tree_decoration",
+        "wxl_set_tree_decoration"
       ],
-      "scope": "Managed visible-root single-selection TREE-CONTROL only. Checked owner/item tokens with canonical views, subtree/owner invalidation, silent selection normalization and native selection/veto guards. No raw IDs/adoption, other tree styles, multiselect, images/item data, label editing or full native class parity. wxQt unavailable pending generation-safe async item events; no full platform claim."
+      "scope": "Managed visible-root single-selection TREE-CONTROL only. Checked owner/item tokens with canonical views, subtree/owner invalidation, silent selection normalization and native selection/veto guards. No raw IDs/adoption, other tree styles, multiselect, images/item data, label editing or full native class parity. wxQt unavailable pending generation-safe async item events; no full platform claim. Native activation/menu/expansion/collapse events and checked bold/RGB/potential-children decorations added; wxQt construction gate retained."
     },
     "wxTreeItemId": {
       "status": "~",
@@ -15892,13 +16456,15 @@
       "status": "~",
       "lisp": [
         "bind-event",
-        "event-tree-item"
+        "event-tree-item",
+        "event-tree-position"
       ],
       "native": [
         "wxl_bind",
-        "wxl_event_tree_item"
+        "wxl_event_tree_item",
+        "wxl_views_detail"
       ],
-      "scope": "Native derived selection events only, view identity snapshots/current contexts and CHANGING veto. No old-item/public event construction/owned/cloning/other tree events. wxQt unavailable pending generation-safe async item events; no full platform claim."
+      "scope": "Native selection, activation, menu, expanding/expanded/collapsing/collapsed events, checked borrowed item tokens, copied point metadata and innermost contexts. Before-events support scoped veto. Payload/ID/timestamp readonly for added kinds; no old-item/raw origin/event constructor/owned/synthetic/cloning. wxQt remains unavailable pending generation-safe asynchronous item event translation."
     },
     "wxSplitterWindow": {
       "status": "~",
@@ -16955,6 +17521,34 @@
         "wxl_queue_thread_event"
       ],
       "scope": "Bounded copied UTF-8 :THREAD delivery through existing EVENT-HANDLER receivers, native THREAD category/base family. Private accounting subclass with independently owned native wxThreadEvent string; GUI-created internal endpoint mutex protects queue/receiver teardown. At most256 packets/receiver and4096/session,1MiB payload. Only queue-thread-event is worker-safe. No public event constructor/clone, arbitrary wxAny/Lisp/pointer payload, receiver adoption or full class parity. See docs/THREAD-EVENTS.md."
+    },
+    "wxListCtrl": {
+      "status": "~",
+      "lisp": [
+        "list-control",
+        "make-list-control",
+        "list-item-text"
+      ],
+      "native": [
+        "wxl_report_list_control",
+        "wxl_report_list_text_reply"
+      ],
+      "scope": "Bounded REPORT/SINGLE_SEL stored rows or native LC_VIRTUAL text hook. At most64 columns,100000 stored/10000000 virtual rows. Safe copied synchronous OnGetItemText response and checked owner/ancestor mutation guards. No native image/attribute callbacks, arbitrary item data, sorting, editing or complete class parity."
+    },
+    "wxListEvent": {
+      "status": "~",
+      "lisp": [
+        "bind-event",
+        "event-list-index",
+        "event-list-column",
+        "event-list-cache-range",
+        "event-list-position"
+      ],
+      "native": [
+        "wxl_bind",
+        "wxl_views_detail"
+      ],
+      "scope": "Bounded native report selected/deselected/activated/right-click/cache-hint/column-click events, copied immutable snapshots and current contexts. Kind-specific getters only, payload/ID/timestamp readonly; no constructor, owned/synthetic/clone or full class coverage."
     }
   }
 }

@@ -3383,3 +3383,57 @@ automatic worker tests. Physical input/IME, graphical Cadre and hosted platforms
 remain unverified. The broader KryptonEdit request still needs selected scalable
 views/grid depth and public graphics/image work. Next bounded grid work is staged
 outside the repository pending a separate native editor/commit/cancel audit.
+
+
+## ABI59 report/virtual list views and tree interaction (2026-10-29)
+
+Native-backed LIST-CONTROL supplies fixed REPORT/SINGLE_SEL stored rows and native
+LC_VIRTUAL text through actual OnGetItemText (CLOS generic/function adapter).
+Columns/cells/count/selection, native activation/context/cache hints and checked
+tree activation/menu/expansion/collapse, bold/colours/potential-children hints are
+implemented. See docs/REPORT-TREE-VIEWS.md and examples/report-views.lisp. This is
+19 new exports, not wxListCtrl/DataView parity; images/attributes/sorting/editing,
+arbitrary item data and virtual mutation callbacks remain unbound.
+
+Virtual providers are synchronous copied pure text queries. Checked registered
+frame/panel/scroll/drawing/web/notebook/AUI/splitter ancestry bounds the audited
+inherited mutator surface. Source/ancestor layout/show/enable/name/title/sizer,
+notebook captions/selection, splitter/scroll and construction reject during the
+provider; native loops/modal/clipboard/destruction retain Input/lifetime guards.
+Replies are single-use current-depth tickets and copied UTF8, with original Lisp
+conditions/nonlocal exits contained, constructor rollback/session root cleanup
+and early native teardown suppression. wxQt tree gate remains.
+
+Independent root review found two missing explicit GUI-thread guards in private
+provider-active/reply entries; ready() now precedes registry/request-stack reads,
+and native foreign-thread regressions cover token0/live token/reply. No further
+actionable review findings. Focused actual CFFI GUI tests pass SBCL605pgxXk and
+CCLfxKZPIwt; expanded integrated native harness fWswVuMR passes zero assertions
+(actual selection, native expansion veto, nested supported containers, readonly
+contexts, provider exception/retirement and inherited ancestor mutation guards).
+Pinned regeneration VwUeRuD1 and14 inventory tests vf9EYSv7 pass. Initial docset
+build/check dZLndLHl/csXNyENL and actual SBCL export/SETF/class checks xFf5ucKZ
+pass; final full suites and refreshed handoff/docset checks follow this record.
+Physical input/IME and hosted platform GUI remain unverified. Primary remaining
+selected work: staged public image/bitmap/canvas resources and audited grid depth.
+
+Final ABI59 acceptance: all89 GUI scenarios plus platform preflight pass on both
+SBCL and CCL (quiet-run.msUjZdUb/I5HsENav), with fresh reports in
+evidence/report-views/{sbcl,ccl}-20261029/. Native full harness with added actual
+selection/expansion and nested-provider ancestry checks passes zero assertions
+(quiet-run.fWswVuMR). Both actual loaded packages expose467 public symbols with
+exactly one API record plus class construction and generic SETF sections
+(quiet-run.xFf5ucKZ/cSkHyD9A). All10 Python docset tests pass jrNzxPJA; pinned
+inventory14 tests pass vf9EYSv7. Final docset rebuild below includes this handoff;
+isolated package creation/install/discovery checks are delegated to the root
+acceptance pass. No commit performed by the views worker.
+
+Final pinned inventory rerun after metadata review passes all14 tests
+(quiet-run.aHHGvi0p); generated summaries/checklists match gcAvGCOt. Independent
+review of packaging CHECK-REPORT-VIEWS found no actionable issue: the relocated
+saved image uses an actual pure native OnGetItemText CFFI callback at row999999,
+checks copied Unicode output, then disposes its owner before other package checks.
+Isolated package build and all5 package tests pass STwP6WnK; output
+`dist/wxlambda-report-views`, report
+`evidence/packaging/report-views-20261029/`. Root final isolated docset install and
+regeneration follow these notes. Views slice is ready for root commit.

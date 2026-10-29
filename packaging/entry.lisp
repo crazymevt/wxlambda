@@ -79,6 +79,19 @@
            (assert (equal payload received)))
       (wxlambda:destroy-event-handler receiver))))
 
+(defun check-report-views ()
+  (let* ((frame (wxlambda:make-frame))
+         (report (wxlambda:make-list-control frame :virtual-p t
+                   :item-text-function (lambda (control row column)
+                                         (declare (ignore control))
+                                         (format nil "Packaged λ ~D/~D" row column)))))
+    (unwind-protect
+         (progn
+           (wxlambda:insert-list-column report 0 "Value" :width 180)
+           (setf (wxlambda:item-count report) 1000000)
+           (assert (string= "Packaged λ 999999/0" (wxlambda:list-item-text report 999999 0))))
+      (wxlambda:destroy-window frame))))
+
 (defun self-test ()
   "Exercise real GUI events, Unicode, recreation, and cleanup in the saved image."
   (let ((calls 0))
@@ -94,6 +107,7 @@
                  (wxlambda-form:set-submit-action #'submitted)
                  (wxlambda:queue-click wxlambda-form:*submit*))))
       (wxlambda:with-application ()
+        (check-report-views)
         (check-thread-delivery)
         (check-styled-workspace)
         (check-web-grid)

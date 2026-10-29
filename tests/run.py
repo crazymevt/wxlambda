@@ -24,6 +24,7 @@ def scenarios():
     yield "styled-text", "styled-text.lisp", {}
     yield "input-events", "input-events.lisp", {}
     yield "thread-events", "thread-events.lisp", {}
+    yield "report-views", "report-views.lisp", {}
     yield "aui-notebook", "aui-notebook.lisp", {}
     yield "grid", "grid.lisp", {}
     yield "webview", "webview.lisp", {}

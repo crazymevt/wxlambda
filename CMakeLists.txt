@@ -47,7 +47,7 @@ check_cxx_source_compiles("#include <wx/setup.h>
 #endif
 int main() { return 0; }" WXLAMBDA_HAS_DRAWING_WORKFLOWS)
 check_cxx_source_compiles("#include <wx/setup.h>
-#if !wxUSE_GRID || !wxUSE_WEBVIEW || !wxUSE_STC || !wxUSE_AUI
+#if !wxUSE_LISTCTRL || !wxUSE_GRID || !wxUSE_WEBVIEW || !wxUSE_STC || !wxUSE_AUI
 #error Grid and WebView required
 #endif
 int main() { return 0; }" WXLAMBDA_HAS_GRID_WEBVIEW)
@@ -110,7 +110,7 @@ if(APPLE)
 endif()
 set_target_properties(wxlambda PROPERTIES CXX_VISIBILITY_PRESET hidden VISIBILITY_INLINES_HIDDEN YES)
 install(TARGETS wxlambda LIBRARY DESTINATION lib RUNTIME DESTINATION bin ARCHIVE DESTINATION lib)
-install(FILES native/wxlambda.h native/drawing-canvas-api.h native/activity-indicator-api.h native/grid-api.h native/webview-api.h native/stc-api.h native/input-events-api.h native/aui-api.h native/thread-events-api.h DESTINATION include)
+install(FILES native/wxlambda.h native/drawing-canvas-api.h native/activity-indicator-api.h native/grid-api.h native/webview-api.h native/stc-api.h native/input-events-api.h native/aui-api.h native/thread-events-api.h native/views-api.h DESTINATION include)
 
 option(WXLAMBDA_BUILD_NATIVE_TESTS "Build native invariant regressions (GUI session required)" OFF)
 if(WXLAMBDA_BUILD_NATIVE_TESTS)

@@ -246,5 +246,9 @@
   "thread-events.lisp": {
     "description": "Existing GUI receiver gets copied Unicode/NUL payload from an actual SBCL/CCL worker thread; callback delivery remains on the GUI thread. No native worker closures, editor jobs, network or system clipboard transfers.",
     "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/thread-events.lisp --eval '(wxlambda-thread-events:start)'"
+  },
+  "report-views.lisp": {
+    "description": "Million-row native virtual report using a CLOS OnGetItemText override, checked decorated tree sidebar and deferred activation actions.",
+    "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/report-views.lisp --eval '(wxlambda-report-views:start)'"
   }
 }

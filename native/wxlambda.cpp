@@ -1,6 +1,7 @@
 #include "wxlambda.h"
 #include <wx/wx.h>
 #include <wx/thread.h>
+#include <wx/listctrl.h>
 #include <wx/choice.h>
 #include <wx/combobox.h>
 #include <wx/scrolwin.h>
@@ -69,6 +70,7 @@
 #endif
 
 namespace {
+bool protected_views_provider(wxWindow*);
 #include "thread-events.inc"
 // wxEvtHandler exposes no public storage-kind query. Its getters assert when
 // called in the opposite client-data mode, so only our native subclasses expose
@@ -413,6 +415,7 @@ wxl_handle find_owned_handler(wxEvtHandler* object) noexcept {
 void validate_window_stack(wxWindow* owner) {
     require(!web_owners.count(owner), "WebViews retain private event delivery; managed window stacks are unsupported");
     require(!dynamic_cast<wxAuiNotebook*>(owner) && !dynamic_cast<wxStyledTextCtrl*>(owner), "AUI/STC private native handlers cannot be replaced");
+    require(!dynamic_cast<wxListCtrl*>(owner), "Lists retain private native report handlers; managed window stacks are unsupported");
     require(!dynamic_cast<wxGrid*>(owner), "Grids retain private scroll handlers; managed window stacks are unsupported");
     require(!dynamic_cast<wxScrolledWindow*>(owner), "Scrolled panels retain a private native scroll helper; managed window stacks are unsupported");
     auto* node = owner->GetEventHandler();
@@ -495,6 +498,7 @@ template<class T> T* as(wxl_handle id) {
     return object;
 }
 wxBoxSizer* box(wxWindow* parent) {
+    require(!protected_views_provider(parent),"Virtual list provider cannot change ancestor layout");
     auto* sizer = dynamic_cast<wxBoxSizer*>(parent->GetSizer());
     require(sizer != nullptr, "Create a row or column before adding layout items");
     return sizer;
@@ -510,8 +514,12 @@ bool attached_notebook_page(wxWindow* object) {
     auto* book = dynamic_cast<wxNotebook*>(object->GetParent());
     return book && book->FindPage(object) != wxNOT_FOUND;
 }
+bool protected_views_provider(wxWindow*);
+bool views_tree_event(wxEventType);
+bool views_provider_running();
 struct NotebookOperation {
     explicit NotebookOperation(wxNotebook* book) {
+        require(!protected_views_provider(book), "Virtual list provider cannot mutate its ancestors");
         for (const auto& active : notebook_operations)
             require(active.get() != book, "Notebook operation is already in progress");
         notebook_operations.emplace_back(book);
@@ -565,7 +573,7 @@ struct TreeOperation {
 struct TreeCallbackOperation {
     bool added = false, allow = true;
     explicit TreeCallbackOperation(wxEvent& event) {
-        if (event.GetEventType() != wxEVT_TREE_SEL_CHANGING && event.GetEventType() != wxEVT_TREE_SEL_CHANGED) return;
+        if (event.GetEventType() != wxEVT_TREE_SEL_CHANGING && event.GetEventType() != wxEVT_TREE_SEL_CHANGED && !views_tree_event(event.GetEventType())) return;
         auto* tree = dynamic_cast<wxTreeCtrl*>(event.GetEventObject());
         if (!tree || !tree_owners.count(tree) || window_destruction_pending(tree)) { allow = false; return; }
         for (const auto& active : tree_operations) if (active.get() == tree) return;
@@ -603,6 +611,7 @@ bool attached_splitter_pane(wxWindow* object) {
 }
 struct SplitterOperation {
     explicit SplitterOperation(wxSplitterWindow* splitter, wxWindow* first = nullptr, wxWindow* second = nullptr) {
+        require(!protected_views_provider(splitter), "Virtual list provider cannot mutate its ancestors");
         for (const auto& active : splitter_operations) require(active.splitter.get() != splitter, "Defer splitter mutation until callback/operation returns");
         splitter_operations.push_back({splitter, first, second});
     }
@@ -697,6 +706,7 @@ bool protected_input_ancestor(wxWindow* object) {
 }
 struct InputOperation {
     explicit InputOperation(wxWindow* object) {
+        require(!protected_views_provider(object), "Virtual list provider cannot mutate its owner/ancestors");
         for (const auto& active : input_operations) require(active.get() != object, "Defer same-control input mutation until callback/operation returns");
         input_operations.emplace_back(object);
     }
@@ -710,6 +720,7 @@ bool input_origin_contains(wxWindow* object, const wxObject* origin) {
 #include "stc-events.inc"
 #include "input-events.inc"
 #include "aui-events.inc"
+#include "views-events.inc"
 struct InputCallbackOperation {
     size_t previous=input_operations.size();
     bool allow=true,unknown=false;
@@ -721,7 +732,7 @@ struct InputCallbackOperation {
     explicit InputCallbackOperation(wxEvent& event) {
         const bool raw=input_kind_for_type(event.GetEventType())!=0 || thread_payload_readonly(event.GetEventType());
         if (aui_kind_for_type(event.GetEventType()) && !aui_public_event(event)) { allow=false; return; }
-        if (!raw && !stc_kind_for_type(event.GetEventType()) && !aui_kind_for_type(event.GetEventType()) && !web_event_type(event.GetEventType()) && event.GetEventType()!=wxEVT_BUTTON && event.GetEventType()!=wxEVT_SEARCH && event.GetEventType()!=wxEVT_SEARCH_CANCEL && event.GetEventType()!=wxEVT_TIME_CHANGED && event.GetEventType()!=wxEVT_DATE_CHANGED && event.GetEventType()!=wxEVT_COMBOBOX && event.GetEventType()!=wxEVT_TOGGLEBUTTON && event.GetEventType()!=wxEVT_RADIOBOX && event.GetEventType()!=wxEVT_SLIDER && event.GetEventType()!=wxEVT_SPINCTRL && event.GetEventType()!=wxEVT_TEXT) return;
+        if (!raw && !views_kind_for_type(event.GetEventType()) && !stc_kind_for_type(event.GetEventType()) && !aui_kind_for_type(event.GetEventType()) && !web_event_type(event.GetEventType()) && event.GetEventType()!=wxEVT_BUTTON && event.GetEventType()!=wxEVT_SEARCH && event.GetEventType()!=wxEVT_SEARCH_CANCEL && event.GetEventType()!=wxEVT_TIME_CHANGED && event.GetEventType()!=wxEVT_DATE_CHANGED && event.GetEventType()!=wxEVT_COMBOBOX && event.GetEventType()!=wxEVT_TOGGLEBUTTON && event.GetEventType()!=wxEVT_RADIOBOX && event.GetEventType()!=wxEVT_SLIDER && event.GetEventType()!=wxEVT_SPINCTRL && event.GetEventType()!=wxEVT_TEXT) return;
         if (input_creation_depth) { allow=false; return; }
         // DESTROY can be consumed/disabled. Weak lifetimes still invalidate both maps.
         for (auto state=managed_window_states.begin();state!=managed_window_states.end();) {
@@ -829,6 +840,7 @@ int selected_event_index(wxEvent& event) {
 }
 void make_box(wxl_handle id, int orientation) {
     auto* parent = window(id);
+    require(!protected_views_provider(parent),"Virtual list provider cannot change ancestor layout");
     require(!dynamic_cast<wxToolBar*>(parent) && !dynamic_cast<wxStatusBar*>(parent) && !dynamic_cast<wxNotebook*>(parent) && !dynamic_cast<wxSplitterWindow*>(parent), "Lay out page/pane panels, not their native container");
     require(parent->GetSizer() == nullptr, "Window already has a sizer");
     parent->SetSizer(new wxBoxSizer(orientation));
@@ -853,6 +865,7 @@ void emit_event(wxl_handle id, const wxl_event& event) {
     }
 }
 wxEventTypeTag<wxEvent> native_event_type(int kind) {
+    if (views_event_kind(kind)) return wxEventTypeTag<wxEvent>(views_event_type(kind));
     if (thread_event_kind(kind)) return wxEventTypeTag<wxEvent>(wxEVT_THREAD);
     if (stc_event_kind(kind)) return wxEventTypeTag<wxEvent>(stc_event_type(kind));
     if (input_event_kind(kind)) return wxEventTypeTag<wxEvent>(input_event_type(kind));
@@ -893,6 +906,7 @@ wxEventTypeTag<wxEvent> native_event_type(int kind) {
     }
 }
 int native_event_family(int kind) {
+    if (views_event_kind(kind)) return WXL_FAMILY_NOTIFY;
     if (thread_event_kind(kind)) return WXL_FAMILY_BASE;
     if (stc_event_kind(kind)) return WXL_FAMILY_COMMAND;
     if (input_event_kind(kind)) return kind==70 ? WXL_FAMILY_COMMAND : WXL_FAMILY_BASE;
@@ -919,7 +933,7 @@ bool event_vetoed(wxEvent& event) {
 std::unique_ptr<wxEvent> synthetic_event(wxEvtHandler* receiver, int kind, int event_id,
                                        const char* text, size_t length, int value,
                                        int can_veto, int vetoed, int logging_off) {
-    require(!thread_event_kind(kind) && !stc_event_kind(kind) && !input_event_kind(kind) && !aui_event_kind(kind) && !web_event_kind(kind) && kind != WXL_EVENT_SEARCH && kind != WXL_EVENT_SEARCH_CANCEL && kind != WXL_EVENT_TIME_CHANGE && kind != WXL_EVENT_DATE_CHANGE && kind != WXL_EVENT_COMBO_SELECTION && kind != WXL_EVENT_TOGGLE_BUTTON_CHANGE && kind != WXL_EVENT_RADIO_SELECTION && kind != WXL_EVENT_SLIDER_CHANGE && kind != WXL_EVENT_SPIN_CHANGE && kind != WXL_EVENT_NOTEBOOK_CHANGING && kind != WXL_EVENT_NOTEBOOK_CHANGED && kind != WXL_EVENT_TREE_CHANGING && kind != WXL_EVENT_TREE_CHANGED && kind != WXL_EVENT_SPLITTER_CHANGING && kind != WXL_EVENT_SPLITTER_CHANGED,
+    require(!views_event_kind(kind) && !thread_event_kind(kind) && !stc_event_kind(kind) && !input_event_kind(kind) && !aui_event_kind(kind) && !web_event_kind(kind) && kind != WXL_EVENT_SEARCH && kind != WXL_EVENT_SEARCH_CANCEL && kind != WXL_EVENT_TIME_CHANGE && kind != WXL_EVENT_DATE_CHANGE && kind != WXL_EVENT_COMBO_SELECTION && kind != WXL_EVENT_TOGGLE_BUTTON_CHANGE && kind != WXL_EVENT_RADIO_SELECTION && kind != WXL_EVENT_SLIDER_CHANGE && kind != WXL_EVENT_SPIN_CHANGE && kind != WXL_EVENT_NOTEBOOK_CHANGING && kind != WXL_EVENT_NOTEBOOK_CHANGED && kind != WXL_EVENT_TREE_CHANGING && kind != WXL_EVENT_TREE_CHANGED && kind != WXL_EVENT_SPLITTER_CHANGING && kind != WXL_EVENT_SPLITTER_CHANGED,
             "Derived navigation events require native interaction; synthetic construction is unsupported");
     const auto type = native_event_type(kind);
     const int family = native_event_family(kind);
@@ -957,6 +971,7 @@ std::unique_ptr<wxEvent> synthetic_event(wxEvtHandler* receiver, int kind, int e
     return event;
 }
 int kind_of(wxEvent& event) {
+    if (views_kind_for_type(event.GetEventType())) return views_kind_for_type(event.GetEventType());
     if (thread_payload_readonly(event.GetEventType())) return 120;
     if (const auto kind=stc_kind_for_type(event.GetEventType())) return kind;
     if (const auto kind=input_kind_for_type(event.GetEventType())) return kind;
@@ -977,7 +992,7 @@ std::unique_ptr<wxEvent> detached_clone(wxEvent& event) {
     require(typeid(event) == typeid(wxCommandEvent) || typeid(event) == typeid(wxNotifyEvent) ||
             typeid(event) == typeid(wxCloseEvent) || typeid(event) == typeid(wxIdleEvent), "Cloning this native event class is not supported");
     const auto kind = kind_of(event);
-    require(!thread_event_kind(kind) && !stc_event_kind(kind) && !input_event_kind(kind) && !aui_event_kind(kind) && !web_event_kind(kind) && kind != WXL_EVENT_SEARCH && kind != WXL_EVENT_SEARCH_CANCEL && kind != WXL_EVENT_TIME_CHANGE && kind != WXL_EVENT_DATE_CHANGE && kind != WXL_EVENT_COMBO_SELECTION && kind != WXL_EVENT_TOGGLE_BUTTON_CHANGE && kind != WXL_EVENT_RADIO_SELECTION && kind != WXL_EVENT_SLIDER_CHANGE && kind != WXL_EVENT_SPIN_CHANGE, "Bounded input control events cannot be detached/cloned");
+    require(!views_event_kind(kind) && !thread_event_kind(kind) && !stc_event_kind(kind) && !input_event_kind(kind) && !aui_event_kind(kind) && !web_event_kind(kind) && kind != WXL_EVENT_SEARCH && kind != WXL_EVENT_SEARCH_CANCEL && kind != WXL_EVENT_TIME_CHANGE && kind != WXL_EVENT_DATE_CHANGE && kind != WXL_EVENT_COMBO_SELECTION && kind != WXL_EVENT_TOGGLE_BUTTON_CHANGE && kind != WXL_EVENT_RADIO_SELECTION && kind != WXL_EVENT_SLIDER_CHANGE && kind != WXL_EVENT_SPIN_CHANGE, "Bounded input control events cannot be detached/cloned");
     require(event.GetEventUserData() == nullptr, "Cannot clone borrowed event userData");
     if (auto* command = dynamic_cast<wxCommandEvent*>(&event))
         require(!command->GetClientData() && !command->GetClientObject(), "Cannot clone borrowed command client data");
@@ -1023,7 +1038,7 @@ int64_t read_event_field(wxEvent& event, int field) {
     }
 }
 void write_event_field(wxEvent& event, int field, int64_t value) {
-    require(!thread_payload_readonly(event.GetEventType()) && !stc_payload_readonly(event.GetEventType()) && !input_payload_readonly(event.GetEventType()) && !aui_payload_readonly(event.GetEventType()) && !web_event_type(event.GetEventType()), "Web event payload metadata is read-only");
+    require(!views_payload_readonly(event.GetEventType()) && !thread_payload_readonly(event.GetEventType()) && !stc_payload_readonly(event.GetEventType()) && !input_payload_readonly(event.GetEventType()) && !aui_payload_readonly(event.GetEventType()) && !web_event_type(event.GetEventType()), "Web event payload metadata is read-only");
     auto* close = dynamic_cast<wxCloseEvent*>(&event);
     auto* notify = dynamic_cast<wxNotifyEvent*>(&event);
     auto* command = dynamic_cast<wxCommandEvent*>(&event);
@@ -1132,7 +1147,7 @@ struct Binding {
                                      event_tree_token(event), event_sash_value(event)};
             snapshot.date_code = event_calendar_code(event);
             snapshot.time_code = event_clock_code(event);
-            fill_stc_detail(event,snapshot); fill_input_detail(event,snapshot); fill_aui_detail(event,snapshot);
+            fill_stc_detail(event,snapshot); fill_input_detail(event,snapshot); fill_aui_detail(event,snapshot); fill_views_detail(event,snapshot);
             if (with_context) {
                 event.Skip(false);
                 EventScope scope(event, snapshot.user_data);
@@ -1205,7 +1220,7 @@ template<class F> const char* metadata_string(F fn, size_t* length) noexcept {
 }
 template<class F> wxl_handle create(F fn) noexcept {
     wxl_handle result = 0;
-    status([&] { ready(); result = fn(); });
+    status([&] { ready(); require(!views_provider_running(),"Native construction is unavailable inside a virtual list provider"); result = fn(); });
     return result;
 }
 wxString utf8(const char* value) {
@@ -1477,7 +1492,7 @@ bool process_deferred_ui_action() {
 
 }
 extern "C" {
-int wxl_abi_version() { return 58; }
+int wxl_abi_version() { return 59; }
 const char* wxl_last_error() { return error.c_str(); }
 int wxl_clipboard_text_available() {
     return boolean_result([&] {
@@ -2337,7 +2352,7 @@ int wxl_context_id(uint64_t token, int* value) {
 }
 int wxl_context_set_id(uint64_t token, int value) {
     return status([&] { auto& event=current_event(token);
-        require(!aui_payload_readonly(event.GetEventType()) && !stc_payload_readonly(event.GetEventType()) && !input_payload_readonly(event.GetEventType()), "Native input/styled/AUI event IDs are read-only"); event.SetId(value); });
+        require(!views_payload_readonly(event.GetEventType()) && !aui_payload_readonly(event.GetEventType()) && !stc_payload_readonly(event.GetEventType()) && !input_payload_readonly(event.GetEventType()), "Native input/styled/AUI event IDs are read-only"); event.SetId(value); });
 }
 int wxl_context_timestamp(uint64_t token, int64_t* value) {
     return status([&] {
@@ -2348,7 +2363,7 @@ int wxl_context_timestamp(uint64_t token, int64_t* value) {
 int wxl_context_set_timestamp(uint64_t token, int64_t value) {
     return status([&] {
         auto& event = current_event(token);
-        require(!aui_payload_readonly(event.GetEventType()) && !stc_payload_readonly(event.GetEventType()) && !input_payload_readonly(event.GetEventType()), "Native input/styled/AUI event timestamps are read-only");
+        require(!views_payload_readonly(event.GetEventType()) && !aui_payload_readonly(event.GetEventType()) && !stc_payload_readonly(event.GetEventType()) && !input_payload_readonly(event.GetEventType()), "Native input/styled/AUI event timestamps are read-only");
         require(value >= std::numeric_limits<long>::min() && value <= std::numeric_limits<long>::max(),
                 "Timestamp is outside the native long range");
         event.SetTimestamp(static_cast<long>(value));
@@ -2536,7 +2551,7 @@ int wxl_set_event_text(uint64_t source, int contextual, const char* text, size_t
             require(!window || !window->WXGetTextEntry(),
                     "Text-entry-origin text-change payloads are lazy and cannot be mutated");
         }
-        require(!thread_payload_readonly(event.GetEventType()) && !stc_payload_readonly(event.GetEventType()) && !input_payload_readonly(event.GetEventType()) && !aui_payload_readonly(event.GetEventType()) && !web_event_type(event.GetEventType()), "Web event text is read-only");
+        require(!views_payload_readonly(event.GetEventType()) && !thread_payload_readonly(event.GetEventType()) && !stc_payload_readonly(event.GetEventType()) && !input_payload_readonly(event.GetEventType()) && !aui_payload_readonly(event.GetEventType()) && !web_event_type(event.GetEventType()), "Web event text is read-only");
         require(text || length == 0, "Null event text");
         command->SetString(wxString::FromUTF8(text ? text : "", length));
     });
@@ -3006,6 +3021,7 @@ const char* wxl_notebook_label(wxl_handle id, int index, size_t* length) {
 int wxl_set_notebook_label(wxl_handle id, int index, const char* label, size_t length) {
     return status([&] {
         auto* book = as<wxNotebook>(id);
+        require(!protected_views_provider(book),"Virtual list provider cannot change ancestor captions");
         require(index >= 0 && static_cast<size_t>(index) < book->GetPageCount(), "Notebook page index out of bounds");
         require(book->SetPageText(static_cast<size_t>(index), menu_string(label, length, true)), "Unable to set notebook page label");
     });
@@ -3533,7 +3549,8 @@ int wxl_row(wxl_handle parent) {
 int wxl_add(wxl_handle parent, wxl_handle child, int proportion,
             int border, int expand, int alignment) {
     return status([&] {
-        auto* p = window(parent); auto* c = window(child);
+        auto* p = window(parent);
+        require(!protected_views_provider(p),"Virtual list provider cannot change ancestor layout"); auto* c = window(child);
         require(proportion >= 0, "Proportion must be nonnegative");
         require(border >= 0, "Border must be nonnegative");
         require(alignment >= WXL_ALIGN_START && alignment <= WXL_ALIGN_END, "Invalid alignment");
@@ -3555,6 +3572,7 @@ int wxl_add(wxl_handle parent, wxl_handle child, int proportion,
 int wxl_spacer(wxl_handle parent, int size) {
     return status([&] {
         auto* p = window(parent);
+        require(!protected_views_provider(p),"Virtual list provider cannot change ancestor layout");
         require(size >= 0, "Spacer size must be nonnegative");
         box(p)->AddSpacer(size);
         p->Layout();
@@ -3563,12 +3581,13 @@ int wxl_spacer(wxl_handle parent, int size) {
 int wxl_stretch(wxl_handle parent, int proportion) {
     return status([&] {
         auto* p = window(parent);
+        require(!protected_views_provider(p),"Virtual list provider cannot change ancestor layout");
         require(proportion > 0, "Stretch proportion must be positive");
         box(p)->AddStretchSpacer(proportion);
         p->Layout();
     });
 }
-int wxl_layout(wxl_handle id) { return status([&] { window(id)->Layout(); }); }
+int wxl_layout(wxl_handle id) { return status([&] { auto* object=window(id); require(!protected_views_provider(object),"Virtual list provider cannot layout its owner/ancestors"); object->Layout(); }); }
 int wxl_geometry(wxl_handle id, int* x, int* y, int* width, int* height) {
     return status([&] {
         auto* control = window(id);
@@ -3584,6 +3603,7 @@ const char* wxl_name(wxl_handle id, size_t* length) {
 int wxl_set_name(wxl_handle id, const char* value, size_t length) {
     return status([&] {
         auto* control = window(id);
+        require(!protected_views_provider(control),"Virtual list provider cannot rename its owner/ancestors");
         require(value != nullptr, "Null UTF-8 name");
         control->SetName(wxString::FromUTF8(value, length));
     });
@@ -3594,19 +3614,20 @@ const char* wxl_title(wxl_handle id, size_t* length) {
 int wxl_set_title(wxl_handle id, const char* value, size_t length) {
     return status([&] {
         auto* frame = as<wxFrame>(id);
+        require(!protected_views_provider(frame),"Virtual list provider cannot rename its ancestors");
         require(value != nullptr, "Null UTF-8 title");
         frame->SetTitle(wxString::FromUTF8(value, length));
     });
 }
-int wxl_show(wxl_handle id) { return status([&] { auto* object = window(id); require(!dynamic_cast<wxDialog*>(object), "Use SHOW-MODAL for dialogs"); object->Show(); }); }
+int wxl_show(wxl_handle id) { return status([&] { auto* object = window(id); require(!protected_views_provider(object),"Virtual list provider cannot show its owner/ancestors"); require(!dynamic_cast<wxDialog*>(object), "Use SHOW-MODAL for dialogs"); object->Show(); }); }
 int wxl_show_state(wxl_handle id, int show) {
-    return boolean_result([&] { auto* object = window(id); require(!dynamic_cast<wxDialog*>(object), "Use SHOW-MODAL for dialogs"); return object->Show(show != 0); });
+    return boolean_result([&] { auto* object = window(id); require(!protected_views_provider(object),"Virtual list provider cannot show its owner/ancestors"); require(!dynamic_cast<wxDialog*>(object), "Use SHOW-MODAL for dialogs"); return object->Show(show != 0); });
 }
 int wxl_shown(wxl_handle id) {
     return boolean_result([&] { return window(id)->IsShown(); });
 }
 int wxl_enable(wxl_handle id, int enable) {
-    return boolean_result([&] { return window(id)->Enable(enable != 0); });
+    return boolean_result([&] { auto* object=window(id); require(!protected_views_provider(object),"Virtual list provider cannot enable its owner/ancestors"); return object->Enable(enable != 0); });
 }
 int wxl_enabled(wxl_handle id) {
     return boolean_result([&] { return window(id)->IsEnabled(); });
@@ -3749,3 +3770,5 @@ extern "C" {
 #define WXL_THREAD_EVENT_IMPLEMENTATION
 #include "thread-events.inc"
 #undef WXL_THREAD_EVENT_IMPLEMENTATION
+
+#include "views.inc"

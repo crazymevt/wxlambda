@@ -213,7 +213,7 @@
     "arguments": "WINDOW is live; optional SHOW is a generalized boolean (default T).",
     "returns": "WINDOW, then a boolean indicating whether its shown state changed.",
     "description": "Show with true SHOW, hide with NIL. Existing one-argument calls still show the window and return it as their primary value.",
-    "scope": "Requires an active GUI session on the process main thread. Invalid/destroyed handles or unsupported native arguments signal NATIVE-ERROR; Lisp argument/type errors remain Lisp conditions. One GUI session per process. Widget behavior uses CLOS generic dispatch. Wrong receiver types signal Lisp dispatch conditions; native handle/state failures signal NATIVE-ERROR. Supported dialogs are modal-only: SHOW-WINDOW and SHOWN-P SETF reject them; use SHOW-MODAL. SHOWN-P reader remains available.",
+    "scope": "Requires an active GUI session on the process main thread. Invalid/destroyed handles or unsupported native arguments signal NATIVE-ERROR; Lisp argument/type errors remain Lisp conditions. One GUI session per process. Widget behavior uses CLOS generic dispatch. Wrong receiver types signal Lisp dispatch conditions; native handle/state failures signal NATIVE-ERROR. Supported dialogs are modal-only: SHOW-WINDOW and SHOWN-P SETF reject them; use SHOW-MODAL. SHOWN-P reader remains available. LIST-CONTROL inherits supported WINDOW operations; owner/ancestor writes defer during native virtual providers.",
     "wxwidgets": "wxWindow::Show(bool) / Hide() equivalent (wxWidgets 3.2)."
   },
   {
@@ -269,7 +269,7 @@
     "kind": "generic-function",
     "arguments": "CONTROL is a live CHOICE, LIST-BOX, RADIO-BOX, COMBO-BOX, NOTEBOOK or TREE-CONTROL; NOTIFY is meaningful for the writer only.",
     "returns": "Index/NIL for choice/listbox/notebook; non-NIL index for radio-box; canonical TREE-ITEM/NIL for tree-control. COMBO-BOX returns native committed index/NIL, not highlighted popup state.",
-    "description": "Read current selection: an index for CHOICE/LIST-BOX/NOTEBOOK, or a canonical managed TREE-ITEM view for TREE-CONTROL, with NIL when no selection exists. Reader NOTIFY is ignored. Writes are silent by default; notifying choice/list writes emit synthetic events, while notebook/tree writes use native vetoable selection. Return of a requested assignment does not prove native acceptance. Populated tree writes require a live same-tree item; NIL is empty-tree no-op only. Root creation and structural edits silently normalize valid selection before idle. RADIO-BOX always has exactly one valid index; its explicit notifying write commits before a native-class command event, without veto or rollback. COMBO-BOX selection writes also set item text; NIL clears both text and selection. Arbitrary text writes do not promise a selected item.",
+    "description": "Read current selection: an index for CHOICE/LIST-BOX/NOTEBOOK, or a canonical managed TREE-ITEM view for TREE-CONTROL, with NIL when no selection exists. Reader NOTIFY is ignored. Writes are silent by default; notifying choice/list writes emit synthetic events, while notebook/tree writes use native vetoable selection. Return of a requested assignment does not prove native acceptance. Populated tree writes require a live same-tree item; NIL is empty-tree no-op only. Root creation and structural edits silently normalize valid selection before idle. RADIO-BOX always has exactly one valid index; its explicit notifying write commits before a native-class command event, without veto or rollback. COMBO-BOX selection writes also set item text; NIL clears both text and selection. Arbitrary text writes do not promise a selected item. LIST-CONTROL is fixed single selection, NIL clears; silent by default, :notify T allows actual native selected/deselected events.",
     "scope": "Requires an active GUI session on the process main thread. Invalid/destroyed handles or unsupported native arguments signal NATIVE-ERROR; Lisp argument/type errors remain Lisp conditions. One GUI session per process. Widget behavior uses CLOS generic dispatch. Wrong receiver types signal Lisp dispatch conditions; native handle/state failures signal NATIVE-ERROR. RADIO-BOX: bounded :radio-selection command events; immutable copied index/native label, current borrowed contexts; no owned/synthetic/clone radio events. Fixed2..64 choices, mandatory valid zero-based selection, one row/column orientation. Active GUI session/native lifetime checks for widget operations; no standalone radio buttons, item mutation or full native parity. See docs/RADIO-GROUPS.md. Also specializes on AUI-NOTEBOOK; empty readNIL, nonempty integer writes only. Silent ChangeSelection versus native notifying/vetoable SetSelection; writer returns request, read actual state. Callback writes reject.",
     "wxwidgets": "wxChoice/wxListBox::GetSelection/SetSelection; wxNotebook::GetSelection/ChangeSelection/SetSelection (wxWidgets 3.2.12). wxTreeCtrl::GetSelection/SelectItem in ABI39. wxRadioBox::GetSelection/SetSelection. wxComboBox::GetSelection/SetSelection, wxTextEntry::ChangeValue.",
     "setf": {
@@ -456,7 +456,7 @@
     "arguments": "WINDOW is live.",
     "returns": "T or NIL.",
     "description": "Read the window's own shown flag. A hidden ancestor does not change this flag; it does not report effective screen visibility.",
-    "scope": "Requires an active GUI session on the process main thread. Invalid/destroyed handles or unsupported native arguments signal NATIVE-ERROR; Lisp argument/type errors remain Lisp conditions. One GUI session per process. Widget behavior uses CLOS generic dispatch. Wrong receiver types signal Lisp dispatch conditions; native handle/state failures signal NATIVE-ERROR. Supported dialogs are modal-only: SHOW-WINDOW and SHOWN-P SETF reject them; use SHOW-MODAL. SHOWN-P reader remains available.",
+    "scope": "Requires an active GUI session on the process main thread. Invalid/destroyed handles or unsupported native arguments signal NATIVE-ERROR; Lisp argument/type errors remain Lisp conditions. One GUI session per process. Widget behavior uses CLOS generic dispatch. Wrong receiver types signal Lisp dispatch conditions; native handle/state failures signal NATIVE-ERROR. Supported dialogs are modal-only: SHOW-WINDOW and SHOWN-P SETF reject them; use SHOW-MODAL. SHOWN-P reader remains available. LIST-CONTROL inherits supported WINDOW operations; owner/ancestor writes defer during native virtual providers.",
     "wxwidgets": "wxWindow::IsShown (wxWidgets 3.2).",
     "setf": {
       "syntax": "(setf (wxlambda:shown-p window) new-value)",
@@ -518,7 +518,7 @@
     "arguments": "Superclass: WXLAMBDA:EVENT-HANDLER. WINDOW is abstract.",
     "returns": "A native-backed instance of this class or a subclass (WINDOW itself is abstract).",
     "description": "Abstract CLOS base of the bound window wrappers. Reuses its wxWindow as a borrowed wxEvtHandler; construction creates one native widget, not a second handler.",
-    "scope": "Construction requires an active main-thread application session. Concrete classes create their native widgets in inherited INITIALIZE-INSTANCE methods; subclass AFTER hooks can use them. Native handles cannot be supplied as initargs. Lisp subclassing does not imply native C++ virtual callbacks. GRID and WEB-VIEW are concrete WINDOW receivers for the implemented generic layout, geometry, visibility, enabled state and lifetime operations. Their private composite scroll/browser event handling forbids managed handler-stack access/edits; their own mutation and callback guards remain in force. STYLED-TEXT-CONTROL and AUI-NOTEBOOK are concrete WINDOW receivers for implemented generic state/geometry/lifetime protocols. AUI retains private manager handlers and page layout; managed stack protocols reject AUI.",
+    "scope": "Construction requires an active main-thread application session. Concrete classes create their native widgets in inherited INITIALIZE-INSTANCE methods; subclass AFTER hooks can use them. Native handles cannot be supplied as initargs. Lisp subclassing does not imply native C++ virtual callbacks. GRID and WEB-VIEW are concrete WINDOW receivers for the implemented generic layout, geometry, visibility, enabled state and lifetime operations. Their private composite scroll/browser event handling forbids managed handler-stack access/edits; their own mutation and callback guards remain in force. STYLED-TEXT-CONTROL and AUI-NOTEBOOK are concrete WINDOW receivers for implemented generic state/geometry/lifetime protocols. AUI retains private manager handlers and page layout; managed stack protocols reject AUI. LIST-CONTROL inherits supported WINDOW operations; owner/ancestor writes defer during native virtual providers.",
     "wxwidgets": "wxWindow (wxWidgets 3.2); this is a Lisp wrapper, not a native subclass.",
     "construction": {
       "syntax": "(make-instance 'wxlambda:frame)",
@@ -796,7 +796,7 @@
     "kind": "generic-function",
     "arguments": "HANDLER is an EVENT-HANDLER/window; KIND is :CLICK, :TEXT-CHANGE, :TOGGLE, :SELECTION, :CLOSE, :QUERY-END-SESSION, :END-SESSION, :IDLE, :MENU or a registered command/notify name. FUNCTION takes one immutable EVENT. ID defaults NIL (any); LAST-ID defaults NIL (exact ID when ID is given). WITH-CONTEXT defaults NIL; when true FUNCTION takes (EVENT CONTEXT) instead of just EVENT. USER-DATA defaults NIL and associates any EQ-preserved Lisp value with this registration; callback arity is unchanged.",
     "returns": "A new independent EVENT-BINDING.",
-    "description": "Register an observer without replacing any existing generic or control-specific registration. Signed 32-bit IDs are supported except -1 (reserved as native wxID_ANY; use NIL). LAST-ID requires ID and an ordered inclusive range. Observer bindings automatically Skip; contextual bindings start unskipped and control native Skip explicitly; relative callback order follows wxWidgets and is not a Lisp API guarantee. Failed registration releases temporary roots. Contextual access is limited to the innermost callback and expires at return, including on errors. A native entry-owned wxObject token adapter represents non-NIL user data without a Lisp/native pointer. EVENT-USER-DATA reads the per-binding value in snapshots/current contexts; there is no public mutation API for an existing association. ABI37 adds :NOTEBOOK-PAGE-CHANGING/:NOTEBOOK-PAGE-CHANGED notify-family observers/contexts. Only CHANGING veto affects navigation. Native page callbacks protect the originating book/ancestors and reject same-book recursive selection, modal and clipboard entry. ABI38 listbox selection/double-click command events carry cached string/index payloads; snapshots are independent of later item edits. Native list callback guards protect receiver/ancestors and defer modal/clipboard entry while allowing item edits. ABI39 tree selection changing/changed are native-only wxTreeEvent notify types. EVENT-TREE-ITEM captures canonical view identity, not frozen text/validity; same-tree writes and nested native loops defer until callback return.",
+    "description": "Register an observer without replacing any existing generic or control-specific registration. Signed 32-bit IDs are supported except -1 (reserved as native wxID_ANY; use NIL). LAST-ID requires ID and an ordered inclusive range. Observer bindings automatically Skip; contextual bindings start unskipped and control native Skip explicitly; relative callback order follows wxWidgets and is not a Lisp API guarantee. Failed registration releases temporary roots. Contextual access is limited to the innermost callback and expires at return, including on errors. A native entry-owned wxObject token adapter represents non-NIL user data without a Lisp/native pointer. EVENT-USER-DATA reads the per-binding value in snapshots/current contexts; there is no public mutation API for an existing association. ABI37 adds :NOTEBOOK-PAGE-CHANGING/:NOTEBOOK-PAGE-CHANGED notify-family observers/contexts. Only CHANGING veto affects navigation. Native page callbacks protect the originating book/ancestors and reject same-book recursive selection, modal and clipboard entry. ABI38 listbox selection/double-click command events carry cached string/index payloads; snapshots are independent of later item edits. Native list callback guards protect receiver/ancestors and defer modal/clipboard entry while allowing item edits. ABI39 tree selection changing/changed are native-only wxTreeEvent notify types. EVENT-TREE-ITEM captures canonical view identity, not frozen text/validity; same-tree writes and nested native loops defer until callback return. Native report-list and tree interaction kinds documented in REPORT-TREE-VIEWS are readonly notify payloads; expansion/collapse veto is available only for native before-events. No owned/synthetic/cloned views events.",
     "scope": "Active main-thread GUI session required; otherwise NATIVE-ERROR. Stale/deleting receivers reject registration/queuing. Invalid event kinds, IDs and payload options signal Lisp errors; wrong receiver types use CLOS dispatch errors. Built-ins and registered command/notify types. Contexts support scoped Skip/propagation and checked close/notify veto. Arbitrary native events, native control-specific notify subclasses, arbitrary native userData pointers, external handler adoption and worker-thread dispatch remain unbound. Session bindings accept only the borrowed application view or an isolated owned handler; windows reject. Real OS delivery remains unverified. Skipped application END_SESSION callbacks can reach process-exiting defaults. Session bindings on attached pushed handlers reject so a window tail cannot route them to app defaults. Callback-local roots preserve current user data after self/peer unbind until return. Snapshots preserve the EQ reference after unbind/session end, not a deep copy of mutable contents. RADIO-BOX :radio-selection is a native-only command kind with copied/current index and native label metadata. Snapshot reads survive source/session cleanup; borrowed contexts require the exact innermost current callback. No owned/synthetic/cloned radio events. See docs/RADIO-GROUPS.md. :TOGGLE-BUTTON-CHANGE copies native checked/text metadata (text normally empty, including explicit notify; no inferred label); no owned/synthetic/clone. Snapshots survive cleanup, contexts expire. See docs/TOGGLE-BUTTONS.md. COMBO-BOX uses new native-only :COMBO-SELECTION and existing :TEXT-CHANGE. Physical native selections may emit multiple command/text notifications; explicit setters emit only their requested kind. See docs/COMBO-BOXES.md. WEB-VIEW adds native-only :WEB-MESSAGE, :WEB-SCRIPT-RESULT, :WEB-LOADED and :WEB-ERROR command snapshots with read-only payloads. JSON messages accept all frames/origins and carry no authentication; script result EVENT-EXTRA-LONG identifies its ticket and EVENT-INTEGER reports success1/error0. No owned/synthetic/cloned web events. GRID adds no grid event family. See docs/WEB-VIEW.md and docs/GRID.md. Native-only notify AUI100..104 kinds :aui-page-changing/:aui-page-changed/:aui-page-close/:aui-page-closed/:aui-drag-done. Selection/oldselection/targetID copied; payload writers and owned/synthetic/cloned forms reject. Scoped changing/close veto; closed index is former index, not current page. See docs/AUI-NOTEBOOK.md. ABI57 raw key/mouse/focus/context-menu/size, STC and AUI native kinds have copied read-only payload metadata and reject owned/synthetic construction/cloning. Ordinary observers automatically Skip; scoped handlers explicitly Skip unhandled native input. STC styling has the exact innermost same-control STYLENEEDED StartStyling/SetStyling exception. AUI close/changing veto is native-scoped and CLOSED has former index/captured target ID. See docs/INPUT-EVENTS.md, docs/STYLED-TEXT.md and docs/AUI-NOTEBOOK.md. AUI private tab-local PAGE_CHANGING events are translated by native wxAuiNotebook before Lisp delivery; public event-selection uses global catalogue indices. DRAG-DONE follows native paths/early returns without an exact count or ordering-transaction guarantee. AUI/native input/STC context IDs and timestamps are read-only. ABI58 :THREAD is a native base-family wxThreadEvent with copied immutable EVENT-TEXT, GUI-only callback dispatch and normal context lifetime. QUEUE-THREAD-EVENT alone permits worker posting after GUI binding; other GUI operations retain their thread rules. No owned/synthetic/cloned :THREAD events. See docs/THREAD-EVENTS.md.",
     "wxwidgets": "wxEvtHandler::Bind member-method overload with wxEvent receiver and optional entry-owned numeric wxObject userData adapter; built-ins and registered command/notify tags (wxWidgets 3.2.12 baseline).",
     "syntax": "(wxlambda:bind-event handler kind function &key id last-id with-context user-data)"
@@ -825,7 +825,7 @@
     "arguments": "HANDLER is live; KIND is a built-in keyword or registered name. ID defaults 0; TEXT defaults empty. CHECKED-P is toggle/menu-only; SELECTION is NIL/nonnegative index for selection. CAN-VETO-P is close-family-only (default T). Registered types accept signed INTEGER (default 0) and copied TEXT; registered notify types accept initial VETOED-P (default NIL). LOGGING-OFF-P defaults NIL and is accepted only for :QUERY-END-SESSION/:END-SESSION; CAN-VETO-P applies to all close-family kinds. The second positional argument may instead be a live OWNED-EVENT, with no payload keyword overrides.",
     "returns": "The supplied handler.",
     "description": "Queue a copied synthetic event: wxCommandEvent for seven command kinds, wxCloseEvent for close/session kinds and wxIdleEvent for :IDLE. Ordinary control properties are not changed directly. A queued close on a frame may run its native default closing action; use CLOSE-WINDOW for a synchronous acceptance result. Explicit UTF-8 lengths preserve text. Close events take no command payload, may be vetoable or non-vetoable, and do not normally propagate to parents. Registry types create wxCommandEvent or wxNotifyEvent according to their declared family. Initial veto applies only to custom notify types. Queuing offers no final veto/handled result; use PROCESS-EVENT when a synchronous decision is required. Owned-event dispatch always clones, attaches the receiver as copy origin and never consumes or mutates the source. The original can be destroyed after queueing or inside callbacks. Processing returns final state from its copy; contextual CLONE-EVENT can retain changed state detached from origin.",
-    "scope": "Active main-thread GUI session required; otherwise NATIVE-ERROR. Stale/deleting receivers reject registration/queuing. Invalid event kinds, IDs and payload options signal Lisp errors; wrong receiver types use CLOS dispatch errors. Built-ins and registered command/notify types. Contexts support scoped Skip/propagation and checked close/notify veto. Arbitrary native events, native control-specific notify subclasses, arbitrary native userData pointers, external handler adoption and worker-thread dispatch remain unbound. Synthetic session kinds require isolated owned standalone handlers; application/window receivers reject before emission. Standalone session fallback to wxApp is suppressed even for skipped, disabled or unmatched delivery. Native application session bindings are distinct from synthetic probes. Owned session event copies retain isolated standalone-receiver guards. Copies carrying borrowed userdata/client pointers or unsupported exact native classes reject. Copied owned :TEXT-CHANGE delivery to text-entry receivers rejects before emission, preventing lazy GetString from shadowing the owned payload. Keyword synthetic behavior is unchanged. Managed standalone chains participate in native traversal; linking does not change pending queue ownership or introduce window/app pushed chains. Window receivers retain wxEvtHandler semantics and bypass pushed stacks; explicit PROCESS-WINDOW-EVENT/LOCALLY provide stack-aware synchronous routing. Synthetic session delivery to attached pushed handlers rejects before emission/transfer. Notebook native page events cannot be synthesized, queued, processed as owned events or contextually cloned in ABI37. ABI38 simple listbox command kinds support owned/synthetic dispatch and text/selection payloads; no automatic list-model mutation. Derived tree selection kinds cannot be synthesized/owned/cloned in ABI39. ABI58 :THREAD is a native base-family wxThreadEvent with copied immutable EVENT-TEXT, GUI-only callback dispatch and normal context lifetime. QUEUE-THREAD-EVENT alone permits worker posting after GUI binding; other GUI operations retain their thread rules. No owned/synthetic/cloned :THREAD events. See docs/THREAD-EVENTS.md.",
+    "scope": "Active main-thread GUI session required; otherwise NATIVE-ERROR. Stale/deleting receivers reject registration/queuing. Invalid event kinds, IDs and payload options signal Lisp errors; wrong receiver types use CLOS dispatch errors. Built-ins and registered command/notify types. Contexts support scoped Skip/propagation and checked close/notify veto. Arbitrary native events, native control-specific notify subclasses, arbitrary native userData pointers, external handler adoption and worker-thread dispatch remain unbound. Synthetic session kinds require isolated owned standalone handlers; application/window receivers reject before emission. Standalone session fallback to wxApp is suppressed even for skipped, disabled or unmatched delivery. Native application session bindings are distinct from synthetic probes. Owned session event copies retain isolated standalone-receiver guards. Copies carrying borrowed userdata/client pointers or unsupported exact native classes reject. Copied owned :TEXT-CHANGE delivery to text-entry receivers rejects before emission, preventing lazy GetString from shadowing the owned payload. Keyword synthetic behavior is unchanged. Managed standalone chains participate in native traversal; linking does not change pending queue ownership or introduce window/app pushed chains. Window receivers retain wxEvtHandler semantics and bypass pushed stacks; explicit PROCESS-WINDOW-EVENT/LOCALLY provide stack-aware synchronous routing. Synthetic session delivery to attached pushed handlers rejects before emission/transfer. Notebook native page events cannot be synthesized, queued, processed as owned events or contextually cloned in ABI37. ABI38 simple listbox command kinds support owned/synthetic dispatch and text/selection payloads; no automatic list-model mutation. Derived tree selection kinds cannot be synthesized/owned/cloned in ABI39. ABI58 :THREAD is a native base-family wxThreadEvent with copied immutable EVENT-TEXT, GUI-only callback dispatch and normal context lifetime. QUEUE-THREAD-EVENT alone permits worker posting after GUI binding; other GUI operations retain their thread rules. No owned/synthetic/cloned :THREAD events. See docs/THREAD-EVENTS.md. LIST-CONTROL inherits supported WINDOW operations; owner/ancestor writes defer during native virtual providers.",
     "wxwidgets": "wxEvtHandler::QueueEvent; wxCommandEvent, wxCloseEvent or wxIdleEvent construction, SetCanVeto at close-event creation only.",
     "syntax": "(wxlambda:queue-event handler kind &key id text checked-p selection can-veto-p integer vetoed-p logging-off-p)\n(wxlambda:queue-event handler owned-event)"
   },
@@ -995,7 +995,7 @@
     "arguments": "HANDLER is a live EVENT-HANDLER/window. KIND and keyword payloads match QUEUE-EVENT. LOGGING-OFF-P defaults NIL and is accepted only for :QUERY-END-SESSION/:END-SESSION; CAN-VETO-P applies to all close-family kinds. The second positional argument may instead be a live OWNED-EVENT, with no payload keyword overrides.",
     "returns": "Two values: native handled-p and final vetoed-p.",
     "description": "Synchronously dispatch a fresh owned synthetic event through ProcessEvent, copy final veto state and then delete the event. Observer callbacks may run while handled-p is NIL because they Skip; native consumption/default handling determines the first result. Final veto is independent of handled-p and may be true from initial VETOED-P even without a matching handler. Close dispatch can run frame defaults. Callback errors re-signal at the nearer Lisp boundary; handled nested errors do not stop RUN. No final values are returned when a condition escapes, and earlier callback mutations are not rolled back. Owned-event dispatch always clones, attaches the receiver as copy origin and never consumes or mutates the source. The original can be destroyed after queueing or inside callbacks. Processing returns final state from its copy; contextual CLONE-EVENT can retain changed state detached from origin.",
-    "scope": "Active main-thread session required for registration/dispatch and scoped native access; inactive calls signal NATIVE-ERROR before FFI. Wrong receiver types use CLOS dispatch errors. Registry metadata lasts until session cleanup; snapshot data is immutable. Borrowed application dispatch is supported; no worker dispatch, validated OS session delivery or arbitrary native class construction is provided. Synthetic session kinds require isolated owned standalone handlers; application/window receivers reject before emission. Standalone session fallback to wxApp is suppressed even for skipped, disabled or unmatched delivery. Native application session bindings are distinct from synthetic probes. Owned session event copies retain isolated standalone-receiver guards. Copies carrying borrowed userdata/client pointers or unsupported exact native classes reject. Copied owned :TEXT-CHANGE delivery to text-entry receivers rejects before emission, preventing lazy GetString from shadowing the owned payload. Keyword synthetic behavior is unchanged. Managed standalone chains participate in native traversal; linking does not change pending queue ownership or introduce window/app pushed chains. Window receivers retain wxEvtHandler semantics and bypass pushed stacks; explicit PROCESS-WINDOW-EVENT/LOCALLY provide stack-aware synchronous routing. Synthetic session delivery to attached pushed handlers rejects before emission/transfer. Notebook native page events cannot be synthesized, queued, processed as owned events or contextually cloned in ABI37. ABI38 simple listbox command kinds support owned/synthetic dispatch and text/selection payloads; no automatic list-model mutation. Derived tree selection kinds cannot be synthesized/owned/cloned in ABI39.",
+    "scope": "Active main-thread session required for registration/dispatch and scoped native access; inactive calls signal NATIVE-ERROR before FFI. Wrong receiver types use CLOS dispatch errors. Registry metadata lasts until session cleanup; snapshot data is immutable. Borrowed application dispatch is supported; no worker dispatch, validated OS session delivery or arbitrary native class construction is provided. Synthetic session kinds require isolated owned standalone handlers; application/window receivers reject before emission. Standalone session fallback to wxApp is suppressed even for skipped, disabled or unmatched delivery. Native application session bindings are distinct from synthetic probes. Owned session event copies retain isolated standalone-receiver guards. Copies carrying borrowed userdata/client pointers or unsupported exact native classes reject. Copied owned :TEXT-CHANGE delivery to text-entry receivers rejects before emission, preventing lazy GetString from shadowing the owned payload. Keyword synthetic behavior is unchanged. Managed standalone chains participate in native traversal; linking does not change pending queue ownership or introduce window/app pushed chains. Window receivers retain wxEvtHandler semantics and bypass pushed stacks; explicit PROCESS-WINDOW-EVENT/LOCALLY provide stack-aware synchronous routing. Synthetic session delivery to attached pushed handlers rejects before emission/transfer. Notebook native page events cannot be synthesized, queued, processed as owned events or contextually cloned in ABI37. ABI38 simple listbox command kinds support owned/synthetic dispatch and text/selection payloads; no automatic list-model mutation. Derived tree selection kinds cannot be synthesized/owned/cloned in ABI39. LIST-CONTROL inherits supported WINDOW operations; owner/ancestor writes defer during native virtual providers.",
     "wxwidgets": "wxEvtHandler::ProcessEvent; wxCloseEvent::GetVeto or NOT wxNotifyEvent::IsAllowed after dispatch. (wxWidgets 3.2.12 baseline).",
     "syntax": "(wxlambda:process-event handler kind &key id text checked-p selection can-veto-p integer vetoed-p logging-off-p)\n(wxlambda:process-event handler owned-event)"
   },
@@ -1160,7 +1160,7 @@
     "arguments": "HANDLER is a live EVENT-HANDLER/window, EVENT is a live OWNED-EVENT. No synthetic payload overrides.",
     "returns": "HANDLER after successful GUI posting.",
     "description": "Post an independent detached copy with wxPostEvent/AddPendingEvent; attach the receiver as copy origin. Input stays live/unchanged and may be destroyed or changed immediately. Delivery is asynchronous in the managed GUI session.",
-    "scope": "Active main-thread GUI session required. Existing session-isolated receiver and lazy text-entry-origin restrictions apply before emission. No non-GUI immediate dispatch, worker posting or ownership transfer. Managed standalone chains participate in native traversal; linking does not change pending queue ownership or introduce window/app pushed chains. Window receivers retain wxEvtHandler semantics and bypass pushed stacks; explicit PROCESS-WINDOW-EVENT/LOCALLY provide stack-aware synchronous routing. Synthetic session delivery to attached pushed handlers rejects before emission/transfer.",
+    "scope": "Active main-thread GUI session required. Existing session-isolated receiver and lazy text-entry-origin restrictions apply before emission. No non-GUI immediate dispatch, worker posting or ownership transfer. Managed standalone chains participate in native traversal; linking does not change pending queue ownership or introduce window/app pushed chains. Window receivers retain wxEvtHandler semantics and bypass pushed stacks; explicit PROCESS-WINDOW-EVENT/LOCALLY provide stack-aware synchronous routing. Synthetic session delivery to attached pushed handlers rejects before emission/transfer. LIST-CONTROL inherits supported WINDOW operations; owner/ancestor writes defer during native virtual providers.",
     "wxwidgets": "wxPostEvent / wxEvtHandler::AddPendingEvent, bounded GUI copy mapping (wxWidgets 3.2.12 baseline)."
   },
   {
@@ -1170,7 +1170,7 @@
     "arguments": "HANDLER is a live EVENT-HANDLER/window; EVENT is a live OWNED-EVENT to consume. No payload overrides.",
     "returns": "HANDLER after native handoff.",
     "description": "Validate before consuming, then remove the actual event from the owned registry, attach receiver origin and hand it to wxQueueEvent. Input becomes non-live and cannot be accessed, cloned or destroyed by its former owner. Destination deletion or pending-event cancellation does not restore it.",
-    "scope": "Active main-thread GUI session required. Preflight failures leave the owned input live; no rollback or delivery guarantee after handoff, including a post-handoff error. Existing session/text-entry receiver restrictions apply before consumption. No raw pointer or arbitrary native class transfer. Managed standalone chains participate in native traversal; linking does not change pending queue ownership or introduce window/app pushed chains. Window receivers retain wxEvtHandler semantics and bypass pushed stacks; explicit PROCESS-WINDOW-EVENT/LOCALLY provide stack-aware synchronous routing. Synthetic session delivery to attached pushed handlers rejects before emission/transfer.",
+    "scope": "Active main-thread GUI session required. Preflight failures leave the owned input live; no rollback or delivery guarantee after handoff, including a post-handoff error. Existing session/text-entry receiver restrictions apply before consumption. No raw pointer or arbitrary native class transfer. Managed standalone chains participate in native traversal; linking does not change pending queue ownership or introduce window/app pushed chains. Window receivers retain wxEvtHandler semantics and bypass pushed stacks; explicit PROCESS-WINDOW-EVENT/LOCALLY provide stack-aware synchronous routing. Synthetic session delivery to attached pushed handlers rejects before emission/transfer. LIST-CONTROL inherits supported WINDOW operations; owner/ancestor writes defer during native virtual providers.",
     "wxwidgets": "wxQueueEvent / wxEvtHandler::QueueEvent native ownership handoff for supported owned events (wxWidgets 3.2.12 baseline)."
   },
   {
@@ -1180,7 +1180,7 @@
     "arguments": "HANDLER is a live EVENT-HANDLER/window; EVENT is a live OWNED-EVENT. No payload overrides.",
     "returns": "Two values: native handled-p and final-vetoed-p of the processing copy.",
     "description": "Synchronously process an independent detached copy with ProcessEventLocally, including local pre-processing and native chained handlers, without normal outer global-filter/parent/application fallback. Source remains live/unchanged. Observer delivery can return handled NIL; final veto is independent. Native local static/default handlers may still execute, including frame-close behavior; local processing is not observer-only or a no-default-action mode.",
-    "scope": "Active main-thread GUI session required. Existing supported-class, session-isolation, text-entry receiver and callback/context protections apply. Callback conditions re-signal at the nearer Lisp boundary. No pending queue pump, pushed-handler API or native virtual override is added. Managed standalone chains participate in native traversal; linking does not change pending queue ownership or introduce window/app pushed chains. Window receivers retain wxEvtHandler semantics and bypass pushed stacks; explicit PROCESS-WINDOW-EVENT/LOCALLY provide stack-aware synchronous routing. Synthetic session delivery to attached pushed handlers rejects before emission/transfer.",
+    "scope": "Active main-thread GUI session required. Existing supported-class, session-isolation, text-entry receiver and callback/context protections apply. Callback conditions re-signal at the nearer Lisp boundary. No pending queue pump, pushed-handler API or native virtual override is added. Managed standalone chains participate in native traversal; linking does not change pending queue ownership or introduce window/app pushed chains. Window receivers retain wxEvtHandler semantics and bypass pushed stacks; explicit PROCESS-WINDOW-EVENT/LOCALLY provide stack-aware synchronous routing. Synthetic session delivery to attached pushed handlers rejects before emission/transfer. LIST-CONTROL inherits supported WINDOW operations; owner/ancestor writes defer during native virtual providers.",
     "wxwidgets": "wxEvtHandler::ProcessEventLocally on a supported detached copy (wxWidgets 3.2.12 baseline)."
   },
   {
@@ -1995,9 +1995,13 @@
     "kind": "generic-function",
     "arguments": "CONTROL is a live LIST-BOX, RADIO-BOX or COMBO-BOX.",
     "returns": "Nonnegative native item count.",
-    "description": "Read native item count. RADIO-BOX and COMBO-BOX retain their fixed constructor choices.",
+    "description": "Read native item count. RADIO-BOX and COMBO-BOX retain their fixed constructor choices. LIST-CONTROL returns native report row count; SETF supports only virtual lists with columns and0..10000000 rows, no per-row allocation; returns value.",
     "scope": "Active main-thread session and native lifetime checks. LIST-BOX supports mutable text items; RADIO-BOX has fixed2..64 choices; COMBO-BOX has fixed0..256 unsorted nonempty choices. No generic receiver fallback or arbitrary native item-container access. Invalid indices/types/handles signal. See docs/LIST-BOX.md, docs/RADIO-GROUPS.md and docs/COMBO-BOXES.md.",
-    "wxwidgets": "wxItemContainerImmutable/wxListBox::GetCount (wxWidgets 3.2.12). wxRadioBox::GetCount. wxComboBox::GetCount."
+    "wxwidgets": "wxItemContainerImmutable/wxListBox::GetCount (wxWidgets 3.2.12). wxRadioBox::GetCount. wxComboBox::GetCount.",
+    "setf": {
+      "syntax": "(setf (wxlambda:item-count control) value)",
+      "description": "Use generic SETF with validated arguments; report/tree mutations reject active providers/callbacks and native lifetime violations. ITEM-COUNT SETF is virtual LIST-CONTROL only."
+    }
   },
   {
     "name": "item-text",
@@ -2017,7 +2021,7 @@
     "kind": "generic-function",
     "arguments": "CONTROL list-box, VALUE string without NUL.",
     "returns": "The appended zero-based index.",
-    "description": "Append native text silently, preserving selected index/NIL. Empty strings/duplicates allowed. Native failure signals; no transactional rollback claim.",
+    "description": "Append native text silently, preserving selected index/NIL. Empty strings/duplicates allowed. Native failure signals; no transactional rollback claim. LIST-CONTROL accepts a proper list of NUL-free cell strings matching columns, stored mode only, max100000 rows and1MiB total row text; returns appended zero-based row.",
     "scope": "Active main-thread session, LIST-BOX receivers only. Unsorted single selection, native-owned text values; no item client data, multi-selection, sorting, arbitrary styles, virtual list/data-view/tree support. Invalid indices/types/handles signal.",
     "wxwidgets": "wxItemContainer::Append(const wxString&) (wxWidgets 3.2.12)."
   },
@@ -2026,7 +2030,7 @@
     "kind": "generic-function",
     "arguments": "CONTROL list-box, INDEX existing zero-based item index.",
     "returns": "T after success.",
-    "description": "Delete silently. Deleting the selected row clears selection; an earlier deletion shifts selected index down one, preserving the same item. No stable IDs or automatic domain-model updates.",
+    "description": "Delete silently. Deleting the selected row clears selection; an earlier deletion shifts selected index down one, preserving the same item. No stable IDs or automatic domain-model updates. LIST-CONTROL deletes a stored report row only; virtual rows use item-count SETF.",
     "scope": "Active main-thread session, LIST-BOX receivers only. Unsorted single selection, native-owned text values; no item client data, multi-selection, sorting, arbitrary styles, virtual list/data-view/tree support. Invalid indices/types/handles signal.",
     "wxwidgets": "wxItemContainer::Delete (wxWidgets 3.2.12)."
   },
@@ -2035,7 +2039,7 @@
     "kind": "generic-function",
     "arguments": "CONTROL list-box.",
     "returns": "T after success.",
-    "description": "Clear all items/selection silently; allowed in list event callbacks. Temporary native event blocker restores managed pushed-handler stack.",
+    "description": "Clear all items/selection silently; allowed in list event callbacks. Temporary native event blocker restores managed pushed-handler stack. LIST-CONTROL clears stored rows or sets virtual count0, retaining columns.",
     "scope": "Active main-thread session, LIST-BOX receivers only. Unsorted single selection, native-owned text values; no item client data, multi-selection, sorting, arbitrary styles, virtual list/data-view/tree support. Invalid indices/types/handles signal.",
     "wxwidgets": "wxItemContainer::Clear (wxWidgets 3.2.12)."
   },
@@ -2170,7 +2174,7 @@
     "kind": "generic-function",
     "arguments": "Immutable EVENT snapshot or current tree EVENT-CONTEXT.",
     "returns": "Canonical TREE-ITEM view or NIL when no managed associated item.",
-    "description": "Snapshot retains view identity, not live validity or frozen label. Non-tree snapshots return NIL; non-tree contexts reject. No owned-event method/setter; associated item can be invalidated later. Copy text while live if needed.",
+    "description": "Snapshot retains view identity, not live validity or frozen label. Non-tree snapshots return NIL; non-tree contexts reject. No owned-event method/setter; associated item can be invalidated later. Copy text while live if needed. New native activation/menu/expanding/expanded/collapsing/collapsed tree events retain checked borrowed same-tree item tokens.",
     "scope": "Snapshot field access needs no session. Context access requires active main-thread exact borrowed context; dereferencing returned item requires live token/owner. Native derived selection events only, no synthetic/owned/cloning/old-item support. wxQt tree construction is explicitly unavailable pending generation-safe asynchronous event translation.",
     "wxwidgets": "wxTreeEvent::GetItem (wxWidgets 3.2.12)."
   },
@@ -3151,7 +3155,7 @@
     "arguments": "Required :parent WINDOW; subclass initargs; no initial URL initarg.",
     "returns": "Native-backed WEB-VIEW WINDOW subtype.",
     "description": "Private wxPanel container owns browser initially at about:blank. Direct CLOS subclasses/default initargs/native-ready AFTER hooks and rollback are supported. Queued immutable command snapshots: :web-message text is JSON (including quoted strings); :web-script-result text is JSON on success or an error description on failure, EVENT-INTEGER is1/0 and EVENT-EXTRA-LONG is the request ticket; :web-loaded text is native URL and :web-error text is native error description. BIND-EVENT supports scoped contexts/Skip/propagation but payload SETF rejects. Async delivery occurs through normal GUI polling/RUN, never directly from an Objective-C completion. Native loaded/error events can reflect prior/subframe navigation; no exact per-navigation correlation or veto API.",
-    "scope": "Verified macOS wxWidgets3.2.12 WKWebView backend only. Active GUI thread/session and live WEB-VIEW WINDOW container; private browser child has no public handle. JavaScript enabled for trusted development content, not a security sandbox. Known wx native dialogs/upload/popups/printing suppressed, known permission requests denied; no complete OS WebKit security/permission policy claim. Mutations/scripts reject callbacks and protect receiver/ancestors/native reentry; use deferred actions. No managed handler stacks, native backend adoption, owned/synthetic/cloned web events. See docs/WEB-VIEW.md. Explicit URL navigation/base-URL inputs support about:blank or absolute http/https/file URLs only; native links, redirects and subresource loads are not a complete navigation sandbox. JSON script messages can originate from all frames and origins; receipt does not authenticate the sender or authorize an action.",
+    "scope": "Verified macOS wxWidgets3.2.12 WKWebView backend only. Active GUI thread/session and live WEB-VIEW WINDOW container; private browser child has no public handle. JavaScript enabled for trusted development content, not a security sandbox. Known wx native dialogs/upload/popups/printing suppressed, known permission requests denied; no complete OS WebKit security/permission policy claim. Mutations/scripts reject callbacks and protect receiver/ancestors/native reentry; use deferred actions. No managed handler stacks, native backend adoption, owned/synthetic/cloned web events. See docs/WEB-VIEW.md. Explicit URL navigation/base-URL inputs support about:blank or absolute http/https/file URLs only; native links, redirects and subresource loads are not a complete navigation sandbox. JSON script messages can originate from all frames and origins; receipt does not authenticate the sender or authorize an action. LIST-CONTROL inherits supported WINDOW operations; owner/ancestor writes defer during native virtual providers.",
     "wxwidgets": "wxWebView/WKWebView bounded adapter, wxWidgets3.2.12; system WebKit runtime.",
     "syntax": "wxlambda:web-view",
     "construction": {
@@ -3165,7 +3169,7 @@
     "arguments": "PARENT WINDOW; validated :class and forwarded subclass initargs.",
     "returns": "New WEB-VIEW or subclass.",
     "description": "Thin native-backed CLOS factory; initially about:blank.",
-    "scope": "Verified macOS wxWidgets3.2.12 WKWebView backend only. Active GUI thread/session and live WEB-VIEW WINDOW container; private browser child has no public handle. JavaScript enabled for trusted development content, not a security sandbox. Known wx native dialogs/upload/popups/printing suppressed, known permission requests denied; no complete OS WebKit security/permission policy claim. Mutations/scripts reject callbacks and protect receiver/ancestors/native reentry; use deferred actions. No managed handler stacks, native backend adoption, owned/synthetic/cloned web events. See docs/WEB-VIEW.md. Explicit URL navigation/base-URL inputs support about:blank or absolute http/https/file URLs only; native links, redirects and subresource loads are not a complete navigation sandbox. JSON script messages can originate from all frames and origins; receipt does not authenticate the sender or authorize an action.",
+    "scope": "Verified macOS wxWidgets3.2.12 WKWebView backend only. Active GUI thread/session and live WEB-VIEW WINDOW container; private browser child has no public handle. JavaScript enabled for trusted development content, not a security sandbox. Known wx native dialogs/upload/popups/printing suppressed, known permission requests denied; no complete OS WebKit security/permission policy claim. Mutations/scripts reject callbacks and protect receiver/ancestors/native reentry; use deferred actions. No managed handler stacks, native backend adoption, owned/synthetic/cloned web events. See docs/WEB-VIEW.md. Explicit URL navigation/base-URL inputs support about:blank or absolute http/https/file URLs only; native links, redirects and subresource loads are not a complete navigation sandbox. JSON script messages can originate from all frames and origins; receipt does not authenticate the sender or authorize an action. LIST-CONTROL inherits supported WINDOW operations; owner/ancestor writes defer during native virtual providers.",
     "wxwidgets": "wxWebView/WKWebView bounded adapter, wxWidgets3.2.12; system WebKit runtime.",
     "syntax": "(wxlambda:make-web-view parent)"
   },
@@ -3175,7 +3179,7 @@
     "arguments": "WEB-VIEW; SETF nonempty NUL-free string, at most8192 UTF-8 bytes. Explicit requests require about:blank or an absolute http/https/file URL.",
     "returns": "Current native URL string; writer returns supplied string.",
     "description": "Read current native URL or request asynchronous navigation. Request return does not imply load completion; current URL may lag requested URL.",
-    "scope": "Verified macOS wxWidgets3.2.12 WKWebView backend only. Active GUI thread/session and live WEB-VIEW WINDOW container; private browser child has no public handle. JavaScript enabled for trusted development content, not a security sandbox. Known wx native dialogs/upload/popups/printing suppressed, known permission requests denied; no complete OS WebKit security/permission policy claim. Mutations/scripts reject callbacks and protect receiver/ancestors/native reentry; use deferred actions. No managed handler stacks, native backend adoption, owned/synthetic/cloned web events. See docs/WEB-VIEW.md. Explicit URL/base input accepts absolute http/https with host, absolute file paths, or exact about:blank; whitespace/control characters and malformed percent escapes reject. This input policy is not a universal page navigation/network sandbox. Explicit URL navigation/base-URL inputs support about:blank or absolute http/https/file URLs only; native links, redirects and subresource loads are not a complete navigation sandbox. JSON script messages can originate from all frames and origins; receipt does not authenticate the sender or authorize an action.",
+    "scope": "Verified macOS wxWidgets3.2.12 WKWebView backend only. Active GUI thread/session and live WEB-VIEW WINDOW container; private browser child has no public handle. JavaScript enabled for trusted development content, not a security sandbox. Known wx native dialogs/upload/popups/printing suppressed, known permission requests denied; no complete OS WebKit security/permission policy claim. Mutations/scripts reject callbacks and protect receiver/ancestors/native reentry; use deferred actions. No managed handler stacks, native backend adoption, owned/synthetic/cloned web events. See docs/WEB-VIEW.md. Explicit URL/base input accepts absolute http/https with host, absolute file paths, or exact about:blank; whitespace/control characters and malformed percent escapes reject. This input policy is not a universal page navigation/network sandbox. Explicit URL navigation/base-URL inputs support about:blank or absolute http/https/file URLs only; native links, redirects and subresource loads are not a complete navigation sandbox. JSON script messages can originate from all frames and origins; receipt does not authenticate the sender or authorize an action. LIST-CONTROL inherits supported WINDOW operations; owner/ancestor writes defer during native virtual providers.",
     "wxwidgets": "wxWebView/WKWebView bounded adapter, wxWidgets3.2.12; system WebKit runtime.",
     "syntax": "(wxlambda:web-view-url view)",
     "setf": {
@@ -3189,7 +3193,7 @@
     "arguments": "WEB-VIEW.",
     "returns": "Copied native title string.",
     "description": "Reads title at call time; may be empty or change asynchronously.",
-    "scope": "Verified macOS wxWidgets3.2.12 WKWebView backend only. Active GUI thread/session and live WEB-VIEW WINDOW container; private browser child has no public handle. JavaScript enabled for trusted development content, not a security sandbox. Known wx native dialogs/upload/popups/printing suppressed, known permission requests denied; no complete OS WebKit security/permission policy claim. Mutations/scripts reject callbacks and protect receiver/ancestors/native reentry; use deferred actions. No managed handler stacks, native backend adoption, owned/synthetic/cloned web events. See docs/WEB-VIEW.md. Explicit URL navigation/base-URL inputs support about:blank or absolute http/https/file URLs only; native links, redirects and subresource loads are not a complete navigation sandbox. JSON script messages can originate from all frames and origins; receipt does not authenticate the sender or authorize an action.",
+    "scope": "Verified macOS wxWidgets3.2.12 WKWebView backend only. Active GUI thread/session and live WEB-VIEW WINDOW container; private browser child has no public handle. JavaScript enabled for trusted development content, not a security sandbox. Known wx native dialogs/upload/popups/printing suppressed, known permission requests denied; no complete OS WebKit security/permission policy claim. Mutations/scripts reject callbacks and protect receiver/ancestors/native reentry; use deferred actions. No managed handler stacks, native backend adoption, owned/synthetic/cloned web events. See docs/WEB-VIEW.md. Explicit URL navigation/base-URL inputs support about:blank or absolute http/https/file URLs only; native links, redirects and subresource loads are not a complete navigation sandbox. JSON script messages can originate from all frames and origins; receipt does not authenticate the sender or authorize an action. LIST-CONTROL inherits supported WINDOW operations; owner/ancestor writes defer during native virtual providers.",
     "wxwidgets": "wxWebView/WKWebView bounded adapter, wxWidgets3.2.12; system WebKit runtime.",
     "syntax": "(wxlambda:web-view-title view)"
   },
@@ -3199,7 +3203,7 @@
     "arguments": "WEB-VIEW.",
     "returns": "Native loading T/NIL.",
     "description": "Native IsBusy state, not a success/failure or script-completion guarantee.",
-    "scope": "Verified macOS wxWidgets3.2.12 WKWebView backend only. Active GUI thread/session and live WEB-VIEW WINDOW container; private browser child has no public handle. JavaScript enabled for trusted development content, not a security sandbox. Known wx native dialogs/upload/popups/printing suppressed, known permission requests denied; no complete OS WebKit security/permission policy claim. Mutations/scripts reject callbacks and protect receiver/ancestors/native reentry; use deferred actions. No managed handler stacks, native backend adoption, owned/synthetic/cloned web events. See docs/WEB-VIEW.md. Explicit URL navigation/base-URL inputs support about:blank or absolute http/https/file URLs only; native links, redirects and subresource loads are not a complete navigation sandbox. JSON script messages can originate from all frames and origins; receipt does not authenticate the sender or authorize an action.",
+    "scope": "Verified macOS wxWidgets3.2.12 WKWebView backend only. Active GUI thread/session and live WEB-VIEW WINDOW container; private browser child has no public handle. JavaScript enabled for trusted development content, not a security sandbox. Known wx native dialogs/upload/popups/printing suppressed, known permission requests denied; no complete OS WebKit security/permission policy claim. Mutations/scripts reject callbacks and protect receiver/ancestors/native reentry; use deferred actions. No managed handler stacks, native backend adoption, owned/synthetic/cloned web events. See docs/WEB-VIEW.md. Explicit URL navigation/base-URL inputs support about:blank or absolute http/https/file URLs only; native links, redirects and subresource loads are not a complete navigation sandbox. JSON script messages can originate from all frames and origins; receipt does not authenticate the sender or authorize an action. LIST-CONTROL inherits supported WINDOW operations; owner/ancestor writes defer during native virtual providers.",
     "wxwidgets": "wxWebView/WKWebView bounded adapter, wxWidgets3.2.12; system WebKit runtime.",
     "syntax": "(wxlambda:web-view-busy-p view)"
   },
@@ -3209,7 +3213,7 @@
     "arguments": "WEB-VIEW, NUL-free HTML string up to2MiB UTF-8; :base-url defaults \"about:blank\", up to8192 UTF-8 bytes. BASE-URL requires about:blank or an absolute http/https/file URL.",
     "returns": "Supplied HTML string.",
     "description": "Asynchronously loads HTML with native base URL resolution. JavaScript remains enabled; loading does not sanitize HTML or isolate its network/storage effects.",
-    "scope": "Verified macOS wxWidgets3.2.12 WKWebView backend only. Active GUI thread/session and live WEB-VIEW WINDOW container; private browser child has no public handle. JavaScript enabled for trusted development content, not a security sandbox. Known wx native dialogs/upload/popups/printing suppressed, known permission requests denied; no complete OS WebKit security/permission policy claim. Mutations/scripts reject callbacks and protect receiver/ancestors/native reentry; use deferred actions. No managed handler stacks, native backend adoption, owned/synthetic/cloned web events. See docs/WEB-VIEW.md. Explicit URL/base input accepts absolute http/https with host, absolute file paths, or exact about:blank; whitespace/control characters and malformed percent escapes reject. This input policy is not a universal page navigation/network sandbox. Explicit URL navigation/base-URL inputs support about:blank or absolute http/https/file URLs only; native links, redirects and subresource loads are not a complete navigation sandbox. JSON script messages can originate from all frames and origins; receipt does not authenticate the sender or authorize an action.",
+    "scope": "Verified macOS wxWidgets3.2.12 WKWebView backend only. Active GUI thread/session and live WEB-VIEW WINDOW container; private browser child has no public handle. JavaScript enabled for trusted development content, not a security sandbox. Known wx native dialogs/upload/popups/printing suppressed, known permission requests denied; no complete OS WebKit security/permission policy claim. Mutations/scripts reject callbacks and protect receiver/ancestors/native reentry; use deferred actions. No managed handler stacks, native backend adoption, owned/synthetic/cloned web events. See docs/WEB-VIEW.md. Explicit URL/base input accepts absolute http/https with host, absolute file paths, or exact about:blank; whitespace/control characters and malformed percent escapes reject. This input policy is not a universal page navigation/network sandbox. Explicit URL navigation/base-URL inputs support about:blank or absolute http/https/file URLs only; native links, redirects and subresource loads are not a complete navigation sandbox. JSON script messages can originate from all frames and origins; receipt does not authenticate the sender or authorize an action. LIST-CONTROL inherits supported WINDOW operations; owner/ancestor writes defer during native virtual providers.",
     "wxwidgets": "wxWebView/WKWebView bounded adapter, wxWidgets3.2.12; system WebKit runtime.",
     "syntax": "(wxlambda:set-web-page view html :base-url \"about:blank\")"
   },
@@ -3219,7 +3223,7 @@
     "arguments": "WEB-VIEW and NUL-free JavaScript string up to1MiB UTF-8; at most64 outstanding requests.",
     "returns": "Positive numeric request ticket.",
     "description": "Asynchronously evaluates JavaScript. JSON-fragment success (undefined maps to null), native error or non-serializable result failure arrives through :web-script-result. Results over1MiB become an error. Ticket retires before event callbacks. Messages posted to window.webkit.messageHandlers.wxlambda.postMessage(value) arrive as JSON via :web-message; at most256 queued messages, each up to1MiB, excess dropped. Owner teardown drops late completions. Queued immutable command snapshots: :web-message text is JSON (including quoted strings); :web-script-result text is JSON on success or an error description on failure, EVENT-INTEGER is1/0 and EVENT-EXTRA-LONG is the request ticket; :web-loaded text is native URL and :web-error text is native error description. BIND-EVENT supports scoped contexts/Skip/propagation but payload SETF rejects. Async delivery occurs through normal GUI polling/RUN, never directly from an Objective-C completion. Native loaded/error events can reflect prior/subframe navigation; no exact per-navigation correlation or veto API.",
-    "scope": "Verified macOS wxWidgets3.2.12 WKWebView backend only. Active GUI thread/session and live WEB-VIEW WINDOW container; private browser child has no public handle. JavaScript enabled for trusted development content, not a security sandbox. Known wx native dialogs/upload/popups/printing suppressed, known permission requests denied; no complete OS WebKit security/permission policy claim. Mutations/scripts reject callbacks and protect receiver/ancestors/native reentry; use deferred actions. No managed handler stacks, native backend adoption, owned/synthetic/cloned web events. See docs/WEB-VIEW.md. Explicit URL navigation/base-URL inputs support about:blank or absolute http/https/file URLs only; native links, redirects and subresource loads are not a complete navigation sandbox. JSON script messages can originate from all frames and origins; receipt does not authenticate the sender or authorize an action.",
+    "scope": "Verified macOS wxWidgets3.2.12 WKWebView backend only. Active GUI thread/session and live WEB-VIEW WINDOW container; private browser child has no public handle. JavaScript enabled for trusted development content, not a security sandbox. Known wx native dialogs/upload/popups/printing suppressed, known permission requests denied; no complete OS WebKit security/permission policy claim. Mutations/scripts reject callbacks and protect receiver/ancestors/native reentry; use deferred actions. No managed handler stacks, native backend adoption, owned/synthetic/cloned web events. See docs/WEB-VIEW.md. Explicit URL navigation/base-URL inputs support about:blank or absolute http/https/file URLs only; native links, redirects and subresource loads are not a complete navigation sandbox. JSON script messages can originate from all frames and origins; receipt does not authenticate the sender or authorize an action. LIST-CONTROL inherits supported WINDOW operations; owner/ancestor writes defer during native virtual providers.",
     "wxwidgets": "Internal WKWebView evaluateJavaScript completion adapter, wxWidgets3.2.12-owned WKWebView; wxWebView::RunScriptAsync/clientData ownership is not exposed.",
     "syntax": "(wxlambda:run-web-script view \"({answer: 42})\")"
   },
@@ -3229,7 +3233,7 @@
     "arguments": "WEB-VIEW.",
     "returns": "Native history availability T/NIL.",
     "description": "Reads current native backward/forward history availability; history changes asynchronously.",
-    "scope": "Verified macOS wxWidgets3.2.12 WKWebView backend only. Active GUI thread/session and live WEB-VIEW WINDOW container; private browser child has no public handle. JavaScript enabled for trusted development content, not a security sandbox. Known wx native dialogs/upload/popups/printing suppressed, known permission requests denied; no complete OS WebKit security/permission policy claim. Mutations/scripts reject callbacks and protect receiver/ancestors/native reentry; use deferred actions. No managed handler stacks, native backend adoption, owned/synthetic/cloned web events. See docs/WEB-VIEW.md. Explicit URL navigation/base-URL inputs support about:blank or absolute http/https/file URLs only; native links, redirects and subresource loads are not a complete navigation sandbox. JSON script messages can originate from all frames and origins; receipt does not authenticate the sender or authorize an action.",
+    "scope": "Verified macOS wxWidgets3.2.12 WKWebView backend only. Active GUI thread/session and live WEB-VIEW WINDOW container; private browser child has no public handle. JavaScript enabled for trusted development content, not a security sandbox. Known wx native dialogs/upload/popups/printing suppressed, known permission requests denied; no complete OS WebKit security/permission policy claim. Mutations/scripts reject callbacks and protect receiver/ancestors/native reentry; use deferred actions. No managed handler stacks, native backend adoption, owned/synthetic/cloned web events. See docs/WEB-VIEW.md. Explicit URL navigation/base-URL inputs support about:blank or absolute http/https/file URLs only; native links, redirects and subresource loads are not a complete navigation sandbox. JSON script messages can originate from all frames and origins; receipt does not authenticate the sender or authorize an action. LIST-CONTROL inherits supported WINDOW operations; owner/ancestor writes defer during native virtual providers.",
     "wxwidgets": "wxWebView/WKWebView bounded adapter, wxWidgets3.2.12; system WebKit runtime.",
     "syntax": "(wxlambda:web-view-can-go-back-p view)"
   },
@@ -3239,7 +3243,7 @@
     "arguments": "WEB-VIEW with available back history.",
     "returns": "VIEW.",
     "description": "Requests asynchronous native history navigation. Missing history signals NATIVE-ERROR; callbacks must defer.",
-    "scope": "Verified macOS wxWidgets3.2.12 WKWebView backend only. Active GUI thread/session and live WEB-VIEW WINDOW container; private browser child has no public handle. JavaScript enabled for trusted development content, not a security sandbox. Known wx native dialogs/upload/popups/printing suppressed, known permission requests denied; no complete OS WebKit security/permission policy claim. Mutations/scripts reject callbacks and protect receiver/ancestors/native reentry; use deferred actions. No managed handler stacks, native backend adoption, owned/synthetic/cloned web events. See docs/WEB-VIEW.md. Explicit URL navigation/base-URL inputs support about:blank or absolute http/https/file URLs only; native links, redirects and subresource loads are not a complete navigation sandbox. JSON script messages can originate from all frames and origins; receipt does not authenticate the sender or authorize an action.",
+    "scope": "Verified macOS wxWidgets3.2.12 WKWebView backend only. Active GUI thread/session and live WEB-VIEW WINDOW container; private browser child has no public handle. JavaScript enabled for trusted development content, not a security sandbox. Known wx native dialogs/upload/popups/printing suppressed, known permission requests denied; no complete OS WebKit security/permission policy claim. Mutations/scripts reject callbacks and protect receiver/ancestors/native reentry; use deferred actions. No managed handler stacks, native backend adoption, owned/synthetic/cloned web events. See docs/WEB-VIEW.md. Explicit URL navigation/base-URL inputs support about:blank or absolute http/https/file URLs only; native links, redirects and subresource loads are not a complete navigation sandbox. JSON script messages can originate from all frames and origins; receipt does not authenticate the sender or authorize an action. LIST-CONTROL inherits supported WINDOW operations; owner/ancestor writes defer during native virtual providers.",
     "wxwidgets": "wxWebView/WKWebView bounded adapter, wxWidgets3.2.12; system WebKit runtime.",
     "syntax": "(wxlambda:web-view-go-back view)"
   },
@@ -3249,7 +3253,7 @@
     "arguments": "WEB-VIEW.",
     "returns": "Native history availability T/NIL.",
     "description": "Reads current native backward/forward history availability; history changes asynchronously.",
-    "scope": "Verified macOS wxWidgets3.2.12 WKWebView backend only. Active GUI thread/session and live WEB-VIEW WINDOW container; private browser child has no public handle. JavaScript enabled for trusted development content, not a security sandbox. Known wx native dialogs/upload/popups/printing suppressed, known permission requests denied; no complete OS WebKit security/permission policy claim. Mutations/scripts reject callbacks and protect receiver/ancestors/native reentry; use deferred actions. No managed handler stacks, native backend adoption, owned/synthetic/cloned web events. See docs/WEB-VIEW.md. Explicit URL navigation/base-URL inputs support about:blank or absolute http/https/file URLs only; native links, redirects and subresource loads are not a complete navigation sandbox. JSON script messages can originate from all frames and origins; receipt does not authenticate the sender or authorize an action.",
+    "scope": "Verified macOS wxWidgets3.2.12 WKWebView backend only. Active GUI thread/session and live WEB-VIEW WINDOW container; private browser child has no public handle. JavaScript enabled for trusted development content, not a security sandbox. Known wx native dialogs/upload/popups/printing suppressed, known permission requests denied; no complete OS WebKit security/permission policy claim. Mutations/scripts reject callbacks and protect receiver/ancestors/native reentry; use deferred actions. No managed handler stacks, native backend adoption, owned/synthetic/cloned web events. See docs/WEB-VIEW.md. Explicit URL navigation/base-URL inputs support about:blank or absolute http/https/file URLs only; native links, redirects and subresource loads are not a complete navigation sandbox. JSON script messages can originate from all frames and origins; receipt does not authenticate the sender or authorize an action. LIST-CONTROL inherits supported WINDOW operations; owner/ancestor writes defer during native virtual providers.",
     "wxwidgets": "wxWebView/WKWebView bounded adapter, wxWidgets3.2.12; system WebKit runtime.",
     "syntax": "(wxlambda:web-view-can-go-forward-p view)"
   },
@@ -3259,7 +3263,7 @@
     "arguments": "WEB-VIEW with available forward history.",
     "returns": "VIEW.",
     "description": "Requests asynchronous native history navigation. Missing history signals NATIVE-ERROR; callbacks must defer.",
-    "scope": "Verified macOS wxWidgets3.2.12 WKWebView backend only. Active GUI thread/session and live WEB-VIEW WINDOW container; private browser child has no public handle. JavaScript enabled for trusted development content, not a security sandbox. Known wx native dialogs/upload/popups/printing suppressed, known permission requests denied; no complete OS WebKit security/permission policy claim. Mutations/scripts reject callbacks and protect receiver/ancestors/native reentry; use deferred actions. No managed handler stacks, native backend adoption, owned/synthetic/cloned web events. See docs/WEB-VIEW.md. Explicit URL navigation/base-URL inputs support about:blank or absolute http/https/file URLs only; native links, redirects and subresource loads are not a complete navigation sandbox. JSON script messages can originate from all frames and origins; receipt does not authenticate the sender or authorize an action.",
+    "scope": "Verified macOS wxWidgets3.2.12 WKWebView backend only. Active GUI thread/session and live WEB-VIEW WINDOW container; private browser child has no public handle. JavaScript enabled for trusted development content, not a security sandbox. Known wx native dialogs/upload/popups/printing suppressed, known permission requests denied; no complete OS WebKit security/permission policy claim. Mutations/scripts reject callbacks and protect receiver/ancestors/native reentry; use deferred actions. No managed handler stacks, native backend adoption, owned/synthetic/cloned web events. See docs/WEB-VIEW.md. Explicit URL navigation/base-URL inputs support about:blank or absolute http/https/file URLs only; native links, redirects and subresource loads are not a complete navigation sandbox. JSON script messages can originate from all frames and origins; receipt does not authenticate the sender or authorize an action. LIST-CONTROL inherits supported WINDOW operations; owner/ancestor writes defer during native virtual providers.",
     "wxwidgets": "wxWebView/WKWebView bounded adapter, wxWidgets3.2.12; system WebKit runtime.",
     "syntax": "(wxlambda:web-view-go-forward view)"
   },
@@ -3269,7 +3273,7 @@
     "arguments": "WEB-VIEW.",
     "returns": "VIEW.",
     "description": "Requests default cached native reload; no synchronous completion guarantee.",
-    "scope": "Verified macOS wxWidgets3.2.12 WKWebView backend only. Active GUI thread/session and live WEB-VIEW WINDOW container; private browser child has no public handle. JavaScript enabled for trusted development content, not a security sandbox. Known wx native dialogs/upload/popups/printing suppressed, known permission requests denied; no complete OS WebKit security/permission policy claim. Mutations/scripts reject callbacks and protect receiver/ancestors/native reentry; use deferred actions. No managed handler stacks, native backend adoption, owned/synthetic/cloned web events. See docs/WEB-VIEW.md. Explicit URL navigation/base-URL inputs support about:blank or absolute http/https/file URLs only; native links, redirects and subresource loads are not a complete navigation sandbox. JSON script messages can originate from all frames and origins; receipt does not authenticate the sender or authorize an action.",
+    "scope": "Verified macOS wxWidgets3.2.12 WKWebView backend only. Active GUI thread/session and live WEB-VIEW WINDOW container; private browser child has no public handle. JavaScript enabled for trusted development content, not a security sandbox. Known wx native dialogs/upload/popups/printing suppressed, known permission requests denied; no complete OS WebKit security/permission policy claim. Mutations/scripts reject callbacks and protect receiver/ancestors/native reentry; use deferred actions. No managed handler stacks, native backend adoption, owned/synthetic/cloned web events. See docs/WEB-VIEW.md. Explicit URL navigation/base-URL inputs support about:blank or absolute http/https/file URLs only; native links, redirects and subresource loads are not a complete navigation sandbox. JSON script messages can originate from all frames and origins; receipt does not authenticate the sender or authorize an action. LIST-CONTROL inherits supported WINDOW operations; owner/ancestor writes defer during native virtual providers.",
     "wxwidgets": "wxWebView/WKWebView bounded adapter, wxWidgets3.2.12; system WebKit runtime.",
     "syntax": "(wxlambda:web-view-reload view)"
   },
@@ -3279,7 +3283,7 @@
     "arguments": "WEB-VIEW.",
     "returns": "VIEW.",
     "description": "Requests native load cancellation; late navigation/events/script completions may still arrive. Does not cancel queued script tickets.",
-    "scope": "Verified macOS wxWidgets3.2.12 WKWebView backend only. Active GUI thread/session and live WEB-VIEW WINDOW container; private browser child has no public handle. JavaScript enabled for trusted development content, not a security sandbox. Known wx native dialogs/upload/popups/printing suppressed, known permission requests denied; no complete OS WebKit security/permission policy claim. Mutations/scripts reject callbacks and protect receiver/ancestors/native reentry; use deferred actions. No managed handler stacks, native backend adoption, owned/synthetic/cloned web events. See docs/WEB-VIEW.md. Explicit URL navigation/base-URL inputs support about:blank or absolute http/https/file URLs only; native links, redirects and subresource loads are not a complete navigation sandbox. JSON script messages can originate from all frames and origins; receipt does not authenticate the sender or authorize an action.",
+    "scope": "Verified macOS wxWidgets3.2.12 WKWebView backend only. Active GUI thread/session and live WEB-VIEW WINDOW container; private browser child has no public handle. JavaScript enabled for trusted development content, not a security sandbox. Known wx native dialogs/upload/popups/printing suppressed, known permission requests denied; no complete OS WebKit security/permission policy claim. Mutations/scripts reject callbacks and protect receiver/ancestors/native reentry; use deferred actions. No managed handler stacks, native backend adoption, owned/synthetic/cloned web events. See docs/WEB-VIEW.md. Explicit URL navigation/base-URL inputs support about:blank or absolute http/https/file URLs only; native links, redirects and subresource loads are not a complete navigation sandbox. JSON script messages can originate from all frames and origins; receipt does not authenticate the sender or authorize an action. LIST-CONTROL inherits supported WINDOW operations; owner/ancestor writes defer during native virtual providers.",
     "wxwidgets": "wxWebView/WKWebView bounded adapter, wxWidgets3.2.12; system WebKit runtime.",
     "syntax": "(wxlambda:web-view-stop view)"
   },
@@ -4837,5 +4841,209 @@
     "description": "Worker-safe wxThreadEvent delivery. Copies bytes before return and never invokes Lisp GUI callbacks on the posting thread. GUI BIND-EVENT :THREAD receives copied EVENT-TEXT in a base-family snapshot/current context. Queue acceptance does not guarantee callback delivery. The packet stores an independently owned native wxThreadEvent string through SetString; all worker temporary aliases die before publication. GetString and inherited native Clone retain native string semantics; public owned-event cloning remains unsupported.",
     "scope": "Only this operation is worker-safe. Endpoint registry and target teardown synchronize independently of GUI registries; posts never call ready or touch wxWeakRef. Endpoints survive unbinding until native receiver destruction; unbound packets may be ignored. At most256 queued/delivering packets per receiver and4096 per session; full/stale/unregistered/shutdown posts signal NATIVE-ERROR. GUI shutdown closes ingress before native cleanup; late posts reject without entering wx. No public endpoint/thread/job/editor abstraction, arbitrary Lisp object/pointer payload, or owned/synthetic/cloned :THREAD events. See docs/THREAD-EVENTS.md.",
     "wxwidgets": "wxThreadEvent, wxEvtHandler::QueueEvent, wxWidgets3.2.12 pinned pending-event lock behavior."
+  },
+  {
+    "name": "list-control",
+    "kind": "class",
+    "arguments": "Native-backed WINDOW with :parent, :virtual-p NIL, :item-text-function NIL.",
+    "returns": "Instance.",
+    "description": "A managed wxListCtrl report, fixed single selection; direct subclasses retain native-backed construction. Virtual lists support only registered frame/panel/scroll/drawing/web/notebook/AUI/splitter ancestor chains.",
+    "scope": "Main-thread active session; checked live native receivers. Invalid state signals NATIVE-ERROR; Lisp argument/type errors remain conditions. See REPORT-TREE-VIEWS guide for bounds and callback rules.",
+    "wxwidgets": "wxListCtrl",
+    "syntax": "(make-instance 'wxlambda:list-control :parent parent :virtual-p nil :item-text-function nil)",
+    "construction": {
+      "syntax": "(make-instance 'wxlambda:list-control :parent parent :virtual-p nil :item-text-function nil)",
+      "description": "Direct CLOS subclasses and native-ready AFTER hooks supported; managed initialization failure destroys native identity and reaps provider roots."
+    }
+  },
+  {
+    "name": "make-list-control",
+    "kind": "generic-function",
+    "arguments": "(parent &key class virtual-p item-text-function &allow-other-keys)",
+    "returns": "Native property/copied value or documented receiver/value.",
+    "description": "Thin checked CLOS factory; ITEM-TEXT-FUNCTION requires virtual mode and receives (control row column).",
+    "scope": "Main-thread active session; checked live native receivers. Invalid state signals NATIVE-ERROR; Lisp argument/type errors remain conditions. See REPORT-TREE-VIEWS guide for bounds and callback rules.",
+    "wxwidgets": "wxListCtrl::wxListCtrl"
+  },
+  {
+    "name": "list-virtual-p",
+    "kind": "generic-function",
+    "arguments": "(control)",
+    "returns": "Native property/copied value or documented receiver/value.",
+    "description": "Return whether fixed native wxLC_VIRTUAL mode is enabled.",
+    "scope": "Main-thread active session; checked live native receivers. Invalid state signals NATIVE-ERROR; Lisp argument/type errors remain conditions. See REPORT-TREE-VIEWS guide for bounds and callback rules.",
+    "wxwidgets": "wxListCtrl::IsVirtual"
+  },
+  {
+    "name": "list-column-count",
+    "kind": "generic-function",
+    "arguments": "(control)",
+    "returns": "Native property/copied value or documented receiver/value.",
+    "description": "Return current native column count0..64.",
+    "scope": "Main-thread active session; checked live native receivers. Invalid state signals NATIVE-ERROR; Lisp argument/type errors remain conditions. See REPORT-TREE-VIEWS guide for bounds and callback rules.",
+    "wxwidgets": "wxListCtrl::GetColumnCount"
+  },
+  {
+    "name": "insert-list-column",
+    "kind": "generic-function",
+    "arguments": "(control index label &key (width120))",
+    "returns": "Native property/copied value or documented receiver/value.",
+    "description": "Insert left-aligned heading at zero-based index while item count0. NUL-free heading<=4096UTF8 bytes, width1..10000 pixels, max64 columns. Return CONTROL.",
+    "scope": "Main-thread active session; checked live native receivers. Invalid state signals NATIVE-ERROR; Lisp argument/type errors remain conditions. See REPORT-TREE-VIEWS guide for bounds and callback rules.",
+    "wxwidgets": "wxListCtrl::InsertColumn"
+  },
+  {
+    "name": "delete-list-column",
+    "kind": "generic-function",
+    "arguments": "(control index)",
+    "returns": "Native property/copied value or documented receiver/value.",
+    "description": "Delete an existing column while item count0; return CONTROL.",
+    "scope": "Main-thread active session; checked live native receivers. Invalid state signals NATIVE-ERROR; Lisp argument/type errors remain conditions. See REPORT-TREE-VIEWS guide for bounds and callback rules.",
+    "wxwidgets": "wxListCtrl::DeleteColumn"
+  },
+  {
+    "name": "list-column-label",
+    "kind": "generic-function",
+    "arguments": "(control index); SETF(value control index)",
+    "returns": "Native property/copied value or documented receiver/value.",
+    "description": "Read copied heading or silently set NUL-free heading<=4096UTF8 bytes; SETF returns value.",
+    "scope": "Main-thread active session; checked live native receivers. Invalid state signals NATIVE-ERROR; Lisp argument/type errors remain conditions. See REPORT-TREE-VIEWS guide for bounds and callback rules.",
+    "wxwidgets": "wxListCtrl::GetColumn / SetColumn",
+    "setf": {
+      "syntax": "(setf (wxlambda:list-column-label control index) value)",
+      "description": "Use generic SETF with validated arguments; report/tree mutations reject active providers/callbacks and native lifetime violations. ITEM-COUNT SETF is virtual LIST-CONTROL only."
+    }
+  },
+  {
+    "name": "list-column-width",
+    "kind": "generic-function",
+    "arguments": "(control index); SETF(value control index)",
+    "returns": "Native property/copied value or documented receiver/value.",
+    "description": "Read native pixel width or set1..10000 pixels; SETF returns value.",
+    "scope": "Main-thread active session; checked live native receivers. Invalid state signals NATIVE-ERROR; Lisp argument/type errors remain conditions. See REPORT-TREE-VIEWS guide for bounds and callback rules.",
+    "wxwidgets": "wxListCtrl::GetColumnWidth / SetColumnWidth",
+    "setf": {
+      "syntax": "(setf (wxlambda:list-column-width control index) value)",
+      "description": "Use generic SETF with validated arguments; report/tree mutations reject active providers/callbacks and native lifetime violations. ITEM-COUNT SETF is virtual LIST-CONTROL only."
+    }
+  },
+  {
+    "name": "list-item-text",
+    "kind": "generic-function",
+    "arguments": "(control row column); SETF(value control row column)",
+    "returns": "Native property/copied value or documented receiver/value.",
+    "description": "Read copied native cell text. In virtual lists actual OnGetItemText calls this generic for subclasses or constructor function; provider must return NUL-free text<=65536UTF8 bytes, may read data and must not mutate source/ancestors or enter native loops. Errors/nonlocal exits contained at callback boundary. SETF silently writes stored lists only.",
+    "scope": "Main-thread active session; checked live native receivers. Invalid state signals NATIVE-ERROR; Lisp argument/type errors remain conditions. See REPORT-TREE-VIEWS guide for bounds and callback rules.",
+    "wxwidgets": "wxListCtrl::GetItemText / SetItem / OnGetItemText",
+    "setf": {
+      "syntax": "(setf (wxlambda:list-item-text control row column) value)",
+      "description": "Use generic SETF with validated arguments; report/tree mutations reject active providers/callbacks and native lifetime violations. ITEM-COUNT SETF is virtual LIST-CONTROL only."
+    }
+  },
+  {
+    "name": "refresh-list-items",
+    "kind": "generic-function",
+    "arguments": "(control first last)",
+    "returns": "Native property/copied value or documented receiver/value.",
+    "description": "Invalidate inclusive native row range; provider data remains application-owned. Return CONTROL.",
+    "scope": "Main-thread active session; checked live native receivers. Invalid state signals NATIVE-ERROR; Lisp argument/type errors remain conditions. See REPORT-TREE-VIEWS guide for bounds and callback rules.",
+    "wxwidgets": "wxListCtrl::RefreshItems"
+  },
+  {
+    "name": "event-list-index",
+    "kind": "generic-function",
+    "arguments": "(event-or-context)",
+    "returns": "Native property/copied value or documented receiver/value.",
+    "description": "Native row for selected/deselected/activated/right-click only; negative sentinel returns NIL. Snapshot copied; context innermost only.",
+    "scope": "Main-thread active session; checked live native receivers. Invalid state signals NATIVE-ERROR; Lisp argument/type errors remain conditions. See REPORT-TREE-VIEWS guide for bounds and callback rules.",
+    "wxwidgets": "wxListEvent::GetIndex"
+  },
+  {
+    "name": "event-list-column",
+    "kind": "generic-function",
+    "arguments": "(event-or-context)",
+    "returns": "Native property/copied value or documented receiver/value.",
+    "description": "Native column for list-column-click only, negative sentinel NIL. No inference for other list events.",
+    "scope": "Main-thread active session; checked live native receivers. Invalid state signals NATIVE-ERROR; Lisp argument/type errors remain conditions. See REPORT-TREE-VIEWS guide for bounds and callback rules.",
+    "wxwidgets": "wxListEvent::GetColumn"
+  },
+  {
+    "name": "event-list-cache-range",
+    "kind": "generic-function",
+    "arguments": "(event-or-context)",
+    "returns": "Native property/copied value or documented receiver/value.",
+    "description": "Fresh (first last) copied native cache-hint range; no guarantee of provider call order or fixed cache size.",
+    "scope": "Main-thread active session; checked live native receivers. Invalid state signals NATIVE-ERROR; Lisp argument/type errors remain conditions. See REPORT-TREE-VIEWS guide for bounds and callback rules.",
+    "wxwidgets": "wxListEvent::GetCacheFrom / GetCacheTo"
+  },
+  {
+    "name": "event-list-position",
+    "kind": "generic-function",
+    "arguments": "(event-or-context)",
+    "returns": "Native property/copied value or documented receiver/value.",
+    "description": "Fresh (x y) copied native item-right-click point; native coordinate conventions apply.",
+    "scope": "Main-thread active session; checked live native receivers. Invalid state signals NATIVE-ERROR; Lisp argument/type errors remain conditions. See REPORT-TREE-VIEWS guide for bounds and callback rules.",
+    "wxwidgets": "wxListEvent::GetPoint"
+  },
+  {
+    "name": "event-tree-position",
+    "kind": "generic-function",
+    "arguments": "(event-or-context)",
+    "returns": "Native property/copied value or documented receiver/value.",
+    "description": "Fresh (x y) copied native tree-item-menu point, including native keyboard context requests.",
+    "scope": "Main-thread active session; checked live native receivers. Invalid state signals NATIVE-ERROR; Lisp argument/type errors remain conditions. See REPORT-TREE-VIEWS guide for bounds and callback rules.",
+    "wxwidgets": "wxTreeEvent::GetPoint"
+  },
+  {
+    "name": "tree-item-bold-p",
+    "kind": "generic-function",
+    "arguments": "(item); SETF(value item)",
+    "returns": "Native property/copied value or documented receiver/value.",
+    "description": "Read native bold or set generalized boolean. Checked same-owner item; callback writes defer.",
+    "scope": "Main-thread active session; checked live native receivers. Invalid state signals NATIVE-ERROR; Lisp argument/type errors remain conditions. See REPORT-TREE-VIEWS guide for bounds and callback rules.",
+    "wxwidgets": "wxTreeCtrl::IsBold / SetItemBold",
+    "setf": {
+      "syntax": "(setf (wxlambda:tree-item-bold-p item) value)",
+      "description": "Use generic SETF with validated arguments; report/tree mutations reject active providers/callbacks and native lifetime violations. ITEM-COUNT SETF is virtual LIST-CONTROL only."
+    }
+  },
+  {
+    "name": "tree-item-foreground",
+    "kind": "generic-function",
+    "arguments": "(item); SETF(value item)",
+    "returns": "Native property/copied value or documented receiver/value.",
+    "description": "Read native packed0xRRGGBB or NIL for invalid colour. SETF NIL resets native colour; port may report effective default RGB afterward.",
+    "scope": "Main-thread active session; checked live native receivers. Invalid state signals NATIVE-ERROR; Lisp argument/type errors remain conditions. See REPORT-TREE-VIEWS guide for bounds and callback rules.",
+    "wxwidgets": "wxTreeCtrl::GetItemTextColour / SetItemTextColour",
+    "setf": {
+      "syntax": "(setf (wxlambda:tree-item-foreground item) value)",
+      "description": "Use generic SETF with validated arguments; report/tree mutations reject active providers/callbacks and native lifetime violations. ITEM-COUNT SETF is virtual LIST-CONTROL only."
+    }
+  },
+  {
+    "name": "tree-item-background",
+    "kind": "generic-function",
+    "arguments": "(item); SETF(value item)",
+    "returns": "Native property/copied value or documented receiver/value.",
+    "description": "Read native packed0xRRGGBB or NIL; SETF NIL clears explicit colour, port may report effective default.",
+    "scope": "Main-thread active session; checked live native receivers. Invalid state signals NATIVE-ERROR; Lisp argument/type errors remain conditions. See REPORT-TREE-VIEWS guide for bounds and callback rules.",
+    "wxwidgets": "wxTreeCtrl::GetItemBackgroundColour / SetItemBackgroundColour",
+    "setf": {
+      "syntax": "(setf (wxlambda:tree-item-background item) value)",
+      "description": "Use generic SETF with validated arguments; report/tree mutations reject active providers/callbacks and native lifetime violations. ITEM-COUNT SETF is virtual LIST-CONTROL only."
+    }
+  },
+  {
+    "name": "tree-item-has-children-p",
+    "kind": "generic-function",
+    "arguments": "(item); SETF(value item)",
+    "returns": "Native property/copied value or documented receiver/value.",
+    "description": "Read/set native potential-children hint, not child count; no children inserted/deleted. Supports deferred lazy-loading with existing expansion veto.",
+    "scope": "Main-thread active session; checked live native receivers. Invalid state signals NATIVE-ERROR; Lisp argument/type errors remain conditions. See REPORT-TREE-VIEWS guide for bounds and callback rules.",
+    "wxwidgets": "wxTreeCtrl::ItemHasChildren / SetItemHasChildren",
+    "setf": {
+      "syntax": "(setf (wxlambda:tree-item-has-children-p item) value)",
+      "description": "Use generic SETF with validated arguments; report/tree mutations reject active providers/callbacks and native lifetime violations. ITEM-COUNT SETF is virtual LIST-CONTROL only."
+    }
   }
 ]
