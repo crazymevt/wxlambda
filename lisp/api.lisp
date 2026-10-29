@@ -71,6 +71,7 @@
 
 (defclass label (window) ())
 (defclass gauge (window) ())
+(defclass time-picker (window) ())
 (defclass date-picker (window) ())
 (defclass combo-box (window) ())
 (defclass toggle-button (window) ())
@@ -80,7 +81,7 @@
 (defclass checkbox (window)
   ((handler-token :initform nil :accessor handler-token)))
 
-(defstruct (event (:constructor %make-event (kind-value source payload-text checked-value selection-value identifier native-type-code can-veto veto family-code payload-integer logging-off time-stamp command origin-code category-code extra-long-data selection-action user-data-value more-requested tree-item-value sash-position-value date-code-value)))
+(defstruct (event (:constructor %make-event (kind-value source payload-text checked-value selection-value identifier native-type-code can-veto veto family-code payload-integer logging-off time-stamp command origin-code category-code extra-long-data selection-action user-data-value more-requested tree-item-value sash-position-value date-code-value time-code-value)))
   "A Lisp-owned snapshot. Slots are read-only; TEXT is an independent string."
   (kind-value nil :read-only t)
   (source nil :read-only t)
@@ -104,7 +105,8 @@
   (more-requested nil :read-only t)
   (tree-item-value nil :read-only t)
   (sash-position-value nil :read-only t)
-  (date-code-value 0 :read-only t))
+  (date-code-value 0 :read-only t)
+  (time-code-value 0 :read-only t))
 
 (defstruct (ui-action (:constructor %make-ui-action (token)))
   "Immutable session-owned deferred-action identity; closures are rooted separately."
@@ -155,8 +157,8 @@
         (let ((handler (gethash token *handlers*)))
           (when handler
             (when (cffi:null-pointer-p payload) (error "Missing event payload"))
-            (cffi:with-foreign-slots ((kind text checked selection id text-length context native-type can-veto vetoed family integer logging-off timestamp command origin-id category extra-long selection-action user-data-token more-requested tree-item sash-position date-code) payload (:struct native-event))
-              (let* ((event-kind (or (case kind (1 :click) (2 :text-change) (3 :toggle) (4 :selection) (5 :close) (6 :query-end-session) (7 :end-session) (8 :idle) (9 :menu) (10 :notebook-page-changing) (11 :notebook-page-changed) (12 :listbox-selection) (13 :listbox-double-click) (14 :tree-selection-changing) (15 :tree-selection-changed) (16 :splitter-sash-changing) (17 :splitter-sash-changed) (18 :slider-change) (19 :spin-change) (20 :radio-selection) (21 :toggle-button-change) (22 :combo-selection) (23 :date-change))
+            (cffi:with-foreign-slots ((kind text checked selection id text-length context native-type can-veto vetoed family integer logging-off timestamp command origin-id category extra-long selection-action user-data-token more-requested tree-item sash-position date-code time-code) payload (:struct native-event))
+              (let* ((event-kind (or (case kind (1 :click) (2 :text-change) (3 :toggle) (4 :selection) (5 :close) (6 :query-end-session) (7 :end-session) (8 :idle) (9 :menu) (10 :notebook-page-changing) (11 :notebook-page-changed) (12 :listbox-selection) (13 :listbox-double-click) (14 :tree-selection-changing) (15 :tree-selection-changed) (16 :splitter-sash-changing) (17 :splitter-sash-changed) (18 :slider-change) (19 :spin-change) (20 :radio-selection) (21 :toggle-button-change) (22 :combo-selection) (23 :date-change) (24 :time-change))
                                      (gethash kind *registered-event-kinds*)
                                      (error "Unregistered native event kind ~S" kind)))
                      (user-data (unless (zerop user-data-token)
@@ -174,7 +176,7 @@
                      (checked-p (and (member kind '(3 9 21)) (not (zerop checked))))
                      (event (%make-event event-kind (handler-source handler) value checked-p
                                          (when (member kind '(4 10 11 12 13 20 22)) (unless (= selection -1) selection)) id native-type
-                                         (not (zerop can-veto)) (not (zerop vetoed)) family integer (not (zerop logging-off)) timestamp (not (zerop command)) origin-id category extra-long (not (zerop selection-action)) user-data (not (zerop more-requested)) (canonical-tree-item tree-item) (when (member kind '(16 17)) sash-position) date-code)))
+                                         (not (zerop can-veto)) (not (zerop vetoed)) family integer (not (zerop logging-off)) timestamp (not (zerop command)) origin-id category extra-long (not (zerop selection-action)) user-data (not (zerop more-requested)) (canonical-tree-item tree-item) (when (member kind '(16 17)) sash-position) date-code time-code)))
                 (if (handler-with-context handler)
                     (funcall (handler-function handler) event (%make-event-context context))
                     (funcall (handler-function handler) event)))))))
@@ -519,7 +521,7 @@ RETURN-TO-APPLICATION-REPL restart. Setup errors propagate to the caller."
     (error "APPLICATION-HANDLER is borrowed; use CURRENT-APPLICATION-HANDLER"))
   (when (and (typep object 'window)
              (/= 1 (count-if (lambda (kind) (typep object kind))
-                         '(frame toolbar status-bar panel scrolled-panel notebook list-box tree-control splitter-window button text-control label checkbox choice gauge slider spin-control radio-box toggle-button combo-box date-picker text-entry-dialog single-choice-dialog message-dialog file-dialog))))
+                         '(frame toolbar status-bar panel scrolled-panel notebook list-box tree-control splitter-window button text-control label checkbox choice gauge slider spin-control radio-box toggle-button combo-box date-picker time-picker text-entry-dialog single-choice-dialog message-dialog file-dialog))))
     (error "~A must inherit exactly one concrete wxlambda widget class; WINDOW is abstract"
            (class-name (class-of object))))
   (unless *active*
@@ -988,7 +990,7 @@ live checkbox, including when called from inside its handler."
   t)
 
 (defun builtin-event-kind (kind)
-  (case kind (:click 1) (:text-change 2) (:toggle 3) (:selection 4) (:close 5) (:query-end-session 6) (:end-session 7) (:idle 8) (:menu 9) (:notebook-page-changing 10) (:notebook-page-changed 11) (:listbox-selection 12) (:listbox-double-click 13) (:tree-selection-changing 14) (:tree-selection-changed 15) (:splitter-sash-changing 16) (:splitter-sash-changed 17) (:slider-change 18) (:spin-change 19) (:radio-selection 20) (:toggle-button-change 21) (:combo-selection 22) (:date-change 23)))
+  (case kind (:click 1) (:text-change 2) (:toggle 3) (:selection 4) (:close 5) (:query-end-session 6) (:end-session 7) (:idle 8) (:menu 9) (:notebook-page-changing 10) (:notebook-page-changed 11) (:listbox-selection 12) (:listbox-double-click 13) (:tree-selection-changing 14) (:tree-selection-changed 15) (:splitter-sash-changing 16) (:splitter-sash-changed 17) (:slider-change 18) (:spin-change 19) (:radio-selection 20) (:toggle-button-change 21) (:combo-selection 22) (:date-change 23) (:time-change 24)))
 (defun native-event-kind (kind)
   (or (builtin-event-kind kind)
       (and *registered-event-types* (gethash kind *registered-event-types*))
@@ -1339,7 +1341,7 @@ live checkbox, including when called from inside its handler."
     (check-status (%set-event-field id contextual field native-value))) value)
 (defun keyword-event-kind (code)
   (or (case code (1 :click) (2 :text-change) (3 :toggle) (4 :selection) (5 :close)
-                (6 :query-end-session) (7 :end-session) (8 :idle) (9 :menu) (10 :notebook-page-changing) (11 :notebook-page-changed) (12 :listbox-selection) (13 :listbox-double-click) (14 :tree-selection-changing) (15 :tree-selection-changed) (16 :splitter-sash-changing) (17 :splitter-sash-changed) (18 :slider-change) (19 :spin-change) (20 :radio-selection) (21 :toggle-button-change) (22 :combo-selection) (23 :date-change))
+                (6 :query-end-session) (7 :end-session) (8 :idle) (9 :menu) (10 :notebook-page-changing) (11 :notebook-page-changed) (12 :listbox-selection) (13 :listbox-double-click) (14 :tree-selection-changing) (15 :tree-selection-changed) (16 :splitter-sash-changing) (17 :splitter-sash-changed) (18 :slider-change) (19 :spin-change) (20 :radio-selection) (21 :toggle-button-change) (22 :combo-selection) (23 :date-change) (24 :time-change))
       (gethash code *registered-event-kinds*) (error "Unknown native event kind ~S" code)))
 (defgeneric event-kind (event))
 (defmethod event-kind ((event event)) (event-kind-value event))
@@ -2690,3 +2692,30 @@ live checkbox, including when called from inside its handler."
 (defgeneric event-date (event))
 (defmethod event-date ((event event)) (decode-calendar-date (event-date-code-value event)))
 (defmethod event-date ((event event-context)) (decode-calendar-date (read-event-field event 19)))
+
+;;; Required time-of-day values, independent of dates and timestamps.
+(defun check-clock-time (value)
+  (check-type value (cons (integer 0 23) (cons (integer 0 59) (cons (integer 0 59) null)))) value)
+(defun decode-clock-time (code)
+  (unless (zerop code)
+    (let ((seconds (1- code))) (list (floor seconds 3600) (mod (floor seconds 60) 60) (mod seconds 60)))))
+(defmethod initialize-instance :after ((object time-picker) &key parent (time '(0 0 0)))
+  (check-type parent window) (check-clock-time time)
+  (adopt-native object (%time-picker (handle parent) (first time) (second time) (third time))))
+(defgeneric make-time-picker (parent &rest initargs &key class time &allow-other-keys))
+(defmethod make-time-picker ((parent window) &rest initargs &key (class 'time-picker) &allow-other-keys)
+  (apply #'make-widget class 'time-picker :parent parent initargs))
+(defgeneric clock-time (control &key notify))
+(defmethod clock-time ((control time-picker) &key notify)
+  (declare (ignore notify))
+  (cffi:with-foreign-object (code :int)
+    (check-status (%clock-time (handle control) code))
+    (decode-clock-time (cffi:mem-ref code :int))))
+(defgeneric (setf clock-time) (value control &key notify))
+(defmethod (setf clock-time) (value (control time-picker) &key notify)
+  (check-clock-time value)
+  (call-setter (lambda () (%set-clock-time (handle control) (first value) (second value) (third value) (if notify 1 0))) notify)
+  value)
+(defgeneric event-time (event))
+(defmethod event-time ((event event)) (decode-clock-time (event-time-code-value event)))
+(defmethod event-time ((event event-context)) (decode-clock-time (read-event-field event 20)))

@@ -99,3 +99,5 @@ behavior is not claimed. Tests do not read or overwrite system clipboard content
 
 Native references: [date picker](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/datectrl.h),
 [date events](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/dateevt.h).
+
+For a separate time-of-day field, see [time pickers](TIME-PICKER.md). Date/time composition into an instant remains application policy.

@@ -1,0 +1,38 @@
+;;; Time-of-day form values, not a scheduling or timezone API.
+(require :asdf)
+(load (merge-pathnames "../wxlambda.asd" *load-truename*))
+(asdf:load-system "wxlambda")
+(defpackage #:wxlambda-time-picker (:use #:cl) (:export #:start #:exercise))
+(in-package #:wxlambda-time-picker)
+(defun time-label (time)
+  (if time (format nil "Start time: ~2,'0D:~2,'0D:~2,'0D" (first time) (second time) (third time)) "No supported event time"))
+(defun build-window ()
+  (let* ((frame (wxlambda:make-frame :title "Start time λ" :width 440 :height 230))
+         (panel (wxlambda:make-panel frame))
+         (picker (wxlambda:make-time-picker panel :time '(9 30 0)))
+         (feedback (wxlambda:make-label panel :label (time-label (wxlambda:clock-time picker))))
+         (reset (wxlambda:make-button panel :label "Reset start time")))
+    (wxlambda:make-column panel)
+    (dolist (child (list picker feedback reset)) (wxlambda:add-child panel child :border 8))
+    (setf (wxlambda:tooltip-text picker) "Choose a start time; no timezone or date is attached.")
+    (wxlambda:bind-event picker :time-change
+      (lambda (event) (setf (wxlambda:label-text feedback) (time-label (wxlambda:event-time event)))))
+    (wxlambda:on-click reset
+      (lambda () (wxlambda:defer-ui-action
+                   (lambda () (setf (wxlambda:clock-time picker :notify t) '(9 30 0))) :owner picker)))
+    (values frame picker feedback reset)))
+(defun exercise ()
+  (multiple-value-bind (frame picker feedback reset) (build-window)
+    (unwind-protect
+         (progn
+           (wxlambda:show-window frame) (wxlambda:process-events)
+           (setf (wxlambda:clock-time picker :notify t) '(23 59 59))
+           (assert (string= "Start time: 23:59:59" (wxlambda:label-text feedback)))
+           (wxlambda:queue-click reset)
+           (loop repeat 30 until (equal '(9 30 0) (wxlambda:clock-time picker)) do (wxlambda:process-events))
+           (assert (equal '(9 30 0) (wxlambda:clock-time picker)))
+           (assert (string= "Start time: 09:30:00" (wxlambda:label-text feedback))) t)
+      (wxlambda:destroy-window frame) (wxlambda:process-events))))
+(defun start ()
+  (wxlambda:with-application ()
+    (let ((frame (build-window))) (wxlambda:show-window frame) (wxlambda:run))))

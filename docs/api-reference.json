@@ -2850,7 +2850,54 @@
     "arguments": "Immutable EVENT snapshot or current innermost borrowed EVENT-CONTEXT.",
     "returns": "Fresh supported (year month day) date tuple, or NIL for non-date snapshots or invalid/out-of-scope native date payloads.",
     "description": "Read captured or current native wxDateEvent date payload, independent of current picker value. Non-date contexts reject; snapshots survive callback/session. No writer, synthetic/owned events or detached clones.",
-    "scope": "Native :date-change command family only. Context lifetime isolation applies; snapshot raw text/integer metadata is not a date encoding. Time-change/calendar event families remain unbound. See docs/DATE-PICKER.md.",
+    "scope": "Native :date-change command family only. Context lifetime isolation applies; snapshot raw text/integer metadata is not a date encoding. Time-change uses separate EVENT-TIME metadata; calendar event families remain unbound. See docs/DATE-PICKER.md.",
     "wxwidgets": "wxDateEvent::GetDate and wxEVT_DATE_CHANGED, wxWidgets3.2.12."
+  },
+  {
+    "name": "time-picker",
+    "kind": "class",
+    "syntax": "wxlambda:time-picker",
+    "arguments": "Required :parent WINDOW; optional :time exact (hour minute second) defaults (0 0 0), plus subclass initargs.",
+    "returns": "Native-backed TIME-PICKER WINDOW subtype.",
+    "description": "Required wall-clock time control with native wxTP_DEFAULT formatting/presentation. Default midnight, not current clock time. No raw adoption or uncreated wrapper.",
+    "scope": "Active GUI thread/session and live WINDOW lifetime. Required (hour minute second), hour0..23 and minute/second0..59, whole seconds only. Fixed local2012-01-01 native construction with component roundtrip/readback, no date/timezone/Unix/universal-time/scheduling API. Default native editor style/locale display. Input origin/composite/propagation and early Destroy guards; core/base/adv plus wxUSE_TIMEPICKCTRL/wxUSE_DATETIME required. See docs/TIME-PICKER.md.",
+    "wxwidgets": "wxTimePickerCtrl::Create, wxWidgets3.2.12; native component adv.",
+    "construction": {
+      "syntax": "(make-instance 'wxlambda:time-picker :parent parent :time '(9 30 0))",
+      "description": "Direct subclasses/default initargs, native-ready AFTER hooks and managed failure/root rollback; one concrete native widget kind per ancestry."
+    }
+  },
+  {
+    "name": "make-time-picker",
+    "kind": "generic-function",
+    "arguments": "PARENT and forwarded :time/:class/subclass initargs.",
+    "returns": "New TIME-PICKER or validated subclass.",
+    "description": "Thin native-backed CLOS factory; TIME defaults to (0 0 0).",
+    "scope": "Active GUI thread/session and live WINDOW lifetime. Required (hour minute second), hour0..23 and minute/second0..59, whole seconds only. Fixed local2012-01-01 native construction with component roundtrip/readback, no date/timezone/Unix/universal-time/scheduling API. Default native editor style/locale display. Input origin/composite/propagation and early Destroy guards; core/base/adv plus wxUSE_TIMEPICKCTRL/wxUSE_DATETIME required. See docs/TIME-PICKER.md.",
+    "wxwidgets": "wxTimePickerCtrl::Create, wxWidgets3.2.12."
+  },
+  {
+    "name": "clock-time",
+    "kind": "generic-function",
+    "syntax": "(wxlambda:clock-time picker)",
+    "arguments": "TIME-PICKER; SETF exact (hour minute second) and optional :notify generalized boolean defaults NIL. Reader accepts/ignores :notify for SETF protocol.",
+    "returns": "Fresh native committed time tuple; writer returns supplied list.",
+    "description": "Time-of-day components only, independent of date and timestamp. Reject NIL, invalid list shape/ranges, fractions and leap second60. Native getter with no valid supported time signals NATIVE-ERROR; writes require native readback match.",
+    "scope": "Active GUI thread/session and live WINDOW lifetime. Required (hour minute second), hour0..23 and minute/second0..59, whole seconds only. Fixed local2012-01-01 native construction with component roundtrip/readback, no date/timezone/Unix/universal-time/scheduling API. Default native editor style/locale display. Input origin/composite/propagation and early Destroy guards; core/base/adv plus wxUSE_TIMEPICKCTRL/wxUSE_DATETIME required. See docs/TIME-PICKER.md.",
+    "wxwidgets": "wxTimePickerCtrl::GetValue/SetValue and bounded wxDateTime component adapter, wxWidgets3.2.12.",
+    "setf": {
+      "syntax": "(setf (wxlambda:clock-time picker :notify t) '(0 0 0))",
+      "description": "Silent by default; notify emits exactly one native time-change event even unchanged. Same-picker callback writes reject; silent cross-picker synchronization supported. Input list not retained; original callback errors re-signal after native setter returns with committed time retained."
+    }
+  },
+  {
+    "name": "event-time",
+    "kind": "generic-function",
+    "syntax": "(wxlambda:event-time event)",
+    "arguments": "Immutable EVENT snapshot or current innermost borrowed EVENT-CONTEXT.",
+    "returns": "Fresh (hour minute second), including (0 0 0) at midnight; NIL for non-time snapshots or invalid native time payload.",
+    "description": "Read captured/current native wxDateEvent time components independently of current control value; ignore date/milliseconds. Non-time or expired/outer contexts reject. Snapshot survives callback/session. No setter, owned/synthetic events or detached clones.",
+    "scope": "Native :time-change command family only. Separate from EVENT-DATE, EVENT-TIMESTAMP and raw integer/text metadata. Context lifetime isolation applies; no date/timezone/instant interpretation. See docs/TIME-PICKER.md.",
+    "wxwidgets": "wxDateEvent::GetDate components and wxEVT_TIME_CHANGED, wxWidgets3.2.12."
   }
 ]

@@ -2926,3 +2926,84 @@ reusing the native feature/component and Input foundation with an explicit copie
 hour/minute/second adapter. Preserve local-time/value semantics, CLOS/SETF and
 callback/lifetime protections, independent review and aligned examples/docs/
 docset/coverage; do not drain unrelated wxDateTime APIs.
+
+## Required time-of-day pickers (2026-10-29)
+
+ABI53 adds native-backed TIME-PICKER, generic MAKE-TIME-PICKER, CLOCK-TIME/SETF
+and read-only EVENT-TIME. Exact copied (hour minute second) lists use hour0..23,
+minute/second0..59, default midnight(0 0 0), not current clock time. Reject NIL,
+invalid shapes/types/bounds, 24:00, fractional and leap seconds before native
+mutation. CLOS :parent/:time construction retains subclasses/defaults/native-ready
+AFTER hooks, one native kind, thin validated :class factory and managed failure/
+root rollback. Native wxTP_DEFAULT editor formatting/AM-PM/seconds presentation
+remains port/locale policy; tuple protocol is always24-hour whole seconds.
+
+Native input construction uses fixed local2012-01-01, matching wxTimePickerCtrl
+SetTime and avoiding today's possible DST gap. Component roundtrip and native
+value readback must match. Native date portion/milliseconds are discarded;
+there is no date/timezone/offset/UTC/Unix/universal-time/scheduling API. No process
+timezone changes during GUI sessions; all historical/timezone combinations are
+not claimed. Default SETF silent; :notify emits exactly1 native wxDateEvent of
+wxEVT_TIME_CHANGED after native readback, including unchanged times. Raw command
+metadata/timestamps are not time encodings. Snapshot time is immutable packed
+1+seconds-from-midnight (zero means absent/invalid), exposed only as fresh tuple;
+midnight remains present. It is independent of control/date metadata and survives
+session. EVENT-TIME on non-time snapshots yields NIL; invalid native time yields
+NIL; non-time/expired/outer contexts reject. No semantic time writer, native
+owned/synthetic time event or detached clone. EVENT-DATE scope remains separate.
+
+Shared InputCallbackOperation now covers actual TIME origins and composite-child
+TEXT plus propagation. Same-picker writes/source/ancestor destroy/close and modal/
+clipboard/GUI/safe-idle reentry reject; silent cross-picker sync allowed. Existing
+early managed Destroy guard extends from date to time picker with weak-ref
+refusal/exception restoration, constructor/base teardown suppression retained.
+Independent code/test/docs/coverage review found no remaining actionable findings;
+widened wxDateEvent and wxDateTime shared coverage/reference scopes accurately.
+Both classes remain bounded partial mappings, not native API parity.
+
+Source audit: pinned generic/MSW/OSX time control and shared Cocoa date/time peer
+sources in /private/tmp/wxl-time-source; native SetTime fixed-anchor helper is in
+installed wx/timectrl.h. Generic control retains its own text/spin implementation;
+runtime verified only macOS wxWidgets3.2.12. CMake requires wxUSE_TIMEPICKCTRL=1
+and wxUSE_DATETIME=1 with existing core/base/adv selection. Negative configuration
+gate probe passes (quiet-run.hD9nL2c5); an actual disabled-feature wxWidgets build
+was not produced. Existing Qt tree gate remains unchanged.
+
+Main/native builds pass (quiet-run.W9WYXLvR/FGFEC6N4), focused SBCL/CCL example/
+tests pass (quiet-run.wzBvB7yr/N1WpFAC2), native harness has zero wx assertions
+(quiet-run.rTH3T4m3). Native probes cover midnight/last second and fixed anchor,
+actual native time events outside setter guards with date1800 (no calendar-date
+bound interpretation), propagation, invalid payloads, composite-child TEXT,
+read-only/non-time/expired contexts, clone rejection, silent/unchanged notify,
+source/ancestor/native-entry guards and early Destroy refusal/suppression.
+Lisp tests cover copied values/snapshot tuple mutation isolation, malformed inputs,
+CLOS/default/factory/rollback, context/date separation, condition identity and
+committed state, post-session snapshots. examples/time-picker.lisp is a start-time
+form with native change feedback and owner-bound deferred Reset action; no timer
+or scheduling interpretation.
+
+Full78 GUI scenarios plus preflight pass on SBCL2.6.9 and CCL1.13
+(quiet-run.Sk2lWKdn/7Stn3vJS), evidence/time-picker/{sbcl,ccl}-20261029/.
+Physical editor/spin input, locale/AM-PM display, accessibility, historical/DST
+and timezone combinations, hosted Windows/Linux/Qt and graphical Cadre remain
+unverified. Early composite teardown is injected on macOS, not hosted generic GUI
+proof. No automatic system clipboard content reads/writes. ASDF cache uses /tmp.
+
+Pinned coverage regeneration/14 checks,16 Python checks and zero-problem docset
+pass (quiet-run.wHDOSPcS). Counts:267 exports,192 named generics,59 SETF generics,
+28 window wrappers (26 concrete+2 abstract),52 examples and372 docset entries.
+Both-Lisp actual public-export/class/SETF coverage and isolated install/discovery/
+symbol/guide/example access pass (quiet-run.XdN30OGg). Install root
+/private/tmp/wxlambda-time-docsets/wxlambda; normal Cadre installation under
+$XDG_DATA_HOME/docsets/wxlambda (default ~/.local/share/docsets/wxlambda/) is in
+docs/DOCSET.md. Package dist/wxlambda-form-time-picker remains the established
+form binary with transitive dependencies bundled; time example is separate
+repository/docset content. All five package isolation checks pass
+(quiet-run.yMhJm2wd), evidence/packaging/time-picker-20261029/. Final docset
+build/check/install follows these handoff notes.
+
+Session handoff: broad GUI coverage with selective depth remains the objective.
+Next selected slice: bounded search controls for list/tree filtering workflows,
+reusing copied UTF-8 text and command/Input lifetime foundations. Preserve explicit
+native text/event semantics, CLOS/SETF, independent review and aligned examples/
+docs/docset/coverage rather than exhausting a native inventory category.

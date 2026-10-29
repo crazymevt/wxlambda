@@ -8085,13 +8085,15 @@
       "status": "~",
       "symbol": "wxDateEvent",
       "lisp": [
-        "event-date"
+        "event-date",
+        "event-time"
       ],
       "native": [
         "wxl_set_calendar_date",
+        "wxl_set_clock_time",
         "wxl_event_field"
       ],
-      "scope": "Native date-change read-only copied date snapshots and current borrowed contexts only; invalid/out-of-scope dates yield NIL. No setters, time-change, detached construction or cloning. Bounded required DATE-PICKER WINDOW and copied Gregorian (year month day) adapter1900..2100; default native style, fixed range and default2000-01-01. Native-backed CLOS, silent SETF/explicit native date event, immutable copied event date/current contexts, actual/propagated/composite Input guards and early Destroy suppression. No raw date/window adoption, time, nullable/style/range APIs, synthetic/owned/date clones or full parity. See docs/DATE-PICKER.md."
+      "scope": "Read-only native date-change and time-change wxDateEvent payload adapters via EVENT-DATE/EVENT-TIME, immutable copied snapshots/current innermost contexts. Dates are bounded Gregorian1900..2100; times are hour0..23/minute-second0..59 with no date interpretation. Invalid/out-of-scope payloads yield NIL. No setters, calendar events, native owned/synthetic events, detached clones or full class parity. See docs/DATE-PICKER.md and docs/TIME-PICKER.md."
     },
     {
       "header": "wx/dateevt.h",
@@ -8100,13 +8102,15 @@
       "status": "~",
       "symbol": "wxDateEvent::GetDate",
       "lisp": [
-        "event-date"
+        "event-date",
+        "event-time"
       ],
       "native": [
         "wxl_set_calendar_date",
+        "wxl_set_clock_time",
         "wxl_event_field"
       ],
-      "scope": "Native date-change read-only copied date snapshots and current borrowed contexts only; invalid/out-of-scope dates yield NIL. No setters, time-change, detached construction or cloning. Bounded required DATE-PICKER WINDOW and copied Gregorian (year month day) adapter1900..2100; default native style, fixed range and default2000-01-01. Native-backed CLOS, silent SETF/explicit native date event, immutable copied event date/current contexts, actual/propagated/composite Input guards and early Destroy suppression. No raw date/window adoption, time, nullable/style/range APIs, synthetic/owned/date clones or full parity. See docs/DATE-PICKER.md."
+      "scope": "Read-only native date-change and time-change wxDateEvent payload adapters via EVENT-DATE/EVENT-TIME, immutable copied snapshots/current innermost contexts. Dates are bounded Gregorian1900..2100; times are hour0..23/minute-second0..59 with no date interpretation. Invalid/out-of-scope payloads yield NIL. No setters, calendar events, native owned/synthetic events, detached clones or full class parity. See docs/DATE-PICKER.md and docs/TIME-PICKER.md."
     },
     {
       "header": "wx/dateevt.h",
@@ -8115,13 +8119,15 @@
       "status": "~",
       "symbol": "wxEVT_DATE_CHANGED",
       "lisp": [
-        "event-date"
+        "event-date",
+        "event-time"
       ],
       "native": [
         "wxl_set_calendar_date",
+        "wxl_set_clock_time",
         "wxl_event_field"
       ],
-      "scope": "Native date-change read-only copied date snapshots and current borrowed contexts only; invalid/out-of-scope dates yield NIL. No setters, time-change, detached construction or cloning. Bounded required DATE-PICKER WINDOW and copied Gregorian (year month day) adapter1900..2100; default native style, fixed range and default2000-01-01. Native-backed CLOS, silent SETF/explicit native date event, immutable copied event date/current contexts, actual/propagated/composite Input guards and early Destroy suppression. No raw date/window adoption, time, nullable/style/range APIs, synthetic/owned/date clones or full parity. See docs/DATE-PICKER.md."
+      "scope": "Read-only native date-change and time-change wxDateEvent payload adapters via EVENT-DATE/EVENT-TIME, immutable copied snapshots/current innermost contexts. Dates are bounded Gregorian1900..2100; times are hour0..23/minute-second0..59 with no date interpretation. Invalid/out-of-scope payloads yield NIL. No setters, calendar events, native owned/synthetic events, detached clones or full class parity. See docs/DATE-PICKER.md and docs/TIME-PICKER.md."
     },
     {
       "header": "wx/datetime.h",
@@ -8131,14 +8137,19 @@
       "symbol": "wxDateTime",
       "lisp": [
         "calendar-date",
-        "event-date"
+        "event-date",
+        "clock-time",
+        "event-time"
       ],
       "native": [
         "wxl_date_picker",
         "wxl_calendar_date",
-        "wxl_set_calendar_date"
+        "wxl_set_calendar_date",
+        "wxl_time_picker",
+        "wxl_clock_time",
+        "wxl_set_clock_time"
       ],
-      "scope": "Copied Gregorian tuple adapter only through DATE-PICKER/CALENDAR-DATE/EVENT-DATE, required dates1900..2100, local civil calendar roundtrip, no time-of-day/timezone/Unix/universal-time or standalone wxDateTime objects. Constructor uses midnight native local representation and rejects failed date roundtrip; native event invalid/out-of-scope dates map NIL. See docs/DATE-PICKER.md."
+      "scope": "Copied Gregorian date/time-of-day tuple adapters only through calendar/time picker properties and EVENT-DATE/EVENT-TIME; no standalone wxDateTime objects, timezone/UTC/Unix/universal-time or scheduling API. Dates1900..2100 use native local date roundtrip; times use fixed local2012-01-01 and hour0..23/minute-second0..59 component roundtrip. Invalid event payloads map NIL; milliseconds not exposed. See docs/DATE-PICKER.md and docs/TIME-PICKER.md."
     },
     {
       "header": "wx/datetime.h",
@@ -8148,14 +8159,19 @@
       "symbol": "wxDateTime::wxDateTime",
       "lisp": [
         "calendar-date",
-        "event-date"
+        "event-date",
+        "clock-time",
+        "event-time"
       ],
       "native": [
         "wxl_date_picker",
         "wxl_calendar_date",
-        "wxl_set_calendar_date"
+        "wxl_set_calendar_date",
+        "wxl_time_picker",
+        "wxl_clock_time",
+        "wxl_set_clock_time"
       ],
-      "scope": "Copied Gregorian tuple adapter only through DATE-PICKER/CALENDAR-DATE/EVENT-DATE, required dates1900..2100, local civil calendar roundtrip, no time-of-day/timezone/Unix/universal-time or standalone wxDateTime objects. Constructor uses midnight native local representation and rejects failed date roundtrip; native event invalid/out-of-scope dates map NIL. See docs/DATE-PICKER.md."
+      "scope": "Copied Gregorian date/time-of-day tuple adapters only through calendar/time picker properties and EVENT-DATE/EVENT-TIME; no standalone wxDateTime objects, timezone/UTC/Unix/universal-time or scheduling API. Dates1900..2100 use native local date roundtrip; times use fixed local2012-01-01 and hour0..23/minute-second0..59 component roundtrip. Invalid event payloads map NIL; milliseconds not exposed. See docs/DATE-PICKER.md and docs/TIME-PICKER.md."
     },
     {
       "header": "wx/datetime.h",
@@ -8207,6 +8223,207 @@
         "wxl_set_calendar_date"
       ],
       "scope": "Copied Gregorian tuple adapter only through DATE-PICKER/CALENDAR-DATE/EVENT-DATE, required dates1900..2100, local civil calendar roundtrip, no time-of-day/timezone/Unix/universal-time or standalone wxDateTime objects. Constructor uses midnight native local representation and rejects failed date roundtrip; native event invalid/out-of-scope dates map NIL. See docs/DATE-PICKER.md."
+    },
+    {
+      "header": "wx/timectrl.h",
+      "line": 53,
+      "declaration": "class wxTimePickerCtrl : public wxControl {",
+      "status": "~",
+      "symbol": "wxTimePickerCtrl",
+      "lisp": [
+        "time-picker",
+        "make-time-picker",
+        "clock-time",
+        "event-time"
+      ],
+      "native": [
+        "wxl_time_picker",
+        "wxl_clock_time",
+        "wxl_set_clock_time"
+      ],
+      "scope": "Bounded required TIME-PICKER WINDOW with copied (hour minute second) values, hour0..23 and minute/second0..59, midnight default. Fixed local2012-01-01 input anchor and native component readback, silent SETF/explicit native time event, immutable copied time snapshots/current contexts and shared Input/early Destroy protection. No date/timezone/scheduling/raw resources, nullable/range/styles, owned/synthetic/time clones or full parity. See docs/TIME-PICKER.md."
+    },
+    {
+      "header": "wx/timectrl.h",
+      "line": 59,
+      "declaration": "wxTimePickerCtrl();",
+      "status": "~",
+      "symbol": "wxTimePickerCtrl::wxTimePickerCtrl",
+      "lisp": [
+        "time-picker",
+        "make-time-picker",
+        "clock-time",
+        "event-time"
+      ],
+      "native": [
+        "wxl_time_picker",
+        "wxl_clock_time",
+        "wxl_set_clock_time"
+      ],
+      "scope": "Bounded required TIME-PICKER WINDOW with copied (hour minute second) values, hour0..23 and minute/second0..59, midnight default. Fixed local2012-01-01 input anchor and native component readback, silent SETF/explicit native time event, immutable copied time snapshots/current contexts and shared Input/early Destroy protection. No date/timezone/scheduling/raw resources, nullable/range/styles, owned/synthetic/time clones or full parity. See docs/TIME-PICKER.md."
+    },
+    {
+      "header": "wx/timectrl.h",
+      "line": 64,
+      "declaration": "wxTimePickerCtrl(wxWindow* parent, wxWindowID id, const wxDateTime& dt = wxDefaultDateTime, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxTP_DEFAULT, const wxValidator& validator = wxDefaultValidator, const wxString& name = wxTimePickerCtrlNameStr);",
+      "status": "~",
+      "symbol": "wxTimePickerCtrl::wxTimePickerCtrl",
+      "lisp": [
+        "time-picker",
+        "make-time-picker",
+        "clock-time",
+        "event-time"
+      ],
+      "native": [
+        "wxl_time_picker",
+        "wxl_clock_time",
+        "wxl_set_clock_time"
+      ],
+      "scope": "Bounded required TIME-PICKER WINDOW with copied (hour minute second) values, hour0..23 and minute/second0..59, midnight default. Fixed local2012-01-01 input anchor and native component readback, silent SETF/explicit native time event, immutable copied time snapshots/current contexts and shared Input/early Destroy protection. No date/timezone/scheduling/raw resources, nullable/range/styles, owned/synthetic/time clones or full parity. See docs/TIME-PICKER.md."
+    },
+    {
+      "header": "wx/timectrl.h",
+      "line": 102,
+      "declaration": "bool Create(wxWindow* parent, wxWindowID id, const wxDateTime& dt = wxDefaultDateTime, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxTP_DEFAULT, const wxValidator& validator = wxDefaultValidator, const wxString& name = wxTimePickerCtrlNameStr);",
+      "status": "~",
+      "symbol": "wxTimePickerCtrl::Create",
+      "lisp": [
+        "time-picker",
+        "make-time-picker",
+        "clock-time",
+        "event-time"
+      ],
+      "native": [
+        "wxl_time_picker",
+        "wxl_clock_time",
+        "wxl_set_clock_time"
+      ],
+      "scope": "Bounded required TIME-PICKER WINDOW with copied (hour minute second) values, hour0..23 and minute/second0..59, midnight default. Fixed local2012-01-01 input anchor and native component readback, silent SETF/explicit native time event, immutable copied time snapshots/current contexts and shared Input/early Destroy protection. No date/timezone/scheduling/raw resources, nullable/range/styles, owned/synthetic/time clones or full parity. See docs/TIME-PICKER.md."
+    },
+    {
+      "header": "wx/timectrl.h",
+      "line": 128,
+      "declaration": "virtual wxDateTime GetValue() const;",
+      "status": "~",
+      "symbol": "wxTimePickerCtrl::GetValue",
+      "lisp": [
+        "time-picker",
+        "make-time-picker",
+        "clock-time",
+        "event-time"
+      ],
+      "native": [
+        "wxl_time_picker",
+        "wxl_clock_time",
+        "wxl_set_clock_time"
+      ],
+      "scope": "Bounded required TIME-PICKER WINDOW with copied (hour minute second) values, hour0..23 and minute/second0..59, midnight default. Fixed local2012-01-01 input anchor and native component readback, silent SETF/explicit native time event, immutable copied time snapshots/current contexts and shared Input/early Destroy protection. No date/timezone/scheduling/raw resources, nullable/range/styles, owned/synthetic/time clones or full parity. See docs/TIME-PICKER.md."
+    },
+    {
+      "header": "wx/timectrl.h",
+      "line": 164,
+      "declaration": "virtual void SetValue(const wxDateTime& dt);",
+      "status": "~",
+      "symbol": "wxTimePickerCtrl::SetValue",
+      "lisp": [
+        "time-picker",
+        "make-time-picker",
+        "clock-time",
+        "event-time"
+      ],
+      "native": [
+        "wxl_time_picker",
+        "wxl_clock_time",
+        "wxl_set_clock_time"
+      ],
+      "scope": "Bounded required TIME-PICKER WINDOW with copied (hour minute second) values, hour0..23 and minute/second0..59, midnight default. Fixed local2012-01-01 input anchor and native component readback, silent SETF/explicit native time event, immutable copied time snapshots/current contexts and shared Input/early Destroy protection. No date/timezone/scheduling/raw resources, nullable/range/styles, owned/synthetic/time clones or full parity. See docs/TIME-PICKER.md."
+    },
+    {
+      "header": "wx/timectrl.h",
+      "line": 40,
+      "declaration": "documented event: EVT_TIME_CHANGED(id, func)",
+      "status": "~",
+      "symbol": "EVT_TIME_CHANGED",
+      "lisp": [
+        "time-picker",
+        "make-time-picker",
+        "clock-time",
+        "event-time"
+      ],
+      "native": [
+        "wxl_time_picker",
+        "wxl_clock_time",
+        "wxl_set_clock_time"
+      ],
+      "scope": "Bounded required TIME-PICKER WINDOW with copied (hour minute second) values, hour0..23 and minute/second0..59, midnight default. Fixed local2012-01-01 input anchor and native component readback, silent SETF/explicit native time event, immutable copied time snapshots/current contexts and shared Input/early Destroy protection. No date/timezone/scheduling/raw resources, nullable/range/styles, owned/synthetic/time clones or full parity. See docs/TIME-PICKER.md."
+    },
+    {
+      "header": "wx/dateevt.h",
+      "line": 37,
+      "declaration": "wxEventType wxEVT_TIME_CHANGED;",
+      "symbol": "wxEVT_TIME_CHANGED",
+      "status": "~",
+      "lisp": [
+        "event-date",
+        "event-time"
+      ],
+      "native": [
+        "wxl_set_calendar_date",
+        "wxl_set_clock_time",
+        "wxl_event_field"
+      ],
+      "scope": "Read-only native date-change and time-change wxDateEvent payload adapters via EVENT-DATE/EVENT-TIME, immutable copied snapshots/current innermost contexts. Dates are bounded Gregorian1900..2100; times are hour0..23/minute-second0..59 with no date interpretation. Invalid/out-of-scope payloads yield NIL. No setters, calendar events, native owned/synthetic events, detached clones or full class parity. See docs/DATE-PICKER.md and docs/TIME-PICKER.md."
+    },
+    {
+      "header": "wx/datetime.h",
+      "line": 549,
+      "declaration": "unsigned short GetHour(const TimeZone& tz = Local) const;",
+      "status": "~",
+      "symbol": "wxDateTime::GetHour",
+      "lisp": [
+        "clock-time",
+        "event-time"
+      ],
+      "native": [
+        "wxl_time_picker",
+        "wxl_clock_time",
+        "wxl_set_clock_time"
+      ],
+      "scope": "Bounded required TIME-PICKER WINDOW with copied (hour minute second) values, hour0..23 and minute/second0..59, midnight default. Fixed local2012-01-01 input anchor and native component readback, silent SETF/explicit native time event, immutable copied time snapshots/current contexts and shared Input/early Destroy protection. No date/timezone/scheduling/raw resources, nullable/range/styles, owned/synthetic/time clones or full parity. See docs/TIME-PICKER.md."
+    },
+    {
+      "header": "wx/datetime.h",
+      "line": 559,
+      "declaration": "unsigned short GetMinute(const TimeZone& tz = Local) const;",
+      "status": "~",
+      "symbol": "wxDateTime::GetMinute",
+      "lisp": [
+        "clock-time",
+        "event-time"
+      ],
+      "native": [
+        "wxl_time_picker",
+        "wxl_clock_time",
+        "wxl_set_clock_time"
+      ],
+      "scope": "Bounded required TIME-PICKER WINDOW with copied (hour minute second) values, hour0..23 and minute/second0..59, midnight default. Fixed local2012-01-01 input anchor and native component readback, silent SETF/explicit native time event, immutable copied time snapshots/current contexts and shared Input/early Destroy protection. No date/timezone/scheduling/raw resources, nullable/range/styles, owned/synthetic/time clones or full parity. See docs/TIME-PICKER.md."
+    },
+    {
+      "header": "wx/datetime.h",
+      "line": 569,
+      "declaration": "unsigned short GetSecond(const TimeZone& tz = Local) const;",
+      "status": "~",
+      "symbol": "wxDateTime::GetSecond",
+      "lisp": [
+        "clock-time",
+        "event-time"
+      ],
+      "native": [
+        "wxl_time_picker",
+        "wxl_clock_time",
+        "wxl_set_clock_time"
+      ],
+      "scope": "Bounded required TIME-PICKER WINDOW with copied (hour minute second) values, hour0..23 and minute/second0..59, midnight default. Fixed local2012-01-01 input anchor and native component readback, silent SETF/explicit native time event, immutable copied time snapshots/current contexts and shared Input/early Destroy protection. No date/timezone/scheduling/raw resources, nullable/range/styles, owned/synthetic/time clones or full parity. See docs/TIME-PICKER.md."
     }
   ],
   "classes": {
@@ -9506,26 +9723,48 @@
     "wxDateEvent": {
       "status": "~",
       "lisp": [
-        "event-date"
+        "event-date",
+        "event-time"
       ],
       "native": [
         "wxl_set_calendar_date",
+        "wxl_set_clock_time",
         "wxl_event_field"
       ],
-      "scope": "Native date-change read-only copied date snapshots and current borrowed contexts only; invalid/out-of-scope dates yield NIL. No setters, time-change, detached construction or cloning. Bounded required DATE-PICKER WINDOW and copied Gregorian (year month day) adapter1900..2100; default native style, fixed range and default2000-01-01. Native-backed CLOS, silent SETF/explicit native date event, immutable copied event date/current contexts, actual/propagated/composite Input guards and early Destroy suppression. No raw date/window adoption, time, nullable/style/range APIs, synthetic/owned/date clones or full parity. See docs/DATE-PICKER.md."
+      "scope": "Read-only native date-change and time-change wxDateEvent payload adapters via EVENT-DATE/EVENT-TIME, immutable copied snapshots/current innermost contexts. Dates are bounded Gregorian1900..2100; times are hour0..23/minute-second0..59 with no date interpretation. Invalid/out-of-scope payloads yield NIL. No setters, calendar events, native owned/synthetic events, detached clones or full class parity. See docs/DATE-PICKER.md and docs/TIME-PICKER.md."
     },
     "wxDateTime": {
       "status": "~",
       "lisp": [
         "calendar-date",
-        "event-date"
+        "event-date",
+        "clock-time",
+        "event-time"
       ],
       "native": [
         "wxl_date_picker",
         "wxl_calendar_date",
-        "wxl_set_calendar_date"
+        "wxl_set_calendar_date",
+        "wxl_time_picker",
+        "wxl_clock_time",
+        "wxl_set_clock_time"
       ],
-      "scope": "Copied Gregorian tuple adapter only through DATE-PICKER/CALENDAR-DATE/EVENT-DATE, required dates1900..2100, local civil calendar roundtrip, no time-of-day/timezone/Unix/universal-time or standalone wxDateTime objects. Constructor uses midnight native local representation and rejects failed date roundtrip; native event invalid/out-of-scope dates map NIL. See docs/DATE-PICKER.md."
+      "scope": "Copied Gregorian date/time-of-day tuple adapters only through calendar/time picker properties and EVENT-DATE/EVENT-TIME; no standalone wxDateTime objects, timezone/UTC/Unix/universal-time or scheduling API. Dates1900..2100 use native local date roundtrip; times use fixed local2012-01-01 and hour0..23/minute-second0..59 component roundtrip. Invalid event payloads map NIL; milliseconds not exposed. See docs/DATE-PICKER.md and docs/TIME-PICKER.md."
+    },
+    "wxTimePickerCtrl": {
+      "status": "~",
+      "lisp": [
+        "time-picker",
+        "make-time-picker",
+        "clock-time",
+        "event-time"
+      ],
+      "native": [
+        "wxl_time_picker",
+        "wxl_clock_time",
+        "wxl_set_clock_time"
+      ],
+      "scope": "Bounded required TIME-PICKER WINDOW with copied (hour minute second) values, hour0..23 and minute/second0..59, midnight default. Fixed local2012-01-01 input anchor and native component readback, silent SETF/explicit native time event, immutable copied time snapshots/current contexts and shared Input/early Destroy protection. No date/timezone/scheduling/raw resources, nullable/range/styles, owned/synthetic/time clones or full parity. See docs/TIME-PICKER.md."
     }
   }
 }

@@ -202,5 +202,9 @@
   "date-picker.lisp": {
     "description": "Required due date with leap-day initialization, copied native change snapshots and an owner-bound deferred Reset action. EXERCISE checks explicit-notify label updates and reset without simulating physical date input.",
     "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/date-picker.lisp --eval '(wxlambda-date-picker:start)'"
+  },
+  "time-picker.lisp": {
+    "description": "Time-of-day start form with native snapshot feedback and an owner-bound deferred Reset action. EXERCISE checks explicit-notify feedback and reset without simulating physical time input or scheduling anything.",
+    "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/time-picker.lisp --eval '(wxlambda-time-picker:start)'"
   }
 }

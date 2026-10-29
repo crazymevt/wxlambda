@@ -35,7 +35,7 @@ void inspect_binding(uint64_t token, const wxl_event* event) {
     saved_context = event->context;
     binding_called = true;
 }
-std::function<void(uint64_t, const wxl_event*)> notebook_probe, list_probe, tree_probe, splitter_probe, toolbar_probe, accelerator_probe, deferred_event_probe, numeric_probe, radio_probe, toggle_probe, combo_probe, scroll_probe, tooltip_probe, date_probe;
+std::function<void(uint64_t, const wxl_event*)> notebook_probe, list_probe, tree_probe, splitter_probe, toolbar_probe, accelerator_probe, deferred_event_probe, numeric_probe, radio_probe, toggle_probe, combo_probe, scroll_probe, tooltip_probe, date_probe, time_probe;
 std::function<void(uint64_t,int)> ui_action_probe;
 void ignore_ui_action(uint64_t token, int execute) { if (ui_action_probe) ui_action_probe(token, execute); }
 void ignore_event(uint64_t token, const wxl_event* event) {
@@ -53,6 +53,7 @@ void ignore_event(uint64_t token, const wxl_event* event) {
     if (token==928 && scroll_probe) scroll_probe(token,event);
     if (token==929 && tooltip_probe) tooltip_probe(token,event);
     if ((token==930 || token==931 || token==932) && date_probe) date_probe(token,event);
+    if ((token==933 || token==934 || token==935) && time_probe) time_probe(token,event);
     if (token == 901) inspect_binding(token, event);
     if (token == 903) { ++menu_calls; menu_checked_payload = event->checked; menu_integer_payload = event->integer; menu_origin = event->origin_id; }
 }
@@ -1577,6 +1578,95 @@ void exercise_date_picker() {
     expect(wxl_calendar_date(picker,&code)==-1 && wxl_set_calendar_date(picker,2024,1,1,0)==-1,"Date teardown stale handles");
 }
 
+class EarlyTimeDestroyProbe : public wxTimePickerCtrl {
+public:
+    using wxTimePickerCtrl::wxTimePickerCtrl;
+    std::function<void()> during_destroy;
+    bool refuse=false;
+    bool Destroy() override {
+        if (during_destroy) during_destroy();
+        return refuse ? false : wxTimePickerCtrl::Destroy();
+    }
+};
+void exercise_time_picker() {
+    const auto frame=wxl_frame("Times",460,240), panel=wxl_panel(frame);
+    unsigned calls=0; bool constructing=true;
+    time_probe=[&](uint64_t,const wxl_event*) { ++calls; expect(!constructing,"Time constructor callbacks suppressed"); };
+    expect(wxl_bind(frame,WXL_EVENT_TIME_CHANGE,933,wxID_ANY,wxID_ANY,1,0)==0 &&
+           wxl_bind(frame,WXL_EVENT_TEXT_CHANGE,935,wxID_ANY,wxID_ANY,1,0)==0,"Observe time creation");
+    const auto picker=wxl_time_picker(panel,0,0,0), other=wxl_time_picker(panel,12,34,56);
+    expect(picker && other && !calls,"Time construction silence"); constructing=false;
+    expect(wxl_unbind(933)==1 && wxl_unbind(935)==1,"Time construction probe unbind");
+    int code=0;
+    expect(wxl_clock_time(picker,&code)==0 && code==1,"Midnight is valid, not absent");
+    const auto anchor=clock_value(2,30,45);
+    expect(anchor.GetYear()==2012 && anchor.GetMonth()==wxDateTime::Jan && anchor.GetDay()==1 &&
+           clock_code(anchor)==9046,"Fixed anchor preserves early-morning time without today's DST date");
+    expect(!wxl_time_picker(panel,24,0,0) && !wxl_time_picker(panel,0,60,0) &&
+           !wxl_time_picker(panel,0,0,60) && !wxl_time_picker(panel,-1,0,0) &&
+           wxl_set_clock_time(picker,0,-1,0,0)==-1 && wxl_set_clock_time(picker,0,0,-1,0)==-1 &&
+           wxl_set_clock_time(picker,0,0,0,2)==-1 && wxl_clock_time(frame,&code)==-1 &&
+           wxl_clock_time(picker,nullptr)==-1,"Raw time/type/output validation");
+    expect(wxl_set_clock_time(picker,23,59,59,0)==0 && wxl_clock_time(picker,&code)==0 && code==86400,"Last time-of-day second");
+    const auto dialog=wxl_message_dialog(frame,"Time",4,"Probe",5,0,0);
+    uint64_t expired=0;
+    int expected=9046;
+    time_probe=[&](uint64_t token,const wxl_event* event) {
+        ++calls; expired=event->context;
+        expect(event->origin_id==picker && event->family==WXL_FAMILY_COMMAND,"Time native origin/family");
+        expect(event->time_code==expected && event->date_code==0 && event->integer==0 && !event->can_veto && !event->text,"Time payload separate from date/raw metadata");
+        expect(wxl_set_clock_time(picker,1,2,3,0)==-1 && wxl_destroy(picker)==-1 &&
+               wxl_destroy(panel)==-1 && wxl_close(frame,1)==-1,"Actual time source/ancestor guard");
+        int result=-1;
+        expect(wxl_poll()==-1 && wxl_clipboard_text_available()==-1 && wxl_dialog_show(dialog,&result)==-1,"Time native-entry protection");
+        expect(wxl_set_clock_time(other,4,5,6,0)==0,"Silent cross-time synchronization");
+        int64_t captured=-1;
+        expect(wxl_event_field(event->context,1,20,&captured)==0 && captured==expected &&
+               wxl_set_event_field(event->context,1,20,1)==-1 && !wxl_clone_event(event->context,1),"Scoped read-only time/no detached clone");
+        expect(wxl_event_field(event->context,1,19,&captured)==-1,"Time context has no date payload");
+        if (token==933) expect(wxl_context_set_skipped(event->context,1)==0,"Time propagation");
+    };
+    expect(wxl_bind(picker,WXL_EVENT_TIME_CHANGE,933,wxID_ANY,wxID_ANY,1,0)==0 &&
+           wxl_bind(frame,WXL_EVENT_TIME_CHANGE,934,wxID_ANY,wxID_ANY,1,0)==0,"Time native bindings");
+    // Payload date is deliberately outside the calendar picker range; only HMS matters.
+    wxDateEvent native(window(picker),wxDateTime(1,wxDateTime::Jan,1800,2,30,45),wxEVT_TIME_CHANGED);
+    window(picker)->HandleWindowEvent(native);
+    expect(calls==2 && input_operations.empty(),"Actual time callback and propagation independent of setters");
+    int64_t captured=-1;
+    expect(wxl_event_field(expired,1,20,&captured)==-1,"Time context expires");
+    expect(wxl_set_clock_time(picker,2,30,45,0)==0 && calls==2,"Silent time write");
+    expect(wxl_set_clock_time(picker,2,30,45,1)==0 && calls==4,"Single explicit time event even unchanged");
+    expected=1;
+    expect(wxl_set_clock_time(picker,0,0,0,1)==0 && calls==6,"Midnight event is present");
+    expected=0;
+    wxDateEvent invalid(window(picker),wxInvalidDateTime,wxEVT_TIME_CHANGED); window(picker)->HandleWindowEvent(invalid);
+    expect(calls==8,"Invalid native event time yields absent metadata");
+    expect(!wxl_owned_event(WXL_EVENT_TIME_CHANGE,1,nullptr,0,0,0,0,0),"Owned time events reject");
+    expect(wxl_unbind(933)==1 && wxl_unbind(934)==1,"Time binding cleanup");
+    const auto child=wxl_text(picker,"child",5,0,1);
+    time_probe=[&](uint64_t,const wxl_event* event) {
+        ++calls;
+        expect(wxl_set_clock_time(picker,1,2,3,0)==-1 && wxl_destroy(picker)==-1,"Time composite-child Input guard");
+        int64_t time=-1;
+        expect(wxl_event_field(event->context,1,20,&time)==-1 && event->time_code==0,"Non-time context/snapshot metadata");
+    };
+    expect(wxl_bind(frame,WXL_EVENT_TEXT_CHANGE,935,wxID_ANY,wxID_ANY,1,0)==0,"Time composite TEXT bind");
+    wxCommandEvent text(wxEVT_TEXT,window(child)->GetId()); text.SetEventObject(window(child)); text.SetString("child"); window(child)->HandleWindowEvent(text);
+    expect(calls==9 && wxl_unbind(935)==1,"Time child-origin text guard");
+    auto* teardown=new ManagedWindow<EarlyTimeDestroyProbe>(window(panel),wxID_ANY,clock_value(0,0,0));
+    const auto teardown_id=track(teardown); input_owners.emplace(teardown,false);
+    unsigned teardown_callbacks=0;
+    time_probe=[&](uint64_t,const wxl_event*) { ++teardown_callbacks; };
+    expect(wxl_bind(frame,WXL_EVENT_TIME_CHANGE,933,wxID_ANY,wxID_ANY,1,0)==0,"Early time teardown binding");
+    teardown->during_destroy=[&] { wxDateEvent event(teardown,clock_value(0,0,0),wxEVT_TIME_CHANGED); teardown->HandleWindowEvent(event); };
+    teardown->refuse=true;
+    expect(!teardown->Destroy() && !input_owners.at(teardown) && !teardown_callbacks,"Failed time Destroy restores Input guard");
+    teardown->refuse=false;
+    expect(wxl_destroy(teardown_id)==0 && !teardown_callbacks && wxl_unbind(933)==1,"Early time Destroy suppresses callbacks");
+    time_probe={}; delete window(frame);
+    expect(wxl_clock_time(picker,&code)==-1 && wxl_set_clock_time(picker,0,0,0,0)==-1,"Time teardown stale handles");
+}
+
 int main() {
     std::thread([] { std::this_thread::sleep_for(std::chrono::seconds(10)); std::_Exit(124); }).detach();
     auto old_assert_handler = wxSetAssertHandler(capture_assert);
@@ -1612,6 +1702,7 @@ int main() {
         exercise_focus_navigation();
         exercise_tooltips();
         exercise_date_picker();
+        exercise_time_picker();
         bool shutdown_ran=false;
         ui_action_probe=[&](uint64_t,int) { shutdown_ran=true; };
         expect(wxl_defer_ui_action(5000,0)==0 && wxl_start_ui_timer(5001,1,0,0)==0,"Queue shutdown action/timer");

@@ -120,7 +120,7 @@ session ownership; actual native window destruction pops managed stacks without
 deleting those handlers. Explicit stack-aware processing differs from generic
 window receiver dispatch, which retains native stack bypass. Public window wrapper
 classes are `window` (abstract), `frame`, `panel`, `scrolled-panel`, `button`,
-`text-control`, `label`, `checkbox`, `choice`, `gauge`, `combo-box`, `date-picker`, `toggle-button`, `radio-box`, `slider`, `spin-control`, `notebook`, `list-box`, `tree-control`, `splitter-window`, `toolbar` and `status-bar` (plus the
+`text-control`, `label`, `checkbox`, `choice`, `gauge`, `combo-box`, `date-picker`, `time-picker`, `toggle-button`, `radio-box`, `slider`, `spin-control`, `notebook`, `list-box`, `tree-control`, `splitter-window`, `toolbar` and `status-bar` (plus the
 DIALOG hierarchy described below). Lisp subclassing does not imply
 native C++ subclassing or virtual-method callbacks; those need separate bridge
 support. See `docs/CLOS-API.md`.
@@ -266,3 +266,11 @@ restoration), CLOS rollback and native local-date roundtrip checks. No nullable,
 time/timezone, mutable range, owned/synthetic/cloned date events or raw native
 date resources. Requires wxUSE_DATEPICKCTRL/wxUSE_DATETIME and adv; see
 `docs/DATE-PICKER.md`.
+
+ABI53 TIME-PICKER has required copied (hour minute second) values, hour0..23 and
+minute/second0..59, default midnight. Preserve fixed local2012-01-01 conversion
+with component roundtrip/readback, independent immutable EVENT-TIME metadata
+(midnight must not become NIL), current-innermost contexts and shared Input/
+early Destroy guards. Date portions, fractions, timezones and scheduling are not
+exposed; no owned/synthetic/cloned time events. Requires wxUSE_TIMEPICKCTRL plus
+wxUSE_DATETIME/adv; see `docs/TIME-PICKER.md`.

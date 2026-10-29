@@ -45,7 +45,7 @@ Class/struct definitions: 0 complete; 12 partial; 290 pending. Partial and pendi
 - [ ] `wxConfigBase` — [`wx/config.h`](phase-c1.md), upstream line 259.
 - [ ] `wxConfigPathChanger` — [`wx/config.h`](phase-c1.md), upstream line 980.
 - [ ] `wxConvAuto` — [`wx/convauto.h`](phase-c1.md), upstream line 111.
-- [~] `wxDateTime` — [`wx/datetime.h`](phase-c1.md), upstream line 76. — **Partial**: `calendar-date`, `event-date`; ABI: `wxl_date_picker`, `wxl_calendar_date`, `wxl_set_calendar_date`. Copied Gregorian tuple adapter only through DATE-PICKER/CALENDAR-DATE/EVENT-DATE, required dates1900..2100, local civil calendar roundtrip, no time-of-day/timezone/Unix/universal-time or standalone wxDateTime objects. Constructor uses midnight native local representation and rejects failed date roundtrip; native event invalid/out-of-scope dates map NIL. See docs/DATE-PICKER.md.
+- [~] `wxDateTime` — [`wx/datetime.h`](phase-c1.md), upstream line 76. — **Partial**: `calendar-date`, `event-date`, `clock-time`, `event-time`; ABI: `wxl_date_picker`, `wxl_calendar_date`, `wxl_set_calendar_date`, `wxl_time_picker`, `wxl_clock_time`, `wxl_set_clock_time`. Copied Gregorian date/time-of-day tuple adapters only through calendar/time picker properties and EVENT-DATE/EVENT-TIME; no standalone wxDateTime objects, timezone/UTC/Unix/universal-time or scheduling API. Dates1900..2100 use native local date roundtrip; times use fixed local2012-01-01 and hour0..23/minute-second0..59 component roundtrip. Invalid event payloads map NIL; milliseconds not exposed. See docs/DATE-PICKER.md and docs/TIME-PICKER.md.
 - [ ] `wxDateTimeWorkDays` — [`wx/datetime.h`](phase-c1.md), upstream line 1605.
 - [ ] `wxDateSpan` — [`wx/datetime.h`](phase-c1.md), upstream line 1654.
 - [ ] `wxTimeSpan` — [`wx/datetime.h`](phase-c1.md), upstream line 1894.
@@ -320,7 +320,7 @@ Class/struct definitions: 0 complete; 12 partial; 290 pending. Partial and pendi
 
 ## C2: Windows, layout, basic controls, and input
 
-Class/struct definitions: 0 complete; 27 partial; 105 pending. Partial and pending classes remain open.
+Class/struct definitions: 0 complete; 28 partial; 104 pending. Partial and pending classes remain open.
 
 [Declaration counts and remaining work](README.md).
 
@@ -359,7 +359,7 @@ Class/struct definitions: 0 complete; 27 partial; 105 pending. Partial and pendi
 - [ ] `wxCursor` — [`wx/cursor.h`](phase-c2.md), upstream line 82.
 - [ ] `wxCustomBackgroundWindow` — [`wx/custombgwin.h`](phase-c2.md), upstream line 47.
 - [~] `wxDatePickerCtrl` — [`wx/datectrl.h`](phase-c2.md), upstream line 83. — **Partial**: `date-picker`, `make-date-picker`, `calendar-date`, `event-date`; ABI: `wxl_date_picker`, `wxl_calendar_date`, `wxl_set_calendar_date`. Bounded required DATE-PICKER WINDOW and copied Gregorian (year month day) adapter1900..2100; default native style, fixed range and default2000-01-01. Native-backed CLOS, silent SETF/explicit native date event, immutable copied event date/current contexts, actual/propagated/composite Input guards and early Destroy suppression. No raw date/window adoption, time, nullable/style/range APIs, synthetic/owned/date clones or full parity. See docs/DATE-PICKER.md.
-- [~] `wxDateEvent` — [`wx/dateevt.h`](phase-c2.md), upstream line 18. — **Partial**: `event-date`; ABI: `wxl_set_calendar_date`, `wxl_event_field`. Native date-change read-only copied date snapshots and current borrowed contexts only; invalid/out-of-scope dates yield NIL. No setters, time-change, detached construction or cloning. Bounded required DATE-PICKER WINDOW and copied Gregorian (year month day) adapter1900..2100; default native style, fixed range and default2000-01-01. Native-backed CLOS, silent SETF/explicit native date event, immutable copied event date/current contexts, actual/propagated/composite Input guards and early Destroy suppression. No raw date/window adoption, time, nullable/style/range APIs, synthetic/owned/date clones or full parity. See docs/DATE-PICKER.md.
+- [~] `wxDateEvent` — [`wx/dateevt.h`](phase-c2.md), upstream line 18. — **Partial**: `event-date`, `event-time`; ABI: `wxl_set_calendar_date`, `wxl_set_clock_time`, `wxl_event_field`. Read-only native date-change and time-change wxDateEvent payload adapters via EVENT-DATE/EVENT-TIME, immutable copied snapshots/current innermost contexts. Dates are bounded Gregorian1900..2100; times are hour0..23/minute-second0..59 with no date interpretation. Invalid/out-of-scope payloads yield NIL. No setters, calendar events, native owned/synthetic events, detached clones or full class parity. See docs/DATE-PICKER.md and docs/TIME-PICKER.md.
 - [ ] `wxEditableListBox` — [`wx/editlbox.h`](phase-c2.md), upstream line 40.
 - [ ] `wxFilePickerCtrl` — [`wx/filepicker.h`](phase-c2.md), upstream line 82.
 - [ ] `wxDirPickerCtrl` — [`wx/filepicker.h`](phase-c2.md), upstream line 236.
@@ -431,7 +431,7 @@ Class/struct definitions: 0 complete; 27 partial; 105 pending. Partial and pendi
 - [ ] `wxTextWrapper` — [`wx/textwrapper.h`](phase-c2.md), upstream line 59.
 - [~] `wxToggleButton` — [`wx/tglbtn.h`](phase-c2.md), upstream line 32. — **Partial**: `toggle-button`, `make-toggle-button`, `checked-p`, `label-text`, `event-checked-p`; ABI: `wxl_toggle_button`, `wxl_toggle_button_checked`, `wxl_set_toggle_button_checked`, `wxl_toggle_button_label`, `wxl_set_toggle_button_label`. Bounded independent two-state TOGGLE-BUTTON, default style, native-backed CLOS and checked/label generic SETF; silent defaults and explicit one native-class update. Native checked/text snapshots/current contexts, source lifetime/reentry guards. No bitmap toggle, grouping, raw adoption, owned/synthetic/cloned toggle-button events or full class parity. See docs/TOGGLE-BUTTONS.md.
 - [ ] `wxBitmapToggleButton` — [`wx/tglbtn.h`](phase-c2.md), upstream line 129.
-- [ ] `wxTimePickerCtrl` — [`wx/timectrl.h`](phase-c2.md), upstream line 53.
+- [~] `wxTimePickerCtrl` — [`wx/timectrl.h`](phase-c2.md), upstream line 53. — **Partial**: `time-picker`, `make-time-picker`, `clock-time`, `event-time`; ABI: `wxl_time_picker`, `wxl_clock_time`, `wxl_set_clock_time`. Bounded required TIME-PICKER WINDOW with copied (hour minute second) values, hour0..23 and minute/second0..59, midnight default. Fixed local2012-01-01 input anchor and native component readback, silent SETF/explicit native time event, immutable copied time snapshots/current contexts and shared Input/early Destroy protection. No date/timezone/scheduling/raw resources, nullable/range/styles, owned/synthetic/time clones or full parity. See docs/TIME-PICKER.md.
 - [ ] `wxTipWindow` — [`wx/tipwin.h`](phase-c2.md), upstream line 24.
 - [ ] `wxToolTip` — [`wx/tooltip.h`](phase-c2.md), upstream line 21.
 - [~] `wxTopLevelWindow` — [`wx/toplevel.h`](phase-c2.md), upstream line 87. — **Partial**: `frame-title`, `(setf frame-title)`, `dialog-title`; ABI: `wxl_title`, `wxl_set_title`, `wxl_dialog_title`, `wxl_set_dialog_title`. Title get/set is exposed for managed frames and supported text/choice/generic message/file dialogs through canonical SETF. Dialogs are modal-only; other top-level families and remaining top-level API stay open.

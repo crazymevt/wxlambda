@@ -835,3 +835,5 @@ run `examples/radio-groups.lisp` for export-format selection.
 [Window tooltips](docs/TOOLTIPS.md) add copied contextual form guidance with explicit removal; run `examples/tooltips.lisp`.
 
 [Date pickers](docs/DATE-PICKER.md) add required calendar dates with copied Gregorian tuples; run `examples/date-picker.lisp`. CMake links wxWidgets adv and requires wxUSE_DATEPICKCTRL/wxUSE_DATETIME.
+
+[Time pickers](docs/TIME-PICKER.md) add copied hour/minute/second form values; run `examples/time-picker.lisp`. CMake requires wxUSE_TIMEPICKCTRL/wxUSE_DATETIME with wxWidgets adv.

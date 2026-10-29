@@ -29,7 +29,8 @@
   (more-requested :int)
   (tree-item :uint64)
   (sash-position :int)
-  (date-code :int))
+  (date-code :int)
+  (time-code :int))
 
 (cffi:defcfun ("wxl_abi_version" %abi-version) :int)
 (cffi:defcfun ("wxl_last_error" %last-error) :string)
@@ -96,7 +97,7 @@
           (if (probe-file local)
               (cffi:load-foreign-library local)
               (cffi:use-foreign-library wxlambda-native))))
-    (unless (= 52 (%abi-version)) (error "Unsupported wxlambda native ABI"))
+    (unless (= 53 (%abi-version)) (error "Unsupported wxlambda native ABI"))
     (setf *native-loaded* t))
   t)
 
@@ -361,3 +362,7 @@
 (cffi:defcfun ("wxl_date_picker" %date-picker) :uint64 (parent :uint64) (year :int) (month :int) (day :int))
 (cffi:defcfun ("wxl_calendar_date" %calendar-date) :int (control :uint64) (code :pointer))
 (cffi:defcfun ("wxl_set_calendar_date" %set-calendar-date) :int (control :uint64) (year :int) (month :int) (day :int) (notify :int))
+
+(cffi:defcfun ("wxl_time_picker" %time-picker) :uint64 (parent :uint64) (hour :int) (minute :int) (second :int))
+(cffi:defcfun ("wxl_clock_time" %clock-time) :int (control :uint64) (code :pointer))
+(cffi:defcfun ("wxl_set_clock_time" %set-clock-time) :int (control :uint64) (hour :int) (minute :int) (second :int) (notify :int))

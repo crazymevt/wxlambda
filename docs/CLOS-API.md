@@ -2,7 +2,7 @@
 
 Widgets are native-backed CLOS instances. The public classes are `window`,
 `frame`, `toolbar`, `status-bar`, `panel`, `scrolled-panel`, `notebook`, `list-box`, `tree-control`, `splitter-window`, `button`, `text-control`, `label`, `checkbox`, `choice`,
-`gauge`, `slider`, `spin-control`, `radio-box`, `toggle-button`, `combo-box`, `date-picker`, abstract `dialog`, and its `text-entry-dialog`, `single-choice-dialog`,
+`gauge`, `slider`, `spin-control`, `radio-box`, `toggle-button`, `combo-box`, `date-picker`, `time-picker`, abstract `dialog`, and its `text-entry-dialog`, `single-choice-dialog`,
 `message-dialog` and `file-dialog` concrete families.
 `window` inherits from `event-handler` and is abstract. Standalone `event-handler`
 instances are native-backed session-owned resources; window instances reuse their
@@ -41,6 +41,7 @@ Concrete native initargs are:
 
 - `frame`: `:title` (default "wxlambda"), `:width` (480), `:height` (240), `:accelerators` (NIL). See [keyboard actions](KEYBOARD-ACCELERATORS.md).
 - `panel`: required `:parent` window.
+- `time-picker`: required `:parent`; `:time` defaults to `(0 0 0)`, a copied hour/minute/second tuple. See [time-of-day values](TIME-PICKER.md).
 - `date-picker`: required `:parent`; `:date` defaults to `(2000 1 1)`, a copied required Gregorian date in 1900..2100. See [calendar dates](DATE-PICKER.md).
 - `slider`: required `:parent`; :minimum0/:maximum100/:value0, :orientation :horizontal.
 - `spin-control`: required `:parent`; :minimum0/:maximum100/:value0. Both numeric families use strict bounds within ±1000000; see [numeric input](NUMERIC-INPUT.md).
@@ -285,3 +286,5 @@ COMBO-BOX adds :parent/:items/:value/:selection with native-backed subclass cons
 SCROLLED-PANEL is a WINDOW subtype backed by wxScrolled<wxPanel>, with :parent/:scroll-rate and native-ready subclass hooks. Nest it inside ordinary notebook/splitter PANEL content. See [scrolling panels](SCROLLING-PANELS.md).
 
 DATE-PICKER is a WINDOW subtype with :parent/:date, a copied Gregorian tuple and native-ready subclass hooks. See [required calendar dates](DATE-PICKER.md).
+
+TIME-PICKER is a WINDOW subtype with :parent/:time, a copied time-of-day tuple and native-ready subclass hooks. See [time pickers](TIME-PICKER.md).
