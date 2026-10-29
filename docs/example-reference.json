@@ -266,5 +266,9 @@
   "theme-palette.lisp": {
     "description": "Copied window, notebook and styled-editor palettes; runnable exercise verifies readback, defaults and unchanged text.",
     "command": "sbcl --load ci/setup.lisp --load examples/theme-palette.lisp --eval \"(wxlambda-theme-palette:start)\""
+  },
+  "font-settings.lisp": {
+    "description": "Installed fonts, OS GUI/monospace defaults, recursive widget fonts, STC gutter font and tab widths with readback assertions.",
+    "command": "sbcl --load ci/setup.lisp --load examples/font-settings.lisp --eval \"(wxlambda-font-settings:start)\""
   }
 }

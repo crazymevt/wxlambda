@@ -17,7 +17,7 @@ class or constructor does not imply full upstream coverage.
 
 ## Current coverage and remaining work
 
-28 implemented; 247 partial; 2587 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
+28 implemented; 249 partial; 2585 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
 
 Counts describe inventory entries, not distinct APIs or percent completion.
 See the [coverage summary](README.md) for phase/header comparisons.
@@ -2995,7 +2995,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h)
 
-14 implemented; 34 partial; 338 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
+14 implemented; 36 partial; 336 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
 
 - [ ] [L12](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L12) `enum wxShowEffect {`
 - [ ] [L19](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L19) `wxSHOW_EFFECT_NONE, wxSHOW_EFFECT_ROLL_TO_LEFT, wxSHOW_EFFECT_ROLL_TO_RIGHT, wxSHOW_EFFECT_ROLL_TO_TOP, wxSHOW_EFFECT_ROLL_TO_BOTTOM, wxSHOW_EFFECT_SLIDE_TO_LEFT, wxSHOW_EFFECT_SLIDE_TO_RIGHT, wxSHOW_EFFECT_SLIDE_TO_TOP, wxSHOW_EFFECT_SLIDE_TO_BOTTOM, wxSHOW_EFFECT_BLEND, wxSHOW_EFFECT_EXPAND, wxSHOW_EFFECT_MAX }`
@@ -3213,7 +3213,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [ ] [L2189](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2189) `virtual int GetCharWidth() const;`
 - [ ] [L2206](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2206) `virtual wxVisualAttributes GetDefaultAttributes() const;`
 - [ ] [L2220](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2220) `virtual wxSize GetDPI() const;`
-- [ ] [L2227](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2227) `wxFont GetFont() const;`
+- [~] [L2227](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2227) `wxFont GetFont() const;` — **Partial**: `window-font`; ABI: `wxl_window_font`. ABI65 copied font settings/enumeration or tab width1..16; no raw resource ownership. See docs/FONT-SETTINGS.md.
 - [~] [L2238](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2238) `wxColour GetForegroundColour() const;` — **Partial**: `window-colours`; ABI: `wxl_window_colours`. Read current native foreground/background as two copied RGB triples; invalid colours fall back to current system window text/button face. GUI/main-thread and checked window lifetime; no wxColour wrapper, alpha, setters, theme forcing or raw handles. See docs/BITMAP-TOGGLES.md.
 - [ ] [L2265](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2265) `void GetTextExtent(const wxString& string, int* w, int* h, int* descent = NULL, int* externalLeading = NULL, const wxFont* font = NULL) const;`
 - [ ] [L2275](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2275) `wxSize GetTextExtent(const wxString& string) const;`
@@ -3226,7 +3226,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [~] [L2386](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2386) `virtual bool SetBackgroundColour(const wxColour& colour);` — **Partial**: `window-colours`; ABI: `wxl_set_window_colours`. Bounded copied theme colors, callback-safe reads and guarded writes; no raw ownership or full class parity. See docs/THEME-COLOURS.md.
 - [ ] [L2442](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2442) `virtual bool SetBackgroundStyle(wxBackgroundStyle style);`
 - [ ] [L2463](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2463) `virtual bool IsTransparentBackgroundSupported(wxString *reason = NULL) const;`
-- [ ] [L2486](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2486) `virtual bool SetFont(const wxFont& font);`
+- [~] [L2486](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2486) `virtual bool SetFont(const wxFont& font);` — **Partial**: `window-font`; ABI: `wxl_set_window_font`. ABI65 copied font settings/enumeration or tab width1..16; no raw resource ownership. See docs/FONT-SETTINGS.md.
 - [~] [L2510](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2510) `virtual bool SetForegroundColour(const wxColour& colour);` — **Partial**: `window-colours`; ABI: `wxl_set_window_colours`. Bounded copied theme colors, callback-safe reads and guarded writes; no raw ownership or full class parity. See docs/THEME-COLOURS.md.
 - [ ] [L2518](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2518) `void SetOwnBackgroundColour(const wxColour& colour);`
 - [ ] [L2525](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2525) `bool InheritsBackgroundColour() const;`

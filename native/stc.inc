@@ -60,6 +60,7 @@ int wxl_stc_get(wxl_handle id,int field,int index,int64_t* result) { return stat
     auto* control=as<StyledControl>(id); require(result,"Missing STC result output");
     switch(field) {
 #include "stc-get-generated.inc"
+        case 48: *result=control->GetTabWidth(); break;
         default:throw std::runtime_error("Unsupported STC property");
     }
 }); }
@@ -68,6 +69,7 @@ int wxl_stc_set(wxl_handle id,int field,int index,int64_t value) { return status
     if (field==25 || field==26 || field==32) stc_unpack_colour(value);
     switch(field) {
 #include "stc-set-generated.inc"
+        case 48: require(value>=1 && value<=16,"Tab width must be1..16"); control->SetTabWidth(static_cast<int>(value)); break;
         default:throw std::runtime_error("Unsupported writable STC property");
     }
 }); }

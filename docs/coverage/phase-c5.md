@@ -17,7 +17,7 @@ class or constructor does not imply full upstream coverage.
 
 ## Current coverage and remaining work
 
-0 implemented; 47 partial; 2198 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
+0 implemented; 48 partial; 2197 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
 
 Counts describe inventory entries, not distinct APIs or percent completion.
 See the [coverage summary](README.md) for phase/header comparisons.
@@ -987,7 +987,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/fontenum.h)
 
-0 implemented; 0 partial; 11 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
+0 implemented; 1 partial; 10 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
 
 - [ ] [L34](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/fontenum.h#L34) `class wxFontEnumerator {`
 - [ ] [L37](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/fontenum.h#L37) `wxFontEnumerator();`
@@ -995,7 +995,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [ ] [L44](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/fontenum.h#L44) `virtual bool EnumerateEncodings(const wxString& font = wxEmptyString);`
 - [ ] [L54](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/fontenum.h#L54) `virtual bool EnumerateFacenames(wxFontEncoding encoding = wxFONTENCODING_SYSTEM, bool fixedWidthOnly = false);`
 - [ ] [L61](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/fontenum.h#L61) `static wxArrayString GetEncodings(const wxString& facename = wxEmptyString);`
-- [ ] [L67](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/fontenum.h#L67) `static wxArrayString GetFacenames(wxFontEncoding encoding = wxFONTENCODING_SYSTEM, bool fixedWidthOnly = false);`
+- [~] [L67](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/fontenum.h#L67) `static wxArrayString GetFacenames(wxFontEncoding encoding = wxFONTENCODING_SYSTEM, bool fixedWidthOnly = false);` — **Partial**: `available-fonts`; ABI: `wxl_font_names`. ABI65 copied font settings/enumeration or tab width1..16; no raw resource ownership. See docs/FONT-SETTINGS.md.
 - [ ] [L74](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/fontenum.h#L74) `static bool IsValidFacename(const wxString& facename);`
 - [ ] [L85](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/fontenum.h#L85) `static void InvalidateCache();`
 - [ ] [L92](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/fontenum.h#L92) `virtual bool OnFacename(const wxString& font);`

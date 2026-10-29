@@ -17940,6 +17940,90 @@
         "wxl_stc_caret_colour"
       ],
       "scope": "Bounded copied theme colors, callback-safe reads and guarded writes; no raw ownership or full class parity. See docs/THEME-COLOURS.md."
+    },
+    {
+      "header": "wx/window.h",
+      "line": 2227,
+      "declaration": "wxFont GetFont() const;",
+      "status": "~",
+      "symbol": "GetFont",
+      "lisp": [
+        "window-font"
+      ],
+      "native": [
+        "wxl_window_font"
+      ],
+      "scope": "ABI65 copied font settings/enumeration or tab width1..16; no raw resource ownership. See docs/FONT-SETTINGS.md."
+    },
+    {
+      "header": "wx/window.h",
+      "line": 2486,
+      "declaration": "virtual bool SetFont(const wxFont& font);",
+      "status": "~",
+      "symbol": "SetFont",
+      "lisp": [
+        "window-font"
+      ],
+      "native": [
+        "wxl_set_window_font"
+      ],
+      "scope": "ABI65 copied font settings/enumeration or tab width1..16; no raw resource ownership. See docs/FONT-SETTINGS.md."
+    },
+    {
+      "header": "wx/fontenum.h",
+      "line": 67,
+      "declaration": "static wxArrayString GetFacenames(wxFontEncoding encoding = wxFONTENCODING_SYSTEM, bool fixedWidthOnly = false);",
+      "status": "~",
+      "symbol": "GetFacenames",
+      "lisp": [
+        "available-fonts"
+      ],
+      "native": [
+        "wxl_font_names"
+      ],
+      "scope": "ABI65 copied font settings/enumeration or tab width1..16; no raw resource ownership. See docs/FONT-SETTINGS.md."
+    },
+    {
+      "header": "wx/settings.h",
+      "line": 347,
+      "declaration": "static wxFont GetFont(wxSystemFont index);",
+      "status": "~",
+      "symbol": "GetFont",
+      "lisp": [
+        "default-font"
+      ],
+      "native": [
+        "wxl_default_font"
+      ],
+      "scope": "ABI65 copied font settings/enumeration or tab width1..16; no raw resource ownership. See docs/FONT-SETTINGS.md."
+    },
+    {
+      "header": "wx/stc/stc.h",
+      "line": 5170,
+      "declaration": "void SetTabWidth(int tabWidth);",
+      "status": "~",
+      "symbol": "SetTabWidth",
+      "lisp": [
+        "stc-tab-width"
+      ],
+      "native": [
+        "wxl_stc_set"
+      ],
+      "scope": "ABI65 copied font settings/enumeration or tab width1..16; no raw resource ownership. See docs/FONT-SETTINGS.md."
+    },
+    {
+      "header": "wx/stc/stc.h",
+      "line": 5175,
+      "declaration": "int GetTabWidth() const;",
+      "status": "~",
+      "symbol": "GetTabWidth",
+      "lisp": [
+        "stc-tab-width"
+      ],
+      "native": [
+        "wxl_stc_get"
+      ],
+      "scope": "ABI65 copied font settings/enumeration or tab width1..16; no raw resource ownership. See docs/FONT-SETTINGS.md."
     }
   ],
   "classes": {

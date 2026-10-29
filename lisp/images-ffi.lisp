@@ -32,3 +32,8 @@
 
 (cffi:defcfun ("wxl_system_colours" %system-colours) :int (foreground :pointer) (background :pointer))
 (cffi:defcfun ("wxl_set_window_colours" %set-window-colours) :int (id :uint64) (foreground :pointer) (background :pointer) (recursive :int))
+
+(cffi:defcfun ("wxl_font_names" %font-names) :pointer (fixed :int) (length :pointer))
+(cffi:defcfun ("wxl_default_font" %default-font) :pointer (fixed :int) (points :pointer) (mono :pointer) (length :pointer))
+(cffi:defcfun ("wxl_window_font" %window-font) :pointer (id :uint64) (points :pointer) (length :pointer))
+(cffi:defcfun ("wxl_set_window_font" %set-window-font) :int (id :uint64) (face :pointer) (length :size) (points :int) (recursive :int))

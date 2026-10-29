@@ -206,3 +206,66 @@ int wxl_set_window_colours(wxl_handle id,const unsigned char* foreground,const u
     }
 }); }
 }
+
+namespace {
+wxFont default_gui_font(bool fixed) {
+    wxFont font=fixed ? wxFont(wxFontInfo(13).Family(wxFONTFAMILY_TELETYPE)) : wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT);
+    require(font.IsOk(),"Cannot obtain native default font"); return font;
+}
+}
+extern "C" {
+const char* wxl_font_names(int fixed,size_t* length) { return metadata_string([&] {
+    ready(); require(fixed==0 || fixed==1,"Invalid font filter");
+    const auto names=wxFontEnumerator::GetFacenames(wxFONTENCODING_SYSTEM,fixed!=0);
+    require(names.size()<=16384,"Too many installed fonts"); wxString result;
+    for (const auto& name:names) if (!name.empty() && name.find('\n')==wxString::npos && name.find('\r')==wxString::npos) {
+        if (!result.empty()) result+='\n'; result+=name;
+    }
+    return result;
+},length); }
+const char* wxl_default_font(int fixed,int* points,int* mono,size_t* length) { return metadata_string([&] {
+    ready(); require(points && mono && (fixed==0 || fixed==1),"Invalid default font query");
+    const auto font=default_gui_font(fixed!=0); *points=font.GetPointSize(); *mono=font.IsFixedWidth() ? 1 : 0; return font.GetFaceName();
+},length); }
+const char* wxl_window_font(wxl_handle id,int* points,size_t* length) { return metadata_string([&] {
+    auto* object=window(id); require(points,"Missing font size output");
+    const auto font=object->GetFont(); require(font.IsOk(),"Window has no valid font");
+    *points=font.GetPointSize(); return font.GetFaceName();
+},length); }
+int wxl_set_window_font(wxl_handle id,const char* face,size_t length,int points,int recursive) { return status([&] {
+    auto* root=window(id); require(callback_depth==0,"Defer font changes until callbacks return");
+    require((recursive==0 || recursive==1) && length<=512,"Invalid font arguments");
+    wxFont font=default_gui_font(false);
+    if (face) {
+        require(length>0 && points>=6 && points<=72,"Font needs a face and point size6..72");
+        const auto name=menu_string(face,length,false); require(name.find('\n')==wxString::npos && name.find('\r')==wxString::npos,"Invalid font face");
+        font=wxFont(wxFontInfo(points).FaceName(name)); require(font.IsOk(),"Cannot create requested font");
+    } else require(length==0 && points==0,"Default font reset takes no face/size");
+    InputOperation operation(root);
+    // Snapshot the complete subtree and item selection state before SetFont.
+    // wxOSX recreates choice peers on font changes and drops their selection.
+    struct Target { wxWeakRef<wxWindow> window; int selection=wxNOT_FOUND; wxArrayInt selected; };
+    std::vector<Target> targets{{root}};
+    for (size_t i=0;i<targets.size();++i) if (auto* object=targets[i].window.get()) {
+        if (recursive) for (auto* child:object->GetChildren()) targets.push_back({child});
+        if (auto* choice=dynamic_cast<wxChoice*>(object)) targets[i].selection=choice->GetSelection();
+        else if (auto* list=dynamic_cast<wxListBox*>(object)) {
+            if (list->HasMultipleSelection()) list->GetSelections(targets[i].selected);
+            else targets[i].selection=list->GetSelection();
+        }
+    }
+    for (auto& target:targets) if (auto* object=target.window.get(); object && !window_destruction_pending(object)) {
+        auto* choice=dynamic_cast<wxChoice*>(object); auto* list=dynamic_cast<wxListBox*>(object);
+        std::unique_ptr<wxEventBlocker> blocker;
+        if (choice || list) blocker=std::make_unique<wxEventBlocker>(object);
+        object->SetFont(font);
+        if (choice) choice->SetSelection(target.selection);
+        else if (list) {
+            if (list->HasMultipleSelection()) {
+                for (unsigned i=0;i<list->GetCount();++i) list->SetSelection(i,target.selected.Index(i)!=wxNOT_FOUND);
+            } else list->SetSelection(target.selection);
+        }
+        object->InvalidateBestSize(); object->Refresh();
+    }
+}); }
+}

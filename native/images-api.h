@@ -31,3 +31,8 @@ WXL_API int wxl_window_colours(wxl_handle id,unsigned char* foreground,unsigned 
 
 WXL_API int wxl_system_colours(unsigned char* foreground,unsigned char* background);
 WXL_API int wxl_set_window_colours(wxl_handle id,const unsigned char* foreground,const unsigned char* background,int recursive);
+
+WXL_API const char* wxl_font_names(int fixed,size_t* length);
+WXL_API const char* wxl_default_font(int fixed,int* points,int* mono,size_t* length);
+WXL_API const char* wxl_window_font(wxl_handle id,int* points,size_t* length);
+WXL_API int wxl_set_window_font(wxl_handle id,const char* face,size_t length,int points,int recursive);

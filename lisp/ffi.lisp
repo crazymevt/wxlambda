@@ -98,7 +98,7 @@
           (if (probe-file local)
               (cffi:load-foreign-library local)
               (cffi:use-foreign-library wxlambda-native))))
-    (unless (= 64 (%abi-version)) (error "Unsupported wxlambda native ABI"))
+    (unless (= 65 (%abi-version)) (error "Unsupported wxlambda native ABI"))
     (setf *native-loaded* t))
   t)
 

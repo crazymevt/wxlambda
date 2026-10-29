@@ -3692,3 +3692,22 @@ example/tests pass on SBCL/CCL; existing SBCL splitter tests and KryptonEdit478
 UI checks pass. Pinned coverage test and docset build/check, SBCL/CCL actual reader
 and isolated install pass. Independent review found no actionable issues. Native
 Windows/Linux rendering and physical keyboard focus remain unverified.
+
+## ABI65 configurable fonts and tab widths
+
+Installed font enumeration, system GUI/TELETYPE defaults, copied window-font
+reader/recursive SETF, and bounded STC tab widths support KryptonEdit settings.
+AUI clones inherit the notebook's GUI font; editor/gutter fonts remain separate
+STC styles. See docs/FONT-SETTINGS.md and examples/font-settings.lisp. Main-thread
+queries, callback-write rejection and weak subtree InputOperation guards retained.
+Windows/Linux rendering/substitution remain unverified.
+
+ABI65 review found no native lifetime/reentry issues. App review caught loss of
+unavailable saved font faces; chooser now preserves/labells those values instead
+of resetting them on unrelated Apply. Real macOS tests also exposed wxChoice
+peer recreation losing selection after SetFont: the native setter now snapshots
+all weak targets/item selections before any change and restores under event
+blocking. Font enumeration/default/style/guard tests pass under SBCL/CCL.
+Native invariant fixture, pinned coverage test and actual SBCL/CCL docset checks
+pass. KryptonEdit settings UI and headless preference tests pass on macOS.
+Windows/Linux execution and physical font rendering remain unverified.

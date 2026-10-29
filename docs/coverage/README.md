@@ -19,13 +19,13 @@ and verify platforms when selected features or completeness claims require it.
 | Category | Headers | Tasks | Implemented | Partial | Pending | Context |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | [C1: Foundation, values, application, events, and base utilities](phase-c1.md) | 119 | 5292 | 7 | 144 | 5141 | 26 |
-| [C2: Windows, layout, basic controls, and input](phase-c2.md) | 82 | 2862 | 28 | 247 | 2587 | 0 |
-| [C3: Dialogs, navigation, menus, and application services](phase-c3.md) | 57 | 1875 | 0 | 127 | 1748 | 0 |
+| [C2: Windows, layout, basic controls, and input](phase-c2.md) | 82 | 2862 | 28 | 249 | 2585 | 0 |
+| [C3: Dialogs, navigation, menus, and application services](phase-c3.md) | 57 | 1875 | 0 | 128 | 1747 | 0 |
 | [C4: Models, complex controls, and document frameworks](phase-c4.md) | 20 | 2328 | 0 | 118 | 2210 | 4 |
-| [C5: Drawing, images, graphics, and printing](phase-c5.md) | 52 | 2245 | 0 | 47 | 2198 | 0 |
-| [C6: Optional libraries, rich content, and integration](phase-c6.md) | 57 | 8912 | 0 | 204 | 8708 | 380 |
+| [C5: Drawing, images, graphics, and printing](phase-c5.md) | 52 | 2245 | 0 | 48 | 2197 | 0 |
+| [C6: Optional libraries, rich content, and integration](phase-c6.md) | 57 | 8912 | 0 | 206 | 8706 | 380 |
 | [C7: Platform extensions and remaining portability APIs](phase-c7.md) | 11 | 279 | 0 | 0 | 279 | 3 |
-| Total | 398 | 23793 | 35 | 887 | 22871 | 413 |
+| Total | 398 | 23793 | 35 | 893 | 22865 | 413 |
 
 ## Classes and widgets
 
@@ -244,7 +244,7 @@ unreviewed inherited/platform behavior.
 | [wx/valtext.h](phase-c2.md#wxvaltexth) | 0 | 0 | 31 | 0 |
 | [wx/vlbox.h](phase-c2.md#wxvlboxh) | 0 | 0 | 31 | 0 |
 | [wx/vscroll.h](phase-c2.md#wxvscrollh) | 0 | 0 | 79 | 0 |
-| [wx/window.h](phase-c2.md#wxwindowh) | 14 | 34 | 338 | 0 |
+| [wx/window.h](phase-c2.md#wxwindowh) | 14 | 36 | 336 | 0 |
 | [wx/windowid.h](phase-c2.md#wxwindowidh) | 0 | 0 | 4 | 0 |
 | [wx/windowptr.h](phase-c2.md#wxwindowptrh) | 0 | 0 | 8 | 0 |
 | [wx/withimages.h](phase-c2.md#wxwithimagesh) | 0 | 0 | 14 | 0 |
@@ -297,7 +297,7 @@ unreviewed inherited/platform behavior.
 | [wx/progdlg.h](phase-c3.md#wxprogdlgh) | 0 | 0 | 30 | 0 |
 | [wx/propdlg.h](phase-c3.md#wxpropdlgh) | 0 | 0 | 21 | 0 |
 | [wx/richmsgdlg.h](phase-c3.md#wxrichmsgdlgh) | 0 | 0 | 12 | 0 |
-| [wx/settings.h](phase-c3.md#wxsettingsh) | 0 | 1 | 22 | 0 |
+| [wx/settings.h](phase-c3.md#wxsettingsh) | 0 | 2 | 21 | 0 |
 | [wx/simplebook.h](phase-c3.md#wxsimplebookh) | 0 | 0 | 9 | 0 |
 | [wx/splash.h](phase-c3.md#wxsplashh) | 0 | 0 | 12 | 0 |
 | [wx/statusbr.h](phase-c3.md#wxstatusbrh) | 0 | 6 | 34 | 0 |
@@ -363,7 +363,7 @@ unreviewed inherited/platform behavior.
 | [wx/dcscreen.h](phase-c5.md#wxdcscreenh) | 0 | 0 | 5 | 0 |
 | [wx/dcsvg.h](phase-c5.md#wxdcsvgh) | 0 | 0 | 26 | 0 |
 | [wx/font.h](phase-c5.md#wxfonth) | 0 | 5 | 106 | 0 |
-| [wx/fontenum.h](phase-c5.md#wxfontenumh) | 0 | 0 | 11 | 0 |
+| [wx/fontenum.h](phase-c5.md#wxfontenumh) | 0 | 1 | 10 | 0 |
 | [wx/fontmap.h](phase-c5.md#wxfontmaph) | 0 | 0 | 18 | 0 |
 | [wx/fontutil.h](phase-c5.md#wxfontutilh) | 0 | 0 | 32 | 0 |
 | [wx/gdicmn.h](phase-c5.md#wxgdicmnh) | 0 | 0 | 187 | 0 |
@@ -449,7 +449,7 @@ unreviewed inherited/platform behavior.
 | [wx/richtext/richtextxml.h](phase-c6.md#wxrichtextrichtextxmlh) | 0 | 0 | 12 | 0 |
 | [wx/richtooltip.h](phase-c6.md#wxrichtooltiph) | 0 | 0 | 12 | 0 |
 | [wx/sound.h](phase-c6.md#wxsoundh) | 0 | 0 | 15 | 0 |
-| [wx/stc/stc.h](phase-c6.md#wxstcstch) | 0 | 169 | 2921 | 0 |
+| [wx/stc/stc.h](phase-c6.md#wxstcstch) | 0 | 171 | 2919 | 0 |
 | [wx/webview.h](phase-c6.md#wxwebviewh) | 0 | 12 | 126 | 0 |
 | [wx/webviewarchivehandler.h](phase-c6.md#wxwebviewarchivehandlerh) | 0 | 0 | 3 | 0 |
 | [wx/webviewfshandler.h](phase-c6.md#wxwebviewfshandlerh) | 0 | 0 | 3 | 0 |

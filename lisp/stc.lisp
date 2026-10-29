@@ -162,3 +162,9 @@
   (cffi:with-foreign-objects ((fg :int64) (bg :int64) (present :int))
     (setf (cffi:mem-ref fg :int64) (if value (first value) 0) (cffi:mem-ref bg :int64) (if value (second value) 0))
     (call-setter (lambda () (%stc-selection-colours (handle control) 1 (if value 0 1) fg bg present)) t)) value)
+
+(defgeneric stc-tab-width (control))
+(defmethod stc-tab-width ((control styled-text-control)) (stc-native-get control 48 0))
+(defgeneric (setf stc-tab-width) (value control))
+(defmethod (setf stc-tab-width) (value (control styled-text-control))
+  (check-type value (integer 1 16)) (stc-native-set control 48 0 value) value)

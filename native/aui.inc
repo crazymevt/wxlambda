@@ -213,6 +213,9 @@ int wxl_aui_tab_colours(wxl_handle id,int write,int reset,int64_t* base,int64_t*
             auto custom=std::make_unique<FlatAuiTabArt>();
             custom->SetColour(stc_unpack_colour(*base)); custom->SetActiveColour(stc_unpack_colour(*active)); art=std::move(custom);
         }
+        art->SetNormalFont(book->GetFont());
+        wxFont selected=book->GetFont(); selected.SetWeight(wxFONTWEIGHT_BOLD);
+        art->SetSelectedFont(selected); art->SetMeasuringFont(selected);
         book->SetArtProvider(art.release());
         // SetArtProvider clones the art into each private group. If the height
         // is unchanged wxAUI does not resize the controls, leaving fresh generic

@@ -5769,5 +5769,49 @@
       "syntax": "(setf (wxlambda:stc-selection-colours window) value)",
       "description": "STYLED-TEXT-CONTROL; SETF takes NIL or (foreground-RGB24 background-RGB24). Returns supplied VALUE. Writes reject callbacks; defer them to a safe GUI boundary."
     }
+  },
+  {
+    "name": "available-fonts",
+    "kind": "function",
+    "arguments": "&KEY FIXED-WIDTH-P.",
+    "returns": "A sorted fresh list of installed face-name strings.",
+    "description": "Enumerate installed native fonts; optional fixed-width filtering. Main-thread active session; no font handles or installation.",
+    "scope": "Requires an active main-thread GUI session. No raw native font resources or installation; native substitution/rendering varies by platform. See docs/FONT-SETTINGS.md.",
+    "wxwidgets": "wxFontEnumerator::GetFacenames"
+  },
+  {
+    "name": "default-font",
+    "kind": "function",
+    "arguments": "&KEY FIXED-WIDTH-P.",
+    "returns": "(face point-size), plus fixed-width-p as a second value.",
+    "description": "Read the OS default GUI font, or a native TELETYPE-family font at13 points. Native font substitution is platform-dependent; inspect fixed-width result.",
+    "scope": "Requires an active main-thread GUI session. No raw native font resources or installation; native substitution/rendering varies by platform. See docs/FONT-SETTINGS.md.",
+    "wxwidgets": "wxSystemSettings::GetFont / wxFontInfo::Family"
+  },
+  {
+    "name": "window-font",
+    "kind": "generic-function",
+    "arguments": "WINDOW. SETF VALUE is NIL or (face point-size6..72); SETF :RECURSIVE-P optionally visits current descendants.",
+    "returns": "Fresh (face point-size); SETF returns supplied value.",
+    "description": "Read/copy native font metadata. NIL resets to current OS GUI font. Invalid names/sizes reject; fonts unavailable on a system can be substituted by the OS. Writes reject native callbacks and use weak subtree references plus InputOperation lifetime guards. Re-layout the application after changes. Does not style STC text or native menus/title bars. Choice/list selections survive recursive font changes without selection notifications, including wxOSX peer recreation.",
+    "scope": "Requires an active main-thread GUI session. No raw native font resources or installation; native substitution/rendering varies by platform. See docs/FONT-SETTINGS.md.",
+    "wxwidgets": "wxWindow::GetFont / SetFont",
+    "setf": {
+      "syntax": "(setf (wxlambda:window-font window :recursive-p t) value)",
+      "description": "WINDOW. SETF VALUE is NIL or (face point-size6..72); SETF :RECURSIVE-P optionally visits current descendants. Writes must be deferred from callbacks."
+    }
+  },
+  {
+    "name": "stc-tab-width",
+    "kind": "generic-function",
+    "arguments": "STYLED-TEXT-CONTROL. SETF VALUE is1..16 columns.",
+    "returns": "Native tab display width; SETF returns supplied value.",
+    "description": "Read/write tab stop width without rewriting tab characters or document history. Mutations use existing STC callback/operation guards.",
+    "scope": "Requires an active main-thread GUI session. No raw native font resources or installation; native substitution/rendering varies by platform. See docs/FONT-SETTINGS.md.",
+    "wxwidgets": "wxStyledTextCtrl::GetTabWidth / SetTabWidth",
+    "setf": {
+      "syntax": "(setf (wxlambda:stc-tab-width window) value)",
+      "description": "STYLED-TEXT-CONTROL. SETF VALUE is1..16 columns. Writes must be deferred from callbacks."
+    }
   }
 ]

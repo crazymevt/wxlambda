@@ -17,7 +17,7 @@ class or constructor does not imply full upstream coverage.
 
 ## Current coverage and remaining work
 
-0 implemented; 204 partial; 8708 pending; 380 context entries. Native gaps stay visible; feature priority is separate.
+0 implemented; 206 partial; 8706 pending; 380 context entries. Native gaps stay visible; feature priority is separate.
 
 Counts describe inventory entries, not distinct APIs or percent completion.
 See the [coverage summary](README.md) for phase/header comparisons.
@@ -6236,7 +6236,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/stc/stc.h)
 
-0 implemented; 169 partial; 2921 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
+0 implemented; 171 partial; 2919 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
 
 - [ ] [L17](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/stc/stc.h#L17) `#define wxSTC_INVALID_POSITION -1`
 - [ ] [L21](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/stc/stc.h#L21) `#define wxSTC_START 2000`
@@ -8821,8 +8821,8 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [ ] [L5147](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/stc/stc.h#L5147) `void BraceBadLight(int pos);`
 - [ ] [L5152](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/stc/stc.h#L5152) `void BraceBadLightIndicator(bool useSetting, int indicator);`
 - [ ] [L5158](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/stc/stc.h#L5158) `int BraceMatch(int pos, int maxReStyle=0);`
-- [ ] [L5170](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/stc/stc.h#L5170) `void SetTabWidth(int tabWidth);`
-- [ ] [L5175](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/stc/stc.h#L5175) `int GetTabWidth() const;`
+- [~] [L5170](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/stc/stc.h#L5170) `void SetTabWidth(int tabWidth);` — **Partial**: `stc-tab-width`; ABI: `wxl_stc_set`. ABI65 copied font settings/enumeration or tab width1..16; no raw resource ownership. See docs/FONT-SETTINGS.md.
+- [~] [L5175](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/stc/stc.h#L5175) `int GetTabWidth() const;` — **Partial**: `stc-tab-width`; ABI: `wxl_stc_get`. ABI65 copied font settings/enumeration or tab width1..16; no raw resource ownership. See docs/FONT-SETTINGS.md.
 - [ ] [L5182](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/stc/stc.h#L5182) `void ClearTabStops(int line);`
 - [ ] [L5189](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/stc/stc.h#L5189) `void AddTabStop(int line, int x);`
 - [ ] [L5196](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/stc/stc.h#L5196) `int GetNextTabStop(int line, int x);`
