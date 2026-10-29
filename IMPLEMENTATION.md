@@ -3583,3 +3583,22 @@ ancestry/query restrictions. No automatic system clipboard transfer occurred.
 See docs/KRYPTONEDIT-COVERAGE.md for the current capability/limitation report.
 Further bindings should follow a demonstrated application need, not inventory
 checkbox exhaustion; application integration is the next step.
+
+
+## WX package nickname (2026-10-29)
+
+WXLAMBDA now has the standard Common Lisp nickname WX. Package, class, function
+and SETF symbols are identical; ASDF/Quicklisp system name remains wxlambda and
+canonical docset package remains WXLAMBDA. No new exports, native bindings or ABI
+change (61); native coverage metadata remains unchanged. README/CLOS guide and
+the hello example document/use the short spelling. Independent review found no
+actionable issues.
+
+Normal Quicklisp fresh SBCL/CCL checks verify package/class/function/SETF identity
+and execute hello construction/callback setup with bounded GUI polling
+(quiet-run.KE4zFIuX). The initial interactive RUN harness stalled after example
+loading replaced its hook; it was stopped and superseded by the bounded check.
+No full-suite/native rebuild was needed for a package-only nickname. Pinned
+inventory regeneration and14 checks pass unchanged (quiet-run.YRDot8vM).
+Docset661 entries/all527 public exports, both-Lisp class/SETF coverage and zero
+checker problems pass (quiet-run.JcDA4ejS); final handoff regeneration follows.

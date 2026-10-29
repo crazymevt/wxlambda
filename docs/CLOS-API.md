@@ -1,5 +1,10 @@
 # CLOS widget API
 
+The `WXLAMBDA` package has the nickname `WX`: `wx:make-frame`,
+`wx:frame` and `(setf (wx:frame-title frame) "Title")` use the same symbols
+as their `wxlambda:` spellings. Load the ASDF/Quicklisp system as `"wxlambda"`;
+its system name and the docset's canonical `WXLAMBDA` package are unchanged.
+
 Widgets are native-backed CLOS instances. The public classes are `window`,
 `styled-text-control`, `aui-notebook`, `grid`, `web-view`, `drawing-canvas`, `activity-indicator`, `frame`, `toolbar`, `status-bar`, `panel`, `scrolled-panel`, `notebook`, `list-box`, `tree-control`, `splitter-window`, `button`, `text-control`, `label`, `checkbox`, `choice`,
 `gauge`, `slider`, `spin-control`, `radio-box`, `toggle-button`, `combo-box`, `date-picker`, `time-picker`, `search-control`, abstract `dialog`, and its `text-entry-dialog`, `single-choice-dialog`,

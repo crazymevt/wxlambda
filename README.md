@@ -34,6 +34,8 @@ lifetime/weak invalidation rules.
 The [CLOS API](docs/CLOS-API.md) provides subclass initargs/defaults/AFTER hooks,
 thin :CLASS-validating factories and canonical generic SETF. The current public
 API has 527 exports, 435 named generic operations and 122 generic property writers.
+The package nickname `WX` lets programs use `wx:make-frame` and other `wx:` names;
+Quicklisp/ASDF still loads the system as `"wxlambda"`.
 Styled text, native input, dynamic AUI tabs and splitter operations are documented in
 the [KryptonEdit coverage survey](docs/KRYPTONEDIT-COVERAGE.md).
 Native virtual callbacks are limited to the audited virtual-list text provider;

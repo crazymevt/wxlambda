@@ -1,6 +1,6 @@
 {
   "hello.lisp": {
-    "description": "Editable Unicode text and button callbacks with copied event payloads. Close the frame to exit.",
+    "description": "Editable Unicode text and button callbacks using the WX package nickname, with copied event payloads. Close the frame to exit.",
     "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/hello.lisp"
   },
   "layout.lisp": {
