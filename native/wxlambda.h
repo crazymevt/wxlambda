@@ -283,6 +283,9 @@ WXL_API int wxl_set_event_sash(uint64_t context, int position);
 /* Managed tree item tokens are not raw wxTreeItemId pointers. Status: 0/-1.
    wxQt tree creation is unavailable pending generation-safe async event translation. */
 WXL_API wxl_handle wxl_tree(wxl_handle parent);
+WXL_API wxl_handle wxl_tree_with_selection(wxl_handle parent,int multiple);
+WXL_API int wxl_tree_selections(wxl_handle owner,wxl_handle* items,size_t capacity,size_t* count);
+WXL_API int wxl_set_tree_selections(wxl_handle owner,const wxl_handle* items,size_t count);
 WXL_API int wxl_tree_add(wxl_handle tree, wxl_handle parent, const char *text, size_t length, wxl_handle *item);
 WXL_API int wxl_tree_query(wxl_handle tree, int field, wxl_handle *item); /* 0=root, 1=selection */
 WXL_API int wxl_tree_relative(wxl_handle item, int field, wxl_handle *relative); /* 0=parent, 1=first child, 2=next sibling */

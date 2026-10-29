@@ -269,7 +269,7 @@
     "kind": "generic-function",
     "arguments": "CONTROL is a live CHOICE, LIST-BOX, RADIO-BOX, COMBO-BOX, NOTEBOOK or TREE-CONTROL; NOTIFY is meaningful for the writer only.",
     "returns": "Index/NIL for choice/listbox/notebook; non-NIL index for radio-box; canonical TREE-ITEM/NIL for tree-control. COMBO-BOX returns native committed index/NIL, not highlighted popup state.",
-    "description": "Read current selection: an index for CHOICE/LIST-BOX/NOTEBOOK, or a canonical managed TREE-ITEM view for TREE-CONTROL, with NIL when no selection exists. Reader NOTIFY is ignored. Writes are silent by default; notifying choice/list writes emit synthetic events, while notebook/tree writes use native vetoable selection. Return of a requested assignment does not prove native acceptance. Populated tree writes require a live same-tree item; NIL is empty-tree no-op only. Root creation and structural edits silently normalize valid selection before idle. RADIO-BOX always has exactly one valid index; its explicit notifying write commits before a native-class command event, without veto or rollback. COMBO-BOX selection writes also set item text; NIL clears both text and selection. Arbitrary text writes do not promise a selected item. LIST-CONTROL is fixed single selection, NIL clears; silent by default, :notify T allows actual native selected/deselected events.",
+    "description": "Read current selection: an index for CHOICE/LIST-BOX/NOTEBOOK, or a canonical managed TREE-ITEM view for TREE-CONTROL, with NIL when no selection exists. Reader NOTIFY is ignored. Writes are silent by default; notifying choice/list writes emit synthetic events, while notebook/tree writes use native vetoable selection. Return of a requested assignment does not prove native acceptance. Default single-tree writes require a live same-tree item; NIL is empty-tree no-op only. For :MULTIPLE-P trees, the reader returns the first selected item and the setter replaces the set with one item or clears it with NIL. TREE-SELECTIONS exposes the complete set. Multi-tree structural edits preserve surviving selections. RADIO-BOX always has exactly one valid index; its explicit notifying write commits before a native-class command event, without veto or rollback. COMBO-BOX selection writes also set item text; NIL clears both text and selection. Arbitrary text writes do not promise a selected item. LIST-CONTROL is fixed single selection, NIL clears; silent by default, :notify T allows actual native selected/deselected events.",
     "scope": "Requires an active GUI session on the process main thread. Invalid/destroyed handles or unsupported native arguments signal NATIVE-ERROR; Lisp argument/type errors remain Lisp conditions. One GUI session per process. Widget behavior uses CLOS generic dispatch. Wrong receiver types signal Lisp dispatch conditions; native handle/state failures signal NATIVE-ERROR. RADIO-BOX: bounded :radio-selection command events; immutable copied index/native label, current borrowed contexts; no owned/synthetic/clone radio events. Fixed2..64 choices, mandatory valid zero-based selection, one row/column orientation. Active GUI session/native lifetime checks for widget operations; no standalone radio buttons, item mutation or full native parity. See docs/RADIO-GROUPS.md. Also specializes on AUI-NOTEBOOK; empty readNIL, nonempty integer writes only. Silent ChangeSelection versus native notifying/vetoable SetSelection; writer returns request, read actual state. Callback writes reject.",
     "wxwidgets": "wxChoice/wxListBox::GetSelection/SetSelection; wxNotebook::GetSelection/ChangeSelection/SetSelection (wxWidgets 3.2.12). wxTreeCtrl::GetSelection/SelectItem in ABI39. wxRadioBox::GetSelection/SetSelection. wxComboBox::GetSelection/SetSelection, wxTextEntry::ChangeValue.",
     "setf": {
@@ -2050,12 +2050,12 @@
     "syntax": "wxlambda:tree-control",
     "arguments": "Concrete WINDOW subclass with visible-root single-selection wxTreeCtrl.",
     "returns": "Native-backed tree window.",
-    "description": "Managed item tokens and canonical views, native selection/veto and bounded structural navigation.",
-    "scope": "Active main-thread session; managed tree-control/items only. Native tokens validate owner/lifetime; no raw IDs/adoption, multiselect, item data, icons, label editing, sorting, drag/drop, virtual models or arbitrary styles. Same-tree writes and nested native loops defer during tree callbacks. wxQt tree construction is explicitly unavailable pending generation-safe asynchronous event translation.",
+    "description": "Managed item tokens and canonical views, native selection/veto and bounded structural navigation. Supports :MULTIPLE-P T at construction (ABI70).",
+    "scope": "Active main-thread session; managed tree-control/items only. Native tokens validate owner/lifetime; No raw IDs/adoption, item data, label editing, sorting, virtual models or arbitrary styles. ABI66 supports copied icons, ABI69 guarded drag, and ABI70 multiple selection. Same-tree writes and nested native loops defer during tree callbacks. wxQt tree construction is explicitly unavailable pending generation-safe asynchronous event translation.",
     "wxwidgets": "wxTreeCtrl (wxWidgets 3.2.12).",
     "construction": {
-      "syntax": "(make-instance 'wxlambda:tree-control :parent parent)",
-      "description": "PARENT required. Fixed single-selection/root-line/button styles, other native constructor defaults. Subclass slots/defaults/AFTER hooks and managed initialization rollback apply."
+      "syntax": "(make-instance 'wxlambda:tree-control :parent parent :multiple-p t)",
+      "description": "PARENT required. :MULTIPLE-P defaults NIL for single selection; T enables wxTR_MULTIPLE. Root-line/button styles fixed. Subclass hooks and managed initialization rollback apply."
     }
   },
   {
@@ -2065,7 +2065,7 @@
     "arguments": "Borrowed canonical resource view, not a WINDOW.",
     "returns": "View of a checked native tree item.",
     "description": "Created by tree creation/traversal/selection APIs; EQ identity stable while native token is live. Retained views/snapshots can become invalid after subtree/owner deletion. Tokens are not raw native IDs.",
-    "scope": "Active main-thread session; managed tree-control/items only. Native tokens validate owner/lifetime; no raw IDs/adoption, multiselect, item data, icons, label editing, sorting, drag/drop, virtual models or arbitrary styles. Same-tree writes and nested native loops defer during tree callbacks. wxQt tree construction is explicitly unavailable pending generation-safe asynchronous event translation.",
+    "scope": "Active main-thread session; managed tree-control/items only. Native tokens validate owner/lifetime; No raw IDs/adoption, item data, label editing, sorting, virtual models or arbitrary styles. ABI66 supports copied icons, ABI69 guarded drag, and ABI70 multiple selection. Same-tree writes and nested native loops defer during tree callbacks. wxQt tree construction is explicitly unavailable pending generation-safe asynchronous event translation.",
     "wxwidgets": "Checked wxTreeItemId adapter (wxWidgets 3.2.12); no raw pointer constructor.",
     "construction": {
       "syntax": "Obtain through ADD-TREE-ROOT, APPEND-TREE-ITEM, TREE-ROOT, traversal or selection.",
@@ -2075,10 +2075,10 @@
   {
     "name": "make-tree-control",
     "kind": "generic-function",
-    "arguments": "PARENT; :CLASS defaults TREE-CONTROL, forwarded initargs.",
+    "arguments": "PARENT; :CLASS defaults TREE-CONTROL, forwarded initargs. Optional :MULTIPLE-P T enables native multiple selection; default NIL retains single selection.",
     "returns": "New TREE-CONTROL/subclass.",
     "description": "Thin validated native-backed CLOS factory.",
-    "scope": "Active main-thread session; managed tree-control/items only. Native tokens validate owner/lifetime; no raw IDs/adoption, multiselect, item data, icons, label editing, sorting, drag/drop, virtual models or arbitrary styles. Same-tree writes and nested native loops defer during tree callbacks. wxQt tree construction is explicitly unavailable pending generation-safe asynchronous event translation.",
+    "scope": "Active main-thread session; managed tree-control/items only. Native tokens validate owner/lifetime; No raw IDs/adoption, item data, label editing, sorting, virtual models or arbitrary styles. ABI66 supports copied icons, ABI69 guarded drag, and ABI70 multiple selection. Same-tree writes and nested native loops defer during tree callbacks. wxQt tree construction is explicitly unavailable pending generation-safe asynchronous event translation.",
     "wxwidgets": "wxTreeCtrl constructor (wxWidgets 3.2.12)."
   },
   {
@@ -2087,7 +2087,7 @@
     "arguments": "TREE control, VALUE string without NUL.",
     "returns": "Canonical TREE-ITEM root view.",
     "description": "Require empty tree; create/select root silently under native event blockers and publish checked token/view. Empty text valid. Failed Lisp view publication deletes new native item.",
-    "scope": "Active main-thread session; managed tree-control/items only. Native tokens validate owner/lifetime; no raw IDs/adoption, multiselect, item data, icons, label editing, sorting, drag/drop, virtual models or arbitrary styles. Same-tree writes and nested native loops defer during tree callbacks. wxQt tree construction is explicitly unavailable pending generation-safe asynchronous event translation.",
+    "scope": "Active main-thread session; managed tree-control/items only. Native tokens validate owner/lifetime; No raw IDs/adoption, item data, label editing, sorting, virtual models or arbitrary styles. ABI66 supports copied icons, ABI69 guarded drag, and ABI70 multiple selection. Same-tree writes and nested native loops defer during tree callbacks. wxQt tree construction is explicitly unavailable pending generation-safe asynchronous event translation.",
     "wxwidgets": "wxTreeCtrl::AddRoot (wxWidgets 3.2.12)."
   },
   {
@@ -2096,7 +2096,7 @@
     "arguments": "PARENT live TREE-ITEM, VALUE string without NUL.",
     "returns": "New canonical TREE-ITEM child view.",
     "description": "Append in native order, preserving selection silently. Native parent owner is inferred and checked; empty/duplicate text valid.",
-    "scope": "Active main-thread session; managed tree-control/items only. Native tokens validate owner/lifetime; no raw IDs/adoption, multiselect, item data, icons, label editing, sorting, drag/drop, virtual models or arbitrary styles. Same-tree writes and nested native loops defer during tree callbacks. wxQt tree construction is explicitly unavailable pending generation-safe asynchronous event translation.",
+    "scope": "Active main-thread session; managed tree-control/items only. Native tokens validate owner/lifetime; No raw IDs/adoption, item data, label editing, sorting, virtual models or arbitrary styles. ABI66 supports copied icons, ABI69 guarded drag, and ABI70 multiple selection. Same-tree writes and nested native loops defer during tree callbacks. wxQt tree construction is explicitly unavailable pending generation-safe asynchronous event translation.",
     "wxwidgets": "wxTreeCtrl::AppendItem (wxWidgets 3.2.12)."
   },
   {
@@ -2105,7 +2105,7 @@
     "arguments": "TREE control.",
     "returns": "Canonical root view or NIL if empty.",
     "description": "Read root identity without raw adoption.",
-    "scope": "Active main-thread session; managed tree-control/items only. Native tokens validate owner/lifetime; no raw IDs/adoption, multiselect, item data, icons, label editing, sorting, drag/drop, virtual models or arbitrary styles. Same-tree writes and nested native loops defer during tree callbacks. wxQt tree construction is explicitly unavailable pending generation-safe asynchronous event translation.",
+    "scope": "Active main-thread session; managed tree-control/items only. Native tokens validate owner/lifetime; No raw IDs/adoption, item data, label editing, sorting, virtual models or arbitrary styles. ABI66 supports copied icons, ABI69 guarded drag, and ABI70 multiple selection. Same-tree writes and nested native loops defer during tree callbacks. wxQt tree construction is explicitly unavailable pending generation-safe asynchronous event translation.",
     "wxwidgets": "wxTreeCtrl::GetRootItem (wxWidgets 3.2.12)."
   },
   {
@@ -2114,7 +2114,7 @@
     "arguments": "ITEM live TREE-ITEM.",
     "returns": "Canonical parent view or NIL for root.",
     "description": "Read native parent identity.",
-    "scope": "Active main-thread session; managed tree-control/items only. Native tokens validate owner/lifetime; no raw IDs/adoption, multiselect, item data, icons, label editing, sorting, drag/drop, virtual models or arbitrary styles. Same-tree writes and nested native loops defer during tree callbacks. wxQt tree construction is explicitly unavailable pending generation-safe asynchronous event translation.",
+    "scope": "Active main-thread session; managed tree-control/items only. Native tokens validate owner/lifetime; No raw IDs/adoption, item data, label editing, sorting, virtual models or arbitrary styles. ABI66 supports copied icons, ABI69 guarded drag, and ABI70 multiple selection. Same-tree writes and nested native loops defer during tree callbacks. wxQt tree construction is explicitly unavailable pending generation-safe asynchronous event translation.",
     "wxwidgets": "wxTreeCtrl::GetItemParent (wxWidgets 3.2.12)."
   },
   {
@@ -2123,7 +2123,7 @@
     "arguments": "ITEM live TREE-ITEM.",
     "returns": "Fresh ordered list of canonical child views.",
     "description": "Iterate native first-child/next-sibling without exposing cookies or raw IDs.",
-    "scope": "Active main-thread session; managed tree-control/items only. Native tokens validate owner/lifetime; no raw IDs/adoption, multiselect, item data, icons, label editing, sorting, drag/drop, virtual models or arbitrary styles. Same-tree writes and nested native loops defer during tree callbacks. wxQt tree construction is explicitly unavailable pending generation-safe asynchronous event translation.",
+    "scope": "Active main-thread session; managed tree-control/items only. Native tokens validate owner/lifetime; No raw IDs/adoption, item data, label editing, sorting, virtual models or arbitrary styles. ABI66 supports copied icons, ABI69 guarded drag, and ABI70 multiple selection. Same-tree writes and nested native loops defer during tree callbacks. wxQt tree construction is explicitly unavailable pending generation-safe asynchronous event translation.",
     "wxwidgets": "wxTreeCtrl::GetFirstChild/GetNextSibling (wxWidgets 3.2.12)."
   },
   {
@@ -2132,7 +2132,7 @@
     "arguments": "ITEM live TREE-ITEM.",
     "returns": "Independent UTF-8 Lisp string.",
     "description": "Read current native label, not historical snapshot contents.",
-    "scope": "Active main-thread session; managed tree-control/items only. Native tokens validate owner/lifetime; no raw IDs/adoption, multiselect, item data, icons, label editing, sorting, drag/drop, virtual models or arbitrary styles. Same-tree writes and nested native loops defer during tree callbacks. wxQt tree construction is explicitly unavailable pending generation-safe asynchronous event translation.",
+    "scope": "Active main-thread session; managed tree-control/items only. Native tokens validate owner/lifetime; No raw IDs/adoption, item data, label editing, sorting, virtual models or arbitrary styles. ABI66 supports copied icons, ABI69 guarded drag, and ABI70 multiple selection. Same-tree writes and nested native loops defer during tree callbacks. wxQt tree construction is explicitly unavailable pending generation-safe asynchronous event translation.",
     "wxwidgets": "wxTreeCtrl::GetItemText/SetItemText (wxWidgets 3.2.12).",
     "setf": {
       "syntax": "(setf (wxlambda:tree-item-text item) value)",
@@ -2145,7 +2145,7 @@
     "arguments": "ITEM live TREE-ITEM.",
     "returns": "Native expansion T/NIL.",
     "description": "Read actual expansion; an expansion request may have no effect for leaves.",
-    "scope": "Active main-thread session; managed tree-control/items only. Native tokens validate owner/lifetime; no raw IDs/adoption, multiselect, item data, icons, label editing, sorting, drag/drop, virtual models or arbitrary styles. Same-tree writes and nested native loops defer during tree callbacks. wxQt tree construction is explicitly unavailable pending generation-safe asynchronous event translation.",
+    "scope": "Active main-thread session; managed tree-control/items only. Native tokens validate owner/lifetime; No raw IDs/adoption, item data, label editing, sorting, virtual models or arbitrary styles. ABI66 supports copied icons, ABI69 guarded drag, and ABI70 multiple selection. Same-tree writes and nested native loops defer during tree callbacks. wxQt tree construction is explicitly unavailable pending generation-safe asynchronous event translation.",
     "wxwidgets": "wxTreeCtrl::IsExpanded/Expand/Collapse (wxWidgets 3.2.12).",
     "setf": {
       "syntax": "(setf (wxlambda:tree-item-expanded-p item) value)",
@@ -2158,7 +2158,7 @@
     "arguments": "ITEM TREE-ITEM view.",
     "returns": "T if token and owner live, NIL for deleted/deleting owner.",
     "description": "Checks registry/owner, stronger than native IsOk non-null test. Active session required; stale views never revive on native address reuse.",
-    "scope": "Active main-thread session; managed tree-control/items only. Native tokens validate owner/lifetime; no raw IDs/adoption, multiselect, item data, icons, label editing, sorting, drag/drop, virtual models or arbitrary styles. Same-tree writes and nested native loops defer during tree callbacks. wxQt tree construction is explicitly unavailable pending generation-safe asynchronous event translation.",
+    "scope": "Active main-thread session; managed tree-control/items only. Native tokens validate owner/lifetime; No raw IDs/adoption, item data, label editing, sorting, virtual models or arbitrary styles. ABI66 supports copied icons, ABI69 guarded drag, and ABI70 multiple selection. Same-tree writes and nested native loops defer during tree callbacks. wxQt tree construction is explicitly unavailable pending generation-safe asynchronous event translation.",
     "wxwidgets": "Checked wxTreeItemId/owner registry (wxWidgets 3.2.12)."
   },
   {
@@ -2167,7 +2167,7 @@
     "arguments": "ITEM live TREE-ITEM.",
     "returns": "T after success.",
     "description": "Invalidate/delete whole subtree. Preserve an outside selection, otherwise choose surviving parent/root silently; deleting root leaves empty. Revision-prune invalid cached views.",
-    "scope": "Active main-thread session; managed tree-control/items only. Native tokens validate owner/lifetime; no raw IDs/adoption, multiselect, item data, icons, label editing, sorting, drag/drop, virtual models or arbitrary styles. Same-tree writes and nested native loops defer during tree callbacks. wxQt tree construction is explicitly unavailable pending generation-safe asynchronous event translation.",
+    "scope": "Active main-thread session; managed tree-control/items only. Native tokens validate owner/lifetime; No raw IDs/adoption, item data, label editing, sorting, virtual models or arbitrary styles. ABI66 supports copied icons, ABI69 guarded drag, and ABI70 multiple selection. Same-tree writes and nested native loops defer during tree callbacks. wxQt tree construction is explicitly unavailable pending generation-safe asynchronous event translation.",
     "wxwidgets": "wxTreeCtrl::Delete and internal delete notifications (wxWidgets 3.2.12)."
   },
   {
@@ -5896,5 +5896,22 @@
     "description": "Run a bounded native move drag with a temporary same-tree drop target. Copied private per-drag identity prevents foreign, stale and cross-tree drops. This returns a target only; it does not mutate items or touch files. Starts synchronously while the original mouse event is live, required by Cocoa.",
     "scope": "GUI main thread inside the matching native BEGIN callback registered with :WITH-CONTEXT T only; calls deferred to idle reject. Existing tree callback and input guards span the nested drag and target teardown. Other callbacks, stale sources and recursive drag reject. Built-in tree dragging stays vetoed. Defer application/tree mutations until the callback returns. Callback errors propagate at the drag boundary after tracking completes.",
     "wxwidgets": "wxDropSource::DoDragDrop, wxDropTarget, wxTreeEvent; wxWidgets 3.2.12."
+  },
+  {
+    "name": "tree-selections",
+    "kind": "generic-function",
+    "syntax": "(wxlambda:tree-selections tree)",
+    "arguments": "Live TREE-CONTROL; setter accepts a finite list of at most100000 distinct live same-tree TREE-ITEMs.",
+    "returns": "Fresh list of selected canonical TREE-ITEMs; setter returns the supplied list.",
+    "description": "Get or silently replace the whole selected set. :MULTIPLE-P T at construction enables native range/toggle selection. Multi trees may have no selection. The singular SELECTION accessor returns the first selected item and its setter replaces the set with one item or NIL.",
+    "scope": "GUI main thread. Readbacks are callback-safe; replacement uses tree mutation guards and rejects during callbacks/dragging. All supplied items validate before mutation. Default trees stay single-select; single trees require one selected item while nonempty. Native returned order is not an application MRU order.",
+    "wxwidgets": "wxTreeCtrl::GetSelections, SelectItem, UnselectAll; wxTR_MULTIPLE.",
+    "setf": {
+      "syntax": "(setf (wxlambda:tree-selections tree) items)",
+      "arguments": "Finite distinct same-tree items.",
+      "returns": "ITEMS.",
+      "description": "Silently replace the selected set after validating every item.",
+      "scope": "Tree mutation guards apply."
+    }
   }
 ]

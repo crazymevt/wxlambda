@@ -4578,7 +4578,7 @@
         "wxl_tree_select",
         "wxl_tree_item_alive"
       ],
-      "scope": "Managed visible-root single-selection TREE-CONTROL only. Checked owner/item tokens with canonical views, subtree/owner invalidation, silent selection normalization and native selection/veto guards. No raw IDs/adoption, other tree styles, multiselect, images/item data, label editing or full native class parity. wxQt backend unavailable pending generation-safe async item events; hosted GTK/MSW runtime still unverified."
+      "scope": "Managed visible-root single-selection TREE-CONTROL only. Checked owner/item tokens with canonical views, subtree/owner invalidation, silent selection normalization and native selection/veto guards. No raw IDs/adoption, other tree styles, multiselect, images/item data, label editing or full native class parity. wxQt backend unavailable pending generation-safe async item events; hosted GTK/MSW runtime still unverified. ABI70 adds :MULTIPLE-P T through wxl_tree_with_selection."
     },
     {
       "header": "wx/treectrl.h",
@@ -4614,7 +4614,7 @@
         "wxl_tree_select",
         "wxl_tree_item_alive"
       ],
-      "scope": "Managed visible-root single-selection TREE-CONTROL only. Checked owner/item tokens with canonical views, subtree/owner invalidation, silent selection normalization and native selection/veto guards. No raw IDs/adoption, other tree styles, multiselect, images/item data, label editing or full native class parity. wxQt backend unavailable pending generation-safe async item events; hosted GTK/MSW runtime still unverified."
+      "scope": "Managed visible-root single-selection TREE-CONTROL only. Checked owner/item tokens with canonical views, subtree/owner invalidation, silent selection normalization and native selection/veto guards. No raw IDs/adoption, other tree styles, multiselect, images/item data, label editing or full native class parity. wxQt backend unavailable pending generation-safe async item events; hosted GTK/MSW runtime still unverified. ABI70 adds :MULTIPLE-P T through wxl_tree_with_selection."
     },
     {
       "header": "wx/treectrl.h",
@@ -4650,7 +4650,7 @@
         "wxl_tree_select",
         "wxl_tree_item_alive"
       ],
-      "scope": "Managed visible-root single-selection TREE-CONTROL only. Checked owner/item tokens with canonical views, subtree/owner invalidation, silent selection normalization and native selection/veto guards. No raw IDs/adoption, other tree styles, multiselect, images/item data, label editing or full native class parity. wxQt backend unavailable pending generation-safe async item events; hosted GTK/MSW runtime still unverified."
+      "scope": "Managed visible-root single-selection TREE-CONTROL only. Checked owner/item tokens with canonical views, subtree/owner invalidation, silent selection normalization and native selection/veto guards. No raw IDs/adoption, other tree styles, multiselect, images/item data, label editing or full native class parity. wxQt backend unavailable pending generation-safe async item events; hosted GTK/MSW runtime still unverified. ABI70 adds :MULTIPLE-P T through wxl_tree_with_selection."
     },
     {
       "header": "wx/treectrl.h",
@@ -4686,7 +4686,7 @@
         "wxl_tree_select",
         "wxl_tree_item_alive"
       ],
-      "scope": "Managed visible-root single-selection TREE-CONTROL only. Checked owner/item tokens with canonical views, subtree/owner invalidation, silent selection normalization and native selection/veto guards. No raw IDs/adoption, other tree styles, multiselect, images/item data, label editing or full native class parity. wxQt backend unavailable pending generation-safe async item events; hosted GTK/MSW runtime still unverified."
+      "scope": "Managed visible-root single-selection TREE-CONTROL only. Checked owner/item tokens with canonical views, subtree/owner invalidation, silent selection normalization and native selection/veto guards. No raw IDs/adoption, other tree styles, multiselect, images/item data, label editing or full native class parity. wxQt backend unavailable pending generation-safe async item events; hosted GTK/MSW runtime still unverified. ABI70 adds :MULTIPLE-P T through wxl_tree_with_selection."
     },
     {
       "header": "wx/treectrl.h",
@@ -4722,7 +4722,7 @@
         "wxl_tree_select",
         "wxl_tree_item_alive"
       ],
-      "scope": "Managed visible-root single-selection TREE-CONTROL only. Checked owner/item tokens with canonical views, subtree/owner invalidation, silent selection normalization and native selection/veto guards. No raw IDs/adoption, other tree styles, multiselect, images/item data, label editing or full native class parity. wxQt backend unavailable pending generation-safe async item events; hosted GTK/MSW runtime still unverified."
+      "scope": "Managed visible-root single-selection TREE-CONTROL only. Checked owner/item tokens with canonical views, subtree/owner invalidation, silent selection normalization and native selection/veto guards. No raw IDs/adoption, other tree styles, multiselect, images/item data, label editing or full native class parity. wxQt backend unavailable pending generation-safe async item events; hosted GTK/MSW runtime still unverified. ABI70 adds :MULTIPLE-P T through wxl_tree_with_selection."
     },
     {
       "header": "wx/treectrl.h",
@@ -4758,7 +4758,7 @@
         "wxl_tree_select",
         "wxl_tree_item_alive"
       ],
-      "scope": "Managed visible-root single-selection TREE-CONTROL only. Checked owner/item tokens with canonical views, subtree/owner invalidation, silent selection normalization and native selection/veto guards. No raw IDs/adoption, other tree styles, multiselect, images/item data, label editing or full native class parity. wxQt backend unavailable pending generation-safe async item events; hosted GTK/MSW runtime still unverified."
+      "scope": "Managed visible-root single-selection TREE-CONTROL only. Checked owner/item tokens with canonical views, subtree/owner invalidation, silent selection normalization and native selection/veto guards. No raw IDs/adoption, other tree styles, multiselect, images/item data, label editing or full native class parity. wxQt backend unavailable pending generation-safe async item events; hosted GTK/MSW runtime still unverified. ABI70 adds :MULTIPLE-P T through wxl_tree_with_selection."
     },
     {
       "header": "wx/treectrl.h",
@@ -4794,7 +4794,7 @@
         "wxl_tree_select",
         "wxl_tree_item_alive"
       ],
-      "scope": "Managed visible-root single-selection TREE-CONTROL only. Checked owner/item tokens with canonical views, subtree/owner invalidation, silent selection normalization and native selection/veto guards. No raw IDs/adoption, other tree styles, multiselect, images/item data, label editing or full native class parity. wxQt backend unavailable pending generation-safe async item events; hosted GTK/MSW runtime still unverified."
+      "scope": "Managed visible-root single-selection TREE-CONTROL only. Checked owner/item tokens with canonical views, subtree/owner invalidation, silent selection normalization and native selection/veto guards. No raw IDs/adoption, other tree styles, multiselect, images/item data, label editing or full native class parity. wxQt backend unavailable pending generation-safe async item events; hosted GTK/MSW runtime still unverified. ABI70 adds :MULTIPLE-P T through wxl_tree_with_selection."
     },
     {
       "header": "wx/treectrl.h",
@@ -4830,7 +4830,7 @@
         "wxl_tree_select",
         "wxl_tree_item_alive"
       ],
-      "scope": "Managed visible-root single-selection TREE-CONTROL only. Checked owner/item tokens with canonical views, subtree/owner invalidation, silent selection normalization and native selection/veto guards. No raw IDs/adoption, other tree styles, multiselect, images/item data, label editing or full native class parity. wxQt backend unavailable pending generation-safe async item events; hosted GTK/MSW runtime still unverified."
+      "scope": "Managed visible-root single-selection TREE-CONTROL only. Checked owner/item tokens with canonical views, subtree/owner invalidation, silent selection normalization and native selection/veto guards. No raw IDs/adoption, other tree styles, multiselect, images/item data, label editing or full native class parity. wxQt backend unavailable pending generation-safe async item events; hosted GTK/MSW runtime still unverified. ABI70 adds :MULTIPLE-P T through wxl_tree_with_selection."
     },
     {
       "header": "wx/treectrl.h",
@@ -4866,7 +4866,7 @@
         "wxl_tree_select",
         "wxl_tree_item_alive"
       ],
-      "scope": "Managed visible-root single-selection TREE-CONTROL only. Checked owner/item tokens with canonical views, subtree/owner invalidation, silent selection normalization and native selection/veto guards. No raw IDs/adoption, other tree styles, multiselect, images/item data, label editing or full native class parity. wxQt backend unavailable pending generation-safe async item events; hosted GTK/MSW runtime still unverified."
+      "scope": "Managed visible-root single-selection TREE-CONTROL only. Checked owner/item tokens with canonical views, subtree/owner invalidation, silent selection normalization and native selection/veto guards. No raw IDs/adoption, other tree styles, multiselect, images/item data, label editing or full native class parity. wxQt backend unavailable pending generation-safe async item events; hosted GTK/MSW runtime still unverified. ABI70 adds :MULTIPLE-P T through wxl_tree_with_selection."
     },
     {
       "header": "wx/treectrl.h",
@@ -4902,7 +4902,7 @@
         "wxl_tree_select",
         "wxl_tree_item_alive"
       ],
-      "scope": "Managed visible-root single-selection TREE-CONTROL only. Checked owner/item tokens with canonical views, subtree/owner invalidation, silent selection normalization and native selection/veto guards. No raw IDs/adoption, other tree styles, multiselect, images/item data, label editing or full native class parity. wxQt backend unavailable pending generation-safe async item events; hosted GTK/MSW runtime still unverified."
+      "scope": "Managed visible-root single-selection TREE-CONTROL only. Checked owner/item tokens with canonical views, subtree/owner invalidation, silent selection normalization and native selection/veto guards. No raw IDs/adoption, other tree styles, multiselect, images/item data, label editing or full native class parity. wxQt backend unavailable pending generation-safe async item events; hosted GTK/MSW runtime still unverified. ABI70 adds :MULTIPLE-P T through wxl_tree_with_selection."
     },
     {
       "header": "wx/treectrl.h",
@@ -4938,7 +4938,7 @@
         "wxl_tree_select",
         "wxl_tree_item_alive"
       ],
-      "scope": "Managed visible-root single-selection TREE-CONTROL only. Checked owner/item tokens with canonical views, subtree/owner invalidation, silent selection normalization and native selection/veto guards. No raw IDs/adoption, other tree styles, multiselect, images/item data, label editing or full native class parity. wxQt backend unavailable pending generation-safe async item events; hosted GTK/MSW runtime still unverified."
+      "scope": "Managed visible-root single-selection TREE-CONTROL only. Checked owner/item tokens with canonical views, subtree/owner invalidation, silent selection normalization and native selection/veto guards. No raw IDs/adoption, other tree styles, multiselect, images/item data, label editing or full native class parity. wxQt backend unavailable pending generation-safe async item events; hosted GTK/MSW runtime still unverified. ABI70 adds :MULTIPLE-P T through wxl_tree_with_selection."
     },
     {
       "header": "wx/treectrl.h",
@@ -4974,7 +4974,7 @@
         "wxl_tree_select",
         "wxl_tree_item_alive"
       ],
-      "scope": "Managed visible-root single-selection TREE-CONTROL only. Checked owner/item tokens with canonical views, subtree/owner invalidation, silent selection normalization and native selection/veto guards. No raw IDs/adoption, other tree styles, multiselect, images/item data, label editing or full native class parity. wxQt backend unavailable pending generation-safe async item events; hosted GTK/MSW runtime still unverified."
+      "scope": "Managed visible-root single-selection TREE-CONTROL only. Checked owner/item tokens with canonical views, subtree/owner invalidation, silent selection normalization and native selection/veto guards. No raw IDs/adoption, other tree styles, multiselect, images/item data, label editing or full native class parity. wxQt backend unavailable pending generation-safe async item events; hosted GTK/MSW runtime still unverified. ABI70 adds :MULTIPLE-P T through wxl_tree_with_selection."
     },
     {
       "header": "wx/treectrl.h",
@@ -5010,7 +5010,7 @@
         "wxl_tree_select",
         "wxl_tree_item_alive"
       ],
-      "scope": "Managed visible-root single-selection TREE-CONTROL only. Checked owner/item tokens with canonical views, subtree/owner invalidation, silent selection normalization and native selection/veto guards. No raw IDs/adoption, other tree styles, multiselect, images/item data, label editing or full native class parity. wxQt backend unavailable pending generation-safe async item events; hosted GTK/MSW runtime still unverified."
+      "scope": "Managed visible-root single-selection TREE-CONTROL only. Checked owner/item tokens with canonical views, subtree/owner invalidation, silent selection normalization and native selection/veto guards. No raw IDs/adoption, other tree styles, multiselect, images/item data, label editing or full native class parity. wxQt backend unavailable pending generation-safe async item events; hosted GTK/MSW runtime still unverified. ABI70 adds :MULTIPLE-P T through wxl_tree_with_selection."
     },
     {
       "header": "wx/treectrl.h",
@@ -5046,7 +5046,7 @@
         "wxl_tree_select",
         "wxl_tree_item_alive"
       ],
-      "scope": "Managed visible-root single-selection TREE-CONTROL only. Checked owner/item tokens with canonical views, subtree/owner invalidation, silent selection normalization and native selection/veto guards. No raw IDs/adoption, other tree styles, multiselect, images/item data, label editing or full native class parity. wxQt backend unavailable pending generation-safe async item events; hosted GTK/MSW runtime still unverified."
+      "scope": "Managed visible-root single-selection TREE-CONTROL only. Checked owner/item tokens with canonical views, subtree/owner invalidation, silent selection normalization and native selection/veto guards. No raw IDs/adoption, other tree styles, multiselect, images/item data, label editing or full native class parity. wxQt backend unavailable pending generation-safe async item events; hosted GTK/MSW runtime still unverified. ABI70 adds :MULTIPLE-P T through wxl_tree_with_selection."
     },
     {
       "header": "wx/treectrl.h",
@@ -5082,7 +5082,7 @@
         "wxl_tree_select",
         "wxl_tree_item_alive"
       ],
-      "scope": "Managed visible-root single-selection TREE-CONTROL only. Checked owner/item tokens with canonical views, subtree/owner invalidation, silent selection normalization and native selection/veto guards. No raw IDs/adoption, other tree styles, multiselect, images/item data, label editing or full native class parity. wxQt backend unavailable pending generation-safe async item events; hosted GTK/MSW runtime still unverified."
+      "scope": "Managed visible-root single-selection TREE-CONTROL only. Checked owner/item tokens with canonical views, subtree/owner invalidation, silent selection normalization and native selection/veto guards. No raw IDs/adoption, other tree styles, multiselect, images/item data, label editing or full native class parity. wxQt backend unavailable pending generation-safe async item events; hosted GTK/MSW runtime still unverified. ABI70 adds :MULTIPLE-P T through wxl_tree_with_selection."
     },
     {
       "header": "wx/treectrl.h",
@@ -5118,7 +5118,7 @@
         "wxl_tree_select",
         "wxl_tree_item_alive"
       ],
-      "scope": "Managed visible-root single-selection TREE-CONTROL only. Checked owner/item tokens with canonical views, subtree/owner invalidation, silent selection normalization and native selection/veto guards. No raw IDs/adoption, other tree styles, multiselect, images/item data, label editing or full native class parity. wxQt backend unavailable pending generation-safe async item events; hosted GTK/MSW runtime still unverified."
+      "scope": "Managed visible-root single-selection TREE-CONTROL only. Checked owner/item tokens with canonical views, subtree/owner invalidation, silent selection normalization and native selection/veto guards. No raw IDs/adoption, other tree styles, multiselect, images/item data, label editing or full native class parity. wxQt backend unavailable pending generation-safe async item events; hosted GTK/MSW runtime still unverified. ABI70 adds :MULTIPLE-P T through wxl_tree_with_selection."
     },
     {
       "header": "wx/treectrl.h",
@@ -5150,7 +5150,7 @@
         "wxl_tree",
         "wxl_tree_delete"
       ],
-      "scope": "Internal token invalidation observer only; no public deletion event kind/binding/snapshot. wxQt backend unavailable pending generation-safe async item events; hosted GTK/MSW runtime still unverified."
+      "scope": "Internal token invalidation observer only; no public deletion event kind/binding/snapshot. wxQt backend unavailable pending generation-safe async item events; hosted GTK/MSW runtime still unverified. ABI70 adds :MULTIPLE-P T through wxl_tree_with_selection."
     },
     {
       "header": "wx/treectrl.h",
@@ -18225,6 +18225,36 @@
         "wxl_tree_drag"
       ],
       "scope": "ABI69: synchronous private same-tree drag in the matching native BEGIN callback registered with :WITH-CONTEXT T; idle/stale/recursive entry rejects. Defer only post-drag mutations. See TREE-DRAG.md."
+    },
+    {
+      "header": "wx/treectrl.h",
+      "line": 685,
+      "declaration": "virtual size_t GetSelections(wxArrayTreeItemIds& selection) const;",
+      "status": "~",
+      "symbol": "wxTreeCtrl",
+      "lisp": [
+        "tree-selections"
+      ],
+      "native": [
+        "wxl_tree_selections",
+        "wxl_set_tree_selections"
+      ],
+      "scope": "ABI70 checked copied multi-selection lists and silent replacement; default single selection retained. See REPORT-TREE-VIEWS.md."
+    },
+    {
+      "header": "wx/treectrl.h",
+      "line": 1010,
+      "declaration": "virtual void UnselectAll();",
+      "status": "~",
+      "symbol": "wxTreeCtrl",
+      "lisp": [
+        "tree-selections"
+      ],
+      "native": [
+        "wxl_tree_selections",
+        "wxl_set_tree_selections"
+      ],
+      "scope": "ABI70 checked copied multi-selection lists and silent replacement; default single selection retained. See REPORT-TREE-VIEWS.md."
     }
   ],
   "classes": {

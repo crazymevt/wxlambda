@@ -1509,7 +1509,7 @@ bool process_deferred_ui_action() {
 
 }
 extern "C" {
-int wxl_abi_version() { return 69; }
+int wxl_abi_version() { return 70; }
 const char* wxl_last_error() { return error.c_str(); }
 int wxl_clipboard_text_available() {
     return boolean_result([&] {
@@ -2839,14 +2839,24 @@ int wxl_set_event_sash(uint64_t token, int position) {
         require(splitter && event.GetEventType() == wxEVT_SPLITTER_SASH_POS_CHANGING, "Only sash-changing contexts can edit proposed position");
         splitter->SetSashPosition(position); });
 }
-wxl_handle wxl_tree(wxl_handle parent) {
+wxArrayTreeItemIds tree_selected_items(wxTreeCtrl* tree) {
+    wxArrayTreeItemIds result;
+    if (tree->HasFlag(wxTR_MULTIPLE)) tree->GetSelections(result);
+    else if (tree->GetSelection().IsOk()) result.Add(tree->GetSelection());
+    return result;
+}
+wxTreeItemId first_tree_selection(wxTreeCtrl* tree) {
+    const auto items=tree_selected_items(tree);return items.empty()?wxTreeItemId():items[0];
+}
+wxl_handle wxl_tree_with_selection(wxl_handle parent,int multiple) {
     return create([&]() -> wxl_handle {
 #if defined(__WXQT__)
         (void)parent;
         throw std::runtime_error("Tree controls are unavailable on wxQt: asynchronous item events need generation-safe translation");
 #else
+        require(multiple==0 || multiple==1,"Invalid tree selection style");
         auto tree = std::make_unique<ManagedWindow<wxTreeCtrl>>(window(parent), wxID_ANY, wxDefaultPosition, wxDefaultSize,
-                                                             wxTR_HAS_BUTTONS | wxTR_LINES_AT_ROOT | wxTR_SINGLE);
+                         wxTR_HAS_BUTTONS | wxTR_LINES_AT_ROOT | (multiple?wxTR_MULTIPLE:wxTR_SINGLE));
         const auto id = track(tree.get());
         tree_owners.emplace(tree.get(), id);
         tree->Bind(wxEVT_TREE_DELETE_ITEM, [id](wxTreeEvent& event) {
@@ -2856,6 +2866,25 @@ wxl_handle wxl_tree(wxl_handle parent) {
         });
         tree.release(); return id;
 #endif
+    });
+}
+wxl_handle wxl_tree(wxl_handle parent) {return wxl_tree_with_selection(parent,0);}
+int wxl_tree_selections(wxl_handle owner,wxl_handle* items,size_t capacity,size_t* count) {
+    return status([&]{require(count,"Null selection count");auto* tree=as<wxTreeCtrl>(owner);
+        const auto selected=tree_selected_items(tree);*count=selected.size();
+        if(!items){require(capacity==0,"Null selection output");return;}
+        require(capacity>=selected.size(),"Selection output too small");
+        for(size_t i=0;i<selected.size();++i){items[i]=tree_token(tree,selected[i]);require(items[i],"Unmanaged selection");}
+    });
+}
+int wxl_set_tree_selections(wxl_handle owner,const wxl_handle* items,size_t count) {
+    return status([&]{auto* tree=as<wxTreeCtrl>(owner);TreeOperation operation(tree);
+        require(count<=100000 && (items || !count),"Invalid selection list");
+        require(tree->HasFlag(wxTR_MULTIPLE) || count==1 || (!count&&!tree->GetRootItem().IsOk()),"Single tree requires one selected item");
+        std::unordered_set<wxl_handle> unique;std::vector<wxTreeItemId> selected;
+        for(size_t i=0;i<count;++i){const auto& node=tree_node(items[i]);require(node.owner==owner&&unique.insert(items[i]).second,"Foreign/duplicate selection item");selected.push_back(node.native);}
+        wxEventBlocker changing(tree,wxEVT_TREE_SEL_CHANGING),changed(tree,wxEVT_TREE_SEL_CHANGED);
+        tree->UnselectAll();for(const auto& item:selected)tree->SelectItem(item,true);
     });
 }
 int wxl_tree_add(wxl_handle owner, wxl_handle parent, const char* value, size_t length, wxl_handle* result) {
@@ -2868,14 +2897,14 @@ int wxl_tree_add(wxl_handle owner, wxl_handle parent, const char* value, size_t 
         if (parent) { const auto& node = tree_node(parent); require(node.owner == owner, "Item belongs to another tree"); native_parent = node.native; }
         else require(!tree->GetRootItem().IsOk(), "Tree already has a root");
         wxEventBlocker changing(tree, wxEVT_TREE_SEL_CHANGING), changed(tree, wxEVT_TREE_SEL_CHANGED);
-        const auto selected = tree->GetSelection();
+        const auto selected = tree->HasFlag(wxTR_MULTIPLE)?wxTreeItemId():first_tree_selection(tree);
         const auto native = parent ? tree->AppendItem(native_parent, text) : tree->AddRoot(text);
         require(native.IsOk(), "Unable to create tree item");
         const auto id = next_handle++;
         try {
             tree_nodes.emplace(id, TreeNode{owner, parent, tree, native, {}});
             if (parent) tree_nodes.at(parent).children.insert(id);
-            tree->SelectItem(parent && selected.IsOk() ? selected : tree->GetRootItem());
+            if(!tree->HasFlag(wxTR_MULTIPLE))tree->SelectItem(parent && selected.IsOk() ? selected : tree->GetRootItem());
         } catch (...) { if (parent && tree_nodes.count(parent)) tree_nodes.at(parent).children.erase(id); tree_nodes.erase(id); tree->Delete(native); throw; }
         *result = id;
     });
@@ -2884,7 +2913,7 @@ int wxl_tree_query(wxl_handle owner, int field, wxl_handle* result) {
     return status([&] {
         require(result && (field == 0 || field == 1), "Invalid tree query");
         auto* tree = as<wxTreeCtrl>(owner);
-        const auto native = field == 0 ? tree->GetRootItem() : tree->GetSelection();
+        const auto native = field == 0 ? tree->GetRootItem() : first_tree_selection(tree);
         *result = tree_token(tree, native);
         require(!native.IsOk() || *result, "Unmanaged native tree item");
     });
@@ -2917,14 +2946,14 @@ int wxl_set_tree_expanded(wxl_handle id, int expanded) {
         require(expanded == 0 || expanded == 1, "Invalid tree expansion flag");
         const auto& node = tree_node(id); auto* tree = as<wxTreeCtrl>(node.owner); TreeOperation operation(tree);
         wxEventBlocker changing(tree, wxEVT_TREE_SEL_CHANGING), changed(tree, wxEVT_TREE_SEL_CHANGED);
-        auto selected = tree->GetSelection();
+        auto selected = tree->HasFlag(wxTR_MULTIPLE)?wxTreeItemId():first_tree_selection(tree);
         auto cursor = tree_token(tree, selected);
         while (!expanded && cursor && tree_nodes.count(cursor)) {
             if (cursor == id) { selected = node.native; break; }
             cursor = tree_nodes.at(cursor).parent;
         }
         if (expanded) tree->Expand(node.native); else tree->Collapse(node.native);
-        tree->SelectItem(selected.IsOk() ? selected : tree->GetRootItem());
+        if(!tree->HasFlag(wxTR_MULTIPLE))tree->SelectItem(selected.IsOk() ? selected : tree->GetRootItem());
     });
 }
 int wxl_tree_delete(wxl_handle id) {
@@ -2932,11 +2961,12 @@ int wxl_tree_delete(wxl_handle id) {
         const auto& node = tree_node(id); auto* tree = as<wxTreeCtrl>(node.owner); const auto native = node.native;
         TreeOperation operation(tree);
         wxEventBlocker changing(tree, wxEVT_TREE_SEL_CHANGING), changed(tree, wxEVT_TREE_SEL_CHANGED);
-        const auto selected = tree->GetSelection();
+        const auto selected = tree->HasFlag(wxTR_MULTIPLE)?wxTreeItemId():first_tree_selection(tree);
         const auto selected_token = tree_token(tree, selected);
         const auto parent = node.parent;
         invalidate_tree_subtree(id);
         tree->Delete(native);
+        if(tree->HasFlag(wxTR_MULTIPLE))return;
         if (selected_token && tree_nodes.count(selected_token)) tree->SelectItem(selected);
         else if (parent && tree_nodes.count(parent)) tree->SelectItem(tree_nodes.at(parent).native);
         else if (tree->GetRootItem().IsOk()) tree->SelectItem(tree->GetRootItem());
@@ -2947,11 +2977,10 @@ int wxl_tree_select(wxl_handle owner, wxl_handle item, int notify) {
     return status([&] {
         require(notify == 0 || notify == 1, "Invalid tree notification flag");
         auto* tree = as<wxTreeCtrl>(owner); TreeOperation operation(tree);
-        require(item || !tree->GetRootItem().IsOk(), "Nonempty trees require a selected item");
-        if (!item) return;
-        const auto& node = tree_node(item); require(node.owner == owner, "Item belongs to another tree");
-        const auto native = node.native;
-        auto change = [&] { tree->SelectItem(native); };
+        require(item || tree->HasFlag(wxTR_MULTIPLE) || !tree->GetRootItem().IsOk(), "Nonempty trees require a selected item");
+        wxTreeItemId native;
+        if(item){const auto& node=tree_node(item);require(node.owner==owner,"Item belongs to another tree");native=node.native;}
+        auto change = [&] { if(tree->HasFlag(wxTR_MULTIPLE))tree->UnselectAll();if(native.IsOk())tree->SelectItem(native); };
         if (notify) change(); else { wxEventBlocker changing(tree, wxEVT_TREE_SEL_CHANGING), changed(tree, wxEVT_TREE_SEL_CHANGED); change(); }
     });
 }

@@ -165,3 +165,18 @@ Run `sbcl --load ~/quicklisp/setup.lisp --load examples/report-views.lisp --eval
 ABI68 adds `:tree-begin-drag` source item/client point snapshots. Built-in dragging
 remains vetoed; see [Guarded tree dragging](TREE-DRAG.md) for synchronous
 `drag-tree-item` in its BEGIN callback and native lifetime boundaries.
+
+## Multiple tree selection (ABI70)
+
+`make-tree-control :multiple-p t` uses wxTR_MULTIPLE. `tree-selections` returns
+all selected items; its SETF silently replaces the set after validating every
+item and rejects duplicates/foreign/stale items. Empty selection is supported.
+`selection` returns the first selected item; its SETF replaces the set with one
+item or NIL. Default single-select trees retain their existing behavior.
+
+Native range/toggle mouse selection works through the platform tree control.
+Appending items preserves selection without scanning the selected set. Expanding
+or collapsing does not force a selected item; deleting entries preserves surviving
+selections. Drag APIs still return one source/target; the application snapshots
+`tree-selections` in the contextual BEGIN callback to implement batch operations.
+See `examples/multi-tree.lisp` and `tests/multi-tree.lisp`.

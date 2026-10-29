@@ -1,0 +1,16 @@
+(load (merge-pathnames "../examples/multi-tree.lisp" *load-truename*))
+(wxlambda:with-application ()
+  (assert (wxlambda-multi-tree:exercise))
+  (let* ((frame (wxlambda:make-frame)) (tree (wxlambda:make-tree-control frame :multiple-p t))
+         (other (wxlambda:make-tree-control frame))
+         (root (wxlambda:add-tree-root tree "Root")) (foreign (wxlambda:add-tree-root other "Other")))
+    (unwind-protect
+         (progn
+           (setf (wxlambda:tree-selections tree) (list root))
+           (assert (handler-case (progn (setf (wxlambda:tree-selections tree) (list root foreign)) nil) (wxlambda:native-error () t)))
+           (assert (equal (list root) (wxlambda:tree-selections tree)))
+           (assert (handler-case (progn (setf (wxlambda:tree-selections tree) (list root root)) nil) (wxlambda:native-error () t)))
+           (assert (equal (list root) (wxlambda:tree-selections tree)))
+           (assert (handler-case (progn (setf (wxlambda:tree-selections tree) '(nil)) nil) (error () t))))
+      (wxlambda:destroy-window frame) (wxlambda:process-events))))
+(format t "Multi-tree selection checks passed.~%")

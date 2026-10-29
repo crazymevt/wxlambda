@@ -7,7 +7,7 @@
            #:web-view #:make-web-view #:web-view-url #:web-view-title #:web-view-busy-p #:set-web-page #:run-web-script #:web-view-can-go-back-p #:web-view-can-go-forward-p #:web-view-go-back #:web-view-go-forward #:web-view-reload #:web-view-stop
            #:activity-indicator #:make-activity-indicator #:activity-running-p #:drawing-canvas #:make-drawing-canvas #:canvas-content #:canvas-client-size #:save-canvas-image #:search-control #:make-search-control #:search-hint #:time-picker #:make-time-picker #:clock-time #:event-time #:date-picker #:make-date-picker #:calendar-date #:event-date #:tooltip-text #:focus-window #:navigate-focus #:scrolled-panel #:make-scrolled-panel #:scroll-rate #:scroll-position #:scroll-extent #:fit-scroll-content #:combo-box #:make-combo-box #:toggle-button #:make-toggle-button #:radio-box #:make-radio-box #:splitter-window #:make-splitter-window #:split-window #:splitter-pane #:splitter-split-p
            #:splitter-orientation #:splitter-sash-position #:splitter-minimum-pane-size #:splitter-sash-gravity #:event-sash-position
-           #:drag-tree-item #:tree-control #:tree-item #:make-tree-control #:add-tree-root #:append-tree-item
+           #:tree-selections #:drag-tree-item #:tree-control #:tree-item #:make-tree-control #:add-tree-root #:append-tree-item
            #:tree-icons #:tree-item-icon #:directory-dialog #:make-directory-dialog #:directory-dialog-path #:tree-root #:tree-item-parent #:tree-item-children #:tree-item-text #:tree-item-expanded-p
            #:tree-item-alive-p #:delete-tree-item #:event-tree-item
            #:list-box #:make-list-box #:item-count #:item-text #:append-item #:delete-item #:clear-items

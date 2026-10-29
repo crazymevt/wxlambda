@@ -21,11 +21,11 @@ and verify platforms when selected features or completeness claims require it.
 | [C1: Foundation, values, application, events, and base utilities](phase-c1.md) | 119 | 5292 | 7 | 144 | 5141 | 26 |
 | [C2: Windows, layout, basic controls, and input](phase-c2.md) | 82 | 2862 | 28 | 253 | 2581 | 0 |
 | [C3: Dialogs, navigation, menus, and application services](phase-c3.md) | 57 | 1875 | 0 | 135 | 1740 | 0 |
-| [C4: Models, complex controls, and document frameworks](phase-c4.md) | 20 | 2328 | 0 | 121 | 2207 | 4 |
+| [C4: Models, complex controls, and document frameworks](phase-c4.md) | 20 | 2328 | 0 | 123 | 2205 | 4 |
 | [C5: Drawing, images, graphics, and printing](phase-c5.md) | 52 | 2245 | 0 | 48 | 2197 | 0 |
 | [C6: Optional libraries, rich content, and integration](phase-c6.md) | 57 | 8912 | 0 | 206 | 8706 | 380 |
 | [C7: Platform extensions and remaining portability APIs](phase-c7.md) | 11 | 279 | 0 | 0 | 279 | 3 |
-| Total | 398 | 23793 | 35 | 907 | 22851 | 413 |
+| Total | 398 | 23793 | 35 | 909 | 22849 | 413 |
 
 ## Classes and widgets
 
@@ -335,7 +335,7 @@ unreviewed inherited/platform behavior.
 | [wx/persist/window.h](phase-c4.md#wxpersistwindowh) | 0 | 0 | 5 | 1 |
 | [wx/persist.h](phase-c4.md#wxpersisth) | 0 | 0 | 29 | 0 |
 | [wx/treebase.h](phase-c4.md#wxtreebaseh) | 0 | 2 | 42 | 0 |
-| [wx/treectrl.h](phase-c4.md#wxtreectrlh) | 0 | 40 | 136 | 0 |
+| [wx/treectrl.h](phase-c4.md#wxtreectrlh) | 0 | 42 | 134 | 0 |
 | [wx/treelist.h](phase-c4.md#wxtreelisth) | 0 | 0 | 92 | 0 |
 
 ### C5: Drawing, images, graphics, and printing

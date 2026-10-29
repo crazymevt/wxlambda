@@ -282,5 +282,9 @@
   "tree-drag.lisp": {
     "description": "Synchronous native drag in its BEGIN callback; only the completion action defers. EXERCISE verifies idle/hidden entry rejection; START is interactive.",
     "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/tree-drag.lisp --eval '(wxlambda-tree-drag:start)'"
+  },
+  "multi-tree.lisp": {
+    "description": "Native multi-selection; exercise checks preserving selected items across append/expand/delete and silent clearing. START shows range/toggle selection.",
+    "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/multi-tree.lisp --eval '(wxlambda-multi-tree:start)'"
   }
 }

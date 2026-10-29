@@ -653,3 +653,9 @@ Drag startup additionally requires BIND-EVENT :WITH-CONTEXT T: observer bindings
 deliver snapshots but create no native EventScope. The KryptonEdit binding and
 example were corrected to use contextual callbacks. A regression checks the
 actual Explorer registration flag, rather than only invoking its helper.
+
+ABI70 adds constructor :MULTIPLE-P and TREE-SELECTIONS get/SETF with checked
+same-tree finite lists. Default single-tree contracts remain. Multi append,
+collapse and deletion avoid forced selection; silent NIL clearing is blocked
+from native notifications. Independent review caught an MSW silent-clear path
+and quadratic append traversal; both were corrected before validation.

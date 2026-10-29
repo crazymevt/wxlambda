@@ -25,6 +25,7 @@ def scenarios():
     yield "input-events", "input-events.lisp", {}
     yield "thread-events", "thread-events.lisp", {}
     yield "report-views", "report-views.lisp", {}
+    yield "multi-tree", "multi-tree.lisp", {}
     yield "images", "images.lisp", {}
     yield "aui-notebook", "aui-notebook.lisp", {}
     yield "grid", "grid.lisp", {}
