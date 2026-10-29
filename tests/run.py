@@ -21,6 +21,7 @@ def scenarios():
     yield "window-state", "window-state.lisp", {}
     yield "window-metadata", "window-metadata.lisp", {}
     yield "clos", "clos.lisp", {}
+    yield "focus-navigation", "focus-navigation.lisp", {}
     yield "scrolling-panels", "scrolling-panels.lisp", {}
     yield "combo-boxes", "combo-boxes.lisp", {}
     yield "toggle-buttons", "toggle-buttons.lisp", {}

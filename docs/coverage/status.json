@@ -7832,6 +7832,62 @@
         "wxl_fit_scroll_content"
       ],
       "scope": "Internal content/client bound check only; Bounded wxScrolled<wxPanel> specialization only (wxScrolledWindow alias), native-backed child container, sizer fit/current virtual extent, rate0..256 and position0..1000000 pairs. Supported pixel extent<=1000000 checked at explicit mutation; inherited/native layout not globally constrained. Protected synchronous native operations and callback-time mutation deferral. Private helper retained; no managed stack APIs, drawing/target/coordinate/scroll events, raw adoption or full class parity. See docs/SCROLLING-PANELS.md."
+    },
+    {
+      "header": "wx/window.h",
+      "line": 565,
+      "declaration": "virtual void SetFocus();",
+      "status": "x",
+      "symbol": "wxWindow::SetFocus",
+      "lisp": [
+        "focus-window"
+      ],
+      "native": [
+        "wxl_focus_window"
+      ],
+      "scope": "Bounded shown/enabled managed WINDOW receivers, GUI thread, callback deferral and synchronous lifetime/native-entry guards. No native virtual override or OS activation guarantee; docs/FOCUS-NAVIGATION.md."
+    },
+    {
+      "header": "wx/window.h",
+      "line": 574,
+      "declaration": "virtual void SetFocusFromKbd();",
+      "status": "x",
+      "symbol": "wxWindow::SetFocusFromKbd",
+      "lisp": [
+        "focus-window"
+      ],
+      "native": [
+        "wxl_focus_window"
+      ],
+      "scope": "Bounded shown/enabled managed WINDOW receivers, GUI thread, callback deferral and synchronous lifetime/native-entry guards. No native virtual override or OS activation guarantee; docs/FOCUS-NAVIGATION.md."
+    },
+    {
+      "header": "wx/panel.h",
+      "line": 136,
+      "declaration": "virtual void SetFocus();",
+      "status": "x",
+      "symbol": "wxPanel::SetFocus",
+      "lisp": [
+        "focus-window"
+      ],
+      "native": [
+        "wxl_focus_window"
+      ],
+      "scope": "Bounded shown/enabled managed WINDOW receivers, GUI thread, callback deferral and synchronous lifetime/native-entry guards. No native virtual override or OS activation guarantee; docs/FOCUS-NAVIGATION.md."
+    },
+    {
+      "header": "wx/window.h",
+      "line": 2913,
+      "declaration": "bool Navigate(int flags = wxNavigationKeyEvent::IsForward);",
+      "status": "~",
+      "symbol": "wxWindow::Navigate",
+      "lisp": [
+        "navigate-focus"
+      ],
+      "native": [
+        "wxl_navigate_focus"
+      ],
+      "scope": "Bounded shown/enabled managed WINDOW receivers, GUI thread, callback deferral and synchronous lifetime/native-entry guards. No native virtual override or OS activation guarantee; docs/FOCUS-NAVIGATION.md. Only IsForward/IsBackward; WinChange unbound."
     }
   ],
   "classes": {

@@ -2554,7 +2554,7 @@
     "arguments": "Native-backed slider, :parent required, :minimum0/:maximum100/:value0, :orientation :horizontal or :vertical.",
     "returns": "Concrete native-backed widget.",
     "description": "Native-backed slider, :parent required, :minimum0/:maximum100/:value0, :orientation :horizontal or :vertical.",
-    "scope": "Active main-thread session; native handle/type/lifetime checks. Supported endpoints±1000000 with minimum<maximum. Same-control numeric writes and protected lifetime/modal/clipboard/pump entry defer during source numeric/forwarded text callbacks. See docs/NUMERIC-INPUT.md for intermediate spin edits, supported scope and unverified ports.",
+    "scope": "Active main-thread session; native handle/type/lifetime checks. Supported endpoints\u00b11000000 with minimum<maximum. Same-control numeric writes and protected lifetime/modal/clipboard/pump entry defer during source numeric/forwarded text callbacks. See docs/NUMERIC-INPUT.md for intermediate spin edits, supported scope and unverified ports.",
     "wxwidgets": "wxSlider (wxWidgets3.2.12).",
     "syntax": "wxlambda:slider",
     "construction": {
@@ -2568,7 +2568,7 @@
     "arguments": "Native-backed decimal integer spin, :parent required, :minimum0/:maximum100/:value0.",
     "returns": "Concrete native-backed widget with arrows and editable native text.",
     "description": "Native-backed decimal integer spin, :parent required, :minimum0/:maximum100/:value0.",
-    "scope": "Active main-thread session; native handle/type/lifetime checks. Supported endpoints±1000000 with minimum<maximum. Same-control numeric writes and protected lifetime/modal/clipboard/pump entry defer during source numeric/forwarded text callbacks. See docs/NUMERIC-INPUT.md for intermediate spin edits, supported scope and unverified ports.",
+    "scope": "Active main-thread session; native handle/type/lifetime checks. Supported endpoints\u00b11000000 with minimum<maximum. Same-control numeric writes and protected lifetime/modal/clipboard/pump entry defer during source numeric/forwarded text callbacks. See docs/NUMERIC-INPUT.md for intermediate spin edits, supported scope and unverified ports.",
     "wxwidgets": "wxSpinCtrl (wxWidgets3.2.12).",
     "syntax": "wxlambda:spin-control",
     "construction": {
@@ -2582,7 +2582,7 @@
     "arguments": "PARENT plus :class/:minimum/:maximum/:value/:orientation and subclass initargs.",
     "returns": "New SLIDER/subclass.",
     "description": "PARENT plus :class/:minimum/:maximum/:value/:orientation and subclass initargs.",
-    "scope": "Active main-thread session; native handle/type/lifetime checks. Supported endpoints±1000000 with minimum<maximum. Same-control numeric writes and protected lifetime/modal/clipboard/pump entry defer during source numeric/forwarded text callbacks. See docs/NUMERIC-INPUT.md for intermediate spin edits, supported scope and unverified ports.",
+    "scope": "Active main-thread session; native handle/type/lifetime checks. Supported endpoints\u00b11000000 with minimum<maximum. Same-control numeric writes and protected lifetime/modal/clipboard/pump entry defer during source numeric/forwarded text callbacks. See docs/NUMERIC-INPUT.md for intermediate spin edits, supported scope and unverified ports.",
     "wxwidgets": "wxSlider::Create (wxWidgets3.2.12)."
   },
   {
@@ -2591,7 +2591,7 @@
     "arguments": "PARENT plus :class/:minimum/:maximum/:value and subclass initargs.",
     "returns": "New SPIN-CONTROL/subclass.",
     "description": "PARENT plus :class/:minimum/:maximum/:value and subclass initargs.",
-    "scope": "Active main-thread session; native handle/type/lifetime checks. Supported endpoints±1000000 with minimum<maximum. Same-control numeric writes and protected lifetime/modal/clipboard/pump entry defer during source numeric/forwarded text callbacks. See docs/NUMERIC-INPUT.md for intermediate spin edits, supported scope and unverified ports.",
+    "scope": "Active main-thread session; native handle/type/lifetime checks. Supported endpoints\u00b11000000 with minimum<maximum. Same-control numeric writes and protected lifetime/modal/clipboard/pump entry defer during source numeric/forwarded text callbacks. See docs/NUMERIC-INPUT.md for intermediate spin edits, supported scope and unverified ports.",
     "wxwidgets": "wxSpinCtrl::Create (wxWidgets3.2.12)."
   },
   {
@@ -2600,7 +2600,7 @@
     "arguments": "SLIDER or SPIN-CONTROL; :notify keyword for SETF (default NIL).",
     "returns": "Bounded integer. SETF returns supplied integer.",
     "description": "SLIDER or SPIN-CONTROL; :notify keyword for SETF (default NIL).",
-    "scope": "Active main-thread session; native handle/type/lifetime checks. Supported endpoints±1000000 with minimum<maximum. Same-control numeric writes and protected lifetime/modal/clipboard/pump entry defer during source numeric/forwarded text callbacks. See docs/NUMERIC-INPUT.md for intermediate spin edits, supported scope and unverified ports.",
+    "scope": "Active main-thread session; native handle/type/lifetime checks. Supported endpoints\u00b11000000 with minimum<maximum. Same-control numeric writes and protected lifetime/modal/clipboard/pump entry defer during source numeric/forwarded text callbacks. See docs/NUMERIC-INPUT.md for intermediate spin edits, supported scope and unverified ports.",
     "wxwidgets": "wxSlider::GetValue/SetValue / wxSpinCtrl::GetTextValue/GetValue/SetValue (wxWidgets3.2.12).",
     "setf": {
       "syntax": "(setf (wxlambda:numeric-value control :notify t) value)",
@@ -2613,7 +2613,7 @@
     "arguments": "SLIDER or SPIN-CONTROL. SETF accepts exact two-element integer list (minimum maximum).",
     "returns": "Fresh list of two bounds. SETF returns supplied list and silently clamps current value.",
     "description": "SLIDER or SPIN-CONTROL. SETF accepts exact two-element integer list (minimum maximum).",
-    "scope": "Active main-thread session; native handle/type/lifetime checks. Supported endpoints±1000000 with minimum<maximum. Same-control numeric writes and protected lifetime/modal/clipboard/pump entry defer during source numeric/forwarded text callbacks. See docs/NUMERIC-INPUT.md for intermediate spin edits, supported scope and unverified ports.",
+    "scope": "Active main-thread session; native handle/type/lifetime checks. Supported endpoints\u00b11000000 with minimum<maximum. Same-control numeric writes and protected lifetime/modal/clipboard/pump entry defer during source numeric/forwarded text callbacks. See docs/NUMERIC-INPUT.md for intermediate spin edits, supported scope and unverified ports.",
     "wxwidgets": "wxSlider / wxSpinCtrl::GetMin/GetMax/SetRange (wxWidgets3.2.12).",
     "setf": {
       "syntax": "(setf (wxlambda:numeric-range control) (list minimum maximum))",
@@ -2626,7 +2626,7 @@
     "arguments": "SLIDER. Immutable constructor orientation.",
     "returns": "Keyword :horizontal or :vertical.",
     "description": "SLIDER. Immutable constructor orientation.",
-    "scope": "Active main-thread session; native handle/type/lifetime checks. Supported endpoints±1000000 with minimum<maximum. Same-control numeric writes and protected lifetime/modal/clipboard/pump entry defer during source numeric/forwarded text callbacks. See docs/NUMERIC-INPUT.md for intermediate spin edits, supported scope and unverified ports.",
+    "scope": "Active main-thread session; native handle/type/lifetime checks. Supported endpoints\u00b11000000 with minimum<maximum. Same-control numeric writes and protected lifetime/modal/clipboard/pump entry defer during source numeric/forwarded text callbacks. See docs/NUMERIC-INPUT.md for intermediate spin edits, supported scope and unverified ports.",
     "wxwidgets": "wxSlider style (wxWidgets3.2.12)."
   },
   {
@@ -2773,5 +2773,23 @@
     "description": "Layout/FitInside/Layout refreshes virtual extent from max(client,sizer minimum), without resizing frame. Requires own sizer and supported content extent; no callback mutation.",
     "scope": "Active main-thread GUI session and valid native lifetime. No callback-time fit/rate/position changes: defer via owner-bound UI action. Supported extent<=1000000 pixels/axis checked before explicit mutation, not globally enforced on inherited/native layout. Private native scroll helper stays owned; managed handler-stack APIs reject for this class. See docs/SCROLLING-PANELS.md.",
     "wxwidgets": "wxWindow::Layout/FitInside (wxWidgets3.2.12)."
+  },
+  {
+    "name": "focus-window",
+    "kind": "generic-function",
+    "arguments": "WINDOW; keyword FROM-KEYBOARD defaults NIL (generalized boolean).",
+    "returns": "WINDOW after requesting focus.",
+    "description": "Request native SetFocus, or SetFocusFromKbd for a keyboard-origin request. Containers can delegate focus to children; keyboard focus can select text according to the native control.",
+    "scope": "Shown-on-screen, enabled live window on GUI thread; callbacks reject: use an owner-bound deferred UI action. OS activation/focus receipt is not guaranteed. Synchronous operation protects all session windows from bridge destruction/close and blocks nested navigation, GUI/modal/clipboard entry. No focus event binding or global focused-window pointer is exposed.",
+    "wxwidgets": "wxWindow::SetFocus / SetFocusFromKbd, wxPanel::SetFocus; wxWidgets 3.2.12."
+  },
+  {
+    "name": "navigate-focus",
+    "kind": "generic-function",
+    "arguments": "WINDOW; keyword FORWARD defaults T (generalized boolean); NIL requests backward.",
+    "returns": "Generalized native navigation result as T/NIL; not a portable focused-window identity.",
+    "description": "Perform native keyboard navigation starting from WINDOW via its parent traversal container. Only forward/backward traversal is exposed; no tab-order mutation, window-change flags or NavigateIn binding.",
+    "scope": "Same shown/enabled/live/main-thread and callback deferral/operation guards as FOCUS-WINDOW. Native traversal order, wrapping, eligible controls and focus effects depend on port/container; successful return does not promise a particular widget.",
+    "wxwidgets": "wxWindow::Navigate with IsForward/IsBackward, wxWidgets 3.2.12."
   }
 ]

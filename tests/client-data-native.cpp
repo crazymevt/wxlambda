@@ -1375,6 +1375,50 @@ void exercise_splitter() {
            wxl_splitter_pane(regular, 0, &pane) == -1, "Splitter teardown left stale pane state");
 }
 
+class FocusProbe : public wxPanel {
+public:
+    using wxPanel::wxPanel;
+    std::function<void()> during_focus;
+    unsigned keyboard_calls=0;
+    void SetFocus() override { if (during_focus) during_focus(); }
+    void SetFocusFromKbd() override { ++keyboard_calls; SetFocus(); }
+};
+void exercise_focus_navigation() {
+    const auto frame=wxl_frame("Focus",400,240);
+    auto* probe=new ManagedWindow<FocusProbe>(window(frame),wxID_ANY);
+    const auto target=track(probe);
+    const auto sibling=wxl_button(frame,"Sibling");
+    expect(wxl_focus_window(target,0)==-1 && wxl_navigate_focus(target,1)==-1,"Hidden focus rejects");
+    expect(wxl_show(frame)==0,"Show focus frame");
+    unsigned calls=0;
+    probe->during_focus=[&] {
+        ++calls;
+        expect(wxl_destroy(target)==-1 && wxl_destroy(sibling)==-1 && wxl_destroy(frame)==-1 &&
+               wxl_close(frame,1)==-1,"Protect focus graph during native operation");
+        expect(wxl_focus_window(sibling,0)==-1 && wxl_navigate_focus(sibling,1)==-1,
+               "Nested focus rejects even outside Lisp callbacks");
+        expect(wxl_poll()==-1 && wxl_run()==-1 && wxl_finish()==-1 && wxl_clipboard_text_available()==-1,
+               "Focus operation native-entry protection");
+    };
+    expect(wxl_focus_window(target,0)==0 && calls==1,"Direct native focus dispatch");
+    expect(wxl_focus_window(target,1)==0 && calls==2 && probe->keyboard_calls==1,"Keyboard-origin native focus dispatch");
+    expect(input_operations.empty() && focus_operation_depth==0,"Focus guards unwind");
+    expect(wxl_focus_window(target,2)==-1 && wxl_navigate_focus(target,-1)==-1,"Raw focus flags reject");
+    probe->Enable(false);
+    expect(wxl_focus_window(target,0)==-1 && input_operations.empty(),"Disabled focus and guard rollback");
+    probe->Enable(true);
+    int navigation_calls=0;
+    window(frame)->Bind(wxEVT_NAVIGATION_KEY,[&](wxNavigationKeyEvent& event) {
+        ++navigation_calls;
+        expect(event.GetDirection()==(navigation_calls==1),"Native traversal direction");
+        expect(wxl_destroy(sibling)==-1 && wxl_navigate_focus(target,1)==-1,"Traversal graph/reentry protection");
+        // Consuming the event makes the native result deterministic without OS focus.
+    });
+    expect(wxl_navigate_focus(target,1)==1 && wxl_navigate_focus(target,0)==1 && navigation_calls==2,"Native forward/backward traversal");
+    delete window(frame);
+    expect(wxl_focus_window(target,0)==-1 && wxl_navigate_focus(target,1)==-1,"Stale focus rejects");
+}
+
 int main() {
     std::thread([] { std::this_thread::sleep_for(std::chrono::seconds(10)); std::_Exit(124); }).detach();
     auto old_assert_handler = wxSetAssertHandler(capture_assert);
@@ -1407,6 +1451,7 @@ int main() {
         exercise_toggle_buttons();
         exercise_combo_boxes();
         exercise_scrolling_panels();
+        exercise_focus_navigation();
         bool shutdown_ran=false;
         ui_action_probe=[&](uint64_t,int) { shutdown_ran=true; };
         expect(wxl_defer_ui_action(5000,0)==0 && wxl_start_ui_timer(5001,1,0,0)==0,"Queue shutdown action/timer");

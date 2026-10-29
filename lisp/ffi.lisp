@@ -95,7 +95,7 @@
           (if (probe-file local)
               (cffi:load-foreign-library local)
               (cffi:use-foreign-library wxlambda-native))))
-    (unless (= 49 (%abi-version)) (error "Unsupported wxlambda native ABI"))
+    (unless (= 50 (%abi-version)) (error "Unsupported wxlambda native ABI"))
     (setf *native-loaded* t))
   t)
 
@@ -350,3 +350,6 @@
 (cffi:defcfun ("wxl_scroll_pair" %scroll-pair) :int (control :uint64) (field :int) (x :pointer) (y :pointer))
 (cffi:defcfun ("wxl_set_scroll_pair" %set-scroll-pair) :int (control :uint64) (field :int) (x :int) (y :int))
 (cffi:defcfun ("wxl_fit_scroll_content" %fit-scroll-content) :int (control :uint64))
+
+(cffi:defcfun ("wxl_focus_window" %focus-window) :int (window :uint64) (keyboard :int))
+(cffi:defcfun ("wxl_navigate_focus" %navigate-focus) :int (window :uint64) (forward :int))

@@ -632,8 +632,10 @@ int accelerator_flags(int flags) {
     return ((flags & 1) ? wxACCEL_CTRL : 0) | ((flags & 2) ? wxACCEL_SHIFT : 0) |
            ((flags & 4) ? wxACCEL_ALT : 0) | ((flags & 8) ? wxACCEL_RAW_CTRL : 0);
 }
+unsigned focus_operation_depth = 0;
 std::vector<wxWeakRef<wxWindow>> input_operations;
 bool protected_input_ancestor(wxWindow* object) {
+    if (focus_operation_depth) return true; // Traversal may touch any sibling or old focus window.
     for (const auto& active : input_operations)
         for (auto* node = active.get(); node; node = node->GetParent()) if (node == object) return true;
     return false;
@@ -1316,7 +1318,7 @@ bool process_deferred_ui_action() {
 
 }
 extern "C" {
-int wxl_abi_version() { return 49; }
+int wxl_abi_version() { return 50; }
 const char* wxl_last_error() { return error.c_str(); }
 int wxl_clipboard_text_available() {
     return boolean_result([&] {
@@ -2892,6 +2894,29 @@ const char* wxl_get_label(wxl_handle id) {
     });
     return result == 0 ? label_result.c_str() : nullptr;
 }
+// Focus can synchronously deliver native focus/navigation events. Keep the entire
+// session's window graph alive, and share the input native-entry gates.
+struct FocusOperation {
+    InputOperation input;
+    explicit FocusOperation(wxWindow* object) : input(object) {
+        require(callback_depth == 0 && focus_operation_depth == 0,
+                "Defer focus navigation until callbacks/operations return");
+        require(object->IsShownOnScreen() && object->IsEnabled(),
+                "Focus navigation requires a shown, enabled window");
+        ++focus_operation_depth;
+    }
+    ~FocusOperation() { --focus_operation_depth; }
+};
+int wxl_focus_window(wxl_handle id, int keyboard) { return status([&] {
+    require(keyboard == 0 || keyboard == 1, "Invalid keyboard focus flag");
+    auto* object = window(id); FocusOperation operation(object);
+    if (keyboard) object->SetFocusFromKbd(); else object->SetFocus();
+}); }
+int wxl_navigate_focus(wxl_handle id, int forward) { return boolean_result([&] {
+    require(forward == 0 || forward == 1, "Invalid focus direction");
+    auto* object = window(id); FocusOperation operation(object);
+    return object->Navigate(forward ? wxNavigationKeyEvent::IsForward : wxNavigationKeyEvent::IsBackward);
+}); }
 constexpr int scroll_extent_limit = 1000000;
 void scroll_bounds(wxScrolledWindow* object) {
     int x=0,y=0; object->GetVirtualSize(&x,&y);

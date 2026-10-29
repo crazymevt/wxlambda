@@ -829,3 +829,5 @@ run `examples/radio-groups.lisp` for export-format selection.
 [Combo boxes](docs/COMBO-BOXES.md) combine fixed presets and custom single-line text; run `examples/combo-boxes.lisp`.
 
 [Scrolling panels](docs/SCROLLING-PANELS.md) provide larger forms with bounded unit-based scrolling; run `examples/scrolling-panels.lisp`.
+
+[Focus navigation](docs/FOCUS-NAVIGATION.md) adds guarded focus requests and forward/backward form traversal; run `examples/focus-navigation.lisp`.

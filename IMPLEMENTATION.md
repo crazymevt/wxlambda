@@ -2727,3 +2727,57 @@ Session handoff: broad GUI coverage with selective depth remains the objective.
 Next selected slice: bounded focus navigation for keyboard-driven forms. Preserve
 native operation/lifetime protection, explicit supported scope, independent review
 and aligned examples/docs/docset/coverage rather than exhausting C1-C7 parity.
+
+## Focus navigation for keyboard-driven forms (2026-10-29)
+
+ABI50 adds generic FOCUS-WINDOW (:from-keyboard generalized boolean) and
+NAVIGATE-FOCUS (:forward generalized boolean, default T) on WINDOW. Native
+SetFocus/SetFocusFromKbd requests return the receiver; Navigate returns native
+T/NIL. Shown-on-screen/enabled live receivers are required, including ancestor
+state. No OS activation or specific focused-child guarantee; native container
+focus delegation, text selection, traversal eligibility/order/wrapping vary.
+No focus event resources, global raw focused-window pointer, tab-order edits,
+NavigateIn/WinChange or native virtual override support is added.
+
+Callbacks reject direct focus/navigation requests; owner-bound deferred actions
+provide the supported path. Synchronous native dispatch shares Input operation
+native-entry gates and additionally protects all session windows against bridge
+destroy/close, covering previous focus and traversal siblings. Recursive focus
+operations reject even outside Lisp callbacks. Constructor failure unwinds
+operation guards. Lisp notifier boundaries preserve original callback conditions
+without claiming native state rollback. See docs/FOCUS-NAVIGATION.md and example
+examples/focus-navigation.lisp (Return to name form action).
+
+Independent code/test/docs review found no actionable findings. Native probes
+verify virtual ordinary/keyboard dispatch, consumed forward/backward navigation
+event direction/results, sibling/source/ancestor lifetime protection, recursive
+navigation and RUN/pump/finish/clipboard rejection, invalid raw flags and guard
+rollback. Full native harness passes with zero wx assertions
+(quiet-run.102vhgIe); main/native builds pass (quiet-run.yzHj9xFF/qLQipTbm).
+Focused SBCL/CCL example/tests pass (quiet-run.ekXsCxyN/6CmvCzkv).
+Full75 GUI scenarios plus preflight pass on SBCL2.6.9 and CCL1.13
+(quiet-run.KiSBkfJ9/y1oTCuyF), evidence/focus-navigation/{sbcl,ccl}-20261029/.
+Physical Tab/Shift-Tab, OS focus receipt/activation, accessibility, hosted ports
+and graphical Cadre remain unverified. No automatic system clipboard contents
+are read/replaced. Initial sandbox GUI attempt could not connect to macOS GUI
+services; terminated and reran with GUI access. ASDF cache redirected to /tmp.
+
+Pinned coverage regeneration and14 checks pass (quiet-run.Fm3ExoIz); its later
+Python stage initially exposed stale scenario-count expectations. Corrected to75
+GUI+1 preflight; all16 Python checks and zero-problem docset check now pass
+(quiet-run.XeeJJu2g). Counts:258 exports,185 named generics,56 SETF generics,
+26 window wrappers (24 concrete+2 abstract),49 examples and357 docset entries.
+Both-Lisp actual export/class/SETF coverage, isolated install/discovery/symbol/
+guide/example checks pass (quiet-run.RuhQ7glk). Isolated install root
+/private/tmp/wxlambda-focus-docsets/wxlambda; normal Cadre installation under
+$XDG_DATA_HOME/docsets/wxlambda (default ~/.local/share/docsets/wxlambda/) is
+in docs/DOCSET.md. Package dist/wxlambda-form-focus-navigation remains the
+established form binary; focus example is repository/docset content. All five
+package isolation checks pass (quiet-run.BxtIrqFU), with reports under
+evidence/packaging/focus-navigation-20261029/. Final docset build/check/install
+follows these handoff notes.
+
+Session handoff: broad GUI coverage with selective depth remains the objective.
+Next selected slice: bounded tooltips for contextual form guidance. Preserve
+native ownership/string semantics, callback/lifetime protection and independent
+review with aligned examples/docs/docset/coverage; no exhaustive C1-C7 parity.

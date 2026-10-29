@@ -242,3 +242,10 @@ ABI47 TOGGLE-BUTTON adds independent pressed state and guarded label/value write
 ABI48 COMBO-BOX is editable with fixed0..256 unsorted nonempty native-CmpNoCase-unique choices. Programmatic text rejects NUL/CR/LF; selection writes set matching text, NIL clears both. Preserve Input guards for actual COMBO and TEXT events, native text/selection readback semantics, explicit single-kind notifications and native-only combo selection resources. Existing generic TEXT event rules retain scope. See docs/COMBO-BOXES.md.
 
 ABI49 SCROLLED-PANEL uses wxScrolled<wxPanel> but Lisp WINDOW ancestry. Preserve rate/view-unit/pixel extent distinctions, callback mutation rejection and Input operation guards around synchronous native Update. Native scroll helper remains owned; managed handler-stack APIs reject. Fit requires own sizer and supported extent; inherited layout is not globally bound-enforced. See docs/SCROLLING-PANELS.md.
+
+ABI50 focus/navigation requests require shown/enabled WINDOW receivers and
+callback deferral. Preserve synchronous all-session window destroy/close guards,
+shared Input native-entry protection and recursive focus rejection. Native focus
+requests/traversal results do not guarantee OS activation or a particular child;
+no raw focused-window pointer or focus event resource is exposed. See
+`docs/FOCUS-NAVIGATION.md`.

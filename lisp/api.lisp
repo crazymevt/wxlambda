@@ -2628,3 +2628,14 @@ live checkbox, including when called from inside its handler."
 (defgeneric fit-scroll-content (panel))
 (defmethod fit-scroll-content ((panel scrolled-panel))
   (call-setter (lambda () (%fit-scroll-content (handle panel))) t) panel)
+
+;;; Native focus requests and bounded tab-order traversal.
+(defgeneric focus-window (window &key from-keyboard))
+(defmethod focus-window ((window window) &key from-keyboard)
+  (call-setter (lambda () (%focus-window (handle window) (if from-keyboard 1 0))) t)
+  window)
+(defgeneric navigate-focus (window &key forward))
+(defmethod navigate-focus ((window window) &key (forward t))
+  (let ((handled (with-native-notifier
+                   (boolean-result (%navigate-focus (handle window) (if forward 1 0))))))
+    (check-callback-error) handled))

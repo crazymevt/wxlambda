@@ -17,7 +17,7 @@ class or constructor does not imply full upstream coverage.
 
 ## Current coverage and remaining work
 
-23 implemented; 168 partial; 2671 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
+26 implemented; 169 partial; 2667 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
 
 Counts describe inventory entries, not distinct APIs or percent completion.
 See the [coverage summary](README.md) for phase/header comparisons.
@@ -1415,7 +1415,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/panel.h)
 
-0 implemented; 2 partial; 10 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
+1 implemented; 2 partial; 9 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
 
 - [ ] [L28](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/panel.h#L28) `documented event: EVT_NAVIGATION_KEY(func)`
 - [~] [L37](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/panel.h#L37) `class wxPanel : public wxWindow {` — **Partial**: `panel`, `make-panel`; ABI: `wxl_panel`. Native-backed CLOS construction, including subclass initargs/defaults and managed rollback. Parent only; remaining constructor options use defaults. Full class and inherited API coverage remain open.
@@ -1427,7 +1427,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [ ] [L100](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/panel.h#L100) `virtual void InitDialog();`
 - [ ] [L106](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/panel.h#L106) `virtual bool Layout();`
 - [ ] [L123](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/panel.h#L123) `void OnSysColourChanged(wxSysColourChangedEvent& event);`
-- [ ] [L136](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/panel.h#L136) `virtual void SetFocus();`
+- [x] [L136](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/panel.h#L136) `virtual void SetFocus();` — **Implemented**: `focus-window`; ABI: `wxl_focus_window`. Bounded shown/enabled managed WINDOW receivers, GUI thread, callback deferral and synchronous lifetime/native-entry guards. No native virtual override or OS activation guarantee; docs/FOCUS-NAVIGATION.md.
 - [ ] [L142](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/panel.h#L142) `void SetFocusIgnoringChildren();`
 
 ## `wx/pickerbase.h`
@@ -2995,7 +2995,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h)
 
-10 implemented; 20 partial; 356 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
+12 implemented; 21 partial; 353 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
 
 - [ ] [L12](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L12) `enum wxShowEffect {`
 - [ ] [L19](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L19) `wxSHOW_EFFECT_NONE, wxSHOW_EFFECT_ROLL_TO_LEFT, wxSHOW_EFFECT_ROLL_TO_RIGHT, wxSHOW_EFFECT_ROLL_TO_TOP, wxSHOW_EFFECT_ROLL_TO_BOTTOM, wxSHOW_EFFECT_SLIDE_TO_LEFT, wxSHOW_EFFECT_SLIDE_TO_RIGHT, wxSHOW_EFFECT_SLIDE_TO_TOP, wxSHOW_EFFECT_SLIDE_TO_BOTTOM, wxSHOW_EFFECT_BLEND, wxSHOW_EFFECT_EXPAND, wxSHOW_EFFECT_MAX }`
@@ -3070,8 +3070,8 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [ ] [L529](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L529) `virtual bool HasFocus() const;`
 - [ ] [L541](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L541) `virtual void SetCanFocus(bool canFocus);`
 - [ ] [L557](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L557) `virtual void EnableVisibleFocus(bool enable);`
-- [ ] [L565](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L565) `virtual void SetFocus();`
-- [ ] [L574](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L574) `virtual void SetFocusFromKbd();`
+- [x] [L565](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L565) `virtual void SetFocus();` — **Implemented**: `focus-window`; ABI: `wxl_focus_window`. Bounded shown/enabled managed WINDOW receivers, GUI thread, callback deferral and synchronous lifetime/native-entry guards. No native virtual override or OS activation guarantee; docs/FOCUS-NAVIGATION.md.
+- [x] [L574](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L574) `virtual void SetFocusFromKbd();` — **Implemented**: `focus-window`; ABI: `wxl_focus_window`. Bounded shown/enabled managed WINDOW receivers, GUI thread, callback deferral and synchronous lifetime/native-entry guards. No native virtual override or OS activation guarantee; docs/FOCUS-NAVIGATION.md.
 - [ ] [L593](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L593) `virtual void AddChild(wxWindow* child);`
 - [ ] [L598](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L598) `bool DestroyChildren();`
 - [ ] [L608](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L608) `wxWindow* FindWindow(long id) const;`
@@ -3264,7 +3264,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [ ] [L2862](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2862) `bool ToggleWindowStyle(int flag);`
 - [ ] [L2885](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2885) `void MoveAfterInTabOrder(wxWindow* win);`
 - [ ] [L2891](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2891) `void MoveBeforeInTabOrder(wxWindow* win);`
-- [ ] [L2913](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2913) `bool Navigate(int flags = wxNavigationKeyEvent::IsForward);`
+- [~] [L2913](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2913) `bool Navigate(int flags = wxNavigationKeyEvent::IsForward);` — **Partial**: `navigate-focus`; ABI: `wxl_navigate_focus`. Bounded shown/enabled managed WINDOW receivers, GUI thread, callback deferral and synchronous lifetime/native-entry guards. No native virtual override or OS activation guarantee; docs/FOCUS-NAVIGATION.md. Only IsForward/IsBackward; WinChange unbound.
 - [ ] [L2919](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2919) `bool NavigateIn(int flags = wxNavigationKeyEvent::IsForward);`
 - [ ] [L2938](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2938) `virtual void Lower();`
 - [ ] [L2954](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2954) `virtual void Raise();`
