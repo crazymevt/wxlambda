@@ -7,6 +7,15 @@ factual discovery records, not a required sequence or release gate.
 
 ## Session handoff: broad GUI coverage
 
+The ABI55 coordinated batch closes the finite automated local macOS MVP: retained
+drawing/monitoring, activity feedback and cohesive tree/list record management
+complement the persistent form/editor workflow. Current acceptance and remaining
+manual/platform boundaries are in [MVP acceptance](docs/MVP-ACCEPTANCE.md).
+Final verification evidence is recorded in the ABI55 checkpoint below. Further
+widget work is optional and should follow an application need or explicit request;
+there is no mandatory next binding slice after this acceptance checkpoint.
+
+
 The user has superseded the earlier complete-wxWidgets objective. Follow the
 [feature policy and acceptance roadmap](docs/WXWIDGETS-COVERAGE.md): core, planned,
 on-demand, Lisp-native and deferred. Native pending/partial entries remain visible
@@ -3094,8 +3103,72 @@ All five final package isolation checks pass (quiet-run.082JN4Ug),
 evidence/packaging/search-controls-20261029-final/. Preliminary pre-guard package/
 reports remain separate. Final docset build/check/install follows these notes.
 
-Session handoff: broad GUI coverage with selective depth remains the objective.
-Next selected slice: bounded activity indicators for busy/deferred workflows.
+Historical ABI54 handoff (superseded by ABI55 acceptance below): broad GUI coverage
+with selective depth remained the objective. The selected next slice was bounded
+activity indicators for busy/deferred workflows.
 Preserve native animation/lifetime and main-thread rules, explicit supported
 scope, independent review and aligned examples/docs/docset/coverage; no exhaustive
 native inventory-category parity requirement.
+
+
+## ABI55: finite local MVP acceptance — 2026-10-29
+
+This larger batch adds two bounded native-backed window kinds and one composed
+application workflow. DRAWING-CANVAS retains copied geometry, text/font, RGB
+colour/bitmap data with native paint/resize handling and private PNG output.
+Screen coordinates are DIP; export extents are pixels without implicit fit.
+Lisp scene compilation and native staging validate limits before commit; committed
+Lisp data stays synchronized across callback errors. Input operation guards,
+callback write/export rejection, native-only rendering and checked lifetimes
+prevent raw DC/resource or callback pointer exposure. PNG encoding precedes open;
+write/flush/close are checked after detached FILE ownership, avoiding pinned
+wxFFile double-close on close failure. Export overwrite is non-atomic.
+
+ACTIVITY-INDICATOR adds idempotent generalized-boolean running state with native
+readback, inherited construction rollback and operation/parent lifetime guards.
+CMake requires IMAGE/LIBPNG/GRAPHICS_CONTEXT/ACTIVITYINDICATOR/STREAMS/FFILE in
+addition to existing TIMER and core/base/adv. Negative cached-feature configure
+probe rejects clearly (quiet-run.Fw8Xh3FA); no actual feature-disabled wx build.
+The existing wxQt tree construction gate is retained.
+
+The record manager composes stable IDs, tree categories, search filtering,
+list/notebook details and deferred menu/tool/key CRUD/copy workflows. Deterministic
+prompt/confirm/clipboard adapters test cancellation, errors, queued stale targets,
+selection preservation and disposal without automatic system clipboard transfers.
+The drawing monitor composes a real owner-bound timer, activity state, copied
+RGB badge, Unicode text and deferred Pause/Resume. All three new examples run.
+
+Two independent subagents implemented/reviewed activity and manager workflows;
+canvas source, tests, guides and packaged integration received independent review.
+Actionable review findings fixed native CR/LF validation, paint exception scope,
+font/image/bitmap validation, native log suppression, checked close ownership,
+DIP roundtrip tolerance and manager queued selection semantics. Final reviews
+found no remaining actionable findings.
+
+Main/native builds pass (quiet-run.51d4fRNq). Native combined harness passes with
+zero wx assertions, including exact PNG pixel checks, copied source buffers,
+resize, callback/native-entry guards, thread/raw validation, activity state and
+teardown (quiet-run.hDxZV5Dn). Final full82 GUI scenarios plus preflight pass on
+SBCL2.6.9 and CCL1.13 (quiet-run.ZeZLFmJK/89VRCUnf), reports
+`evidence/mvp/{sbcl,ccl}-20261029/`. Final monitoring PNG visually inspected after
+matching scene/export extent (quiet-run.p4ZsUGwp). Packaged self-test now actually
+exercises canvas PNG and activity as well as existing form lifecycle. Build and
+all five relocated/isolated package checks pass (quiet-run.3sDyUEjf/tYx5iZ0g),
+`dist/wxlambda-mvp`, report `evidence/packaging/mvp-20261029/`.
+
+Pinned coverage regeneration and all14 consistency tests pass
+(quiet-run.BY4cUhyv/yMEP7cuM). All16 Python checks and rebuilt392-entry docset pass
+(quiet-run.VLWKGcJX), with zero checker/link/discovery/lookup/guide/example problems.
+Both-Lisp actual278-export/class/SETF coverage and isolated installation pass
+(quiet-run.6KS7vQ0h). Final docs are rebuilt/rechecked/reinstalled after these notes.
+Counts:278 exports,200 named generic operations,62 SETF generics,31 WINDOW wrappers
+(29 concrete+2 abstract),56 examples and392 docset entries. Normal Cadre install is
+$XDG_DATA_HOME/docsets/wxlambda, default ~/.local/share/docsets/wxlambda/; verified
+isolated root /private/tmp/wxlambda-mvp-docsets/wxlambda. See docs/DOCSET.md.
+
+All finite acceptance gates have passed: **primary automated local macOS MVP goal
+reached**. Session handoff: no next required native binding batch. Future work
+requires an application need or explicitly selected extension/validation target.
+No physical-input/IME/accessibility, hosted Windows/Linux/Qt, exhaustive font/
+locale/DPI, external clipboard or graphical Cadre verification is claimed.
+Primary automated local macOS MVP completion ends the mandatory expansion loop.

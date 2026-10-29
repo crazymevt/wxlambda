@@ -133,8 +133,8 @@ def load_status():
         raise ValueError('Coverage status version differs from inventory version')
     entries = {}
     exports = set(re.findall(r'#:([\w-]+)', (ROOT / 'lisp/package.lisp').read_text().split('(:export', 1)[1]))
-    ffi = (ROOT / 'lisp/ffi.lisp').read_text()
-    bridge = (ROOT / 'native/wxlambda.cpp').read_text()
+    ffi = '\n'.join(p.read_text() for p in sorted((ROOT / 'lisp').glob('*.lisp')))
+    bridge = (ROOT / 'native/wxlambda.cpp').read_text() + '\n' + '\n'.join(p.read_text() for p in sorted((ROOT / 'native').glob('*.inc')))
     for record in [*status['declarations'], *status['classes'].values()]:
         if record['status'] not in ('x', '~') or not record['scope']:
             raise ValueError('Status must be x/~ with a supported scope')

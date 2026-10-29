@@ -210,5 +210,17 @@
   "search-controls.lisp": {
     "description": "Native query and Lisp-native list filtering with deferred TEXT/search handling and explicit deferred cancel/clear policy. EXERCISE uses explicit TEXT notification and a Clear filter command; native search/cancel gestures are tested separately without physical input simulation.",
     "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/search-controls.lisp --eval '(wxlambda-search-controls:start)'"
+  },
+  "activity-indicator.lisp": {
+    "description": "Native busy feedback toggled through owner-bound deferred button commands; EXERCISE checks state/labels, not animation pixels or background work.",
+    "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/activity-indicator.lisp --eval '(wxlambda-activity-indicator:start)'"
+  },
+  "record-manager.lisp": {
+    "description": "Cohesive in-memory tree/list record manager with stable IDs, search/category filtering, notebook details, shared menu/tool/key actions, deferred CRUD/dialogs and clipboard adapters. EXERCISE and tests use deterministic prompt/confirm/copy functions without system clipboard transfers.",
+    "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/record-manager.lisp --eval '(wxlambda-record-manager:start)'"
+  },
+  "drawing-monitor.lisp": {
+    "description": "Retained native canvas with bounded geometry, Unicode text/font/RGB/bitmap adapters, activity animation and owner-bound periodic UI updates. EXERCISE self-stops after three real timer ticks, exports PNG and resumes; data is simulated, not background work.",
+    "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/drawing-monitor.lisp --eval '(wxlambda-drawing-monitor:start)'"
   }
 }

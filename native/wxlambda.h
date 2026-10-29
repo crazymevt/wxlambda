@@ -53,6 +53,8 @@ typedef void (*wxl_callback)(uint64_t token, const wxl_event *event);
    Never unwind across this boundary. No borrowed event context is active. */
 typedef void (*wxl_ui_callback)(uint64_t token, int kind);
 WXL_API int wxl_abi_version(void);
+#include "drawing-canvas-api.h"
+#include "activity-indicator-api.h"
 /* Editable single-line search text/hint: explicit UTF-8 lengths, NUL/CR/LF reject.
    Field0=text,1=hint; setter notify is valid only for text (one TEXT event).
    Search/cancel are native-only command kinds; no widget menu/button policy API. */

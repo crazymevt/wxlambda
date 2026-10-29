@@ -1,7 +1,7 @@
 # CLOS widget API
 
 Widgets are native-backed CLOS instances. The public classes are `window`,
-`frame`, `toolbar`, `status-bar`, `panel`, `scrolled-panel`, `notebook`, `list-box`, `tree-control`, `splitter-window`, `button`, `text-control`, `label`, `checkbox`, `choice`,
+`drawing-canvas`, `activity-indicator`, `frame`, `toolbar`, `status-bar`, `panel`, `scrolled-panel`, `notebook`, `list-box`, `tree-control`, `splitter-window`, `button`, `text-control`, `label`, `checkbox`, `choice`,
 `gauge`, `slider`, `spin-control`, `radio-box`, `toggle-button`, `combo-box`, `date-picker`, `time-picker`, `search-control`, abstract `dialog`, and its `text-entry-dialog`, `single-choice-dialog`,
 `message-dialog` and `file-dialog` concrete families.
 `window` inherits from `event-handler` and is abstract. Standalone `event-handler`
@@ -40,6 +40,8 @@ Use `make-instance` directly, including for your own subclasses:
 Concrete native initargs are:
 
 - `frame`: `:title` (default "wxlambda"), `:width` (480), `:height` (240), `:accelerators` (NIL). See [keyboard actions](KEYBOARD-ACCELERATORS.md).
+- `drawing-canvas`: required `:parent`; `:content` defaults to an empty white retained scene. See [drawing](DRAWING-CANVAS.md).
+- `activity-indicator`: required `:parent`; `:running-p` defaults to NIL. See [activity feedback](ACTIVITY-INDICATORS.md).
 - `panel`: required `:parent` window.
 - `search-control`: required `:parent`; `:value` defaults `""`, `:hint` defaults `"Search"`. Lisp WINDOW ancestry, bounded TEXT/hint properties only; see [search controls](SEARCH-CONTROLS.md).
 - `time-picker`: required `:parent`; `:time` defaults to `(0 0 0)`, a copied hour/minute/second tuple. See [time-of-day values](TIME-PICKER.md).

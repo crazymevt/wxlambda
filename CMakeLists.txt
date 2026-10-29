@@ -41,6 +41,11 @@ check_cxx_source_compiles("#include <wx/setup.h>
 #error Search and text controls are required
 #endif
 int main() { return 0; }" WXLAMBDA_HAS_SEARCH_CONTROL)
+check_cxx_source_compiles("#include <wx/setup.h>
+#if !wxUSE_IMAGE || !wxUSE_LIBPNG || !wxUSE_GRAPHICS_CONTEXT || !wxUSE_ACTIVITYINDICATOR || !wxUSE_STREAMS || !wxUSE_FFILE
+#error Drawing and activity support are required
+#endif
+int main() { return 0; }" WXLAMBDA_HAS_DRAWING_WORKFLOWS)
 cmake_pop_check_state()
 if(NOT WXLAMBDA_HAS_ACCELERATORS)
   message(FATAL_ERROR "wxlambda requires wxWidgets built with wxUSE_ACCEL=1")
@@ -63,13 +68,16 @@ endif()
 if(NOT WXLAMBDA_HAS_SEARCH_CONTROL)
   message(FATAL_ERROR "wxlambda requires wxUSE_SEARCHCTRL=1 and wxUSE_TEXTCTRL=1")
 endif()
+if(NOT WXLAMBDA_HAS_DRAWING_WORKFLOWS)
+  message(FATAL_ERROR "wxlambda requires wxUSE_IMAGE/wxUSE_LIBPNG/wxUSE_GRAPHICS_CONTEXT/wxUSE_ACTIVITYINDICATOR/wxUSE_STREAMS/wxUSE_FFILE")
+endif()
 add_library(wxlambda SHARED native/wxlambda.cpp)
 target_compile_features(wxlambda PRIVATE cxx_std_17)
 target_compile_definitions(wxlambda PRIVATE WXLAMBDA_BUILD)
 target_link_libraries(wxlambda PRIVATE ${wxWidgets_LIBRARIES})
 set_target_properties(wxlambda PROPERTIES CXX_VISIBILITY_PRESET hidden VISIBILITY_INLINES_HIDDEN YES)
 install(TARGETS wxlambda LIBRARY DESTINATION lib RUNTIME DESTINATION bin ARCHIVE DESTINATION lib)
-install(FILES native/wxlambda.h DESTINATION include)
+install(FILES native/wxlambda.h native/drawing-canvas-api.h native/activity-indicator-api.h DESTINATION include)
 
 option(WXLAMBDA_BUILD_NATIVE_TESTS "Build native invariant regressions (GUI session required)" OFF)
 if(WXLAMBDA_BUILD_NATIVE_TESTS)

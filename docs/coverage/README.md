@@ -19,17 +19,17 @@ and verify platforms when selected features or completeness claims require it.
 | Category | Headers | Tasks | Implemented | Partial | Pending | Context |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | [C1: Foundation, values, application, events, and base utilities](phase-c1.md) | 119 | 5292 | 7 | 114 | 5171 | 26 |
-| [C2: Windows, layout, basic controls, and input](phase-c2.md) | 82 | 2862 | 28 | 199 | 2635 | 0 |
+| [C2: Windows, layout, basic controls, and input](phase-c2.md) | 82 | 2862 | 28 | 209 | 2625 | 0 |
 | [C3: Dialogs, navigation, menus, and application services](phase-c3.md) | 57 | 1875 | 0 | 118 | 1757 | 0 |
 | [C4: Models, complex controls, and document frameworks](phase-c4.md) | 20 | 2328 | 0 | 24 | 2304 | 4 |
-| [C5: Drawing, images, graphics, and printing](phase-c5.md) | 52 | 2245 | 0 | 0 | 2245 | 0 |
+| [C5: Drawing, images, graphics, and printing](phase-c5.md) | 52 | 2245 | 0 | 25 | 2220 | 0 |
 | [C6: Optional libraries, rich content, and integration](phase-c6.md) | 57 | 8912 | 0 | 0 | 8912 | 380 |
 | [C7: Platform extensions and remaining portability APIs](phase-c7.md) | 11 | 279 | 0 | 0 | 279 | 3 |
-| Total | 398 | 23793 | 35 | 455 | 23303 | 413 |
+| Total | 398 | 23793 | 35 | 490 | 23268 | 413 |
 
 ## Classes and widgets
 
-1016 class/struct definitions: 0 complete; 61 partial; 955 pending.
+1016 class/struct definitions: 0 complete; 71 partial; 945 pending.
 
 See the [complete class/widget index](classes.md) for partial scopes and missing
 types. An implemented constructor does not complete a class or its inherited API.
@@ -169,7 +169,7 @@ unreviewed inherited/platform behavior.
 | Header | Implemented | Partial | Pending | Context |
 | --- | ---: | ---: | ---: | ---: |
 | [wx/accel.h](phase-c2.md#wxaccelh) | 0 | 9 | 15 | 0 |
-| [wx/activityindicator.h](phase-c2.md#wxactivityindicatorh) | 0 | 0 | 7 | 0 |
+| [wx/activityindicator.h](phase-c2.md#wxactivityindicatorh) | 0 | 7 | 0 | 0 |
 | [wx/addremovectrl.h](phase-c2.md#wxaddremovectrlh) | 0 | 0 | 14 | 0 |
 | [wx/anybutton.h](phase-c2.md#wxanybuttonh) | 0 | 0 | 27 | 0 |
 | [wx/bannerwindow.h](phase-c2.md#wxbannerwindowh) | 0 | 0 | 8 | 0 |
@@ -210,7 +210,7 @@ unreviewed inherited/platform behavior.
 | [wx/mousestate.h](phase-c2.md#wxmousestateh) | 0 | 0 | 22 | 0 |
 | [wx/nonownedwnd.h](phase-c2.md#wxnonownedwndh) | 0 | 0 | 4 | 0 |
 | [wx/odcombo.h](phase-c2.md#wxodcomboh) | 0 | 0 | 24 | 0 |
-| [wx/panel.h](phase-c2.md#wxpanelh) | 1 | 2 | 9 | 0 |
+| [wx/panel.h](phase-c2.md#wxpanelh) | 1 | 3 | 8 | 0 |
 | [wx/pickerbase.h](phase-c2.md#wxpickerbaseh) | 0 | 0 | 27 | 0 |
 | [wx/radiobox.h](phase-c2.md#wxradioboxh) | 0 | 7 | 20 | 0 |
 | [wx/radiobut.h](phase-c2.md#wxradiobuth) | 0 | 0 | 14 | 0 |
@@ -244,7 +244,7 @@ unreviewed inherited/platform behavior.
 | [wx/valtext.h](phase-c2.md#wxvaltexth) | 0 | 0 | 31 | 0 |
 | [wx/vlbox.h](phase-c2.md#wxvlboxh) | 0 | 0 | 31 | 0 |
 | [wx/vscroll.h](phase-c2.md#wxvscrollh) | 0 | 0 | 79 | 0 |
-| [wx/window.h](phase-c2.md#wxwindowh) | 14 | 23 | 349 | 0 |
+| [wx/window.h](phase-c2.md#wxwindowh) | 14 | 25 | 347 | 0 |
 | [wx/windowid.h](phase-c2.md#wxwindowidh) | 0 | 0 | 4 | 0 |
 | [wx/windowptr.h](phase-c2.md#wxwindowptrh) | 0 | 0 | 8 | 0 |
 | [wx/withimages.h](phase-c2.md#wxwithimagesh) | 0 | 0 | 14 | 0 |
@@ -347,22 +347,22 @@ unreviewed inherited/platform behavior.
 | [wx/anidecod.h](phase-c5.md#wxanidecodh) | 0 | 0 | 13 | 0 |
 | [wx/animate.h](phase-c5.md#wxanimateh) | 0 | 0 | 47 | 0 |
 | [wx/animdecod.h](phase-c5.md#wxanimdecodh) | 0 | 0 | 18 | 0 |
-| [wx/bitmap.h](phase-c5.md#wxbitmaph) | 0 | 0 | 84 | 0 |
+| [wx/bitmap.h](phase-c5.md#wxbitmaph) | 0 | 4 | 80 | 0 |
 | [wx/bmpbndl.h](phase-c5.md#wxbmpbndlh) | 0 | 0 | 41 | 0 |
 | [wx/brush.h](phase-c5.md#wxbrushh) | 0 | 0 | 36 | 0 |
 | [wx/cmndata.h](phase-c5.md#wxcmndatah) | 0 | 0 | 100 | 0 |
-| [wx/colour.h](phase-c5.md#wxcolourh) | 0 | 0 | 53 | 0 |
-| [wx/dc.h](phase-c5.md#wxdch) | 0 | 0 | 188 | 0 |
-| [wx/dcbuffer.h](phase-c5.md#wxdcbufferh) | 0 | 0 | 20 | 0 |
+| [wx/colour.h](phase-c5.md#wxcolourh) | 0 | 2 | 51 | 0 |
+| [wx/dc.h](phase-c5.md#wxdch) | 0 | 6 | 182 | 0 |
+| [wx/dcbuffer.h](phase-c5.md#wxdcbufferh) | 0 | 2 | 18 | 0 |
 | [wx/dcclient.h](phase-c5.md#wxdcclienth) | 0 | 0 | 6 | 0 |
 | [wx/dcgraph.h](phase-c5.md#wxdcgraphh) | 0 | 0 | 10 | 0 |
-| [wx/dcmemory.h](phase-c5.md#wxdcmemoryh) | 0 | 0 | 8 | 0 |
+| [wx/dcmemory.h](phase-c5.md#wxdcmemoryh) | 0 | 2 | 6 | 0 |
 | [wx/dcmirror.h](phase-c5.md#wxdcmirrorh) | 0 | 0 | 2 | 0 |
 | [wx/dcprint.h](phase-c5.md#wxdcprinth) | 0 | 0 | 3 | 0 |
 | [wx/dcps.h](phase-c5.md#wxdcpsh) | 0 | 0 | 3 | 0 |
 | [wx/dcscreen.h](phase-c5.md#wxdcscreenh) | 0 | 0 | 5 | 0 |
 | [wx/dcsvg.h](phase-c5.md#wxdcsvgh) | 0 | 0 | 26 | 0 |
-| [wx/font.h](phase-c5.md#wxfonth) | 0 | 0 | 111 | 0 |
+| [wx/font.h](phase-c5.md#wxfonth) | 0 | 5 | 106 | 0 |
 | [wx/fontenum.h](phase-c5.md#wxfontenumh) | 0 | 0 | 11 | 0 |
 | [wx/fontmap.h](phase-c5.md#wxfontmaph) | 0 | 0 | 18 | 0 |
 | [wx/fontutil.h](phase-c5.md#wxfontutilh) | 0 | 0 | 32 | 0 |
@@ -374,12 +374,12 @@ unreviewed inherited/platform behavior.
 | [wx/icon.h](phase-c5.md#wxiconh) | 0 | 0 | 27 | 0 |
 | [wx/iconbndl.h](phase-c5.md#wxiconbndlh) | 0 | 0 | 22 | 0 |
 | [wx/iconloc.h](phase-c5.md#wxiconloch) | 0 | 0 | 4 | 0 |
-| [wx/image.h](phase-c5.md#wximageh) | 0 | 0 | 197 | 0 |
+| [wx/image.h](phase-c5.md#wximageh) | 0 | 2 | 195 | 0 |
 | [wx/imaggif.h](phase-c5.md#wximaggifh) | 0 | 0 | 8 | 0 |
 | [wx/imagiff.h](phase-c5.md#wximagiffh) | 0 | 0 | 5 | 0 |
 | [wx/imagjpeg.h](phase-c5.md#wximagjpegh) | 0 | 0 | 6 | 0 |
 | [wx/imagpcx.h](phase-c5.md#wximagpcxh) | 0 | 0 | 5 | 0 |
-| [wx/imagpng.h](phase-c5.md#wximagpngh) | 0 | 0 | 12 | 0 |
+| [wx/imagpng.h](phase-c5.md#wximagpngh) | 0 | 2 | 10 | 0 |
 | [wx/imagpnm.h](phase-c5.md#wximagpnmh) | 0 | 0 | 5 | 0 |
 | [wx/imagtga.h](phase-c5.md#wximagtgah) | 0 | 0 | 5 | 0 |
 | [wx/imagtiff.h](phase-c5.md#wximagtiffh) | 0 | 0 | 12 | 0 |

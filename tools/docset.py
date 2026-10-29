@@ -231,7 +231,7 @@ def content():
         raise ValueError('Example reference must cover every example source exactly once')
     links = {p.resolve(): prefix + '/' + p.relative_to(ROOT).as_posix()
              for prefix, paths in [('guide', guides), ('example', examples)] for p in paths}
-    api = (ROOT / 'lisp/api.lisp').read_text(encoding='utf-8') + '\n' + (ROOT / 'lisp/ffi.lisp').read_text(encoding='utf-8')
+    api = '\n'.join(p.read_text(encoding='utf-8') for p in sorted((ROOT / 'lisp').glob('*.lisp')))
     signatures = {}
     for match in re.finditer(r'^\(def(un|macro|generic|method)\s+([\w-]+)\s+(?=\()', api, re.M):
         signature = balanced(api, match.end())

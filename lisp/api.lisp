@@ -522,7 +522,7 @@ RETURN-TO-APPLICATION-REPL restart. Setup errors propagate to the caller."
     (error "APPLICATION-HANDLER is borrowed; use CURRENT-APPLICATION-HANDLER"))
   (when (and (typep object 'window)
              (/= 1 (count-if (lambda (kind) (typep object kind))
-                         '(frame toolbar status-bar panel scrolled-panel notebook list-box tree-control splitter-window button text-control label checkbox choice gauge slider spin-control radio-box toggle-button combo-box date-picker time-picker search-control text-entry-dialog single-choice-dialog message-dialog file-dialog))))
+                         '(frame toolbar status-bar panel scrolled-panel notebook list-box tree-control splitter-window button text-control label checkbox choice gauge slider spin-control radio-box toggle-button combo-box date-picker time-picker search-control drawing-canvas activity-indicator text-entry-dialog single-choice-dialog message-dialog file-dialog))))
     (error "~A must inherit exactly one concrete wxlambda widget class; WINDOW is abstract"
            (class-name (class-of object))))
   (unless *active*

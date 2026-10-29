@@ -8630,6 +8630,720 @@
         "wxl_set_search_field"
       ],
       "scope": "Bounded editable SEARCH-CONTROL WINDOW with copied single-line UTF-8 query and descriptive hint, NUL/CR/LF rejection, native-backed CLOS and rollback. Default TEXT writes/hint writes silent; explicit TEXT notify once even unchanged. Native-only search/cancel payloads copied without query inference; shared Input source/composite/propagation and early Destroy guards. Requests both icons and PROCESS_ENTER, with native GTK/Cocoa/generic visibility/empty/cancel differences. No menus/styles/button visibility/editing APIs/raw adoption or full parity. See docs/SEARCH-CONTROLS.md. Search-origin TEXT context string writes reject uniformly, including absent native text-entry hook; generic TEXT cloning remains supported."
+    },
+    {
+      "header": "wx/activityindicator.h",
+      "line": 22,
+      "declaration": "class wxActivityIndicator : public wxControl {",
+      "symbol": "wxActivityIndicator",
+      "status": "~",
+      "lisp": [
+        "activity-indicator",
+        "make-activity-indicator",
+        "activity-running-p"
+      ],
+      "native": [
+        "wxl_activity_indicator",
+        "wxl_activity_running",
+        "wxl_set_activity_running"
+      ],
+      "scope": "Bounded ACTIVITY-INDICATOR WINDOW, native-backed :parent/:running-p CLOS construction, initially stopped by default, state readback, noncumulative Start/Stop and generic ACTIVITY-RUNNING-P/SETF. Callback writes defer; synchronous Input lifetime/native-entry protection. Native appearance/timer internals remain owned; no raw adoption, artwork/style/size/task or full class parity. Requires ACTIVITYINDICATOR/GRAPHICS_CONTEXT/TIMER and existing adv linkage. See docs/ACTIVITY-INDICATORS.md."
+    },
+    {
+      "header": "wx/activityindicator.h",
+      "line": 30,
+      "declaration": "wxActivityIndicator();",
+      "symbol": "wxActivityIndicator::wxActivityIndicator",
+      "status": "~",
+      "lisp": [
+        "activity-indicator",
+        "make-activity-indicator",
+        "activity-running-p"
+      ],
+      "native": [
+        "wxl_activity_indicator",
+        "wxl_activity_running",
+        "wxl_set_activity_running"
+      ],
+      "scope": "Bounded ACTIVITY-INDICATOR WINDOW, native-backed :parent/:running-p CLOS construction, initially stopped by default, state readback, noncumulative Start/Stop and generic ACTIVITY-RUNNING-P/SETF. Callback writes defer; synchronous Input lifetime/native-entry protection. Native appearance/timer internals remain owned; no raw adoption, artwork/style/size/task or full class parity. Requires ACTIVITYINDICATOR/GRAPHICS_CONTEXT/TIMER and existing adv linkage. See docs/ACTIVITY-INDICATORS.md."
+    },
+    {
+      "header": "wx/activityindicator.h",
+      "line": 38,
+      "declaration": "explicit wxActivityIndicator(wxWindow* parent, wxWindowID winid = wxID_ANY, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = 0, const wxString& name = \"activityindicator\");",
+      "symbol": "wxActivityIndicator::wxActivityIndicator",
+      "status": "~",
+      "lisp": [
+        "activity-indicator",
+        "make-activity-indicator",
+        "activity-running-p"
+      ],
+      "native": [
+        "wxl_activity_indicator",
+        "wxl_activity_running",
+        "wxl_set_activity_running"
+      ],
+      "scope": "Bounded ACTIVITY-INDICATOR WINDOW, native-backed :parent/:running-p CLOS construction, initially stopped by default, state readback, noncumulative Start/Stop and generic ACTIVITY-RUNNING-P/SETF. Callback writes defer; synchronous Input lifetime/native-entry protection. Native appearance/timer internals remain owned; no raw adoption, artwork/style/size/task or full class parity. Requires ACTIVITYINDICATOR/GRAPHICS_CONTEXT/TIMER and existing adv linkage. See docs/ACTIVITY-INDICATORS.md."
+    },
+    {
+      "header": "wx/activityindicator.h",
+      "line": 51,
+      "declaration": "bool Create(wxWindow* parent, wxWindowID winid = wxID_ANY, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = 0, const wxString& name = \"activityindicator\");",
+      "symbol": "wxActivityIndicator::Create",
+      "status": "~",
+      "lisp": [
+        "activity-indicator",
+        "make-activity-indicator",
+        "activity-running-p"
+      ],
+      "native": [
+        "wxl_activity_indicator",
+        "wxl_activity_running",
+        "wxl_set_activity_running"
+      ],
+      "scope": "Bounded ACTIVITY-INDICATOR WINDOW, native-backed :parent/:running-p CLOS construction, initially stopped by default, state readback, noncumulative Start/Stop and generic ACTIVITY-RUNNING-P/SETF. Callback writes defer; synchronous Input lifetime/native-entry protection. Native appearance/timer internals remain owned; no raw adoption, artwork/style/size/task or full class parity. Requires ACTIVITYINDICATOR/GRAPHICS_CONTEXT/TIMER and existing adv linkage. See docs/ACTIVITY-INDICATORS.md."
+    },
+    {
+      "header": "wx/activityindicator.h",
+      "line": 63,
+      "declaration": "void Start();",
+      "symbol": "wxActivityIndicator::Start",
+      "status": "~",
+      "lisp": [
+        "activity-indicator",
+        "make-activity-indicator",
+        "activity-running-p"
+      ],
+      "native": [
+        "wxl_activity_indicator",
+        "wxl_activity_running",
+        "wxl_set_activity_running"
+      ],
+      "scope": "Bounded ACTIVITY-INDICATOR WINDOW, native-backed :parent/:running-p CLOS construction, initially stopped by default, state readback, noncumulative Start/Stop and generic ACTIVITY-RUNNING-P/SETF. Callback writes defer; synchronous Input lifetime/native-entry protection. Native appearance/timer internals remain owned; no raw adoption, artwork/style/size/task or full class parity. Requires ACTIVITYINDICATOR/GRAPHICS_CONTEXT/TIMER and existing adv linkage. See docs/ACTIVITY-INDICATORS.md."
+    },
+    {
+      "header": "wx/activityindicator.h",
+      "line": 71,
+      "declaration": "void Stop();",
+      "symbol": "wxActivityIndicator::Stop",
+      "status": "~",
+      "lisp": [
+        "activity-indicator",
+        "make-activity-indicator",
+        "activity-running-p"
+      ],
+      "native": [
+        "wxl_activity_indicator",
+        "wxl_activity_running",
+        "wxl_set_activity_running"
+      ],
+      "scope": "Bounded ACTIVITY-INDICATOR WINDOW, native-backed :parent/:running-p CLOS construction, initially stopped by default, state readback, noncumulative Start/Stop and generic ACTIVITY-RUNNING-P/SETF. Callback writes defer; synchronous Input lifetime/native-entry protection. Native appearance/timer internals remain owned; no raw adoption, artwork/style/size/task or full class parity. Requires ACTIVITYINDICATOR/GRAPHICS_CONTEXT/TIMER and existing adv linkage. See docs/ACTIVITY-INDICATORS.md."
+    },
+    {
+      "header": "wx/activityindicator.h",
+      "line": 79,
+      "declaration": "bool IsRunning() const;",
+      "symbol": "wxActivityIndicator::IsRunning",
+      "status": "~",
+      "lisp": [
+        "activity-indicator",
+        "make-activity-indicator",
+        "activity-running-p"
+      ],
+      "native": [
+        "wxl_activity_indicator",
+        "wxl_activity_running",
+        "wxl_set_activity_running"
+      ],
+      "scope": "Bounded ACTIVITY-INDICATOR WINDOW, native-backed :parent/:running-p CLOS construction, initially stopped by default, state readback, noncumulative Start/Stop and generic ACTIVITY-RUNNING-P/SETF. Callback writes defer; synchronous Input lifetime/native-entry protection. Native appearance/timer internals remain owned; no raw adoption, artwork/style/size/task or full class parity. Requires ACTIVITYINDICATOR/GRAPHICS_CONTEXT/TIMER and existing adv linkage. See docs/ACTIVITY-INDICATORS.md."
+    },
+    {
+      "header": "wx/dc.h",
+      "line": 199,
+      "declaration": "class wxDC : public wxObject {",
+      "symbol": "wxDC",
+      "status": "~",
+      "lisp": [
+        "drawing-canvas",
+        "make-drawing-canvas",
+        "canvas-content",
+        "canvas-client-size",
+        "save-canvas-image"
+      ],
+      "native": [
+        "wxl_drawing_canvas",
+        "wxl_set_canvas_content",
+        "wxl_canvas_client_size",
+        "wxl_save_canvas_image"
+      ],
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+    },
+    {
+      "header": "wx/colour.h",
+      "line": 68,
+      "declaration": "class wxColour : public wxObject {",
+      "symbol": "wxColour",
+      "status": "~",
+      "lisp": [
+        "drawing-canvas",
+        "make-drawing-canvas",
+        "canvas-content",
+        "canvas-client-size",
+        "save-canvas-image"
+      ],
+      "native": [
+        "wxl_drawing_canvas",
+        "wxl_set_canvas_content",
+        "wxl_canvas_client_size",
+        "wxl_save_canvas_image"
+      ],
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+    },
+    {
+      "header": "wx/font.h",
+      "line": 313,
+      "declaration": "class wxFontInfo {",
+      "symbol": "wxFontInfo",
+      "status": "~",
+      "lisp": [
+        "drawing-canvas",
+        "make-drawing-canvas",
+        "canvas-content",
+        "canvas-client-size",
+        "save-canvas-image"
+      ],
+      "native": [
+        "wxl_drawing_canvas",
+        "wxl_set_canvas_content",
+        "wxl_canvas_client_size",
+        "wxl_save_canvas_image"
+      ],
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+    },
+    {
+      "header": "wx/font.h",
+      "line": 509,
+      "declaration": "class wxFont : public wxGDIObject {",
+      "symbol": "wxFont",
+      "status": "~",
+      "lisp": [
+        "drawing-canvas",
+        "make-drawing-canvas",
+        "canvas-content",
+        "canvas-client-size",
+        "save-canvas-image"
+      ],
+      "native": [
+        "wxl_drawing_canvas",
+        "wxl_set_canvas_content",
+        "wxl_canvas_client_size",
+        "wxl_save_canvas_image"
+      ],
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+    },
+    {
+      "header": "wx/bitmap.h",
+      "line": 211,
+      "declaration": "class wxBitmap : public wxGDIObject {",
+      "symbol": "wxBitmap",
+      "status": "~",
+      "lisp": [
+        "drawing-canvas",
+        "make-drawing-canvas",
+        "canvas-content",
+        "canvas-client-size",
+        "save-canvas-image"
+      ],
+      "native": [
+        "wxl_drawing_canvas",
+        "wxl_set_canvas_content",
+        "wxl_canvas_client_size",
+        "wxl_save_canvas_image"
+      ],
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+    },
+    {
+      "header": "wx/image.h",
+      "line": 489,
+      "declaration": "class wxImage : public wxObject {",
+      "symbol": "wxImage",
+      "status": "~",
+      "lisp": [
+        "drawing-canvas",
+        "make-drawing-canvas",
+        "canvas-content",
+        "canvas-client-size",
+        "save-canvas-image"
+      ],
+      "native": [
+        "wxl_drawing_canvas",
+        "wxl_set_canvas_content",
+        "wxl_canvas_client_size",
+        "wxl_save_canvas_image"
+      ],
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+    },
+    {
+      "header": "wx/dcmemory.h",
+      "line": 65,
+      "declaration": "class wxMemoryDC : public wxDC {",
+      "symbol": "wxMemoryDC",
+      "status": "~",
+      "lisp": [
+        "drawing-canvas",
+        "make-drawing-canvas",
+        "canvas-content",
+        "canvas-client-size",
+        "save-canvas-image"
+      ],
+      "native": [
+        "wxl_drawing_canvas",
+        "wxl_set_canvas_content",
+        "wxl_canvas_client_size",
+        "wxl_save_canvas_image"
+      ],
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+    },
+    {
+      "header": "wx/dcbuffer.h",
+      "line": 167,
+      "declaration": "class wxAutoBufferedPaintDC : public wxBufferedPaintDC {",
+      "symbol": "wxAutoBufferedPaintDC",
+      "status": "~",
+      "lisp": [
+        "drawing-canvas",
+        "make-drawing-canvas",
+        "canvas-content",
+        "canvas-client-size",
+        "save-canvas-image"
+      ],
+      "native": [
+        "wxl_drawing_canvas",
+        "wxl_set_canvas_content",
+        "wxl_canvas_client_size",
+        "wxl_save_canvas_image"
+      ],
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+    },
+    {
+      "header": "wx/imagpng.h",
+      "line": 38,
+      "declaration": "class wxPNGHandler : public wxImageHandler {",
+      "symbol": "wxPNGHandler",
+      "status": "~",
+      "lisp": [
+        "drawing-canvas",
+        "make-drawing-canvas",
+        "canvas-content",
+        "canvas-client-size",
+        "save-canvas-image"
+      ],
+      "native": [
+        "wxl_drawing_canvas",
+        "wxl_set_canvas_content",
+        "wxl_canvas_client_size",
+        "wxl_save_canvas_image"
+      ],
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+    },
+    {
+      "header": "wx/panel.h",
+      "line": 88,
+      "declaration": "bool Create(wxWindow* parent, wxWindowID id = wxID_ANY, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxTAB_TRAVERSAL, const wxString& name = wxPanelNameStr);",
+      "symbol": "wxPanel::Create",
+      "status": "~",
+      "lisp": [
+        "drawing-canvas",
+        "make-drawing-canvas",
+        "canvas-content",
+        "canvas-client-size",
+        "save-canvas-image"
+      ],
+      "native": [
+        "wxl_drawing_canvas",
+        "wxl_set_canvas_content",
+        "wxl_canvas_client_size",
+        "wxl_save_canvas_image"
+      ],
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+    },
+    {
+      "header": "wx/dc.h",
+      "line": 659,
+      "declaration": "void DrawRectangle(wxCoord x, wxCoord y, wxCoord width, wxCoord height);",
+      "symbol": "wxDC::DrawRectangle",
+      "status": "~",
+      "lisp": [
+        "drawing-canvas",
+        "make-drawing-canvas",
+        "canvas-content",
+        "canvas-client-size",
+        "save-canvas-image"
+      ],
+      "native": [
+        "wxl_drawing_canvas",
+        "wxl_set_canvas_content",
+        "wxl_canvas_client_size",
+        "wxl_save_canvas_image"
+      ],
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+    },
+    {
+      "header": "wx/dc.h",
+      "line": 532,
+      "declaration": "void DrawLine(wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2);",
+      "symbol": "wxDC::DrawLine",
+      "status": "~",
+      "lisp": [
+        "drawing-canvas",
+        "make-drawing-canvas",
+        "canvas-content",
+        "canvas-client-size",
+        "save-canvas-image"
+      ],
+      "native": [
+        "wxl_drawing_canvas",
+        "wxl_set_canvas_content",
+        "wxl_canvas_client_size",
+        "wxl_save_canvas_image"
+      ],
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+    },
+    {
+      "header": "wx/dc.h",
+      "line": 453,
+      "declaration": "void DrawEllipse(wxCoord x, wxCoord y, wxCoord width, wxCoord height);",
+      "symbol": "wxDC::DrawEllipse",
+      "status": "~",
+      "lisp": [
+        "drawing-canvas",
+        "make-drawing-canvas",
+        "canvas-content",
+        "canvas-client-size",
+        "save-canvas-image"
+      ],
+      "native": [
+        "wxl_drawing_canvas",
+        "wxl_set_canvas_content",
+        "wxl_canvas_client_size",
+        "wxl_save_canvas_image"
+      ],
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+    },
+    {
+      "header": "wx/dc.h",
+      "line": 776,
+      "declaration": "void DrawText(const wxString& text, wxCoord x, wxCoord y);",
+      "symbol": "wxDC::DrawText",
+      "status": "~",
+      "lisp": [
+        "drawing-canvas",
+        "make-drawing-canvas",
+        "canvas-content",
+        "canvas-client-size",
+        "save-canvas-image"
+      ],
+      "native": [
+        "wxl_drawing_canvas",
+        "wxl_set_canvas_content",
+        "wxl_canvas_client_size",
+        "wxl_save_canvas_image"
+      ],
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+    },
+    {
+      "header": "wx/dc.h",
+      "line": 415,
+      "declaration": "void DrawBitmap(const wxBitmap& bitmap, wxCoord x, wxCoord y, bool useMask = false);",
+      "symbol": "wxDC::DrawBitmap",
+      "status": "~",
+      "lisp": [
+        "drawing-canvas",
+        "make-drawing-canvas",
+        "canvas-content",
+        "canvas-client-size",
+        "save-canvas-image"
+      ],
+      "native": [
+        "wxl_drawing_canvas",
+        "wxl_set_canvas_content",
+        "wxl_canvas_client_size",
+        "wxl_save_canvas_image"
+      ],
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+    },
+    {
+      "header": "wx/colour.h",
+      "line": 88,
+      "declaration": "wxColour(unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha = wxALPHA_OPAQUE);",
+      "symbol": "wxColour::wxColour",
+      "status": "~",
+      "lisp": [
+        "drawing-canvas",
+        "make-drawing-canvas",
+        "canvas-content",
+        "canvas-client-size",
+        "save-canvas-image"
+      ],
+      "native": [
+        "wxl_drawing_canvas",
+        "wxl_set_canvas_content",
+        "wxl_canvas_client_size",
+        "wxl_save_canvas_image"
+      ],
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+    },
+    {
+      "header": "wx/font.h",
+      "line": 330,
+      "declaration": "explicit wxFontInfo(double pointSize);",
+      "symbol": "wxFontInfo::wxFontInfo",
+      "status": "~",
+      "lisp": [
+        "drawing-canvas",
+        "make-drawing-canvas",
+        "canvas-content",
+        "canvas-client-size",
+        "save-canvas-image"
+      ],
+      "native": [
+        "wxl_drawing_canvas",
+        "wxl_set_canvas_content",
+        "wxl_canvas_client_size",
+        "wxl_save_canvas_image"
+      ],
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+    },
+    {
+      "header": "wx/font.h",
+      "line": 350,
+      "declaration": "wxFontInfo& Family(wxFontFamily family);",
+      "symbol": "wxFontInfo::Family",
+      "status": "~",
+      "lisp": [
+        "drawing-canvas",
+        "make-drawing-canvas",
+        "canvas-content",
+        "canvas-client-size",
+        "save-canvas-image"
+      ],
+      "native": [
+        "wxl_drawing_canvas",
+        "wxl_set_canvas_content",
+        "wxl_canvas_client_size",
+        "wxl_save_canvas_image"
+      ],
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+    },
+    {
+      "header": "wx/font.h",
+      "line": 538,
+      "declaration": "wxFont(const wxFontInfo& fontInfo);",
+      "symbol": "wxFont::wxFont",
+      "status": "~",
+      "lisp": [
+        "drawing-canvas",
+        "make-drawing-canvas",
+        "canvas-content",
+        "canvas-client-size",
+        "save-canvas-image"
+      ],
+      "native": [
+        "wxl_drawing_canvas",
+        "wxl_set_canvas_content",
+        "wxl_canvas_client_size",
+        "wxl_save_canvas_image"
+      ],
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+    },
+    {
+      "header": "wx/bitmap.h",
+      "line": 302,
+      "declaration": "wxBitmap(int width, int height, int depth = wxBITMAP_SCREEN_DEPTH);",
+      "symbol": "wxBitmap::wxBitmap",
+      "status": "~",
+      "lisp": [
+        "drawing-canvas",
+        "make-drawing-canvas",
+        "canvas-content",
+        "canvas-client-size",
+        "save-canvas-image"
+      ],
+      "native": [
+        "wxl_drawing_canvas",
+        "wxl_set_canvas_content",
+        "wxl_canvas_client_size",
+        "wxl_save_canvas_image"
+      ],
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+    },
+    {
+      "header": "wx/bitmap.h",
+      "line": 368,
+      "declaration": "wxBitmap(const wxImage& img, int depth = wxBITMAP_SCREEN_DEPTH);",
+      "symbol": "wxBitmap::wxBitmap",
+      "status": "~",
+      "lisp": [
+        "drawing-canvas",
+        "make-drawing-canvas",
+        "canvas-content",
+        "canvas-client-size",
+        "save-canvas-image"
+      ],
+      "native": [
+        "wxl_drawing_canvas",
+        "wxl_set_canvas_content",
+        "wxl_canvas_client_size",
+        "wxl_save_canvas_image"
+      ],
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+    },
+    {
+      "header": "wx/bitmap.h",
+      "line": 450,
+      "declaration": "virtual wxImage ConvertToImage() const;",
+      "symbol": "wxBitmap::ConvertToImage",
+      "status": "~",
+      "lisp": [
+        "drawing-canvas",
+        "make-drawing-canvas",
+        "canvas-content",
+        "canvas-client-size",
+        "save-canvas-image"
+      ],
+      "native": [
+        "wxl_drawing_canvas",
+        "wxl_set_canvas_content",
+        "wxl_canvas_client_size",
+        "wxl_save_canvas_image"
+      ],
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+    },
+    {
+      "header": "wx/image.h",
+      "line": 550,
+      "declaration": "wxImage(int width, int height, bool clear = true);",
+      "symbol": "wxImage::wxImage",
+      "status": "~",
+      "lisp": [
+        "drawing-canvas",
+        "make-drawing-canvas",
+        "canvas-content",
+        "canvas-client-size",
+        "save-canvas-image"
+      ],
+      "native": [
+        "wxl_drawing_canvas",
+        "wxl_set_canvas_content",
+        "wxl_canvas_client_size",
+        "wxl_save_canvas_image"
+      ],
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+    },
+    {
+      "header": "wx/dcmemory.h",
+      "line": 95,
+      "declaration": "wxMemoryDC(wxBitmap& bitmap);",
+      "symbol": "wxMemoryDC::wxMemoryDC",
+      "status": "~",
+      "lisp": [
+        "drawing-canvas",
+        "make-drawing-canvas",
+        "canvas-content",
+        "canvas-client-size",
+        "save-canvas-image"
+      ],
+      "native": [
+        "wxl_drawing_canvas",
+        "wxl_set_canvas_content",
+        "wxl_canvas_client_size",
+        "wxl_save_canvas_image"
+      ],
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+    },
+    {
+      "header": "wx/dcbuffer.h",
+      "line": 173,
+      "declaration": "wxAutoBufferedPaintDC(wxWindow* window);",
+      "symbol": "wxAutoBufferedPaintDC::wxAutoBufferedPaintDC",
+      "status": "~",
+      "lisp": [
+        "drawing-canvas",
+        "make-drawing-canvas",
+        "canvas-content",
+        "canvas-client-size",
+        "save-canvas-image"
+      ],
+      "native": [
+        "wxl_drawing_canvas",
+        "wxl_set_canvas_content",
+        "wxl_canvas_client_size",
+        "wxl_save_canvas_image"
+      ],
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+    },
+    {
+      "header": "wx/imagpng.h",
+      "line": 48,
+      "declaration": "virtual bool SaveFile( wxImage *image, wxOutputStream& stream, bool verbose=true );",
+      "symbol": "wxPNGHandler::SaveFile",
+      "status": "~",
+      "lisp": [
+        "drawing-canvas",
+        "make-drawing-canvas",
+        "canvas-content",
+        "canvas-client-size",
+        "save-canvas-image"
+      ],
+      "native": [
+        "wxl_drawing_canvas",
+        "wxl_set_canvas_content",
+        "wxl_canvas_client_size",
+        "wxl_save_canvas_image"
+      ],
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+    },
+    {
+      "header": "wx/window.h",
+      "line": 1107,
+      "declaration": "int FromDIP(int d) const;",
+      "symbol": "wxWindow::FromDIP",
+      "status": "~",
+      "lisp": [
+        "drawing-canvas",
+        "make-drawing-canvas",
+        "canvas-content",
+        "canvas-client-size",
+        "save-canvas-image"
+      ],
+      "native": [
+        "wxl_drawing_canvas",
+        "wxl_set_canvas_content",
+        "wxl_canvas_client_size",
+        "wxl_save_canvas_image"
+      ],
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+    },
+    {
+      "header": "wx/window.h",
+      "line": 1158,
+      "declaration": "wxSize ToDIP(const wxSize& sz) const;",
+      "symbol": "wxWindow::ToDIP",
+      "status": "~",
+      "lisp": [
+        "drawing-canvas",
+        "make-drawing-canvas",
+        "canvas-content",
+        "canvas-client-size",
+        "save-canvas-image"
+      ],
+      "native": [
+        "wxl_drawing_canvas",
+        "wxl_set_canvas_content",
+        "wxl_canvas_client_size",
+        "wxl_save_canvas_image"
+      ],
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
     }
   ],
   "classes": {
@@ -8650,12 +9364,21 @@
       "status": "~",
       "lisp": [
         "panel",
-        "make-panel"
+        "make-panel",
+        "drawing-canvas",
+        "make-drawing-canvas",
+        "canvas-content",
+        "canvas-client-size",
+        "save-canvas-image"
       ],
       "native": [
-        "wxl_panel"
+        "wxl_panel",
+        "wxl_drawing_canvas",
+        "wxl_set_canvas_content",
+        "wxl_canvas_client_size",
+        "wxl_save_canvas_image"
       ],
-      "scope": "Native-backed CLOS construction, including subclass initargs/defaults and managed rollback. Parent only; remaining constructor options use defaults. Full class and inherited API coverage remain open."
+      "scope": "Native-backed CLOS construction, including subclass initargs/defaults and managed rollback. Parent only; remaining constructor options use defaults. Full class and inherited API coverage remain open. DRAWING-CANVAS additionally uses a private retained wxPanel subclass with WINDOW Lisp ancestry and copied bounded rendering data; it does not widen general PANEL methods. Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
     },
     "wxButton": {
       "status": "~",
@@ -8747,7 +9470,9 @@
         "pop-event-handler",
         "remove-event-handler",
         "process-window-event",
-        "process-window-event-locally"
+        "process-window-event-locally",
+        "drawing-canvas",
+        "activity-indicator"
       ],
       "native": [
         "wxl_show_state",
@@ -8758,9 +9483,11 @@
         "wxl_push_handler",
         "wxl_pop_handler",
         "wxl_remove_handler",
-        "wxl_dispatch_owned"
+        "wxl_dispatch_owned",
+        "wxl_drawing_canvas",
+        "wxl_activity_indicator"
       ],
-      "scope": "Logical names, visibility and effective enabled state, layout, geometry and destruction are exposed; the remaining wxWindow API stays open. Managed handler stacks and explicit stack-aware copied routing are now supported. Push preserves bridge ownership; default pop/remove detach alive, deleting pop consumes native resource. All supported concrete native window destructors (including supported generic dialogs) pop(false) before base teardown, independent of destroy observers/enabled flags. No external adoption/SetEventHandler or retained origins. Modal-only dialog show writers reject; active modal/ancestor close/destroy guards preserve native modal lifetime. Native availability rejects pending/scheduled receiver or ancestor deletion through public wxApp::IsScheduledForDestruction plus bridge markers; no dedicated general deletion-query API. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
+      "scope": "Logical names, visibility and effective enabled state, layout, geometry and destruction are exposed; the remaining wxWindow API stays open. Managed handler stacks and explicit stack-aware copied routing are now supported. Push preserves bridge ownership; default pop/remove detach alive, deleting pop consumes native resource. All supported concrete native window destructors (including supported generic dialogs) pop(false) before base teardown, independent of destroy observers/enabled flags. No external adoption/SetEventHandler or retained origins. Modal-only dialog show writers reject; active modal/ancestor close/destroy guards preserve native modal lifetime. Native availability rejects pending/scheduled receiver or ancestor deletion through public wxApp::IsScheduledForDestruction plus bridge markers; no dedicated general deletion-query API. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md. DRAWING-CANVAS and ACTIVITY-INDICATOR are WINDOW receivers for implemented generic layout/geometry/state/lifetime/handler protocols; this is not arbitrary wxPanel/wxControl parity. Canvas writes/export and activity writes retain their callback/native-operation guards."
     },
     "wxTopLevelWindow": {
       "status": "~",
@@ -9987,6 +10714,173 @@
         "wxl_set_search_field"
       ],
       "scope": "Bounded editable SEARCH-CONTROL WINDOW with copied single-line UTF-8 query and descriptive hint, NUL/CR/LF rejection, native-backed CLOS and rollback. Default TEXT writes/hint writes silent; explicit TEXT notify once even unchanged. Native-only search/cancel payloads copied without query inference; shared Input source/composite/propagation and early Destroy guards. Requests both icons and PROCESS_ENTER, with native GTK/Cocoa/generic visibility/empty/cancel differences. No menus/styles/button visibility/editing APIs/raw adoption or full parity. See docs/SEARCH-CONTROLS.md. Search-origin TEXT context string writes reject uniformly, including absent native text-entry hook; generic TEXT cloning remains supported."
+    },
+    "wxActivityIndicator": {
+      "status": "~",
+      "lisp": [
+        "activity-indicator",
+        "make-activity-indicator",
+        "activity-running-p"
+      ],
+      "native": [
+        "wxl_activity_indicator",
+        "wxl_activity_running",
+        "wxl_set_activity_running"
+      ],
+      "scope": "Bounded ACTIVITY-INDICATOR WINDOW, native-backed :parent/:running-p CLOS construction, initially stopped by default, state readback, noncumulative Start/Stop and generic ACTIVITY-RUNNING-P/SETF. Callback writes defer; synchronous Input lifetime/native-entry protection. Native appearance/timer internals remain owned; no raw adoption, artwork/style/size/task or full class parity. Requires ACTIVITYINDICATOR/GRAPHICS_CONTEXT/TIMER and existing adv linkage. See docs/ACTIVITY-INDICATORS.md."
+    },
+    "wxDC": {
+      "status": "~",
+      "lisp": [
+        "drawing-canvas",
+        "make-drawing-canvas",
+        "canvas-content",
+        "canvas-client-size",
+        "save-canvas-image"
+      ],
+      "native": [
+        "wxl_drawing_canvas",
+        "wxl_set_canvas_content",
+        "wxl_canvas_client_size",
+        "wxl_save_canvas_image"
+      ],
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+    },
+    "wxColour": {
+      "status": "~",
+      "lisp": [
+        "drawing-canvas",
+        "make-drawing-canvas",
+        "canvas-content",
+        "canvas-client-size",
+        "save-canvas-image"
+      ],
+      "native": [
+        "wxl_drawing_canvas",
+        "wxl_set_canvas_content",
+        "wxl_canvas_client_size",
+        "wxl_save_canvas_image"
+      ],
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+    },
+    "wxFontInfo": {
+      "status": "~",
+      "lisp": [
+        "drawing-canvas",
+        "make-drawing-canvas",
+        "canvas-content",
+        "canvas-client-size",
+        "save-canvas-image"
+      ],
+      "native": [
+        "wxl_drawing_canvas",
+        "wxl_set_canvas_content",
+        "wxl_canvas_client_size",
+        "wxl_save_canvas_image"
+      ],
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+    },
+    "wxFont": {
+      "status": "~",
+      "lisp": [
+        "drawing-canvas",
+        "make-drawing-canvas",
+        "canvas-content",
+        "canvas-client-size",
+        "save-canvas-image"
+      ],
+      "native": [
+        "wxl_drawing_canvas",
+        "wxl_set_canvas_content",
+        "wxl_canvas_client_size",
+        "wxl_save_canvas_image"
+      ],
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+    },
+    "wxBitmap": {
+      "status": "~",
+      "lisp": [
+        "drawing-canvas",
+        "make-drawing-canvas",
+        "canvas-content",
+        "canvas-client-size",
+        "save-canvas-image"
+      ],
+      "native": [
+        "wxl_drawing_canvas",
+        "wxl_set_canvas_content",
+        "wxl_canvas_client_size",
+        "wxl_save_canvas_image"
+      ],
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+    },
+    "wxImage": {
+      "status": "~",
+      "lisp": [
+        "drawing-canvas",
+        "make-drawing-canvas",
+        "canvas-content",
+        "canvas-client-size",
+        "save-canvas-image"
+      ],
+      "native": [
+        "wxl_drawing_canvas",
+        "wxl_set_canvas_content",
+        "wxl_canvas_client_size",
+        "wxl_save_canvas_image"
+      ],
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+    },
+    "wxMemoryDC": {
+      "status": "~",
+      "lisp": [
+        "drawing-canvas",
+        "make-drawing-canvas",
+        "canvas-content",
+        "canvas-client-size",
+        "save-canvas-image"
+      ],
+      "native": [
+        "wxl_drawing_canvas",
+        "wxl_set_canvas_content",
+        "wxl_canvas_client_size",
+        "wxl_save_canvas_image"
+      ],
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+    },
+    "wxAutoBufferedPaintDC": {
+      "status": "~",
+      "lisp": [
+        "drawing-canvas",
+        "make-drawing-canvas",
+        "canvas-content",
+        "canvas-client-size",
+        "save-canvas-image"
+      ],
+      "native": [
+        "wxl_drawing_canvas",
+        "wxl_set_canvas_content",
+        "wxl_canvas_client_size",
+        "wxl_save_canvas_image"
+      ],
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
+    },
+    "wxPNGHandler": {
+      "status": "~",
+      "lisp": [
+        "drawing-canvas",
+        "make-drawing-canvas",
+        "canvas-content",
+        "canvas-client-size",
+        "save-canvas-image"
+      ],
+      "native": [
+        "wxl_drawing_canvas",
+        "wxl_set_canvas_content",
+        "wxl_canvas_client_size",
+        "wxl_save_canvas_image"
+      ],
+      "scope": "Private retained drawing/value adapter via DRAWING-CANVAS/CANVAS-CONTENT and SAVE-CANVAS-IMAGE only. Bounded scene: opaque RGB bytes, signed DIP geometry, Swiss/sans point-size text and copied RGB bitmap buffers; private native DC/font/colour/image/bitmap resources never escape or become Lisp objects. Callback writes/export defer; source/ancestor/native-entry guards and staged scene replacement. Native paint exceptions are contained; PNG output uses private handler and checked non-atomic file write. No standalone class/API parity. See docs/DRAWING-CANVAS.md."
     }
   }
 }

@@ -283,3 +283,22 @@ Those kinds reject owned/synthetic/cloning, while generic TEXT scope is retained
 Search-origin TEXT context string SETF rejects even without WXGetTextEntry; do
 not weaken that portable rule. Requires wxUSE_SEARCHCTRL/wxUSE_TEXTCTRL; see
 `docs/SEARCH-CONTROLS.md`.
+
+
+ABI55 DRAWING-CANVAS is a retained WINDOW adapter with copied bounded scene data,
+private native paint/resize rendering and private PNG export. Preserve per-scene
+item/text/RGB limits, staged native commit and synchronized Lisp slot commit,
+DIP screen units versus pixel export extents, point-size native font metrics,
+no Lisp paint callbacks/raw DC/image handles, callback write/export rejection,
+Input operation lifetime guards and suppressed native error dialogs. PNG output
+uses checked write/flush/close after encoding; overwrite is non-atomic. ACTIVITY-
+INDICATOR owns native animation, generalized boolean running state, idempotent
+Start/Stop, parent teardown and callback write guards. See docs/DRAWING-CANVAS.md
+and docs/ACTIVITY-INDICATORS.md.
+
+The finite automated local macOS MVP checkpoint is documented in
+`docs/MVP-ACCEPTANCE.md`. Once its final gates pass, tell the user the primary goal
+has been reached. Do not manufacture another required widget batch; further work
+is application-driven or explicitly requested platform/manual validation.
+Preserve manager stable-ID deferred targeting, first-request coalescing and
+pending-owner cancellation; see docs/RECORD-MANAGER.md.

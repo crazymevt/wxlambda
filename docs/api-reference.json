@@ -2936,5 +2936,99 @@
       "syntax": "(setf (wxlambda:search-hint control) \"Find records\")",
       "description": "Copies input to native descriptive text, rejects same-source callback writes, returns input string. Native presentation remains port-specific."
     }
+  },
+  {
+    "name": "activity-indicator",
+    "kind": "class",
+    "syntax": "wxlambda:activity-indicator",
+    "arguments": "Required :parent WINDOW; optional :running-p generalized boolean defaults NIL, plus subclass initargs.",
+    "returns": "Native-backed ACTIVITY-INDICATOR WINDOW subtype.",
+    "description": "Window-owned native busy animation with verified initial state. Appearance/cadence and visibility remain port policy; no task is run by the control.",
+    "scope": "Active main-thread GUI session and valid native lifetime. Native-backed CLOS subclasses/defaults/AFTER hooks and managed failure/root rollback. No native animation/timer/pointer adoption, progress percentage or artwork/styles. Requires wxUSE_ACTIVITYINDICATOR and wxUSE_GRAPHICS_CONTEXT, plus existing TIMER/core/base/adv. See docs/ACTIVITY-INDICATORS.md.",
+    "wxwidgets": "wxActivityIndicator::Create/Start/Stop/IsRunning, wxWidgets3.2.12; installed class exported from adv.",
+    "construction": {
+      "syntax": "(make-instance 'wxlambda:activity-indicator :parent parent :running-p nil)",
+      "description": "Direct subclass slot/default initargs and native-ready AFTER hooks; one concrete native widget kind, managed rollback on later initialization failure."
+    }
+  },
+  {
+    "name": "make-activity-indicator",
+    "kind": "generic-function",
+    "arguments": "PARENT and forwarded :running-p/:class/subclass initargs.",
+    "returns": "New ACTIVITY-INDICATOR or validated subclass.",
+    "description": "Thin native-backed CLOS factory. Initially stopped unless RUNNING-P is non-NIL. Animation is feedback, not background work.",
+    "scope": "Main-thread live parent and active GUI session; native default style/geometry. See docs/ACTIVITY-INDICATORS.md.",
+    "wxwidgets": "wxActivityIndicator::Create, wxWidgets3.2.12."
+  },
+  {
+    "name": "activity-running-p",
+    "kind": "generic-function",
+    "syntax": "(wxlambda:activity-running-p indicator)",
+    "arguments": "ACTIVITY-INDICATOR; SETF accepts a generalized boolean.",
+    "returns": "Native T/NIL activity state; writer returns supplied value.",
+    "description": "Read or set native animation state. Starts are not cumulative and one NIL write stops. Repeated state requests are idempotent; state is not a promise of visible animation while hidden or while the GUI loop is blocked.",
+    "scope": "Reader callback-safe; all access GUI-thread/lifetime checked. Writes reject event callbacks; defer via owner-bound UI action. Synchronous writes protect receiver/ancestors and gate nested native GUI/modal/clipboard/safe-idle entry through InputOperation. Native state readback must match request. See docs/ACTIVITY-INDICATORS.md.",
+    "wxwidgets": "wxActivityIndicator::IsRunning/Start/Stop, wxWidgets3.2.12.",
+    "setf": {
+      "syntax": "(setf (wxlambda:activity-running-p indicator) t)",
+      "description": "Non-NIL calls native Start; NIL calls Stop; both verify state. Returns input generalized boolean. Callback writes reject, including another indicator; use owner-bound deferral. Parent/session teardown owns animation cleanup."
+    }
+  },
+  {
+    "name": "drawing-canvas",
+    "kind": "class",
+    "syntax": "wxlambda:drawing-canvas",
+    "arguments": "Required :parent WINDOW; :content defaults (:background (255 255 255) :items NIL), plus subclass initargs.",
+    "returns": "Native-backed DRAWING-CANVAS WINDOW subtype backed by a private wxPanel.",
+    "description": "Retained drawing window for copied geometry, RGB colours, single-line text/font sizes and RGB bitmap values. Native paint/resize handlers render without calling Lisp; Lisp ancestry is WINDOW rather than PANEL.",
+    "scope": "Active main-thread GUI session, live managed DRAWING-CANVAS, no DC/native object adoption or Lisp paint callback. Native scene staging, rendering/export and Input lifetime/reentry guards; writes/export reject event callbacks. Copied bounded data only; font/paint/DPI appearance is native. See docs/DRAWING-CANVAS.md.",
+    "wxwidgets": "Private wxPanel subclass, wxAutoBufferedPaintDC, wxDC drawing/value adapters; wxWidgets3.2.12.",
+    "construction": {
+      "syntax": "(make-instance 'wxlambda:drawing-canvas :parent parent :content '(:background (255 255 255) :items nil))",
+      "description": "Native-backed subclasses/default initargs and properties in AFTER hooks; validated one-concrete-kind ancestry and managed initialization/root rollback."
+    }
+  },
+  {
+    "name": "make-drawing-canvas",
+    "kind": "generic-function",
+    "arguments": "PARENT and forwarded :content/:class/subclass initargs.",
+    "returns": "New DRAWING-CANVAS or validated subclass.",
+    "description": "Thin native-backed CLOS factory for the retained canvas. Use existing row/column layout, typically proportion1 and expandT.",
+    "scope": "Active main-thread GUI session, live managed WINDOW parent, no DC/native object adoption or Lisp paint callback. Native scene staging, rendering/export and Input lifetime/reentry guards; writes/export reject event callbacks. Copied bounded data only; font/paint/DPI appearance is native. See docs/DRAWING-CANVAS.md.",
+    "wxwidgets": "wxPanel::Create with private retained paint/size handlers, wxWidgets3.2.12."
+  },
+  {
+    "name": "canvas-content",
+    "kind": "generic-function",
+    "syntax": "(wxlambda:canvas-content canvas)",
+    "arguments": "DRAWING-CANVAS. SETF value is a proper plist with exactly :background RGB and :items, containing at most512 bounded primitives.",
+    "returns": "Fresh normalized deep scene copy, including strings/RGB lists/pixel vectors. SETF returns supplied object.",
+    "description": "Items are (:rect x y width height rgb), (:ellipse x y width height rgb), (:line x1 y1 x2 y2 rgb stroke-width), (:text x y string point-size rgb), or (:bitmap x y width height pixels). RGB bytes0..255, coordinates/endpoints \u00b110000, non-bitmap extents1..10000, line widths1..32, text6..72 points in native Swiss/sans family. Text is NUL/CR/LF-free, total65536 UTF-8 bytes; bitmaps1..256 per axis use exact simple RGB byte vectors, total2MiB. On-screen geometry uses DIP; no alpha/native resource handles.",
+    "scope": "Active main-thread GUI session, live managed DRAWING-CANVAS, no DC/native object adoption or Lisp paint callback. Native scene staging, rendering/export and Input lifetime/reentry guards; writes/export reject event callbacks. Copied bounded data only; font/paint/DPI appearance is native. See docs/DRAWING-CANVAS.md. Getter validates native lifetime and reports retained native paint errors. Invalid staging preserves prior scene; successful paint/new content clears paint error. Input/output objects are independent copies.",
+    "wxwidgets": "Bounded wxDC geometry/text/bitmap operations with private wxColour/wxFont/wxImage/wxBitmap adapters, wxWidgets3.2.12.",
+    "setf": {
+      "syntax": "(setf (wxlambda:canvas-content canvas) '(:background (245 248 252) :items ((:rect 20 20 100 40 (30 140 190)))))",
+      "description": "Validate/copy bounded scene, stage and replace all native items/bitmaps and request refresh, then synchronize the stored Lisp scene before reporting callback errors. Reject event callbacks and same-canvas native operation recursion; defer via owner-bound UI action or safe UI timer body."
+    }
+  },
+  {
+    "name": "canvas-client-size",
+    "kind": "generic-function",
+    "syntax": "(wxlambda:canvas-client-size canvas)",
+    "arguments": "Live DRAWING-CANVAS.",
+    "returns": "Fresh (width height) client dimensions in DIP.",
+    "description": "Get native client size through ToDIP. Integer scaling may round by a pixel. Resize repaints retained data but does not rewrite the model; applications can rebuild geometry from this value. Reports retained native paint failure before returning.",
+    "scope": "Active main-thread GUI session, live managed DRAWING-CANVAS, no DC/native object adoption or Lisp paint callback. Native scene staging, rendering/export and Input lifetime/reentry guards; writes/export reject event callbacks. Copied bounded data only; font/paint/DPI appearance is native. See docs/DRAWING-CANVAS.md.",
+    "wxwidgets": "wxWindow::GetClientSize/ToDIP(wxSize), wxWidgets3.2.12."
+  },
+  {
+    "name": "save-canvas-image",
+    "kind": "generic-function",
+    "syntax": "(wxlambda:save-canvas-image canvas path :width 640 :height 480)",
+    "arguments": "DRAWING-CANVAS, string/pathname PATH; WIDTH/HEIGHT default640/480, each1..2048 pixels.",
+    "returns": "(pathname PATH) after successful PNG encoding/write/flush/close.",
+    "description": "Render same retained scene into private RGB24 bitmap and PNG. Export coordinates are pixels, one scene unit per pixel with clipping, not model scaling; fonts keep native point-size metrics. Internal PNG handler does not alter global registry. Existing target is overwritten; encoding is staged before open, but write/flush/close failure can leave partial output and is not atomic replacement.",
+    "scope": "Active main-thread GUI session, live managed DRAWING-CANVAS, no DC/native object adoption or Lisp paint callback. Native scene staging, rendering/export and Input lifetime/reentry guards; writes/export reject event callbacks. Copied bounded data only; font/paint/DPI appearance is native. See docs/DRAWING-CANVAS.md. Explicit UTF-8 native path conversion with NUL/empty-path rejection. Invalid arguments/native IO/render failures signal Lisp/native conditions; no general image/file-loader/printing or arbitrary filesystem fault recovery API.",
+    "wxwidgets": "Private wxMemoryDC/wxBitmap/wxPNGHandler and checked wxFFileOutputStream output, wxWidgets3.2.12."
   }
 ]

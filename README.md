@@ -6,15 +6,17 @@ desktop workflows, reliable lifetime/event contracts and Lisp-friendly APIs.
 The current implementation is still an early GUI binding; exhaustive native
 wxWidgets parity is not the delivery objective.
 
-The current GUI baseline includes twelve concrete window kinds (frame, panel,
-button, text control, label, checkbox, choice, gauge, text-entry dialog and
-single-choice dialog, generic message dialog and generic file dialog), basic row/column layout
-and native-backed CLOS construction/SETF. The event foundation includes immutable
-snapshots, scoped contexts, owned native events, copied/posted/transferred
+The automated local macOS MVP covers persistent form/editor, searchable record
+manager and timer-driven drawing/monitoring workflows. See the finite
+[acceptance scope and evidence](docs/MVP-ACCEPTANCE.md). Further widgets and
+platform validation are application-driven extensions.
+
+The GUI surface includes everyday input controls, notebook/list/tree navigation,
+menus/toolbars/status bars, keyboard actions, guarded dialogs, clipboard text,
+deferred actions, timers, scrolling, retained drawing and activity feedback.
+The event foundation includes immutable snapshots, scoped contexts, owned events,
 pending delivery, managed handler chains/window stacks and rooted Lisp data.
-Idle support adds bounded idle scheduling and policy. Frame menus/actions extend
-the everyday GUI surface; modal text/single-choice dialogs add input workflows. Generic message/file dialogs provide guarded wxWidgets GUI workflows; native OS
-alerts/panels remain unbound.
+Native OS alerts/panels remain unbound.
 
 Native pointers never escape the bridge. Construction, callbacks and lifetime
 checks remain on the main GUI thread. There is one GUI session per process;
@@ -24,7 +26,7 @@ lifetime/weak invalidation rules.
 
 The [CLOS API](docs/CLOS-API.md) provides subclass initargs/defaults/AFTER hooks,
 thin :CLASS-validating factories and canonical generic SETF. The current public
-API has 167 exports, 115 named generic operations and 36 generic property writers.
+API has 278 exports, 200 named generic operations and 62 generic property writers.
 Native C++ virtual Lisp callbacks remain separate work. These counts describe
 public interfaces, not full native class coverage or completed platform validation.
 

@@ -30,7 +30,9 @@ class CoverageInventoryChecks(unittest.TestCase):
         self.root = Path(self.temp.name)
         self.original_root = inventory.ROOT
         inventory.ROOT = self.root
-        for name in ('docs/coverage/status.json', 'lisp/package.lisp', 'lisp/ffi.lisp', 'native/wxlambda.cpp'):
+        for name in ['docs/coverage/status.json', 'native/wxlambda.cpp',
+                     *[str(p.relative_to(ROOT)) for p in (ROOT / 'lisp').glob('*.lisp')],
+                     *[str(p.relative_to(ROOT)) for p in (ROOT / 'native').glob('*.inc')]]:
             target = self.root / name
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(ROOT / name, target)
@@ -200,6 +202,7 @@ class CoverageInventoryChecks(unittest.TestCase):
         }
         self.assertTrue(required <= {record['symbol'] for record in self.status['declarations']})
         self.assertEqual(set(self.status['classes']), {
+            'wxActivityIndicator', 'wxDC', 'wxColour', 'wxFontInfo', 'wxFont', 'wxBitmap', 'wxImage', 'wxMemoryDC', 'wxAutoBufferedPaintDC', 'wxPNGHandler',
             'wxSearchCtrl', 'wxDatePickerCtrl', 'wxTimePickerCtrl', 'wxDateEvent', 'wxDateTime',
             'wxFrame', 'wxPanel', 'wxButton', 'wxTextCtrl', 'wxStaticText',
             'wxCheckBox', 'wxChoice', 'wxGauge', 'wxBoxSizer', 'wxWindow', 'wxTopLevelWindow',

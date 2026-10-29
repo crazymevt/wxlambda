@@ -17,6 +17,24 @@
                  (wxlambda-form:set-submit-action #'submitted)
                  (wxlambda:queue-click wxlambda-form:*submit*))))
       (wxlambda:with-application ()
+        (let* ((frame (wxlambda:make-frame))
+               (canvas (wxlambda:make-drawing-canvas frame
+                         :content '(:background (255 255 255)
+                                    :items ((:rect 2 2 12 10 (20 80 140))
+                                            (:text 2 18 "Packaged λ" 12 (0 0 0))))))
+               (activity (wxlambda:make-activity-indicator frame)))
+          (unwind-protect
+               (progn
+                 (setf (wxlambda:activity-running-p activity) t)
+                 (assert (wxlambda:activity-running-p activity))
+                 (setf (wxlambda:activity-running-p activity) nil)
+                 (assert (not (wxlambda:activity-running-p activity)))
+                 (uiop:with-temporary-file (:pathname path :prefix "wxlambda-png-" :type "png")
+                   (wxlambda:save-canvas-image canvas path :width 96 :height 48)
+                   (with-open-file (input path :element-type '(unsigned-byte 8))
+                     (assert (equal '(137 80 78 71 13 10 26 10)
+                                    (loop repeat 8 collect (read-byte input)))))))
+            (wxlambda:destroy-window frame)))
         (wxlambda-form:open-window)
         (setf (wxlambda:text wxlambda-form:*name* :notify t) "λ 日本語 😀")
         (setf (wxlambda:selection wxlambda-form:*style* :notify t) 1)
@@ -24,7 +42,7 @@
         (wxlambda:queue-click wxlambda-form:*submit*)
         (wxlambda:run)))
     (assert (= calls 2)))
-  (format t "PASS: packaged startup, Unicode callbacks, recreation, and cleanup~%"))
+  (format t "PASS: packaged startup, Unicode callbacks, recreation, drawing PNG, activity, and cleanup~%"))
 
 (defun main ()
   (handler-case

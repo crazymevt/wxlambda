@@ -20,6 +20,14 @@
 #include <wx/datectrl.h>
 #include <wx/timectrl.h>
 #include <wx/srchctrl.h>
+#include <wx/activityindicator.h>
+#include <wx/dcbuffer.h>
+#include <wx/dcmemory.h>
+#include <wx/image.h>
+#include <wx/imagpng.h>
+#include <wx/mstream.h>
+#include <wx/wfstream.h>
+#include <wx/ffile.h>
 #include <wx/dateevt.h>
 #include <chrono>
 #include <wx/notebook.h>
@@ -27,6 +35,7 @@
 #include <wx/treectrl.h>
 #include <wx/splitter.h>
 #include <cmath>
+#include <cstdio>
 #include <wx/textdlg.h>
 #include <wx/choicdlg.h>
 #include <wx/generic/msgdlgg.h>
@@ -1393,7 +1402,7 @@ bool process_deferred_ui_action() {
 
 }
 extern "C" {
-int wxl_abi_version() { return 54; }
+int wxl_abi_version() { return 55; }
 const char* wxl_last_error() { return error.c_str(); }
 int wxl_clipboard_text_available() {
     return boolean_result([&] {
@@ -3630,4 +3639,10 @@ int wxl_click(wxl_handle id) {
         wxPostEvent(b, event);
     });
 }
+}
+
+#include "drawing-canvas.inc"
+
+extern "C" {
+#include "activity-indicator.inc"
 }

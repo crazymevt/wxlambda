@@ -52,10 +52,9 @@ automatic release requirements.
 - In generated checklists, `[x]` means the declaration's operation is implemented
   with its stated Lisp mapping, `[~]` means partial support with the supported
   arguments/receivers and remaining limits stated inline, and `[ ]` means pending.
-  The class index uses `[~]` for the managed `wxAppConsole`/`wxApp` interfaces,
-  `wxEvtHandler`, twelve concrete window families, managed menu resources,
-  `wxBoxSizer`, `wxWindow` and `wxTopLevelWindow`; none has
-  complete class coverage. Applications have lifecycle functions and a borrowed application-handler view;
+  Class records remain partial for the managed application, handler, window,
+  menu, layout and drawing adapters; none claims complete native class coverage.
+  Applications have lifecycle functions and a borrowed application-handler view;
   native application construction and subclass hooks remain unbound.
   Constructors with fixed IDs/styles remain partial.
 - [status.json](coverage/status.json) is the persistent source of declaration and
@@ -67,9 +66,10 @@ automatic release requirements.
   statements are labeled **Context** without checkboxes. Public macro definitions
   and constants remain API tasks. Context is retained for platform interpretation
   and is counted separately in the manifest.
-- The baseline is based on `native/wxlambda.{h,cpp}`, `lisp/{ffi,api,package}.lisp`
-  and existing tests. Historical test results remain in the implementation plan;
-  no GUI or hosted-platform checks were rerun for this documentation change.
+- The baseline is based on `native/wxlambda.{h,cpp}` plus modular native includes and `lisp/*.lisp`
+  and existing tests. Current local verification is recorded in the MVP acceptance
+  report; historical results remain in the implementation plan. Hosted platforms
+  remain unverified.
 - For each binding, record the Lisp name, native ABI entry, supported arguments,
   return values, receiver types, ownership, events, platform availability and
   focused verification before closing its full declaration. One mapping can
@@ -87,33 +87,13 @@ is scheduled by feature priority, not automatically required for a release. A cl
 works. Context, class-definition and declaration counts must not be interpreted
 as percentages of distinct wxWidgets APIs.
 
-The current baseline has twelve concrete window kinds, basic layout and a deeply tested
-managed lifetime/event layer, including command/notify/close/idle families, owned
-resources, pending delivery, handler chains/stacks and rooted Lisp associations.
-This foundation supports breadth; it is not a mandate to keep draining C1.
-Menus/actions deliver the first part of the selected form/editor slice.
-Modal text-entry/single-choice dialogs add bounded input workflows; generic message/file
-workflows extend them, with native OS implementations still unbound.
-Native notify subclasses, retained origins and other unselected depth stay
-visible as native gaps without automatically blocking that GUI work.
-See the [C1 details](coverage/phase-c1.md), [C2 details](coverage/phase-c2.md) and
-[class index](coverage/classes.md) for the remaining work within bound families.
-
-The scheduled-deletion ancestor gap is repaired: the bridge uses public wxApp
-scheduled-deletion state plus its pending markers. Native regressions, independent
-review and the full GUI/package checks below validate the corrected behavior.
-
-The current bridge is ABI 39, with 202 public Lisp exports. The full 57-scenario
-suite passes on local Apple Silicon macOS SBCL and CCL, with independent reviews.
-Post-port-gate native/focused tests and five final package checks pass; wxQt tree
-creation is explicitly unavailable pending safe asynchronous translation. Reports:
-`evidence/tree-navigation/{sbcl,ccl}-20261028-final/` and
-`evidence/packaging/tree-navigation-20261028-final/`. Docset checks pass with 279
-entries and zero problems, including actual public-export/class/SETF coverage and
-isolated discovery/lookup. Native tree, list, notebook, text and clipboard tests pass
-with zero wx assertions. Physical tree input/accessibility, large/deep trees, hosted
-Windows/Linux/Qt, graphical Cadre and external clipboard interoperability remain
-unverified; the Qt constructor-gate test branch has not run on a Qt host.
+The current ABI55 baseline covers everyday controls, navigation, actions,
+dialogs, deferred/timed work and bounded retained drawing, with a deeply tested
+managed lifetime/event layer. The finite automated local macOS MVP is accepted
+against form/editor, manager and drawing/monitoring workflows. See
+[MVP acceptance](MVP-ACCEPTANCE.md) for current evidence and explicit boundaries;
+this is not full native class parity or hosted platform certification.
+The wxQt tree construction gate remains in force.
 
 A milestone is accepted against its selected GUI scope and representative
 workflows, not declaration totals or completion of every pending native entry.
@@ -315,9 +295,7 @@ may fit better than literal native containers.
 
 ### C5: Drawing, images, graphics, and printing
 
-[Complete C5 source inventory](coverage/phase-c5.md). Plan practical canvas/drawing,
-bitmap/image, geometry, font and colour support. Choose useful rendering paths
-first; every DC/backend, metafile or print integration is on-demand.
+[Complete C5 source inventory](coverage/phase-c5.md). The [retained drawing canvas](DRAWING-CANVAS.md) provides bounded geometry, text/font, RGB colour/bitmap and PNG output adapters for the monitoring workflow. Raw resource/DC ownership, other backends, metafiles and printing remain on-demand.
 
 ### C6: Optional libraries, rich content, and integration
 
