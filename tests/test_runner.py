@@ -36,11 +36,16 @@ class EvidenceTests(unittest.TestCase):
             self.assertEqual(result.returncode, 0, result.stdout)
             report = Path(temporary) / "report"
             summary = json.loads((report / "summary.json").read_text())
+            expected = [name for name, _, _ in runner.scenarios()]
             self.assertEqual(summary["status"], "passed")
-            self.assertEqual(summary["completed_gui_scenarios"], 91)
-            self.assertEqual(summary["expected_gui_scenarios"], 91)
-            self.assertEqual(len(summary["results"]), 92)
+            self.assertGreater(len(expected), 0)
+            self.assertEqual(len(expected), len(set(expected)), "scenario IDs must be unique")
+            self.assertEqual(summary["completed_gui_scenarios"], len(expected))
+            self.assertEqual(summary["expected_gui_scenarios"], len(expected))
+            self.assertEqual(len(summary["results"]), len(expected) + 1)
             self.assertEqual(summary["results"][0]["kind"], "preflight")
+            self.assertEqual([row["name"] for row in summary["results"][1:]], expected)
+            self.assertTrue(all(row["kind"] == "gui" for row in summary["results"][1:]))
             for row in summary["results"]:
                 self.assertIn(b"fake runtime output", (report / row["log"]).read_bytes())
 
