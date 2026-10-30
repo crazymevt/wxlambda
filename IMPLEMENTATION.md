@@ -13,8 +13,10 @@ User explicitly requested committing the complete pending tree and setting up CI
 for a new public GitHub repository. This snapshot includes the pending ABI73
 frame maximization work and the experimental WebView/Windows prerequisite work;
 it is not cross-platform browser acceptance. No existing git remote is replaced.
-GitHub CLI authenticated successfully as crazymevt; proposed wxlambda name was
-not found. Repository creation/push await the owner/name/publication choice.
+User confirmed crazymevt/wxlambda. The public repository is published at
+https://github.com/crazymevt/wxlambda and origin/main tracks the pushed branch.
+GitHub Actions is enabled and the workflow is active. Initial push/manual runs
+were registered; remote results remain pending, not platform acceptance.
 No project-wide licence was selected implicitly.
 
 Independent release review found missing maximize callback/reentry/lifetime
