@@ -49,9 +49,9 @@
 #include <wx/textdlg.h>
 #include <wx/choicdlg.h>
 #include <wx/generic/msgdlgg.h>
-#include <wx/generic/filedlgg.h>
+#include "generic-dialogs/filedlgg.h"
 #include <wx/dirdlg.h>
-#include <wx/generic/dirdlgg.h>
+#include "generic-dialogs/dirdlgg.h"
 #include <wx/imaglist.h>
 #include <wx/modalhook.h>
 #include <wx/filename.h>
@@ -1360,7 +1360,7 @@ protected:
 std::unique_ptr<WorkflowModalHook> workflow_modal_hook;
 void validate_dialog_result(wxDialog* object, int code) {
     require(code >= 0 && code <= 3, "Invalid modal result");
-    if (code==0) if (auto* directory=dynamic_cast<wxGenericDirDialog*>(object))
+    if (code==0) if (auto* directory=dynamic_cast<WxlGenericDirDialog*>(object))
         require(wxDirExists(directory->GetPath()),"Selected directory no longer exists");
     if (code == 1) return; // Cancellation always remains available to unwind safely.
     const auto found = dialog_message_buttons.find(object);
@@ -1736,13 +1736,13 @@ wxl_handle wxl_directory_dialog(wxl_handle parent,const char* title,size_t title
         const auto caption=menu_string(title,title_length,false), directory=menu_string(path,path_length,true);
         require(directory.empty() || wxDirExists(directory),"Directory dialog path must exist");
         DialogOperationScope operation(owner);
-        auto object=std::make_unique<ManagedWindow<wxGenericDirDialog>>(owner,caption,directory,wxDD_DEFAULT_STYLE|wxDD_DIR_MUST_EXIST);
+        auto object=std::make_unique<ManagedWindow<WxlGenericDirDialog>>(owner,caption,directory,wxDD_DEFAULT_STYLE|wxDD_DIR_MUST_EXIST);
         if (object->GetParent()!=owner) require(object->Reparent(owner),"Cannot preserve directory dialog parent");
         const auto id=track(object.get()); object.release(); return id;
     });
 }
 const char* wxl_directory_dialog_path(wxl_handle id,size_t* length) {
-    return metadata_string([&] { return as<wxGenericDirDialog>(id)->GetPath(); },length);
+    return metadata_string([&] { return as<WxlGenericDirDialog>(id)->GetPath(); },length);
 }
 wxl_handle wxl_file_dialog(wxl_handle parent, const char* title, size_t title_length,
                           const char* directory, size_t directory_length, const char* filename, size_t filename_length,
@@ -1770,7 +1770,7 @@ wxl_handle wxl_file_dialog(wxl_handle parent, const char* title, size_t title_le
         const long flags = (mode == 0 ? wxFD_OPEN : wxFD_SAVE) | (must_exist ? wxFD_FILE_MUST_EXIST : 0) | (overwrite_prompt ? wxFD_OVERWRITE_PROMPT : 0);
         auto* requested_parent = parent ? window(parent) : nullptr;
         DialogOperationScope operation(requested_parent);
-        auto object = std::make_unique<ManagedWindow<wxGenericFileDialog>>(requested_parent, caption, dir, name, filters, flags);
+        auto object = std::make_unique<ManagedWindow<WxlGenericFileDialog>>(requested_parent, caption, dir, name, filters, flags);
         // Cocoa wxDialog::Create strips button flags which overlap FD_SAVE and
         // FD_OVERWRITE_PROMPT. Restore the requested file policy after creation.
         object->SetWindowStyleFlag(object->GetWindowStyleFlag() | flags);
@@ -1783,19 +1783,19 @@ const char* wxl_dialog_message(wxl_handle id, size_t* length) { return metadata_
 int wxl_message_dialog_buttons(wxl_handle id) {
     int value = -1; const auto result = status([&] { auto* object = as<PreparedMessageDialog>(id); value = dialog_message_buttons.at(object); }); return result == 0 ? value : -1;
 }
-int wxl_file_dialog_mode(wxl_handle id) { int mode = -1; const auto result = status([&] { mode = as<wxGenericFileDialog>(id)->HasFdFlag(wxFD_SAVE) ? 1 : 0; }); return result == 0 ? mode : -1; }
-const char* wxl_file_dialog_path(wxl_handle id, size_t* length) { return metadata_string([&] { return as<wxGenericFileDialog>(id)->GetPath(); }, length); }
+int wxl_file_dialog_mode(wxl_handle id) { int mode = -1; const auto result = status([&] { mode = as<WxlGenericFileDialog>(id)->HasFdFlag(wxFD_SAVE) ? 1 : 0; }); return result == 0 ? mode : -1; }
+const char* wxl_file_dialog_path(wxl_handle id, size_t* length) { return metadata_string([&] { return as<WxlGenericFileDialog>(id)->GetPath(); }, length); }
 int wxl_set_file_dialog_path(wxl_handle id, const char* path, size_t length) { return status([&] {
-    auto* object = as<wxGenericFileDialog>(id);
+    auto* object = as<WxlGenericFileDialog>(id);
     const auto value = menu_string(path, length, true);
     const auto directory = wxFileName(value).GetPath();
     require(directory.empty() || wxDirExists(directory), "File dialog path directory must exist");
     DialogOperationScope operation(object);
     object->SetPath(value);
 }); }
-int wxl_file_dialog_filter_index(wxl_handle id) { int value = -1; const auto result = status([&] { value = as<wxGenericFileDialog>(id)->GetFilterIndex(); }); return result == 0 ? value : -1; }
+int wxl_file_dialog_filter_index(wxl_handle id) { int value = -1; const auto result = status([&] { value = as<WxlGenericFileDialog>(id)->GetFilterIndex(); }); return result == 0 ? value : -1; }
 int wxl_set_file_dialog_filter_index(wxl_handle id, int value) { return status([&] {
-    auto* object = as<wxGenericFileDialog>(id);
+    auto* object = as<WxlGenericFileDialog>(id);
     require(value >= 0 && value < dialog_file_filters.at(object), "File dialog filter index out of range");
     DialogOperationScope operation(object);
     object->SetFilterIndex(value);

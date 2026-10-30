@@ -40,6 +40,35 @@ inputs; without those inputs they report explicit skips. The Windows patch check
 uses its real pinned source tree. SDK staging itself always verifies the package
 checksum. These unit/integration checks do not replace native COM execution.
 
+Additional optional integration inputs are `WXLAMBDA_SBCL_MSI` (the pinned
+installer, checked but never executed by Python tests) and
+`WXLAMBDA_GENERIC_DIALOG_SOURCE` (pinned wx source for private adapter regeneration).
+These report explicit skips when not supplied.
+
+### First-run failures and repair scope
+
+The first completed public run exposed four distinct setup failures, not four
+failed GUI assertions:
+
+- Linux distro headers omitted the generic file dialog. The bridge now compiles
+  private, symbol-isolated copies of the pinned generic file/directory dialogs;
+  it does not fall back to platform-native panels. See
+  [the modal contract](MESSAGE-FILE-DIALOGS.md).
+- The experimental GTK job passed an invalid configure flag. The pinned script
+  accepts `--enable-webviewwebkit`; GTK3 selects WebKit2 internally.
+- macOS selected a system TIFF library without usable include flags. Its pinned
+  source build now requests bundled TIFF/JPEG/PNG/zlib instead of that detection.
+- The Windows SBCL response failed checksum validation. An independent official
+  download still matched the original pin. The bounded downloader now tries two
+  official hosts, validates both the original SHA256 and compound-file header,
+  logs rejected response sizes/hashes, and never publishes rejected payloads as
+  an installer. PowerShell independently rechecks the same pin before extraction.
+  No checksum was changed or validation disabled. Download diagnostics are
+  retained even when extraction never starts.
+
+These repairs require a new remote run. Local macOS results and unit tests do
+not establish GTK/MSVC build or execution success.
+
 ## Local checks and publishing
 
 ```sh

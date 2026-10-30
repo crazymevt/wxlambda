@@ -1733,7 +1733,7 @@
     "arguments": "Optional :PARENT, :TITLE(default \"Open file\"/\"Save file\" by mode), :DIRECTORY(default empty), :FILENAME(default empty), :WILDCARD(default \"All files|*\"), :MODE(:OPEN default or :SAVE), :MUST-EXIST(default true for open), :OVERWRITE-PROMPT(default true for save), :FILTER-INDEX(default0) and optional :PATH.",
     "returns": "New native-backed dialog.",
     "description": "Construct a generic single-file selection dialog. Directory/path accept strings or pathnames converted through native namestring; supplied directory must exist, empty directory lets native code use cwd. Path must be nonempty; filename is a string. Filters require nonempty description/pattern pairs and valid zero-based filter index. No change-directory flag, multiselect or external controls. Dialog browser actions such as New Directory can change the filesystem; selection does not perform file-content IO. True MUST-EXIST is rejected for :SAVE, and true OVERWRITE-PROMPT for :OPEN. Supplied path directories must exist.",
-    "scope": "Requires active main-thread GUI session and live managed modal dialog, including receiver/ancestor pending/scheduled-deletion checks. Uses explicit generic wxWidgets GUI backend; native OS NSAlert/NSPanel implementations remain unbound. No backend selector, native pointer adoption, modeless interface or GC finalizer.",
+    "scope": "Requires active main-thread GUI session and live managed modal dialog, including receiver/ancestor pending/scheduled-deletion checks. Uses explicit generic wxWidgets GUI backend; native OS NSAlert/NSPanel implementations remain unbound. No backend selector, native pointer adoption, modeless interface or GC finalizer. Uses bundled, symbol-isolated private copies of wx3.2.12 generic file/directory dialogs on every port; no platform-native panel fallback or dependency on port-exported generic classes. See docs/MESSAGE-FILE-DIALOGS.md.",
     "wxwidgets": "wxGenericFileDialog; bounded equivalent wxFileDialog public surface (wxWidgets 3.2.12 baseline).",
     "syntax": "wxlambda:file-dialog",
     "construction": {
@@ -1747,7 +1747,7 @@
     "arguments": "Keyword-only constructor initargs and validated :CLASS(default FILE-DIALOG); subclass initargs forwarded.",
     "returns": "New selected concrete subclass.",
     "description": "Thin MAKE-INSTANCE factory with same backend, defaults, validation, lifetime and rollback as FILE-DIALOG.",
-    "scope": "Requires active main-thread GUI session and live managed modal dialog, including receiver/ancestor pending/scheduled-deletion checks. Uses explicit generic wxWidgets GUI backend; native OS NSAlert/NSPanel implementations remain unbound. No backend selector, native pointer adoption, modeless interface or GC finalizer.",
+    "scope": "Requires active main-thread GUI session and live managed modal dialog, including receiver/ancestor pending/scheduled-deletion checks. Uses explicit generic wxWidgets GUI backend; native OS NSAlert/NSPanel implementations remain unbound. No backend selector, native pointer adoption, modeless interface or GC finalizer. Uses bundled, symbol-isolated private copies of wx3.2.12 generic file/directory dialogs on every port; no platform-native panel fallback or dependency on port-exported generic classes. See docs/MESSAGE-FILE-DIALOGS.md.",
     "wxwidgets": "wxGenericFileDialog; bounded equivalent wxFileDialog public surface constructor."
   },
   {
@@ -1776,7 +1776,7 @@
     "arguments": "DIALOG is a live FILE-DIALOG.",
     "returns": ":OPEN or :SAVE.",
     "description": "Read fixed single-file selection mode. Configured native UI validation differs from raw END-MODAL result assignment. Reader reflects the actual restored generic file flags, including the macOS overlap repair, rather than merely echoing a Lisp requested-mode slot.",
-    "scope": "Requires active main-thread GUI session and live managed modal dialog, including receiver/ancestor pending/scheduled-deletion checks. Uses explicit generic wxWidgets GUI backend; native OS NSAlert/NSPanel implementations remain unbound. No backend selector, native pointer adoption, modeless interface or GC finalizer.",
+    "scope": "Requires active main-thread GUI session and live managed modal dialog, including receiver/ancestor pending/scheduled-deletion checks. Uses explicit generic wxWidgets GUI backend; native OS NSAlert/NSPanel implementations remain unbound. No backend selector, native pointer adoption, modeless interface or GC finalizer. Uses bundled, symbol-isolated private copies of wx3.2.12 generic file/directory dialogs on every port; no platform-native panel fallback or dependency on port-exported generic classes. See docs/MESSAGE-FILE-DIALOGS.md.",
     "wxwidgets": "Bounded wxFileDialog open/save style view",
     "syntax": "(wxlambda:file-dialog-mode dialog)"
   },
@@ -1786,7 +1786,7 @@
     "arguments": "DIALOG is live FILE-DIALOG. SETF VALUE is nonempty string/pathname; pathnames convert to native namestring. A directory component, when present, must exist.",
     "returns": "Current native path string; SETF returns original supplied VALUE.",
     "description": "Read/write current single-file path. This is not acceptance, file existence, overwrite confirmation or successful content IO. A raw END-MODAL :OK bypasses button validation/transfer, must-exist and overwrite enforcement. Native property changes can open internal prompts and use the guarded prompt workflow.",
-    "scope": "Requires active main-thread GUI session and live managed modal dialog, including receiver/ancestor pending/scheduled-deletion checks. Uses explicit generic wxWidgets GUI backend; native OS NSAlert/NSPanel implementations remain unbound. No backend selector, native pointer adoption, modeless interface or GC finalizer.",
+    "scope": "Requires active main-thread GUI session and live managed modal dialog, including receiver/ancestor pending/scheduled-deletion checks. Uses explicit generic wxWidgets GUI backend; native OS NSAlert/NSPanel implementations remain unbound. No backend selector, native pointer adoption, modeless interface or GC finalizer. Uses bundled, symbol-isolated private copies of wx3.2.12 generic file/directory dialogs on every port; no platform-native panel fallback or dependency on port-exported generic classes. See docs/MESSAGE-FILE-DIALOGS.md.",
     "wxwidgets": "wxFileDialogBase::GetPath / wxGenericFileDialog::SetPath",
     "syntax": "(wxlambda:file-dialog-path dialog)",
     "setf": {
@@ -1800,7 +1800,7 @@
     "arguments": "DIALOG is live FILE-DIALOG. SETF VALUE is valid zero-based filter-pair index.",
     "returns": "Native filter index; SETF returns VALUE.",
     "description": "Read/write one of the construction-time wildcard description/pattern pairs. Invalid index rejects. Filters do not prove current path acceptance.",
-    "scope": "Requires active main-thread GUI session and live managed modal dialog, including receiver/ancestor pending/scheduled-deletion checks. Uses explicit generic wxWidgets GUI backend; native OS NSAlert/NSPanel implementations remain unbound. No backend selector, native pointer adoption, modeless interface or GC finalizer.",
+    "scope": "Requires active main-thread GUI session and live managed modal dialog, including receiver/ancestor pending/scheduled-deletion checks. Uses explicit generic wxWidgets GUI backend; native OS NSAlert/NSPanel implementations remain unbound. No backend selector, native pointer adoption, modeless interface or GC finalizer. Uses bundled, symbol-isolated private copies of wx3.2.12 generic file/directory dialogs on every port; no platform-native panel fallback or dependency on port-exported generic classes. See docs/MESSAGE-FILE-DIALOGS.md.",
     "wxwidgets": "wxFileDialogBase::GetFilterIndex / SetFilterIndex",
     "syntax": "(wxlambda:file-dialog-filter-index dialog)",
     "setf": {

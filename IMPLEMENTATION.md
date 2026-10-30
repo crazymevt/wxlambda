@@ -7,6 +7,35 @@ factual discovery records, not a required sequence or release gate.
 
 ## Session handoff: broad GUI coverage
 
+### First public CI repair (2026-10-30)
+
+Run41145097504 failed during setup/build in four jobs: distro Linux omitted
+wx/generic/filedlgg.h; experimental Linux used invalid --enable-webviewwebkit2;
+Windows SBCL response failed the correct pinned checksum; macOS wx compilation
+could not find system tiff.h. The pure checks job passed. No GTK/Windows runtime
+acceptance follows from these early failures.
+
+Repairs: compile private symbol-isolated copies of pinned generic file/directory
+dialog sources on all ports, retaining licences and reproducing against four
+upstream hashes via tools/generic_dialogs.py. Do not adopt native panels or depend
+on port-exported generic classes. GTK uses --enable-webviewwebkit; macOS requests
+bundled TIFF/JPEG/PNG/zlib. Windows uses bounded official-host fallback with
+unchanged SHA256, compound-file header validation and retained rejected-response
+metadata; PowerShell still rechecks the original pin before extraction. No bad
+payload is published as an installer. Independent review found stale native test
+casts and temporary-file cleanup/truncated-transport hardening; resolved.
+Local verification:41 Python tests passed with real source/MSI/SDK integration
+inputs; four-source regeneration/check and live SBCL downloader passed without
+changing the pin. Both library/native harness rebuilt on macOS. All93 GUI
+scenarios passed using the private dialogs; the native suite passed on repeat
+with zero wx assertions. Its first attempt passed the dialog tests but failed a
+later AUI tab-rectangle timing assertion; this is retained as a known fixture
+flakiness observation, not silently counted as a clean first pass. CTest,
+actionlint, pinned coverage regeneration, docset build/check (704 entries, zero
+problems, discovery/exports/symbols/guides/examples) and diff checks passed.
+GTK/MSVC repair acceptance still requires the new remote CI run.
+
+
 ### Public-repository / CI preparation (2026-10-30)
 
 User explicitly requested committing the complete pending tree and setting up CI

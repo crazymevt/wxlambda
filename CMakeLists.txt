@@ -27,6 +27,11 @@ endif()
 cmake_push_check_state(RESET)
 set(CMAKE_REQUIRED_INCLUDES ${wxWidgets_INCLUDE_DIRS})
 check_cxx_source_compiles("#include <wx/setup.h>
+#if !wxUSE_FILEDLG || !wxUSE_DIRDLG || !wxUSE_FILECTRL || !wxUSE_TREECTRL || !wxUSE_BMPBUTTON || !wxUSE_STATLINE
+#error Private generic dialogs require their wx GUI controls
+#endif
+int main() { return 0; }" WXLAMBDA_HAS_GENERIC_DIALOG_CONTROLS)
+check_cxx_source_compiles("#include <wx/setup.h>
 #if !wxUSE_ACCEL
 #error wxUSE_ACCEL is required
 #endif
@@ -181,7 +186,11 @@ elseif(WXLAMBDA_EXPERIMENTAL_GTK_WEBVIEW)
 else()
   set(WXLAMBDA_WEBVIEW_SOURCE native/webview-unavailable.cpp)
 endif()
-add_library(wxlambda SHARED native/wxlambda.cpp ${WXLAMBDA_WEBVIEW_SOURCE})
+set(WXLAMBDA_GENERIC_DIALOG_SOURCES native/generic-dialogs/filedlgg.cpp native/generic-dialogs/dirdlgg.cpp)
+if(NOT WXLAMBDA_HAS_GENERIC_DIALOG_CONTROLS)
+  message(FATAL_ERROR "Private generic dialogs require wxUSE_FILEDLG/DIRDLG/FILECTRL/TREECTRL/BMPBUTTON/STATLINE=1")
+endif()
+add_library(wxlambda SHARED native/wxlambda.cpp ${WXLAMBDA_WEBVIEW_SOURCE} ${WXLAMBDA_GENERIC_DIALOG_SOURCES})
 target_compile_features(wxlambda PRIVATE cxx_std_17)
 target_compile_definitions(wxlambda PRIVATE WXLAMBDA_BUILD)
 target_link_libraries(wxlambda PRIVATE ${wxWidgets_LIBRARIES})
@@ -193,6 +202,7 @@ if(APPLE)
 endif()
 set_target_properties(wxlambda PROPERTIES CXX_VISIBILITY_PRESET hidden VISIBILITY_INLINES_HIDDEN YES)
 install(TARGETS wxlambda LIBRARY DESTINATION lib RUNTIME DESTINATION bin ARCHIVE DESTINATION lib)
+install(FILES native/generic-dialogs/LICENCE.txt native/generic-dialogs/LGPL.txt DESTINATION share/doc/wxlambda/generic-dialogs)
 install(FILES native/wxlambda.h native/drawing-canvas-api.h native/activity-indicator-api.h native/grid-api.h native/grid-extra-api.h native/webview-api.h native/stc-api.h native/input-events-api.h native/aui-api.h native/thread-events-api.h native/views-api.h native/images-api.h DESTINATION include)
 
 option(WXLAMBDA_BUILD_NATIVE_TESTS "Build native invariant regressions (GUI session required)" OFF)
@@ -204,7 +214,7 @@ if(WXLAMBDA_BUILD_PORTABILITY_TESTS)
   add_test(NAME asynchronous-owner-retirement COMMAND wxlambda-async-owner-native)
 endif()
 if(WXLAMBDA_BUILD_NATIVE_TESTS)
-  add_executable(wxlambda-client-data-native tests/client-data-native.cpp ${WXLAMBDA_WEBVIEW_SOURCE})
+  add_executable(wxlambda-client-data-native tests/client-data-native.cpp ${WXLAMBDA_WEBVIEW_SOURCE} ${WXLAMBDA_GENERIC_DIALOG_SOURCES})
   target_compile_features(wxlambda-client-data-native PRIVATE cxx_std_17)
   target_compile_definitions(wxlambda-client-data-native PRIVATE WXLAMBDA_BUILD)
   target_link_libraries(wxlambda-client-data-native PRIVATE ${wxWidgets_LIBRARIES})

@@ -7,6 +7,19 @@ Platform-native alerts/file panels, including macOS NSAlert/NSPanel, remain
 unbound after their cancellation probe hung. This generic implementation does
 not claim native OS-dialog parity. The baseline is wxWidgets 3.2.12.
 
+The file and nested directory dialogs use symbol-isolated private copies of
+the pinned wx generic implementation. Some wxGTK/MSW builds neither export nor
+install these generic classes; copying an absent header or switching to native
+panels would not preserve this modal contract. The bridge compiles its copies on
+all ports, without globally renaming foreign wx classes or importing their private
+symbols. Original copyright/licence notices are retained under
+`native/generic-dialogs/`; `tools/generic_dialogs.py` verifies upstream hashes and
+reproduces the private adapters. The Lisp/FFI interface and behavior below are
+unchanged. Real native button acceptance, nested prompts and cleanup remain
+covered by the native regressions as well as the runnable example.
+Builds require wx file/directory dialogs, file controls, tree controls, bitmap
+buttons and static lines; configuration rejects builds missing these prerequisites.
+
 Both classes inherit DIALOG/WINDOW and the [modal lifetime protocol](STANDARD-DIALOGS.md).
 Keyword-only MAKE-MESSAGE-DIALOG/MAKE-FILE-DIALOG are thin ordinary factories
 with validated :CLASS. Direct construction, subclass slots/defaults/AFTER hooks,

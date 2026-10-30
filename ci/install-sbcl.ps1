@@ -8,8 +8,8 @@ New-Item -ItemType Directory -Path $Destination | Out-Null
 $installer = Join-Path $Destination 'sbcl.msi'
 $extract = Join-Path $Destination 'extracted'
 $log = Join-Path $Destination 'install.log'
-$url = 'https://downloads.sourceforge.net/project/sbcl/sbcl/2.6.9/sbcl-2.6.9-x86-64-windows-binary.msi'
-Invoke-WebRequest -Uri $url -OutFile $installer
+python (Join-Path $PSScriptRoot 'download-sbcl.py') $installer 2>&1 | Tee-Object -FilePath (Join-Path $Destination 'download.log')
+if ($LASTEXITCODE -ne 0) { throw 'SBCL download/validation failed; see attempt diagnostics' }
 $expected = '2be695e44a69ff29f01cf7980f67472cb383e75e9292d5fcd27cf5418b871226'
 if ((Get-FileHash -Algorithm SHA256 $installer).Hash.ToLowerInvariant() -ne $expected) {
     throw 'SBCL installer SHA256 does not match the pinned binary'

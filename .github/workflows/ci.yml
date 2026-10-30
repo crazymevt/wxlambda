@@ -60,11 +60,13 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y cmake g++ make sbcl pkg-config libgtk-3-dev libwebkit2gtk-4.1-dev xvfb xauth
+      - name: Verify private generic dialog sources against pinned upstream
+        run: python3 tools/generic_dialogs.py vendor/wxWidgets --check
       - name: Build pinned wxWidgets against WebKitGTK 4.1
         run: |
           mkdir -p vendor/wx-build
           cd vendor/wx-build
-          ../wxWidgets/configure --prefix="$RUNNER_TEMP/wx" --with-gtk=3 --enable-webview --enable-webviewwebkit2
+          ../wxWidgets/configure --prefix="$RUNNER_TEMP/wx" --with-gtk=3 --enable-webview --enable-webviewwebkit
           make -j2
           make install
       - name: Fetch pinned Lisp dependencies
@@ -138,7 +140,8 @@ jobs:
         run: |
           mkdir -p vendor/wx-build
           cd vendor/wx-build
-          ../wxWidgets/configure --prefix="$RUNNER_TEMP/wx" --with-osx_cocoa --enable-webview
+          ../wxWidgets/configure --prefix="$RUNNER_TEMP/wx" --with-osx_cocoa --enable-webview \
+            --with-libtiff=builtin --with-libjpeg=builtin --with-libpng=builtin --with-zlib=builtin
           make -j3
           make install
       - name: Fetch pinned Lisp dependencies
@@ -267,5 +270,6 @@ jobs:
             build/CMakeFiles/*.yaml
             build/Testing/Temporary/*.log
             ${{ runner.temp }}/wxlambda-sbcl/install.log
+            ${{ runner.temp }}/wxlambda-sbcl/download.log
           if-no-files-found: warn
           retention-days: 30

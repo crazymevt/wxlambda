@@ -118,7 +118,7 @@ void exercise_generic_dialogs() {
         const bool save = scenario == 1;
         const auto file = wxl_file_dialog(frame, "Files", 5, directory.data(), directory.size(), save ? "existing.txt" : "missing.txt", save ? 12 : 11, wildcard, 16, save ? 1 : 0, save ? 0 : 1, save ? 1 : 0);
         expect(file && wxl_file_dialog_mode(file) == (save ? 1 : 0), "Generic file mode restoration failed");
-        auto* native = as<wxGenericFileDialog>(file);
+        auto* native = as<WxlGenericFileDialog>(file);
         expect(!save || native->HasFdFlag(wxFD_SAVE) && native->HasFdFlag(wxFD_OVERWRITE_PROMPT), "Save/overwrite flags were stripped");
         expect(wxl_set_file_dialog_filter_index(file, 1) == 0 && wxl_file_dialog_filter_index(file) == 1 && wxl_set_file_dialog_filter_index(file, 2) == -1,
                "File filter bounds failed");
@@ -155,14 +155,14 @@ void exercise_generic_dialogs() {
         int result = -1;
         DialogTimer accept([&] {
             wxCommandEvent event(wxEVT_BUTTON, wxID_OK);
-            event.SetEventObject(as<wxGenericFileDialog>(file)->FindWindow(wxID_OK));
-            as<wxGenericFileDialog>(file)->GetEventHandler()->ProcessEvent(event);
+            event.SetEventObject(as<WxlGenericFileDialog>(file)->FindWindow(wxID_OK));
+            as<WxlGenericFileDialog>(file)->GetEventHandler()->ProcessEvent(event);
         }); accept.StartOnce(60);
         expect(wxl_dialog_show(file, &result) == 0 && result == 0 && wxl_dialog_depth() == 0, "Actual file OK acceptance failed");
         size_t path_length = 0;
         const auto* path = wxl_file_dialog_path(file, &path_length);
         expect(path && std::string(path, path_length) == directory + "/" + name, "File accepted native path mismatch");
-        delete as<wxGenericFileDialog>(file);
+        delete as<WxlGenericFileDialog>(file);
     }
     {
         expect(wxl_callback_error_pending(1) == 0, "Pending callback error latch setup failed");

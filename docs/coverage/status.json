@@ -3145,7 +3145,7 @@
       "native": [
         "wxl_file_dialog"
       ],
-      "scope": "Equivalent wxGenericFileDialog constructor: single open/save, initial directory/file/wildcard, mode-appropriate must-exist/overwrite, no CHANGE_DIR/multiselect/external controls. Existing directory preflight; optional parent normalized. Explicit wxGeneric GUI implementation only; native OS NSAlert/NSPanel variants unbound, no backend selector. Modal/context/lifetime/ancestor guards apply; no raw adoption or full native class parity."
+      "scope": "Equivalent wxGenericFileDialog constructor: single open/save, initial directory/file/wildcard, mode-appropriate must-exist/overwrite, no CHANGE_DIR/multiselect/external controls. Existing directory preflight; optional parent normalized. Explicit wxGeneric GUI implementation only; native OS NSAlert/NSPanel variants unbound, no backend selector. Modal/context/lifetime/ancestor guards apply; no raw adoption or full native class parity. Uses bundled, symbol-isolated private copies of wx3.2.12 generic file/directory dialogs on every port; no platform-native panel fallback or dependency on port-exported generic classes. See docs/MESSAGE-FILE-DIALOGS.md."
     },
     {
       "header": "wx/filedlg.h",
@@ -3173,7 +3173,7 @@
       "native": [
         "wxl_file_dialog_path"
       ],
-      "scope": "Current native selection string, not accepted/existing/overwritten/content-IO proof. Explicit wxGeneric GUI implementation only; native OS NSAlert/NSPanel variants unbound, no backend selector. Modal/context/lifetime/ancestor guards apply; no raw adoption or full native class parity."
+      "scope": "Current native selection string, not accepted/existing/overwritten/content-IO proof. Explicit wxGeneric GUI implementation only; native OS NSAlert/NSPanel variants unbound, no backend selector. Modal/context/lifetime/ancestor guards apply; no raw adoption or full native class parity. Uses bundled, symbol-isolated private copies of wx3.2.12 generic file/directory dialogs on every port; no platform-native panel fallback or dependency on port-exported generic classes. See docs/MESSAGE-FILE-DIALOGS.md."
     },
     {
       "header": "wx/filedlg.h",
@@ -3187,7 +3187,7 @@
       "native": [
         "wxl_set_file_dialog_path"
       ],
-      "scope": "Nonempty string/pathname via native namestring; existing path-directory preflight, return original Lisp value. Native prompts are guarded; no acceptance/content IO guarantee. Explicit wxGeneric GUI implementation only; native OS NSAlert/NSPanel variants unbound, no backend selector. Modal/context/lifetime/ancestor guards apply; no raw adoption or full native class parity."
+      "scope": "Nonempty string/pathname via native namestring; existing path-directory preflight, return original Lisp value. Native prompts are guarded; no acceptance/content IO guarantee. Explicit wxGeneric GUI implementation only; native OS NSAlert/NSPanel variants unbound, no backend selector. Modal/context/lifetime/ancestor guards apply; no raw adoption or full native class parity. Uses bundled, symbol-isolated private copies of wx3.2.12 generic file/directory dialogs on every port; no platform-native panel fallback or dependency on port-exported generic classes. See docs/MESSAGE-FILE-DIALOGS.md."
     },
     {
       "header": "wx/filedlg.h",
@@ -3201,7 +3201,7 @@
       "native": [
         "wxl_file_dialog_filter_index"
       ],
-      "scope": "Zero-based filter-pair index for constructor validated wildcard pairs. Explicit wxGeneric GUI implementation only; native OS NSAlert/NSPanel variants unbound, no backend selector. Modal/context/lifetime/ancestor guards apply; no raw adoption or full native class parity."
+      "scope": "Zero-based filter-pair index for constructor validated wildcard pairs. Explicit wxGeneric GUI implementation only; native OS NSAlert/NSPanel variants unbound, no backend selector. Modal/context/lifetime/ancestor guards apply; no raw adoption or full native class parity. Uses bundled, symbol-isolated private copies of wx3.2.12 generic file/directory dialogs on every port; no platform-native panel fallback or dependency on port-exported generic classes. See docs/MESSAGE-FILE-DIALOGS.md."
     },
     {
       "header": "wx/filedlg.h",
@@ -3215,7 +3215,7 @@
       "native": [
         "wxl_set_file_dialog_filter_index"
       ],
-      "scope": "In-range constructor filter pair only; no wildcard mutation. Explicit wxGeneric GUI implementation only; native OS NSAlert/NSPanel variants unbound, no backend selector. Modal/context/lifetime/ancestor guards apply; no raw adoption or full native class parity."
+      "scope": "In-range constructor filter pair only; no wildcard mutation. Explicit wxGeneric GUI implementation only; native OS NSAlert/NSPanel variants unbound, no backend selector. Modal/context/lifetime/ancestor guards apply; no raw adoption or full native class parity. Uses bundled, symbol-isolated private copies of wx3.2.12 generic file/directory dialogs on every port; no platform-native panel fallback or dependency on port-exported generic classes. See docs/MESSAGE-FILE-DIALOGS.md."
     },
     {
       "header": "wx/filedlg.h",
@@ -3246,7 +3246,7 @@
         "wxl_file_dialog_mode",
         "wxl_file_dialog"
       ],
-      "scope": "Internal bounded generic file mode/style prerequisite; mode reader uses generic HasFdFlag implementation. No public raw window-style API. Explicit wxGeneric GUI implementation only; native OS NSAlert/NSPanel variants unbound, no backend selector. Modal/context/lifetime/ancestor guards apply; no raw adoption or full native class parity."
+      "scope": "Internal bounded generic file mode/style prerequisite; mode reader uses generic HasFdFlag implementation. No public raw window-style API. Explicit wxGeneric GUI implementation only; native OS NSAlert/NSPanel variants unbound, no backend selector. Modal/context/lifetime/ancestor guards apply; no raw adoption or full native class parity. Uses bundled, symbol-isolated private copies of wx3.2.12 generic file/directory dialogs on every port; no platform-native panel fallback or dependency on port-exported generic classes. See docs/MESSAGE-FILE-DIALOGS.md."
     },
     {
       "header": "wx/window.h",
@@ -3260,7 +3260,7 @@
       "native": [
         "wxl_file_dialog"
       ],
-      "scope": "Internal restore of requested SAVE/OVERWRITE bits stripped by overlapping Cocoa wxDialog button flags. No public arbitrary style writer. Explicit wxGeneric GUI implementation only; native OS NSAlert/NSPanel variants unbound, no backend selector. Modal/context/lifetime/ancestor guards apply; no raw adoption or full native class parity."
+      "scope": "Internal restore of requested SAVE/OVERWRITE bits stripped by overlapping Cocoa wxDialog button flags. No public arbitrary style writer. Explicit wxGeneric GUI implementation only; native OS NSAlert/NSPanel variants unbound, no backend selector. Modal/context/lifetime/ancestor guards apply; no raw adoption or full native class parity. Uses bundled, symbol-isolated private copies of wx3.2.12 generic file/directory dialogs on every port; no platform-native panel fallback or dependency on port-exported generic classes. See docs/MESSAGE-FILE-DIALOGS.md."
     },
     {
       "header": "wx/modalhook.h",

@@ -1,4 +1,6 @@
 ;;; START is interactive; EXERCISE runs bounded automatic cancellation in a session.
+;;; File/directory dialogs use the bundled private wx3.2.12 generic adapters on
+;;; every port; see docs/MESSAGE-FILE-DIALOGS.md (no platform-native panel fallback).
 (require :asdf)
 (load (merge-pathnames "../wxlambda.asd" *load-truename*))
 (asdf:load-system "wxlambda")
