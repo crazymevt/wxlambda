@@ -28,7 +28,7 @@ AFTER hooks and managed initializer failure/root rollback follow the CLOS API.
 The native `aui` library and `wxUSE_AUI=1` are build prerequisites.
 
 Tabs use a fixed top-tab style with scrolling, an active-tab close button and
-mouse reordering while the notebook has one tab group. Programmatic native
+mouse reordering within groups and movement between existing groups. Programmatic native
 splitting and movement are described below. External notebook transfer/reparenting,
 mouse drag splitting, middle-button close, arbitrary style flags, art providers, page icons,
 raw tab/manager resources and docking/perspective APIs are not exposed. Native
@@ -45,14 +45,23 @@ page can replace that group rather than increase the number of groups. Geometry
 is native policy. Splitting may notify selection; a selection veto does not undo
 the already committed group structure, so read actual `selection` afterward.
 
-Pinned3.2.12 mouse drag handlers mix group-local indices with global page indices.
-To preserve page/selection identity, mouse movement is disabled while multiple
-groups exist, and native drag completion is cancelled with native hint/cursor
-cleanup. It is restored when removal/movement leaves one group. Use
-`move-notebook-page` for checked moves in split notebooks; its remove/insert places
-the moved page in the active native group and may remove an empty source group.
-Mouse drag splitting (`wxAUI_NB_TAB_SPLIT`) remains disabled; the supported split
-operation is the existing native programmatic method, not a constructor policy.
+ABI72 replaces the affected3.2.12 drag-motion/drop paths with checked movement
+by page identity. Drag a tab before/after another tab, or drop over the visible
+editor body of an existing group to append there. Same-notebook movement retains
+page parents, canonical wrappers and global selection identity; moving a group's
+last page removes that empty group. It creates no new group and performs no
+external notebook transfer. Native DRAG-DONE reports the moved page's global
+catalogue index. OS physical pointer delivery remains unverified on Windows/Linux.
+
+`(notebook-group-pages book index)` returns the existing canonical PANEL wrappers
+in the indexed page's visual group order. The returned list is copied and can be
+used to scope tab menu actions without guessing group-local/global index mappings.
+`(move-notebook-page-to-group book from target slot)` inserts FROM into the group
+containing TARGET. SLOT is a local gap index0..group-count before the move; a
+same-group source before the gap adjusts the final position by one. The moved
+page becomes selected and a successful move emits DRAG-DONE. Normal structural
+callback/pump/gesture and lifetime guards apply. No-op moves do not emit it.
+`move-notebook-page` retains its existing global remove/insert semantics.
 
 Native private tab handlers in3.2.12 cover501 tab-group IDs per notebook lifetime.
 The adapter refuses a split or an empty-book insertion that would allocate beyond

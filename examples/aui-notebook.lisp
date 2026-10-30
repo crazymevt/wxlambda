@@ -43,6 +43,8 @@
         (when (> (wxlambda:notebook-page-count book) 1)
           (wxlambda:split-notebook-page book (wxlambda:selection book) :right))) :owner book)))
     (values frame book add close move splitter)))
+;; Reorder with a mouse drag; split first, then drag to another existing tab strip
+;; or its editor body. Group order is also queryable for document close menus.
 (defun exercise ()
   (multiple-value-bind (frame book add close move splitter) (build-window)
     (unwind-protect

@@ -70,7 +70,8 @@ void exercise_aui_notebook() {
     }
     expect(window(a)->GetParent()==book && window(b)->GetParent()==book && window(c)->GetParent()==book &&
            wxl_aui_page_index(id,b)==2,"Native split preserves native page parent and global catalogue identity");
-    expect(!(book->GetWindowStyleFlag() & wxAUI_NB_TAB_MOVE),"Native mouse reorder disabled while private groups have different index spaces");
+    expect(book->GetWindowStyleFlag() & wxAUI_NB_TAB_MOVE,"Safe native movement remains enabled in split groups");
+    book->test_drag_point=true; book->test_drag_screen=wxPoint(-10000,-10000);
     const int before_drag=book->GetSelection();
     wxAuiNotebookEvent ignored_drag(wxEVT_AUINOTEBOOK_END_DRAG,right->GetId());
     ignored_drag.SetEventObject(right); ignored_drag.SetSelection(right_index); book->GetEventHandler()->ProcessEvent(ignored_drag);
@@ -169,4 +170,52 @@ void exercise_aui_notebook() {
            wxl_handler_alive(three)==1 && wxl_set_splitter_orientation(splitter,1)==0 && wxl_splitter_resplit(splitter,three)==0,"Retained hidden panes and mutable orientation");
     aui_probe={}; delete window(frame);
     expect(wxl_aui_count(id)==-2 && wxl_handler_alive(a)==0 && wxl_handler_alive(c)==0 && wxl_handler_alive(target)==0,"AUI ancestor teardown invalidates pages");
+}
+
+void exercise_aui_group_drag() {
+    const auto frame=wxl_frame("Group movement",900,500), id=wxl_aui_notebook(frame);
+    const auto a=wxl_panel(id),b=wxl_panel(id),c=wxl_panel(id),d=wxl_panel(id);
+    for (auto page:{a,b,c,d}) expect(wxl_aui_insert(id,page,wxl_aui_count(id),"Tab",3,0)==0,"Group fixture append");
+    auto* book=as<DynamicAuiNotebook>(id); wxl_show(frame); book->SetSize(880,450); wxl_poll();
+    expect(wxl_aui_split(id,wxl_aui_page_index(id,d),1)==0,"Group fixture split"); wxl_poll();
+    auto group=[&](wxl_handle page) {
+        int indices[256]; size_t count=0; std::vector<wxl_handle> pages;
+        expect(wxl_aui_group_indices(id,wxl_aui_page_index(id,page),indices,256,&count)==0,"Query visual group");
+        for (size_t i=0;i<count;++i) pages.push_back(wxl_aui_page(id,indices[i]));
+        return pages;
+    };
+    expect(group(a)==std::vector<wxl_handle>({a,b,c}) && group(d)==std::vector<wxl_handle>({d}),"Initial group order");
+    auto drag=[&](wxl_handle page,wxl_handle destination,bool body,bool after) {
+        auto* source=book->GroupForPage(window(page)); auto* target=book->GroupForPage(window(destination));
+        int local=source->GetIdxFromWindow(window(page)); const int target_index=target->GetIdxFromWindow(window(destination));
+        if (body) book->test_drag_screen=window(destination)->ClientToScreen(wxPoint(30,50));
+        else {
+            const auto rect=target->GetPage(target_index).rect;
+            expect(rect.width>4 && rect.height>4,"Native tab rectangle available for deterministic drop");
+            book->test_drag_screen=target->ClientToScreen(wxPoint(rect.x+(after ? rect.width-2 : 2),rect.y+rect.height/2));
+        }
+        book->test_drag_point=true;
+        wxAuiNotebookEvent motion(wxEVT_AUINOTEBOOK_DRAG_MOTION,source->GetId());
+        motion.SetEventObject(source); motion.SetSelection(local); book->GetEventHandler()->ProcessEvent(motion);
+        wxAuiNotebookEvent end(wxEVT_AUINOTEBOOK_END_DRAG,source->GetId());
+        end.SetEventObject(source); end.SetSelection(local); book->GetEventHandler()->ProcessEvent(end);
+        wxl_poll();
+        expect(book->GetCurrentPage()==window(page),"Native drop selects source page by global identity");
+        expect(window(page)->GetParent()==book && wxl_aui_count(id)==4,"Native drop preserves membership/parent");
+    };
+    drag(c,a,false,false);
+    expect(group(a)==std::vector<wxl_handle>({c,a,b}),"Same-group drop reorders visual tabs");
+    drag(b,d,false,true);
+    expect(group(d)==std::vector<wxl_handle>({d,b}) && group(a)==std::vector<wxl_handle>({c,a}),"Cross-group tab-strip drop");
+    drag(a,b,true,false);
+    expect(group(d)==std::vector<wxl_handle>({d,b,a}),"Editor-body drop appends to existing destination group");
+    drag(c,a,true,false);
+    expect(group(d)==std::vector<wxl_handle>({d,b,a,c}) && book->TabGroupCount()==1,"Last source tab drop removes empty group");
+    expect(wxl_aui_move_to_group(id,wxl_aui_page_index(id,c),wxl_aui_page_index(id,d),0)==0,
+           "Public group move shares checked drag movement implementation");
+    expect(group(d)==std::vector<wxl_handle>({c,d,b,a}),"Group move preserves requested visual insertion slot");
+    expect(wxl_aui_move_to_group(id,0,1,257)==-1,"Invalid group insertion rejected");
+    int indices[256];size_t count=0;
+    expect(wxl_aui_group_indices(id,-1,indices,256,&count)==-1 && wxl_aui_group_indices(id,0,indices,2,&count)==-1,"Group query bounds");
+    wxl_destroy(frame);wxl_poll();
 }

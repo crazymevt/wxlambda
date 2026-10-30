@@ -19,3 +19,6 @@
 (cffi:defcfun ("wxl_set_splitter_orientation" %set-splitter-orientation) :int (splitter :uint64) (orientation :int))
 
 (cffi:defcfun ("wxl_aui_tab_colours" %aui-tab-colours) :int (book :uint64) (write :int) (reset :int) (base :pointer) (active :pointer) (present :pointer))
+
+(cffi:defcfun ("wxl_aui_group_indices" %aui-group-indices) :int (book :uint64) (index :int) (indices :pointer) (capacity :size) (count :pointer))
+(cffi:defcfun ("wxl_aui_move_to_group" %aui-move-to-group) :int (book :uint64) (from :int) (target :int) (slot :int))

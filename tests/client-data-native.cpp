@@ -1850,6 +1850,7 @@ int main() {
         exercise_grid_extra();
         exercise_web_view();
         exercise_aui_notebook();
+        exercise_aui_group_drag();
         exercise_input_events();
         exercise_thread_events();
         exercise_styled_text();

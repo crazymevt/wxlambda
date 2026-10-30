@@ -3821,3 +3821,13 @@ AUI event105 :aui-tab-right-up uses the existing native-only notify transport,
 public notebook origin filter and immutable page/global-index metadata. It adds
 no raw tab-control or synthetic-event API. Application resolves target identity
 before deferring Split Right. macOS native build and AUI example/tests passed; synthetic event105 construction rejects. Coverage inventory (14 checks) and docset validation passed. Independent review identified and fixed the missing event105 Lisp snapshot selection whitelist; application review also resolved peer-edit/deferred-origin races with splice and native view regressions. Windows/Linux and physical tab-right-click input remain unverified.
+
+## ABI72: same-notebook group-aware tab movement
+
+KryptonEdit now needs drag reordering/cross-group movement and group-scoped bulk
+closing. Native drag-motion/end handlers are replaced after auditing pinned3.2.12
+source: they resolve source pages through the originating wxAuiTabCtrl, move
+existing page records and reselect by global identity. No TAB_SPLIT/external move
+flags, private ID allocation or parent changes are added. Group queries return
+copied canonical pages; the public group move uses the same checked implementation.
+Independent review found no actionable move/index/lifetime or bulk-close safety issue. macOS verification passed: native build, full native invariant harness (deterministic same-group/cross-group/body drops, empty-group retirement, invalid slots and zero wx assertions), AUI Lisp example/API checks, full KryptonEdit UI suite, pinned coverage inventory (14 checks), and docset export/discovery/symbol/guide/example checks. Native tests inject coordinates only in the test executable, without moving the system pointer. OS physical pointer delivery and Windows/Linux builds remain unverified. ABI72 is required for the two new native query/move entry points.

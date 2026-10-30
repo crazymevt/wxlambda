@@ -124,3 +124,15 @@
     (setf (cffi:mem-ref base :int64) (if value (first value) 0) (cffi:mem-ref active :int64) (if value (second value) 0))
     (call-setter (lambda () (%aui-tab-colours (handle book) 1 (if value 0 1) base active present)) t))
   value)
+
+(defgeneric notebook-group-pages (book index))
+(defmethod notebook-group-pages ((book aui-notebook) index)
+  (check-notebook-index index)
+  (cffi:with-foreign-objects ((indices :int 256) (count :size))
+    (check-status (%aui-group-indices (handle book) index indices 256 count))
+    (loop for local below (cffi:mem-ref count :size) collect
+      (notebook-page book (cffi:mem-aref indices :int local)))))
+(defgeneric move-notebook-page-to-group (book from target slot))
+(defmethod move-notebook-page-to-group ((book aui-notebook) from target slot)
+  (check-notebook-index from) (check-notebook-index target) (check-type slot (integer 0 256))
+  (call-setter (lambda () (%aui-move-to-group (handle book) from target slot)) t) book)

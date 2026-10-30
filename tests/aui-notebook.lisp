@@ -12,8 +12,22 @@
 (defclass attaching-aui-page (wxlambda:panel) ())
 (defmethod initialize-instance :after ((page attaching-aui-page) &key parent)
   (wxlambda:add-notebook-page parent page))
+
+(defun exercise-group-api ()
+  (let* ((frame (wxlambda:make-frame)) (book (wxlambda:make-aui-notebook frame))
+         (a (wxlambda:make-panel book)) (b (wxlambda:make-panel book)) (c (wxlambda:make-panel book)))
+    (unwind-protect
+        (progn
+          (loop for page in (list a b c) do (wxlambda:add-notebook-page book page :label "Tab"))
+          (wxlambda:split-notebook-page book 2 :right)
+          (assert (equal (list a b) (wxlambda:notebook-group-pages book 0)))
+          (wxlambda:move-notebook-page-to-group book (wxlambda:notebook-page-index book b) (wxlambda:notebook-page-index book c) 1)
+          (assert (equal (list c b) (wxlambda:notebook-group-pages book (wxlambda:notebook-page-index book c)))))
+      (wxlambda:destroy-window frame) (wxlambda:process-events))))
+
 (wxlambda:with-application ()
   (assert (wxlambda-aui-notebook:exercise))
+  (exercise-group-api)
   (let* ((frame (wxlambda:make-frame))
          (book (wxlambda:make-aui-notebook frame :class 'custom-aui :tag :factory))
          (a (wxlambda:make-panel book)) (b (wxlambda:make-panel book)) (c (wxlambda:make-panel book))

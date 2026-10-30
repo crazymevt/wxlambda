@@ -1,6 +1,6 @@
 enum wxl_aui_event_kind { WXL_EVENT_AUI_PAGE_CHANGING=100, WXL_EVENT_AUI_PAGE_CHANGED=101,
     WXL_EVENT_AUI_PAGE_CLOSE=102, WXL_EVENT_AUI_PAGE_CLOSED=103, WXL_EVENT_AUI_DRAG_DONE=104, WXL_EVENT_AUI_TAB_RIGHT_UP=105 };
-/* Fixed top tabs, one-group drag movement, active-tab close; programmatic Split.
+/* Fixed top tabs, same-notebook group-aware drag movement, active-tab close; programmatic Split.
    Mouse split/external transfer disabled; split books use
    checked programmatic movement. Page limit256, copied caption<=4096UTF8 bytes.
    detail[0]=native old selection, [1]=stable target page handle or0,
@@ -27,3 +27,6 @@ WXL_API int wxl_splitter_resplit(wxl_handle splitter,wxl_handle pane);
 WXL_API int wxl_set_splitter_orientation(wxl_handle splitter,int orientation);
 
 WXL_API int wxl_aui_tab_colours(wxl_handle book,int write,int reset,int64_t* base,int64_t* active,int* present);
+
+WXL_API int wxl_aui_group_indices(wxl_handle id,int index,int* indices,size_t capacity,size_t* count);
+WXL_API int wxl_aui_move_to_group(wxl_handle id,int from,int target,int slot);

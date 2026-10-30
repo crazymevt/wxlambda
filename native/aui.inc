@@ -80,8 +80,99 @@ public:
     }
     void SyncMovementStyle() {
         const long previous=GetWindowStyleFlag();
-        const long style=TabGroupCount()<=1 ? previous|wxAUI_NB_TAB_MOVE : previous&~wxAUI_NB_TAB_MOVE;
-        if (style!=previous) SetWindowStyleFlag(style);
+        if (!(previous&wxAUI_NB_TAB_MOVE)) SetWindowStyleFlag(previous|wxAUI_NB_TAB_MOVE);
+    }
+    wxAuiTabCtrl* GroupForPage(wxWindow* page,int* local=nullptr) {
+        wxAuiTabCtrl* tabs=nullptr; int index=-1;
+        if (!FindTab(page,&tabs,&index)) return nullptr;
+        if (local) *local=index;
+        return tabs;
+    }
+    wxAuiTabCtrl* DropGroup(const wxPoint& client) {
+        if (auto* tabs=GetTabCtrlFromPoint(client)) return tabs;
+        // Existing groups also accept a drop over their visible editor page.
+        for (size_t index=0;index<GetPageCount();++index) {
+            auto* page=GetPage(index);
+            if (page->IsShown() && page->GetRect().Contains(client)) return GroupForPage(page);
+        }
+        return nullptr;
+    }
+    bool MoveToGroup(wxWindow* page,wxAuiTabCtrl* target,size_t slot) {
+        int source_index=-1; auto* source=GroupForPage(page,&source_index);
+        require(source && target && target->GetParent()==this,"Invalid same-notebook tab group");
+        require(slot<=target->GetPageCount(),"Tab group insertion slot out of bounds");
+        if (source==target && size_t(source_index)<slot) --slot;
+        if (source==target && size_t(source_index)==slot) return false;
+        wxWindow* neighbour=nullptr;
+        if (slot<target->GetPageCount()) neighbour=target->GetWindowFromIdx(slot);
+        int global_destination=neighbour ? m_tabs.GetIdxFromWindow(neighbour) : int(m_tabs.GetPageCount()-1);
+        const int global_source=m_tabs.GetIdxFromWindow(page);
+        require(global_source>=0 && global_destination>=0,"Tab page missing from global catalogue");
+        if (source==target) {
+            require(source->MovePage(page,slot),"Unable to reorder tab");
+        } else {
+            auto info=source->GetPage(source_index); info.active=false;
+            // Publish destination first; failed insertion leaves source intact.
+            require(target->InsertPage(page,info,slot),"Unable to move tab into group");
+            require(source->RemovePage(page),"Unable to remove source tab");
+            if (source->GetPageCount()) {
+                source->SetActivePage(size_t(std::min(source_index,int(source->GetPageCount()-1))));
+                source->DoShowHide(); source->Refresh();
+            }
+            if (neighbour && global_source<global_destination) --global_destination;
+        }
+        require(m_tabs.MovePage(page,size_t(global_destination)),"Unable to reorder tab catalogue");
+        if (source!=target && !source->GetPageCount()) RemoveEmptyTabFrames();
+        // Re-select by identity; never assign a group-local index to m_curPage.
+        m_curPage=-1; ChangeSelection(size_t(m_tabs.GetIdxFromWindow(page)));
+        DoSizing(); target->DoShowHide(); target->Refresh(); UpdateHintWindowSize();
+        return true;
+    }
+    void NotifyMoved(wxWindow* page,int previous) {
+        wxAuiNotebookEvent done(wxEVT_AUINOTEBOOK_DRAG_DONE,GetId());
+        done.SetEventObject(this); done.SetSelection(m_tabs.GetIdxFromWindow(page)); done.SetOldSelection(previous);
+        GetEventHandler()->ProcessEvent(done);
+    }
+    wxPoint DragScreenPosition() const {
+#ifdef WXLAMBDA_NATIVE_TESTS
+        if (test_drag_point) return test_drag_screen;
+#endif
+        return wxGetMousePosition();
+    }
+#ifdef WXLAMBDA_NATIVE_TESTS
+    bool test_drag_point=false;
+    wxPoint test_drag_screen;
+#endif
+    void SafeDragMotion(wxAuiNotebookEvent& event) {
+        auto* source=dynamic_cast<wxAuiTabCtrl*>(event.GetEventObject());
+        if (!source || source->GetParent()!=this) return;
+        auto* target=DropGroup(ScreenToClient(DragScreenPosition()));
+        m_mgr.HideHint(); source->SetCursor(wxCursor(target ? wxCURSOR_ARROW : wxCURSOR_NO_ENTRY));
+        if (target && target!=source) {
+            auto rect=target->GetClientRect(); rect.SetPosition(target->ClientToScreen(rect.GetPosition()));
+            m_mgr.ShowHint(rect);
+        }
+    }
+    void SafeEndDrag(wxAuiNotebookEvent& event) {
+        auto* source=dynamic_cast<wxAuiTabCtrl*>(event.GetEventObject());
+        if (!source || source->GetParent()!=this) return;
+        OnTabCancelDrag(event); // Hide hints/reset cursor before an empty source is retired.
+        const int local=event.GetSelection();
+        if (local<0 || size_t(local)>=source->GetPageCount()) return;
+        auto* page=source->GetWindowFromIdx(local);
+        const auto screen=DragScreenPosition(); auto* target=DropGroup(ScreenToClient(screen));
+        if (!target) return; // No external transfer or drag-created groups.
+        size_t slot=target->GetPageCount(); wxWindow* hit=nullptr;
+        const auto point=target->ScreenToClient(screen);
+        if (target->TabHitTest(point.x,point.y,&hit)) {
+            const int index=target->GetIdxFromWindow(hit);
+            if (index>=0) {
+                slot=size_t(index);
+                if (point.x>target->GetPage(index).rect.GetX()+target->GetPage(index).rect.GetWidth()/2) ++slot;
+            }
+        }
+        const int previous=GetSelection();
+        if (MoveToGroup(page,target,slot)) NotifyMoved(page,previous);
     }
     bool ProcessEvent(wxEvent& event) override {
         // Internal tab-button/drag events are not public bindings, but their
@@ -94,13 +185,11 @@ public:
             wxAuiNotebook* book; bool clear;
             ~ClosingScope() { if (clear) aui_closing_pages.erase(book); }
         } closing{this,outer};
-        if (event.GetEventType()==wxEVT_AUINOTEBOOK_END_DRAG && TabGroupCount()>1) {
-            // Pinned3.2.12's native drag handlers mix tab-group-local indices
-            // with global catalogue indices. Movement is disabled in split
-            // books. The tab control already released capture and cleared its
-            // dragging flag before END_DRAG; native cancellation clears hints
-            // and cursor without touching page ordering or global selection.
-            OnTabCancelDrag(static_cast<wxAuiNotebookEvent&>(event)); return true;
+        if (event.GetEventType()==wxEVT_AUINOTEBOOK_DRAG_MOTION) {
+            SafeDragMotion(static_cast<wxAuiNotebookEvent&>(event)); return true;
+        }
+        if (event.GetEventType()==wxEVT_AUINOTEBOOK_END_DRAG) {
+            SafeEndDrag(static_cast<wxAuiNotebookEvent&>(event)); return true;
         }
         if (event.GetEventType()==wxEVT_AUINOTEBOOK_PAGE_CLOSE) {
             const int index=static_cast<wxAuiNotebookEvent&>(event).GetSelection();
@@ -175,6 +264,24 @@ int wxl_aui_move(wxl_handle id,int from,int to) { return status([&] {
     require(book->InsertPage(size_t(to),page,caption,false),"Unable to insert moved AUI page");
     if (selected) book->ChangeSelection(size_t(book->GetPageIndex(selected)));
     book->SyncMovementStyle();
+}); }
+int wxl_aui_group_indices(wxl_handle id,int index,int* indices,size_t capacity,size_t* count) { return status([&] {
+    auto* book=as<DynamicAuiNotebook>(id); aui_index(book,index);
+    require(indices && count && capacity>=256,"Invalid tab-group output buffer");
+    auto* group=book->GroupForPage(book->GetPage(size_t(index)));
+    require(group,"Tab page has no group"); *count=group->GetPageCount();
+    require(*count<=256,"Invalid tab-group page count");
+    for (size_t local=0;local<*count;++local) {
+        indices[local]=book->GetPageIndex(group->GetWindowFromIdx(local));
+        require(indices[local]>=0,"Tab-group page missing from catalogue");
+    }
+}); }
+int wxl_aui_move_to_group(wxl_handle id,int from,int target,int slot) { return status([&] {
+    auto* book=as<DynamicAuiNotebook>(id); aui_mutation_ready(book,true); aui_index(book,from); aui_index(book,target);
+    auto* page=book->GetPage(size_t(from)); auto* group=book->GroupForPage(book->GetPage(size_t(target)));
+    require(group && slot>=0 && size_t(slot)<=group->GetPageCount(),"Invalid destination group slot");
+    AuiOperation operation(book); const int previous=book->GetSelection();
+    if (book->MoveToGroup(page,group,size_t(slot))) book->NotifyMoved(page,previous);
 }); }
 int wxl_aui_split(wxl_handle id,int index,int direction) { return status([&] {
     auto* book=as<DynamicAuiNotebook>(id); aui_mutation_ready(book,true); aui_index(book,index);
