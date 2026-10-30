@@ -3806,3 +3806,11 @@ native toolkit behavior and were not manually exercised in this turn.
 ## KryptonEdit command overlay support
 
 Added POSITION-PANEL for ordinary non-sizer child panels and WINDOW-DESCENDANTS for borrowed registered window views, without native pointer exposure. ABI71 requires rebuilding the native bridge; existing entry points are unchanged. See docs/OVERLAY-PANELS.md and examples/overlay-panel.lisp. Also added native list row hit-testing and a focus-containment query. Verified locally on macOS: native bridge build, overlay geometry/focus/hit-test/callback/container/lifetime regression, runnable overlay example, KryptonEdit's 839-check UI suite, pinned coverage regeneration/check, and docset build/check (699 entries, zero problems, discovery/symbol/guide/example access). Independent review findings on container guards, ABI compatibility, force-close disposal, blank clicks and queued command identity were resolved. The native regression is in the existing three-OS runner; Windows/Linux and physical pointer/keyboard gestures have not been run locally. Existing native entry points are unchanged; applications must rebuild for ABI71.
+
+## KryptonEdit context menu separators
+
+Application-driven extension: POPUP-CHOICE accepts :separator between command
+groups, encoded as a disabled empty bridge label and native AppendSeparator.
+Original indexes include separators; native guards reject selectable/boundary/
+adjacent separators. No ABI signature change or lifetime gate relaxation.
+Validation on macOS: native rebuild, context-menus example/test, pinned coverage inventory, docset build/check (699 entries, zero problems, discovery/lookup/guide/example reads), and full KryptonEdit UI suite passed. Independent review found and resolved a test-parenthesis error; no actionable native/Lisp guard or index findings remained. Windows/Linux and physical native popup selection were not exercised.

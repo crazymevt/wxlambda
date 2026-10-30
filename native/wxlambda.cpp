@@ -2096,6 +2096,13 @@ int wxl_popup_choice(wxl_handle id,const char** labels,const int* enabled,size_t
         wxMenu menu;
         for (size_t i=0;i<count;++i) {
             require(labels[i] && (enabled[i]==0 || enabled[i]==1),"Invalid popup item");
+            // Empty strings are the bridge encoding of Lisp :separator.
+            // Preserve original indexes, but separators can never be selected.
+            if (!labels[i][0]) {
+                require(!enabled[i] && i>0 && i+1<count && labels[i-1] && labels[i-1][0] && labels[i+1] && labels[i+1][0],
+                        "Popup separators must be disabled and between command groups");
+                menu.AppendSeparator(); continue;
+            }
             auto label=menu_string(labels[i],std::strlen(labels[i]),false);
             require(label.length()<=256,"Popup label too long");
             menu.Append(6000+static_cast<int>(i),label)->Enable(enabled[i]!=0);

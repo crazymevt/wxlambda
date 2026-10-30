@@ -31,5 +31,5 @@
       (wxlambda:bind-event tree :tree-item-menu
         (lambda (event) (declare (ignore event))
           (wxlambda:defer-ui-action
-            (lambda () (format t "Choice: ~S~%" (wxlambda:popup-choice tree '("New File" "New Folder" "Rename" "Delete")))))))
+            (lambda () (format t "Choice: ~S~%" (wxlambda:popup-choice tree '("New File" "New Folder" :separator "Rename" "Delete")))))))
       (wxlambda:show-window frame) (wxlambda:run))))

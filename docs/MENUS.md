@@ -138,7 +138,12 @@ boundaries; scalar menu state remains subject to the existing menu guards.
 `(popup-choice tree '("New File…" "Rename…" "Delete…") :enabled '(t t nil))`
 returns a zero-based choice or NIL on cancellation. It builds and releases a
 temporary native menu, with copied labels and matching optional enable flags.
-Labels are limited to1..16 choices; positions default to the native pointer
+Use `:separator` between command groups, for example
+`(popup-choice editor '("Undo" "Redo" :separator "Cut" "Copy" "Paste"))`.
+Separators are nonselectable and count toward returned indexes and the 16-entry
+limit; leading, trailing and consecutive separators are rejected. Optional enable
+flags include separator slots, whose values are ignored.
+Labels are limited to1..16 entries; positions default to the native pointer
 location or use client X/Y. Invoke it from a deferred action after a tree-item
 menu event, never directly inside the callback. Input-operation lifetime guards
 prevent receiver/ancestor destruction and suppress nested deferred work while

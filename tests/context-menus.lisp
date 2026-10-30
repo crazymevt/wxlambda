@@ -13,6 +13,8 @@
            (assert (handler-case (progn (wxlambda:make-menu-item file :id 12001 :label "Duplicate") nil) (wxlambda:native-error () t)))
            (assert (handler-case (progn (wxlambda:popup-choice frame nil) nil) (error () t)))
            (assert (handler-case (progn (wxlambda:popup-choice frame '("A") :enabled '(t nil)) nil) (error () t)))
+           (dolist (labels '((:separator "A") ("A" :separator) ("A" :separator :separator "B")))
+             (assert (handler-case (progn (wxlambda:popup-choice frame labels) nil) (error () t))))
            (wxlambda:on-click button (lambda () (setf refused (handler-case (progn (wxlambda:popup-choice frame '("A")) nil) (wxlambda:native-error () t)))))
            (wxlambda:queue-click button) (wxlambda:process-events) (assert refused)
            (wxlambda:destroy-menu-resource file)

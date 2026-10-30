@@ -5881,10 +5881,10 @@
     "name": "popup-choice",
     "kind": "function",
     "syntax": "(wxlambda:popup-choice window labels &key enabled (x -1) (y -1))",
-    "arguments": "Managed shown/enabled WINDOW; finite list of 1..16 label strings. Optional ENABLED is a matching list of generalized booleans. X/Y are client coordinates, or -1 for the native default.",
+    "arguments": "Managed shown/enabled WINDOW; finite list of 1..16 label strings or :separator entries. Optional ENABLED is a matching list of generalized booleans. X/Y are client coordinates, or -1 for the native default.",
     "returns": "Zero-based selected index, or NIL on cancellation.",
-    "description": "Synchronously display a temporary native context menu. Labels and flags are copied; the native menu is destroyed before returning. No menu resource escapes.",
-    "scope": "GUI main thread, outside callbacks and pumps, or in a deferred UI action. Native input-operation guards protect the receiver and pause deferred work/timers until selection returns. No arbitrary popup resources, separators or radio items.",
+    "description": "Synchronously display a temporary native context menu. Labels and flags are copied; the native menu is destroyed before returning. No menu resource escapes. Use :separator between command groups; separators are disabled, count in the returned zero-based indexes and 16-entry limit, and cannot lead, trail or be consecutive.",
+    "scope": "GUI main thread, outside callbacks and pumps, or in a deferred UI action. Native input-operation guards protect the receiver and pause deferred work/timers until selection returns. No arbitrary popup resources or radio items. Separators must be between command groups.",
     "wxwidgets": "wxWindow::GetPopupMenuSelectionFromUser, wxWidgets 3.2.12."
   },
   {

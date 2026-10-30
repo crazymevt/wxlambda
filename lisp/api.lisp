@@ -2791,15 +2791,21 @@ live checkbox, including when called from inside its handler."
   (let ((count (ignore-errors (list-length labels))))
     (unless (and count (<= 1 count 16)) (error "Popup requires a finite list of1..16 labels."))
     (when enabled (unless (eql count (ignore-errors (list-length enabled))) (error "Popup enabled flags must match labels.")))
+    (loop for tail on labels for index from 0 do
+      (let ((label (car tail)))
+        (if (eq label :separator)
+            (unless (and (plusp index) (not (eq (nth (1- index) labels) :separator)) (cdr tail) (not (eq (cadr tail) :separator)))
+              (error "Popup separators must be between command groups."))
+            (check-menu-text label))))
     (check-type x (integer -1 1000000)) (check-type y (integer -1 1000000))
     (let ((strings nil))
       (unwind-protect
            (progn
-             (dolist (label labels) (check-menu-text label) (push (cffi:foreign-string-alloc label :encoding :utf-8) strings))
+             (dolist (label labels) (push (cffi:foreign-string-alloc (if (eq label :separator) "" label) :encoding :utf-8) strings))
              (setf strings (nreverse strings))
              (cffi:with-foreign-objects ((pointers :pointer count) (flags :int count) (selected :int))
                (loop for string in strings for i from 0 do
-                 (setf (cffi:mem-aref pointers :pointer i) string (cffi:mem-aref flags :int i) (if (or (null enabled) (nth i enabled)) 1 0)))
+                 (setf (cffi:mem-aref pointers :pointer i) string (cffi:mem-aref flags :int i) (if (and (not (eq (nth i labels) :separator)) (or (null enabled) (nth i enabled))) 1 0)))
                (check-status (%popup-choice (handle window) pointers flags count x y selected))
                (let ((index (cffi:mem-ref selected :int))) (unless (= index -1) index))))
         (dolist (string strings) (cffi:foreign-string-free string))))))
