@@ -118,8 +118,12 @@ class DocsetChecks(unittest.TestCase):
             self.assertEqual(result.returncode, 0, result.stdout.decode())
             entries = output / 'entries.sexp'
             # Change an entry payload without corrupting syntax or byte offsets.
-            data = entries.read_text(encoding='utf-8')
-            entries.write_text(data.replace('Load the native bridge', 'Skip the native bridge', 1), encoding='utf-8')
+            data = entries.read_bytes()
+            self.assertIn(b'Load the native bridge', data)
+            changed = data.replace(b'Load the native bridge', b'Skip the native bridge', 1)
+            self.assertEqual(len(data), len(changed))
+            self.assertEqual(data.count(b'\r\n'), changed.count(b'\r\n'))
+            entries.write_bytes(changed)
             result = run('check')
             self.assertNotEqual(result.returncode, 0)
             self.assertIn(b'assertion', result.stdout.lower())

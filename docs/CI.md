@@ -66,8 +66,13 @@ failed GUI assertions:
   No checksum was changed or validation disabled. Download diagnostics are
   retained even when extraction never starts.
 
-These repairs require a new remote run. Local macOS results and unit tests do
-not establish GTK/MSVC build or execution success.
+The repair run passed the distro-Linux bridge build and Windows SBCL/SDK staging.
+Windows then exposed a stale-docset test mutation that translated line endings
+and invalidated byte offsets. That mutation now uses a same-length binary
+replacement, preserving length and CRLF counts, rather than text-mode rewriting.
+The actual initial Windows docset build/check stages had already passed.
+Remaining remote build/runtime results still require validation; local macOS
+results and unit tests do not establish full GTK/MSVC acceptance.
 
 ## Local checks and publishing
 

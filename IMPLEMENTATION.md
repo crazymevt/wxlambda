@@ -33,7 +33,12 @@ later AUI tab-rectangle timing assertion; this is retained as a known fixture
 flakiness observation, not silently counted as a clean first pass. CTest,
 actionlint, pinned coverage regeneration, docset build/check (704 entries, zero
 problems, discovery/exports/symbols/guides/examples) and diff checks passed.
-GTK/MSVC repair acceptance still requires the new remote CI run.
+Repair commit ddc134a/run41146613067 passed the distro-Linux bridge build and
+Windows pinned MSI extraction/SDK/Edge patch staging. Windows then failed only
+the stale-docset mutation test: text-mode writing converted newlines and broke
+indexed byte offsets. Initial Windows docset build/build/check had passed.
+The follow-up uses same-length binary mutation with length/CRLF invariants;
+remaining remote build/runtime acceptance is still pending.
 
 
 ### Public-repository / CI preparation (2026-10-30)
