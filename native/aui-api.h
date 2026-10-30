@@ -1,5 +1,5 @@
 enum wxl_aui_event_kind { WXL_EVENT_AUI_PAGE_CHANGING=100, WXL_EVENT_AUI_PAGE_CHANGED=101,
-    WXL_EVENT_AUI_PAGE_CLOSE=102, WXL_EVENT_AUI_PAGE_CLOSED=103, WXL_EVENT_AUI_DRAG_DONE=104 };
+    WXL_EVENT_AUI_PAGE_CLOSE=102, WXL_EVENT_AUI_PAGE_CLOSED=103, WXL_EVENT_AUI_DRAG_DONE=104, WXL_EVENT_AUI_TAB_RIGHT_UP=105 };
 /* Fixed top tabs, one-group drag movement, active-tab close; programmatic Split.
    Mouse split/external transfer disabled; split books use
    checked programmatic movement. Page limit256, copied caption<=4096UTF8 bytes.

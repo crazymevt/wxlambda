@@ -107,7 +107,7 @@
                  (assert (not (member b (wxlambda::notebook-pages book) :test #'eq)))))
              (wxlambda::check-callback-error))
         (wxlambda:unbind-event binding)))
-    (dolist (kind '(:aui-page-changing :aui-page-changed :aui-page-close :aui-page-closed :aui-drag-done))
+    (dolist (kind '(:aui-page-changing :aui-page-changed :aui-page-close :aui-page-closed :aui-drag-done :aui-tab-right-up))
       (aui-error (lambda () (wxlambda:make-event :kind kind))))
     (let* ((splitter (wxlambda:make-splitter-window frame))
            (first (wxlambda:make-panel splitter)) (second (wxlambda:make-panel splitter)) (third (wxlambda:make-panel splitter)))

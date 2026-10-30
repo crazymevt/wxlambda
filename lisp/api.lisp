@@ -189,7 +189,7 @@
                                 (cffi:foreign-string-to-lisp text :count text-length :encoding :utf-8))))
                      (checked-p (and (member kind '(3 9 21)) (not (zerop checked))))
                      (event (%make-event event-kind (handler-source handler) value checked-p
-                                         (when (member kind '(4 10 11 12 13 20 22 100 101 102 103 104)) (unless (= selection -1) selection)) id native-type
+                                         (when (member kind '(4 10 11 12 13 20 22 100 101 102 103 104 105)) (unless (= selection -1) selection)) id native-type
                                          (not (zerop can-veto)) (not (zerop vetoed)) family integer (not (zerop logging-off)) timestamp (not (zerop command)) origin-id category extra-long (not (zerop selection-action)) user-data (not (zerop more-requested)) (canonical-tree-item tree-item) (when (member kind '(16 17)) sash-position) date-code time-code
                                          (let ((pointer (cffi:foreign-slot-pointer payload '(:struct native-event) 'detail)))
                                            (map-into (make-array 24) (let ((i -1)) (lambda () (cffi:mem-aref pointer :int64 (incf i)))))))))

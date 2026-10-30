@@ -3814,3 +3814,10 @@ groups, encoded as a disabled empty bridge label and native AppendSeparator.
 Original indexes include separators; native guards reject selectable/boundary/
 adjacent separators. No ABI signature change or lifetime gate relaxation.
 Validation on macOS: native rebuild, context-menus example/test, pinned coverage inventory, docset build/check (699 entries, zero problems, discovery/lookup/guide/example reads), and full KryptonEdit UI suite passed. Independent review found and resolved a test-parenthesis error; no actionable native/Lisp guard or index findings remained. Windows/Linux and physical native popup selection were not exercised.
+
+## KryptonEdit split-tab context target
+
+AUI event105 :aui-tab-right-up uses the existing native-only notify transport,
+public notebook origin filter and immutable page/global-index metadata. It adds
+no raw tab-control or synthetic-event API. Application resolves target identity
+before deferring Split Right. macOS native build and AUI example/tests passed; synthetic event105 construction rejects. Coverage inventory (14 checks) and docset validation passed. Independent review identified and fixed the missing event105 Lisp snapshot selection whitelist; application review also resolved peer-edit/deferred-origin races with splice and native view regressions. Windows/Linux and physical tab-right-click input remain unverified.

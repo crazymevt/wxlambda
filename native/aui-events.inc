@@ -1,5 +1,5 @@
 // Prelude: include after InputOperation and before native_event_type.
-bool aui_event_kind(int kind) { return kind>=100 && kind<=104; }
+bool aui_event_kind(int kind) { return kind>=100 && kind<=105; }
 wxEventType aui_event_type(int kind) {
     switch (kind) {
         case 100:return wxEVT_AUINOTEBOOK_PAGE_CHANGING;
@@ -7,11 +7,12 @@ wxEventType aui_event_type(int kind) {
         case 102:return wxEVT_AUINOTEBOOK_PAGE_CLOSE;
         case 103:return wxEVT_AUINOTEBOOK_PAGE_CLOSED;
         case 104:return wxEVT_AUINOTEBOOK_DRAG_DONE;
+        case 105:return wxEVT_AUINOTEBOOK_TAB_RIGHT_UP;
         default:return wxEVT_NULL;
     }
 }
 int aui_kind_for_type(wxEventType type) {
-    for (int kind=100;kind<=104;++kind) if (aui_event_type(kind)==type) return kind;
+    for (int kind=100;kind<=105;++kind) if (aui_event_type(kind)==type) return kind;
     return 0;
 }
 bool aui_payload_readonly(wxEventType type) { return aui_kind_for_type(type)!=0; }

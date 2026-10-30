@@ -105,7 +105,7 @@ deletion, unchanged assignments and physical input can vary.
 ## Native events and close policy
 
 The notify-family native-only event kinds are `:aui-page-changing`,
-`:aui-page-changed`, `:aui-page-close`, `:aui-page-closed` and `:aui-drag-done`.
+`:aui-page-changed`, `:aui-page-close`, `:aui-page-closed`, `:aui-drag-done` and `:aui-tab-right-up`.
 Bind ordinary observers or current borrowed contexts with `bind-event`.
 `event-selection` is native index metadata; `event-old-selection` reports native
 old-selection metadata when available. `event-aui-page-id` is an immutable numeric
@@ -189,3 +189,12 @@ foreign-thread rejection, split-group global-index translation, native private-I
 exhaustion guards and teardown. Native rendering, physical drag/focus,
 accessibility and hosted GTK/MSW behavior require separate runtime checks. The
 binding targets pinned wxWidgets3.2.12 and makes no full wxAUI parity claim.
+
+## Tab context menus
+
+Bind native-only `:aui-tab-right-up` to receive a right-clicked tab's global
+`event-selection` and stable `event-aui-page-id`. It does not select the page.
+Private tab-control events are filtered until wxAuiNotebook translates them;
+resolve the captured page identity and defer popup/structural actions. Payloads
+are copied/read-only; owned, synthetic and cloned forms reject as for other AUI
+notifications. Physical right-click delivery remains platform-dependent.

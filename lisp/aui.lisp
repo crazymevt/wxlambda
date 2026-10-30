@@ -1,7 +1,7 @@
 (in-package #:wxlambda)
 (defparameter *aui-event-kinds*
   '((100 . :aui-page-changing) (101 . :aui-page-changed) (102 . :aui-page-close)
-    (103 . :aui-page-closed) (104 . :aui-drag-done)))
+    (103 . :aui-page-closed) (104 . :aui-drag-done) (105 . :aui-tab-right-up)))
 (setf *extension-event-kinds*
       (append *aui-event-kinds* (remove-if (lambda (entry) (assoc (car entry) *aui-event-kinds*)) *extension-event-kinds*)))
 (defclass aui-notebook (window) ((pages :initform nil :accessor notebook-pages)))

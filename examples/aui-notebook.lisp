@@ -17,6 +17,11 @@
          (close (wxlambda:make-button sidebar :label "Delete selected"))
          (move (wxlambda:make-button sidebar :label "Move last to first"))
          (split (wxlambda:make-button sidebar :label "Split selected right")) (counter 1))
+    (wxlambda:bind-event book :aui-tab-right-up
+      (lambda (event)
+        (let ((page-id (wxlambda:event-aui-page-id event)))
+          (wxlambda:defer-ui-action
+            (lambda () (format t "Tab context target ID: ~D~%" page-id)) :owner book))))
     (wxlambda:make-column frame) (wxlambda:add-child frame splitter :proportion 1 :expand t)
     (wxlambda:make-column sidebar)
     (dolist (button (list add close move split)) (wxlambda:add-child sidebar button :border 8))
