@@ -3802,3 +3802,7 @@ cancel/delete, no-overwrite preflight and partial-progress buffer integrity.
 The new multi-tree scenario is included in the existing three-OS CI runner;
 Windows/Linux have not run locally. Physical modifier-click gestures remain
 native toolkit behavior and were not manually exercised in this turn.
+
+## KryptonEdit command overlay support
+
+Added POSITION-PANEL for ordinary non-sizer child panels and WINDOW-DESCENDANTS for borrowed registered window views, without native pointer exposure. ABI71 requires rebuilding the native bridge; existing entry points are unchanged. See docs/OVERLAY-PANELS.md and examples/overlay-panel.lisp. Also added native list row hit-testing and a focus-containment query. Verified locally on macOS: native bridge build, overlay geometry/focus/hit-test/callback/container/lifetime regression, runnable overlay example, KryptonEdit's 839-check UI suite, pinned coverage regeneration/check, and docset build/check (699 entries, zero problems, discovery/symbol/guide/example access). Independent review findings on container guards, ABI compatibility, force-close disposal, blank clicks and queued command identity were resolved. The native regression is in the existing three-OS runner; Windows/Linux and physical pointer/keyboard gestures have not been run locally. Existing native entry points are unchanged; applications must rebuild for ABI71.

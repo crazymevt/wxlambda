@@ -17,7 +17,7 @@ class or constructor does not imply full upstream coverage.
 
 ## Current coverage and remaining work
 
-28 implemented; 253 partial; 2581 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
+28 implemented; 258 partial; 2576 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
 
 Counts describe inventory entries, not distinct APIs or percent completion.
 See the [coverage summary](README.md) for phase/header comparisons.
@@ -1279,7 +1279,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/listbox.h)
 
-0 implemented; 8 partial; 31 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
+0 implemented; 9 partial; 30 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
 
 - [ ] [L30](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/listbox.h#L30) `documented style: wxLB_SINGLE`
 - [ ] [L32](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/listbox.h#L32) `documented style: wxLB_MULTIPLE`
@@ -1304,7 +1304,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [ ] [L191](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/listbox.h#L191) `virtual bool SetStringSelection(const wxString& s, bool select);`
 - [ ] [L192](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/listbox.h#L192) `virtual bool SetStringSelection(const wxString& s);`
 - [ ] [L213](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/listbox.h#L213) `virtual int GetSelections(wxArrayInt& selections) const;`
-- [ ] [L229](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/listbox.h#L229) `int HitTest(const wxPoint& point) const;`
+- [~] [L229](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/listbox.h#L229) `int HitTest(const wxPoint& point) const;` — **Partial**: `list-item-at-point`; ABI: `wxl_list_item_at_point`. Bounded ABI71 child-panel overlay geometry, registered borrowed descendants, focus containment or list row hit-testing only. No general native pointer exposure. See docs/OVERLAY-PANELS.md.
 - [ ] [L234](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/listbox.h#L234) `int HitTest(int x, int y) const;`
 - [ ] [L251](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/listbox.h#L251) `void InsertItems(unsigned int nItems, const wxString *items, unsigned int pos);`
 - [ ] [L267](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/listbox.h#L267) `void InsertItems(const wxArrayString& items, unsigned int pos);`
@@ -2995,7 +2995,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h)
 
-14 implemented; 38 partial; 334 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
+14 implemented; 42 partial; 330 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
 
 - [ ] [L12](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L12) `enum wxShowEffect {`
 - [ ] [L19](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L19) `wxSHOW_EFFECT_NONE, wxSHOW_EFFECT_ROLL_TO_LEFT, wxSHOW_EFFECT_ROLL_TO_RIGHT, wxSHOW_EFFECT_ROLL_TO_TOP, wxSHOW_EFFECT_ROLL_TO_BOTTOM, wxSHOW_EFFECT_SLIDE_TO_LEFT, wxSHOW_EFFECT_SLIDE_TO_RIGHT, wxSHOW_EFFECT_SLIDE_TO_TOP, wxSHOW_EFFECT_SLIDE_TO_BOTTOM, wxSHOW_EFFECT_BLEND, wxSHOW_EFFECT_EXPAND, wxSHOW_EFFECT_MAX }`
@@ -3081,7 +3081,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [ ] [L644](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L644) `virtual void RemoveChild(wxWindow* child);`
 - [ ] [L657](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L657) `wxWindow* GetGrandParent() const;`
 - [ ] [L667](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L667) `wxWindow* GetNextSibling() const;`
-- [ ] [L672](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L672) `wxWindow* GetParent() const;`
+- [~] [L672](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L672) `wxWindow* GetParent() const;` — **Partial**: `window-descendants`; ABI: `wxl_window_descendants`. Bounded ABI71 child-panel overlay geometry, registered borrowed descendants, focus containment or list row hit-testing only. No general native pointer exposure. See docs/OVERLAY-PANELS.md.
 - [ ] [L682](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L682) `wxWindow* GetPrevSibling() const;`
 - [ ] [L698](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L698) `bool IsDescendant(wxWindow* win) const;`
 - [ ] [L711](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L711) `virtual bool Reparent(wxWindow* newParent);`
@@ -3172,7 +3172,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [ ] [L1707](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L1707) `virtual void SetMaxSize(const wxSize& size);`
 - [ ] [L1728](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L1728) `virtual void SetMinClientSize(const wxSize& size);`
 - [ ] [L1744](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L1744) `virtual void SetMinSize(const wxSize& size);`
-- [ ] [L1789](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L1789) `void SetSize(int x, int y, int width, int height, int sizeFlags = wxSIZE_AUTO);`
+- [~] [L1789](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L1789) `void SetSize(int x, int y, int width, int height, int sizeFlags = wxSIZE_AUTO);` — **Partial**: `position-panel`; ABI: `wxl_position_panel`. Bounded ABI71 child-panel overlay geometry, registered borrowed descendants, focus containment or list row hit-testing only. No general native pointer exposure. See docs/OVERLAY-PANELS.md.
 - [ ] [L1800](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L1800) `void SetSize(const wxRect& rect);`
 - [ ] [L1805](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L1805) `void SetSize(const wxSize& size);`
 - [ ] [L1810](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L1810) `void SetSize(int width, int height);`
@@ -3267,7 +3267,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [~] [L2913](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2913) `bool Navigate(int flags = wxNavigationKeyEvent::IsForward);` — **Partial**: `navigate-focus`; ABI: `wxl_navigate_focus`. Bounded shown/enabled managed WINDOW receivers, GUI thread, callback deferral and synchronous lifetime/native-entry guards. No native virtual override or OS activation guarantee; docs/FOCUS-NAVIGATION.md. Only IsForward/IsBackward; WinChange unbound.
 - [ ] [L2919](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2919) `bool NavigateIn(int flags = wxNavigationKeyEvent::IsForward);`
 - [ ] [L2938](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2938) `virtual void Lower();`
-- [ ] [L2954](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2954) `virtual void Raise();`
+- [~] [L2954](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2954) `virtual void Raise();` — **Partial**: `position-panel`; ABI: `wxl_position_panel`. Bounded ABI71 child-panel overlay geometry, registered borrowed descendants, focus containment or list row hit-testing only. No general native pointer exposure. See docs/OVERLAY-PANELS.md.
 - [x] [L2968](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2968) `bool Hide();` — **Implemented**: `show-window`; ABI: `wxl_show_state`. Equivalent Lisp mapping: (show-window window nil), using Show(false); second value preserves the native changed-state boolean.
 - [ ] [L2979](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2979) `virtual bool HideWithEffect(wxShowEffect effect, unsigned int timeout = 0);`
 - [x] [L2991](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L2991) `bool IsEnabled() const;` — **Implemented**: `enabled-p`; ABI: `wxl_enabled`. Effective enabled state includes disabled ancestors.
@@ -3359,7 +3359,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [ ] [L4022](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L4022) `virtual bool UnregisterHotKey(int hotkeyId);`
 - [ ] [L4055](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L4055) `virtual void UpdateWindowUI(long flags = wxUPDATE_UI_NONE);`
 - [ ] [L4093](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L4093) `static wxVisualAttributes GetClassDefaultAttributes(wxWindowVariant variant = wxWINDOW_VARIANT_NORMAL);`
-- [ ] [L4103](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L4103) `static wxWindow* FindFocus();`
+- [~] [L4103](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L4103) `static wxWindow* FindFocus();` — **Partial**: `window-focus-within-p`; ABI: `wxl_window_focus_within`. Bounded ABI71 child-panel overlay geometry, registered borrowed descendants, focus containment or list row hit-testing only. No general native pointer exposure. See docs/OVERLAY-PANELS.md.
 - [ ] [L4117](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L4117) `static wxWindow* FindWindowById(long id, const wxWindow* parent = 0);`
 - [ ] [L4134](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L4134) `static wxWindow* FindWindowByLabel(const wxString& label, const wxWindow* parent = 0);`
 - [ ] [L4156](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/window.h#L4156) `static wxWindow* FindWindowByName(const wxString& name, const wxWindow* parent = 0);`

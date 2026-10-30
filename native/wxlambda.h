@@ -365,6 +365,11 @@ WXL_API int wxl_add(wxl_handle parent, wxl_handle child, int proportion,
 WXL_API int wxl_spacer(wxl_handle parent, int size);
 WXL_API int wxl_stretch(wxl_handle parent, int proportion);
 WXL_API int wxl_layout(wxl_handle window);
+/* Read-only overlay input and placement helpers; coordinates use wx units. */
+WXL_API int wxl_window_focus_within(wxl_handle window, int* result);
+WXL_API int wxl_list_item_at_point(wxl_handle list, int x, int y, int* index);
+WXL_API int wxl_position_panel(wxl_handle panel, int x, int y, int width, int height);
+WXL_API int wxl_window_descendants(wxl_handle window, wxl_handle* result, size_t capacity, size_t* count);
 /* All four output pointers must be non-NULL. Values use wxWidgets coordinates. */
 WXL_API int wxl_geometry(wxl_handle window, int *x, int *y, int *width, int *height);
 /* Metadata getters return UTF-8 borrowed until the next wxl_name/wxl_title

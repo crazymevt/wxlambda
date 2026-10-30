@@ -1509,7 +1509,7 @@ bool process_deferred_ui_action() {
 
 }
 extern "C" {
-int wxl_abi_version() { return 70; }
+int wxl_abi_version() { return 71; }
 const char* wxl_last_error() { return error.c_str(); }
 int wxl_clipboard_text_available() {
     return boolean_result([&] {
@@ -3704,6 +3704,55 @@ int wxl_stretch(wxl_handle parent, int proportion) {
     });
 }
 int wxl_layout(wxl_handle id) { return status([&] { auto* object=window(id); require(!protected_views_provider(object),"Virtual list provider cannot layout its owner/ancestors"); object->Layout(); }); }
+int wxl_window_focus_within(wxl_handle id, int* result) {
+    return status([&] {
+        require(result,"Missing focus result"); auto* owner=window(id);
+        *result=0;
+        for (auto* current=wxWindow::FindFocus(); current; current=current->GetParent())
+            if (current==owner) { *result=1; break; }
+    });
+}
+int wxl_list_item_at_point(wxl_handle id, int x, int y, int* index) {
+    return status([&] {
+        require(index,"Missing list hit-test result");
+        require(x>=-100000 && y>=-100000 && x<=100000 && y<=100000,"List point outside supported range");
+        *index=as<wxListBox>(id)->HitTest(wxPoint(x,y));
+    });
+}
+int wxl_position_panel(wxl_handle id, int x, int y, int width, int height) {
+    return status([&] {
+        require(callback_depth == 0, "Defer panel positioning until callbacks return");
+        auto* panel=as<wxPanel>(id);
+        require(typeid(*panel)==typeid(ManagedWindow<wxPanel>), "Position only ordinary panels");
+        require(!panel->GetContainingSizer(), "Do not position a sizer-managed panel");
+        auto* parent=panel->GetParent();
+        require(parent && !dynamic_cast<wxSplitterWindow*>(parent) && !dynamic_cast<wxNotebook*>(parent)
+                && !dynamic_cast<wxAuiNotebook*>(parent) && !dynamic_cast<wxToolBar*>(parent),
+                "Do not position native container panes");
+        require(x>=0 && y>=0 && x<=100000 && y<=100000 && width>0 && height>0 && width<=100000 && height<=100000,
+                "Panel geometry outside supported range");
+        InputOperation operation(panel);
+        panel->SetSize(x,y,width,height);
+        panel->Layout(); panel->Raise();
+    });
+}
+int wxl_window_descendants(wxl_handle id, wxl_handle* result, size_t capacity, size_t* count) {
+    return status([&] {
+        require(count,"Missing descendant count");
+        auto* owner=window(id); std::vector<wxl_handle> ids;
+        for (const auto& entry:windows) {
+            auto* candidate=entry.second.get();
+            if (!candidate || window_destruction_pending(candidate)) continue;
+            for (auto* parent=candidate->GetParent();parent;parent=parent->GetParent()) {
+                if (parent==owner) { ids.push_back(entry.first); break; }
+            }
+        }
+        *count=ids.size();
+        if (!result) { require(capacity==0,"Missing descendant output"); return; }
+        require(capacity>=ids.size(),"Descendant output too small");
+        std::copy(ids.begin(),ids.end(),result);
+    });
+}
 int wxl_geometry(wxl_handle id, int* x, int* y, int* width, int* height) {
     return status([&] {
         auto* control = window(id);

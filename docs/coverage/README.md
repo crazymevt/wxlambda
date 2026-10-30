@@ -19,13 +19,13 @@ and verify platforms when selected features or completeness claims require it.
 | Category | Headers | Tasks | Implemented | Partial | Pending | Context |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | [C1: Foundation, values, application, events, and base utilities](phase-c1.md) | 119 | 5292 | 7 | 144 | 5141 | 26 |
-| [C2: Windows, layout, basic controls, and input](phase-c2.md) | 82 | 2862 | 28 | 253 | 2581 | 0 |
+| [C2: Windows, layout, basic controls, and input](phase-c2.md) | 82 | 2862 | 28 | 258 | 2576 | 0 |
 | [C3: Dialogs, navigation, menus, and application services](phase-c3.md) | 57 | 1875 | 0 | 135 | 1740 | 0 |
 | [C4: Models, complex controls, and document frameworks](phase-c4.md) | 20 | 2328 | 0 | 123 | 2205 | 4 |
 | [C5: Drawing, images, graphics, and printing](phase-c5.md) | 52 | 2245 | 0 | 48 | 2197 | 0 |
 | [C6: Optional libraries, rich content, and integration](phase-c6.md) | 57 | 8912 | 0 | 206 | 8706 | 380 |
 | [C7: Platform extensions and remaining portability APIs](phase-c7.md) | 11 | 279 | 0 | 0 | 279 | 3 |
-| Total | 398 | 23793 | 35 | 909 | 22849 | 413 |
+| Total | 398 | 23793 | 35 | 914 | 22844 | 413 |
 
 ## Classes and widgets
 
@@ -205,7 +205,7 @@ unreviewed inherited/platform behavior.
 | [wx/kbdstate.h](phase-c2.md#wxkbdstateh) | 0 | 4 | 12 | 0 |
 | [wx/layout.h](phase-c2.md#wxlayouth) | 0 | 0 | 47 | 0 |
 | [wx/laywin.h](phase-c2.md#wxlaywinh) | 0 | 0 | 45 | 0 |
-| [wx/listbox.h](phase-c2.md#wxlistboxh) | 0 | 8 | 31 | 0 |
+| [wx/listbox.h](phase-c2.md#wxlistboxh) | 0 | 9 | 30 | 0 |
 | [wx/mousemanager.h](phase-c2.md#wxmousemanagerh) | 0 | 0 | 12 | 0 |
 | [wx/mousestate.h](phase-c2.md#wxmousestateh) | 0 | 8 | 14 | 0 |
 | [wx/nonownedwnd.h](phase-c2.md#wxnonownedwndh) | 0 | 0 | 4 | 0 |
@@ -244,7 +244,7 @@ unreviewed inherited/platform behavior.
 | [wx/valtext.h](phase-c2.md#wxvaltexth) | 0 | 0 | 31 | 0 |
 | [wx/vlbox.h](phase-c2.md#wxvlboxh) | 0 | 0 | 31 | 0 |
 | [wx/vscroll.h](phase-c2.md#wxvscrollh) | 0 | 0 | 79 | 0 |
-| [wx/window.h](phase-c2.md#wxwindowh) | 14 | 38 | 334 | 0 |
+| [wx/window.h](phase-c2.md#wxwindowh) | 14 | 42 | 330 | 0 |
 | [wx/windowid.h](phase-c2.md#wxwindowidh) | 0 | 0 | 4 | 0 |
 | [wx/windowptr.h](phase-c2.md#wxwindowptrh) | 0 | 0 | 8 | 0 |
 | [wx/withimages.h](phase-c2.md#wxwithimagesh) | 0 | 2 | 12 | 0 |

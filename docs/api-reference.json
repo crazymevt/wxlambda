@@ -5913,5 +5913,45 @@
       "description": "Silently replace the selected set after validating every item.",
       "scope": "Tree mutation guards apply."
     }
+  },
+  {
+    "name": "position-panel",
+    "kind": "generic-function",
+    "syntax": "(wxlambda:position-panel panel x y width height)",
+    "arguments": "Ordinary live PANEL outside a sizer. Parent-relative x/y 0..100000; width/height 1..100000 in wx units.",
+    "returns": "PANEL.",
+    "description": "Set panel geometry, lay out its children and raise above siblings, for in-window overlays. Use FROM-DIP when starting from DIP sizes.",
+    "scope": "GUI thread; rejects callbacks, virtual providers, sizer-managed panels and specialized panel kinds. Caller owns placement and resize updates.",
+    "wxwidgets": "wxWindow::SetSize, Layout, Raise; wxPanel."
+  },
+  {
+    "name": "window-descendants",
+    "kind": "generic-function",
+    "syntax": "(wxlambda:window-descendants window)",
+    "arguments": "Live WINDOW.",
+    "returns": "Fresh list of borrowed generic WINDOW views.",
+    "description": "Read registered live descendants, excluding WINDOW itself and unregistered native implementation children. Useful for observing input over a window subtree.",
+    "scope": "GUI thread; read only, callback safe. Order and Lisp EQ identity unspecified. Views share native lifetime and never adopt native children.",
+    "wxwidgets": "wxWindow::GetParent."
+  },
+  {
+    "name": "list-item-at-point",
+    "kind": "generic-function",
+    "syntax": "(wxlambda:list-item-at-point list x y)",
+    "arguments": "Live LIST-BOX; x and y client coordinates in wx units, each -100000..100000.",
+    "returns": "Zero-based row index, or NIL.",
+    "description": "Hit-test a row for single-click activation. Blank space, scrollbar or an outside point returns NIL.",
+    "scope": "Read only, GUI thread, callback safe. No row height assumptions or pointer retention.",
+    "wxwidgets": "wxListBox::HitTest."
+  },
+  {
+    "name": "window-focus-within-p",
+    "kind": "generic-function",
+    "syntax": "(wxlambda:window-focus-within-p window)",
+    "arguments": "Live WINDOW.",
+    "returns": "Generalized boolean.",
+    "description": "Query keyboard focus on WINDOW or any native descendant, including native implementation children. Use after a deferred focus-lost event to detect focus leaving an overlay.",
+    "scope": "Read only, GUI thread, callback safe. Does not transfer focus or expose the focused native pointer.",
+    "wxwidgets": "wxWindow::FindFocus, GetParent."
   }
 ]

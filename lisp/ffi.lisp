@@ -98,7 +98,7 @@
           (if (probe-file local)
               (cffi:load-foreign-library local)
               (cffi:use-foreign-library wxlambda-native))))
-    (unless (= 70 (%abi-version)) (error "Unsupported wxlambda native ABI"))
+    (unless (= 71 (%abi-version)) (error "Unsupported wxlambda native ABI"))
     (setf *native-loaded* t))
   t)
 
@@ -380,3 +380,10 @@
 (cffi:defcfun ("wxl_tree_with_selection" %tree-with-selection) :uint64 (parent :uint64) (multiple :int))
 (cffi:defcfun ("wxl_tree_selections" %tree-selections) :int (tree :uint64) (items :pointer) (capacity :size) (count :pointer))
 (cffi:defcfun ("wxl_set_tree_selections" %set-tree-selections) :int (tree :uint64) (items :pointer) (count :size))
+
+(cffi:defcfun ("wxl_position_panel" %position-panel) :int (panel :uint64) (x :int) (y :int) (width :int) (height :int))
+(cffi:defcfun ("wxl_window_descendants" %window-descendants) :int (window :uint64) (result :pointer) (capacity :size) (count :pointer))
+
+(cffi:defcfun ("wxl_list_item_at_point" %list-item-at-point) :int (list :uint64) (x :int) (y :int) (index :pointer))
+
+(cffi:defcfun ("wxl_window_focus_within" %window-focus-within) :int (window :uint64) (result :pointer))

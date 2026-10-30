@@ -286,5 +286,9 @@
   "multi-tree.lisp": {
     "description": "Native multi-selection; exercise checks preserving selected items across append/expand/delete and silent clearing. START shows range/toggle selection.",
     "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/multi-tree.lisp --eval '(wxlambda-multi-tree:start)'"
+  },
+  "overlay-panel.lisp": {
+    "description": "Create a child panel overlay outside a sizer, position it above content, and enumerate borrowed descendants; automatically closes.",
+    "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/overlay-panel.lisp"
   }
 }

@@ -18255,6 +18255,76 @@
         "wxl_set_tree_selections"
       ],
       "scope": "ABI70 checked copied multi-selection lists and silent replacement; default single selection retained. See REPORT-TREE-VIEWS.md."
+    },
+    {
+      "header": "wx/window.h",
+      "line": 672,
+      "declaration": "wxWindow* GetParent() const;",
+      "status": "~",
+      "symbol": "wxWindow::GetParent",
+      "lisp": [
+        "window-descendants"
+      ],
+      "native": [
+        "wxl_window_descendants"
+      ],
+      "scope": "Bounded ABI71 child-panel overlay geometry, registered borrowed descendants, focus containment or list row hit-testing only. No general native pointer exposure. See docs/OVERLAY-PANELS.md."
+    },
+    {
+      "header": "wx/window.h",
+      "line": 1789,
+      "declaration": "void SetSize(int x, int y, int width, int height, int sizeFlags = wxSIZE_AUTO);",
+      "status": "~",
+      "symbol": "wxWindow::SetSize",
+      "lisp": [
+        "position-panel"
+      ],
+      "native": [
+        "wxl_position_panel"
+      ],
+      "scope": "Bounded ABI71 child-panel overlay geometry, registered borrowed descendants, focus containment or list row hit-testing only. No general native pointer exposure. See docs/OVERLAY-PANELS.md."
+    },
+    {
+      "header": "wx/window.h",
+      "line": 2954,
+      "declaration": "virtual void Raise();",
+      "status": "~",
+      "symbol": "wxWindow::Raise",
+      "lisp": [
+        "position-panel"
+      ],
+      "native": [
+        "wxl_position_panel"
+      ],
+      "scope": "Bounded ABI71 child-panel overlay geometry, registered borrowed descendants, focus containment or list row hit-testing only. No general native pointer exposure. See docs/OVERLAY-PANELS.md."
+    },
+    {
+      "header": "wx/window.h",
+      "line": 4103,
+      "declaration": "static wxWindow* FindFocus();",
+      "status": "~",
+      "symbol": "wxWindow::FindFocus",
+      "lisp": [
+        "window-focus-within-p"
+      ],
+      "native": [
+        "wxl_window_focus_within"
+      ],
+      "scope": "Bounded ABI71 child-panel overlay geometry, registered borrowed descendants, focus containment or list row hit-testing only. No general native pointer exposure. See docs/OVERLAY-PANELS.md."
+    },
+    {
+      "header": "wx/listbox.h",
+      "line": 229,
+      "declaration": "int HitTest(const wxPoint& point) const;",
+      "status": "~",
+      "symbol": "wxListBox::HitTest",
+      "lisp": [
+        "list-item-at-point"
+      ],
+      "native": [
+        "wxl_list_item_at_point"
+      ],
+      "scope": "Bounded ABI71 child-panel overlay geometry, registered borrowed descendants, focus containment or list row hit-testing only. No general native pointer exposure. See docs/OVERLAY-PANELS.md."
     }
   ],
   "classes": {
