@@ -219,3 +219,21 @@ void exercise_aui_group_drag() {
     expect(wxl_aui_group_indices(id,-1,indices,256,&count)==-1 && wxl_aui_group_indices(id,0,indices,2,&count)==-1,"Group query bounds");
     wxl_destroy(frame);wxl_poll();
 }
+
+void exercise_aui_selection_focus() {
+    const auto frame=wxl_frame("Selection focus",800,500), id=wxl_aui_notebook(frame);
+    const auto a=wxl_panel(id), b=wxl_panel(id), c=wxl_panel(id);
+    const auto input=wxl_text(a,"editor",6,1,1);
+    for (auto page:{a,b,c}) expect(wxl_aui_insert(id,page,wxl_aui_count(id),"Tab",3,0)==0,"Selection fixture append");
+    auto* book=as<DynamicAuiNotebook>(id); wxl_show(frame);book->SetSize(780,450);wxl_poll();
+    expect(wxl_set_aui_selection(id,0,0)==0,"Select outgoing editor");
+    window(input)->SetFocus();
+    expect(wxl_set_aui_selection(id,2,1)==0 && wxl_aui_selection(id)==2 && window(c)->IsShown(),
+           "Child focus while hiding outgoing editor cannot select intermediate tab");
+    // Inject the exact native child-focus reentry deterministically as well.
+    book->ChangeSelection(0);
+    { DynamicAuiNotebook::SelectionScope scope(*book);
+      wxChildFocusEvent focus(window(b));book->GetEventHandler()->ProcessEvent(focus); }
+    expect(book->GetSelection()==0,"Selection scope suppresses nested native CHILD_FOCUS routing");
+    wxl_destroy(frame);wxl_poll();
+}

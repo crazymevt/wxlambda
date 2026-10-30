@@ -207,3 +207,12 @@ Private tab-control events are filtered until wxAuiNotebook translates them;
 resolve the captured page identity and defer popup/structural actions. Payloads
 are copied/read-only; owned, synthetic and cloned forms reject as for other AUI
 notifications. Physical right-click delivery remains platform-dependent.
+
+## Programmatic selection and native child focus
+
+SetSelection and ChangeSelection guard their selection transaction against native
+CHILD_FOCUS reentry. On Cocoa, hiding the outgoing editor can focus a sibling
+before the requested page is shown; that incidental focus must not replace the
+requested selection. Normal focus routing resumes after the transaction.
+Public changing/changed notifications, selection veto and existing callback,
+operation and lifetime guards are retained. No new ABI entry point is added.

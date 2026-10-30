@@ -61,6 +61,18 @@ class DynamicAuiNotebook : public wxAuiNotebook {
 public:
     int first_tab_id=0;
     bool themed_colours=false; wxColour theme_base,theme_active;
+    int selection_depth=0;
+    struct SelectionScope {
+        DynamicAuiNotebook& book;
+        explicit SelectionScope(DynamicAuiNotebook& value):book(value) { ++book.selection_depth; }
+        ~SelectionScope() { --book.selection_depth; }
+    };
+    int SetSelection(size_t index) override {
+        SelectionScope scope(*this); return wxAuiNotebook::SetSelection(index);
+    }
+    int ChangeSelection(size_t index) override {
+        SelectionScope scope(*this); return wxAuiNotebook::ChangeSelection(index);
+    }
     bool Create(wxWindow* parent,wxWindowID id,const wxPoint& position=wxDefaultPosition,
                 const wxSize& size=wxDefaultSize,long style=wxAUI_NB_DEFAULT_STYLE) {
         const bool result=wxAuiNotebook::Create(parent,id,position,size,style);
@@ -175,6 +187,10 @@ public:
         if (MoveToGroup(page,target,slot)) NotifyMoved(page,previous);
     }
     bool ProcessEvent(wxEvent& event) override {
+        // Cocoa can focus an intermediate sibling as DoShowHide hides the
+        // old editor. Its CHILD_FOCUS must not recursively replace the requested
+        // selection while the original selection transaction is still running.
+        if (selection_depth && event.GetEventType()==wxEVT_CHILD_FOCUS) return true;
         // Internal tab-button/drag events are not public bindings, but their
         // complete native handler span must protect pages after callbacks return.
         if (!dynamic_cast<wxAuiNotebookEvent*>(&event)) return wxAuiNotebook::ProcessEvent(event);

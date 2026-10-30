@@ -3831,3 +3831,14 @@ existing page records and reselect by global identity. No TAB_SPLIT/external mov
 flags, private ID allocation or parent changes are added. Group queries return
 copied canonical pages; the public group move uses the same checked implementation.
 Independent review found no actionable move/index/lifetime or bulk-close safety issue. macOS verification passed: native build, full native invariant harness (deterministic same-group/cross-group/body drops, empty-group retirement, invalid slots and zero wx assertions), AUI Lisp example/API checks, full KryptonEdit UI suite, pinned coverage inventory (14 checks), and docset export/discovery/symbol/guide/example checks. Native tests inject coordinates only in the test executable, without moving the system pointer. OS physical pointer delivery and Windows/Linux builds remain unverified. ABI72 is required for the two new native query/move entry points.
+
+## Keyboard navigation selection focus fix
+
+KryptonEdit tab/group cycling exposed a Cocoa reentry: hiding focused page A
+while selecting C can focus B and recursively replace m_curPage. Dynamic AUI
+SetSelection/ChangeSelection now scope selection depth and consume CHILD_FOCUS
+only during that transaction. Public AUI notify/veto and lifetime guards remain.
+The application separately ignores incidental focus activation during its own
+page synchronization. Native and application regressions cover reverse cycling,
+reordered groups, independent cursors and retained selected views.
+Independent review found no actionable issue in native selection scoping or application navigation/masks. macOS verification passed: native rebuild, complete native invariant harness including focused outgoing-page selection and injected CHILD_FOCUS reentry (zero wx assertions), 49 focused application navigation checks and complete application UI suite, pinned coverage inventory (14 checks), and docset build/check with export/discovery/lookup and guide/example coverage. Windows/Linux and physical shortcut input remain unverified. No new ABI entry point/version change.
