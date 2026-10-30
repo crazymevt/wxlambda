@@ -71,6 +71,8 @@
 (cffi:defcfun ("wxl_set_title" %set-title) :int (frame :uint64) (value :pointer) (length :size))
 (cffi:defcfun ("wxl_show" %show) :int (window :uint64))
 (cffi:defcfun ("wxl_show_state" %show-state) :int (window :uint64) (show :int))
+(cffi:defcfun ("wxl_frame_maximized" %frame-maximized) :int (frame :uint64))
+(cffi:defcfun ("wxl_set_frame_maximized" %set-frame-maximized) :int (frame :uint64) (maximized :int))
 (cffi:defcfun ("wxl_shown" %shown) :int (window :uint64))
 (cffi:defcfun ("wxl_enable" %enable) :int (window :uint64) (enable :int))
 (cffi:defcfun ("wxl_enabled" %enabled) :int (window :uint64))
@@ -98,7 +100,7 @@
           (if (probe-file local)
               (cffi:load-foreign-library local)
               (cffi:use-foreign-library wxlambda-native))))
-    (unless (= 72 (%abi-version)) (error "Unsupported wxlambda native ABI"))
+    (unless (= 73 (%abi-version)) (error "Unsupported wxlambda native ABI"))
     (setf *native-loaded* t))
   t)
 

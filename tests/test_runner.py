@@ -96,6 +96,24 @@ class EvidenceTests(unittest.TestCase):
         self.assertEqual((code, status), (127, "failed"))
         self.assertIn(b"Cannot launch Lisp", output)
 
+    def test_unavailable_webview_is_explicit_in_manifest_and_report(self):
+        with patch.dict(os.environ, {"WXLAMBDA_TEST_WEBVIEW": "unavailable"}):
+            cases = list(runner.scenarios())
+            case = next(row for row in cases if row[1] == "webview.lisp")
+            self.assertEqual(case[0], "webview-unavailable")
+            self.assertEqual(case[2], {"WXLAMBDA_WEBVIEW_TEST_MODE": "unavailable"})
+            with tempfile.TemporaryDirectory() as temporary:
+                result = self.run_fake(temporary)
+                self.assertEqual(result.returncode, 0, result.stdout)
+                summary = json.loads((Path(temporary) / "report/summary.json").read_text())
+                self.assertEqual(summary["webview_test_mode"], "unavailable")
+                self.assertIn("webview-unavailable", [row["name"] for row in summary["results"]])
+
+    def test_invalid_webview_policy_is_rejected(self):
+        with patch.dict(os.environ, {"WXLAMBDA_TEST_WEBVIEW": "pretend-supported"}):
+            with self.assertRaisesRegex(ValueError, "supported or unavailable"):
+                list(runner.scenarios())
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -19,13 +19,13 @@ and verify platforms when selected features or completeness claims require it.
 | Category | Headers | Tasks | Implemented | Partial | Pending | Context |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | [C1: Foundation, values, application, events, and base utilities](phase-c1.md) | 119 | 5292 | 7 | 144 | 5141 | 26 |
-| [C2: Windows, layout, basic controls, and input](phase-c2.md) | 82 | 2862 | 28 | 258 | 2576 | 0 |
+| [C2: Windows, layout, basic controls, and input](phase-c2.md) | 82 | 2862 | 28 | 260 | 2574 | 0 |
 | [C3: Dialogs, navigation, menus, and application services](phase-c3.md) | 57 | 1875 | 0 | 135 | 1740 | 0 |
 | [C4: Models, complex controls, and document frameworks](phase-c4.md) | 20 | 2328 | 0 | 123 | 2205 | 4 |
 | [C5: Drawing, images, graphics, and printing](phase-c5.md) | 52 | 2245 | 0 | 48 | 2197 | 0 |
 | [C6: Optional libraries, rich content, and integration](phase-c6.md) | 57 | 8912 | 0 | 206 | 8706 | 380 |
 | [C7: Platform extensions and remaining portability APIs](phase-c7.md) | 11 | 279 | 0 | 0 | 279 | 3 |
-| Total | 398 | 23793 | 35 | 914 | 22844 | 413 |
+| Total | 398 | 23793 | 35 | 916 | 22842 | 413 |
 
 ## Classes and widgets
 
@@ -237,7 +237,7 @@ unreviewed inherited/platform behavior.
 | [wx/timectrl.h](phase-c2.md#wxtimectrlh) | 0 | 7 | 4 | 0 |
 | [wx/tipwin.h](phase-c2.md#wxtipwinh) | 0 | 0 | 4 | 0 |
 | [wx/tooltip.h](phase-c2.md#wxtooltiph) | 0 | 0 | 10 | 0 |
-| [wx/toplevel.h](phase-c2.md#wxtoplevelh) | 0 | 3 | 65 | 0 |
+| [wx/toplevel.h](phase-c2.md#wxtoplevelh) | 0 | 5 | 63 | 0 |
 | [wx/valgen.h](phase-c2.md#wxvalgenh) | 0 | 0 | 14 | 0 |
 | [wx/validate.h](phase-c2.md#wxvalidateh) | 0 | 0 | 12 | 0 |
 | [wx/valnum.h](phase-c2.md#wxvalnumh) | 0 | 0 | 27 | 0 |

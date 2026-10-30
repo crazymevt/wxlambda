@@ -20,7 +20,7 @@
     "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/live.lisp --eval '(wxlambda-live:start)'"
   },
   "window-state.lisp": {
-    "description": "Toggle text visibility and input using actual button callbacks. The reusable exercise runs the same callbacks without waiting for manual input.",
+    "description": "Toggle text visibility and input using actual button callbacks. The reusable exercise runs the same callbacks without waiting for manual input. Includes a native frame maximize/restore button (not full screen).",
     "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/window-state.lisp --eval '(wxlambda-window-state:start)'"
   },
   "window-metadata.lisp": {
@@ -228,7 +228,7 @@
     "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/grid.lisp --eval '(wxlambda-grid:start)'"
   },
   "webview.lisp": {
-    "description": "Interactive trusted-development HTML/JavaScript WebView with asynchronous script tickets and JSON message bridge; no external network required by deterministic exercise. Known native popup/dialog/upload paths are suppressed; this is not a general security sandbox.",
+    "description": "Interactive trusted-development HTML/JavaScript WebView with asynchronous script tickets and JSON message bridge; no external network required by deterministic exercise. Linux GTK3 support is experimental/opt-in; Windows is not yet implemented (see WEB-VIEW-PORTABILITY.md). Known native popup/dialog/upload paths are suppressed; this is not a general security sandbox.",
     "command": "sbcl --load ~/quicklisp/setup.lisp --load examples/webview.lisp --eval '(wxlambda-webview:start)'"
   },
   "input-events.lisp": {

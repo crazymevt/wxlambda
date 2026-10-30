@@ -8,15 +8,106 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   PYTHONUTF8: '1'
   WXLAMBDA_TEST_REPORT: test-results
 
 jobs:
+  checks:
+    name: Documentation, reporting and portability unit checks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      WXLAMBDA_DOCSET_SOURCE: ${{ github.workspace }}/vendor/docset
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          repository: crazymevt/docset
+          ref: 481f57e7222925c3157e41a7e3deaeb628ecc9a7
+          path: vendor/docset
+      - name: Install documentation runtime
+        run: sudo apt-get update && sudo apt-get install -y sbcl
+      - name: Python unit checks
+        run: python3 -m unittest discover -s tests -p 'test_*.py'
+      - name: Check committed docset and public-export coverage
+        run: python3 tools/docset.py check
+      - name: Sanitized asynchronous lifetime checks (no GUI)
+        run: |
+          c++ -std=c++11 -Wall -Wextra -Werror -fsanitize=address,undefined tests/async-owner-native.cpp -o /tmp/wxlambda-async-owner
+          /tmp/wxlambda-async-owner
+  experimental-linux-webview:
+    name: Experimental WebView / pinned wx3.2.12 / Linux GTK3
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Check out pinned wxWidgets
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          repository: wxWidgets/wxWidgets
+          ref: 3b7c7fc839093ad28146bd17555af2565c792c96 # v3.2.12
+          path: vendor/wxWidgets
+          submodules: recursive
+      - name: Install GTK3 and matching WebKitGTK ABI
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake g++ make sbcl pkg-config libgtk-3-dev libwebkit2gtk-4.1-dev xvfb xauth
+      - name: Build pinned wxWidgets against WebKitGTK 4.1
+        run: |
+          mkdir -p vendor/wx-build
+          cd vendor/wx-build
+          ../wxWidgets/configure --prefix="$RUNNER_TEMP/wx" --with-gtk=3 --enable-webview --enable-webviewwebkit2
+          make -j2
+          make install
+      - name: Fetch pinned Lisp dependencies
+        run: python3 ci/fetch-deps.py
+      - name: Build experimental bridge and native regressions
+        run: |
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
+            -DwxWidgets_CONFIG_EXECUTABLE="$RUNNER_TEMP/wx/bin/wx-config" \
+            -DWXLAMBDA_EXPERIMENTAL_GTK_WEBVIEW=ON \
+            -DWXLAMBDA_WEBKITGTK_PACKAGE=webkit2gtk-4.1 \
+            -DWXLAMBDA_BUILD_PORTABILITY_TESTS=ON \
+            -DWXLAMBDA_BUILD_NATIVE_TESTS=ON
+          cmake --build build --parallel 2
+      - name: Offline WebView example and Lisp lifetime regressions
+        run: |
+          mkdir -p test-results
+          export LD_LIBRARY_PATH="$RUNNER_TEMP/wx/lib:${LD_LIBRARY_PATH:-}"
+          set -o pipefail
+          xvfb-run -a timeout 60s sbcl --noinform --no-sysinit --no-userinit --non-interactive \
+            --load ci/setup.lisp --load tests/webview.lisp 2>&1 | tee test-results/webview.log
+      - name: Native invariant regressions
+        run: |
+          export LD_LIBRARY_PATH="$RUNNER_TEMP/wx/lib:${LD_LIBRARY_PATH:-}"
+          set -o pipefail
+          xvfb-run -a timeout 120s build/wxlambda-client-data-native 2>&1 | tee test-results/native.log
+          ctest --test-dir build --output-on-failure
+      - name: Preserve experimental platform evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: experimental-linux-webview
+          path: |
+            test-results/
+            build/CMakeFiles/*.log
+            build/CMakeFiles/*.yaml
+            build/Testing/Temporary/*.log
+            vendor/wx-build/config.log
+          if-no-files-found: warn
+          retention-days: 30
   gui:
     name: GUI tests / ${{ matrix.os }} / SBCL
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 20
+    timeout-minutes: 45
     strategy:
       fail-fast: false
       matrix:
@@ -30,10 +121,26 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install -y cmake g++ sbcl libwxgtk3.2-dev xvfb xauth
+          sudo apt-get install -y cmake g++ sbcl libwxgtk3.2-dev libwxgtk-webview3.2-dev xvfb xauth
       - name: Install macOS tools
         if: runner.os == 'macOS'
-        run: brew install cmake sbcl wxwidgets@3.2
+        run: brew install cmake sbcl
+      - name: Check out pinned wxWidgets for macOS
+        if: runner.os == 'macOS'
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          repository: wxWidgets/wxWidgets
+          ref: 3b7c7fc839093ad28146bd17555af2565c792c96 # v3.2.12
+          path: vendor/wxWidgets
+          submodules: recursive
+      - name: Build pinned macOS wxWidgets
+        if: runner.os == 'macOS'
+        run: |
+          mkdir -p vendor/wx-build
+          cd vendor/wx-build
+          ../wxWidgets/configure --prefix="$RUNNER_TEMP/wx" --with-osx_cocoa --enable-webview
+          make -j3
+          make install
       - name: Fetch pinned Lisp dependencies
         run: python3 ci/fetch-deps.py
       - name: Check test reporting
@@ -42,7 +149,7 @@ jobs:
         run: |
           if [[ "$RUNNER_OS" == macOS ]]; then
             cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
-              -DwxWidgets_CONFIG_EXECUTABLE="$(brew --prefix wxwidgets@3.2)/bin/wx-config-3.2"
+              -DwxWidgets_CONFIG_EXECUTABLE="$RUNNER_TEMP/wx/bin/wx-config"
           else
             cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
           fi
@@ -50,12 +157,16 @@ jobs:
         run: cmake --build build --parallel 2
       - name: Test under Xvfb
         if: runner.os == 'Linux'
+        env:
+          WXLAMBDA_TEST_WEBVIEW: unavailable
         run: >-
           xvfb-run -a python3 tests/run.py
           sbcl --noinform --no-sysinit --no-userinit --non-interactive
           --load ci/setup.lisp
       - name: Test on macOS
         if: runner.os == 'macOS'
+        env:
+          DYLD_LIBRARY_PATH: ${{ runner.temp }}/wx/lib
         run: >-
           python3 tests/run.py
           sbcl --noinform --no-sysinit --no-userinit --non-interactive
@@ -66,7 +177,11 @@ jobs:
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: gui-${{ matrix.os }}-sbcl
-          path: test-results/
+          path: |
+            test-results/
+            build/CMakeFiles/*.log
+            build/CMakeFiles/*.yaml
+            vendor/wx-build/config.log
           if-no-files-found: warn
           retention-days: 30
 
@@ -74,6 +189,9 @@ jobs:
     name: GUI tests / Windows x64 / MSVC / SBCL
     runs-on: windows-2022
     timeout-minutes: 45
+    env:
+      WXLAMBDA_DOCSET_SOURCE: ${{ github.workspace }}/vendor/docset
+      WXLAMBDA_TEST_WEBVIEW: unavailable
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - name: Check out wxWidgets 3.2.12
@@ -83,6 +201,12 @@ jobs:
           ref: 3b7c7fc839093ad28146bd17555af2565c792c96 # v3.2.12
           path: vendor/wxWidgets
           submodules: recursive
+      - name: Stage shared docset library for Python documentation tests
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          repository: crazymevt/docset
+          ref: 481f57e7222925c3157e41a7e3deaeb628ecc9a7
+          path: vendor/docset
       - name: Set up MSVC x64
         uses: ilammy/msvc-dev-cmd@0b201ec74fa43914dc39ae48a89fd1d8cb592756 # v1
         with:
@@ -90,10 +214,23 @@ jobs:
       - name: Stage pinned SBCL x64
         shell: pwsh
         run: ./ci/install-sbcl.ps1 -Destination "$env:RUNNER_TEMP/wxlambda-sbcl"
+      - name: Stage pinned WebView2 SDK and Edge lifetime prerequisite
+        shell: pwsh
+        run: |
+          python ci/stage-webview2.py vendor/wxWidgets/3rdparty/webview2
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python ci/patch-wx-edge.py vendor/wxWidgets
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python -c "from pathlib import Path; p=Path('vendor/wxWidgets/include/wx/msw/setup.h'); s=p.read_text(); old='#define wxUSE_WEBVIEW_EDGE 0'; assert s.count(old)==1; p.write_text(s.replace(old,'#define wxUSE_WEBVIEW_EDGE 1'))"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Fetch pinned Lisp dependencies
         run: python ci/fetch-deps.py
-      - name: Check test reporting
-        run: python -m unittest discover -s tests -p test_runner.py
+      - name: Check reporting and portability patch tools
+        shell: pwsh
+        run: |
+          $env:WXLAMBDA_WX_EDGE_SOURCE = "$env:GITHUB_WORKSPACE/vendor/wxWidgets"
+          python -m unittest discover -s tests -p 'test_*.py'
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Build wxWidgets release DLLs
         shell: cmd
         working-directory: vendor/wxWidgets/build/msw
@@ -105,13 +242,17 @@ jobs:
           -DwxWidgets_LIB_DIR="${{ github.workspace }}/vendor/wxWidgets/lib/vc_x64_dll"
           -DwxWidgets_CONFIGURATION=mswu
           -DwxWidgets_USE_REL_AND_DBG=OFF
+          -DWXLAMBDA_VERIFY_EDGE_COMPLETION_PATCH=ON
+          -DWXLAMBDA_BUILD_PORTABILITY_TESTS=ON
           -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE="${{ github.workspace }}/build"
       - name: Build bridge
         run: cmake --build build --config Release --parallel 2
+      - name: Check GUI-independent owner retirement
+        run: ctest --test-dir build -C Release --output-on-failure
       - name: Test Lisp loading and GUI lifecycle
         shell: pwsh
         run: |
-          $env:PATH = "$env:GITHUB_WORKSPACE/vendor/wxWidgets/lib/vc_x64_dll;$env:PATH"
+          $env:PATH = "$env:GITHUB_WORKSPACE/vendor/wxWidgets/lib/vc_x64_dll;$env:GITHUB_WORKSPACE/vendor/wxWidgets/3rdparty/webview2/build/native/x64;$env:PATH"
           if (-not (Test-Path build/wxlambda.dll)) { throw 'Bridge DLL missing from build/' }
           python tests/run.py sbcl --noinform --no-sysinit --no-userinit --non-interactive --load ci/setup.lisp
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
@@ -122,6 +263,9 @@ jobs:
           name: gui-windows-2022-sbcl
           path: |
             test-results/
+            build/CMakeFiles/*.log
+            build/CMakeFiles/*.yaml
+            build/Testing/Temporary/*.log
             ${{ runner.temp }}/wxlambda-sbcl/install.log
           if-no-files-found: warn
           retention-days: 30

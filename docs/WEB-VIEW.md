@@ -2,10 +2,44 @@
 
 ABI56 adds `web-view`, a native-backed WINDOW container owning a private
 wxWebView browser. The initial backend is explicitly gated to macOS,
-wxWidgets3.2.12 and WKWebView. Other ports/versions reject construction until
-their asynchronous lifetime and native UI paths are audited. Building requires
+wxWidgets3.2.12 and WKWebView. Except for the explicit experimental Linux opt-in
+below, other ports/versions reject construction until their asynchronous lifetime
+and native UI paths are audited and tested. Building requires
 the wxWidgets `webview` component; macOS also compiles an Objective-C++ adapter
 and links the system WebKit framework. JavaScript is enabled.
+
+### Cross-platform extension status
+
+Linux GTK3 has an **experimental, opt-in** WebKitGTK adapter, not yet verified
+on a Linux host. Windows construction remains unavailable: adding Windows is
+not complete. See [the backend audit](WEB-VIEW-PORTABILITY.md) for the concrete
+Windows lifetime prerequisite patch and the remaining acceptance gates.
+
+Linux requires wxWidgets **3.2.12**, built with GTK3/WebKit2, WebKitGTK >=2.22
+and GLib >=2.66. The adapter must link the **same WebKitGTK ABI** as wxWidgets;
+4.0 and 4.1 must not be mixed in one process. Configure, for example, when wx
+was built against 4.1:
+
+```sh
+cmake -S . -B build -DWXLAMBDA_EXPERIMENTAL_GTK_WEBVIEW=ON \
+  -DWXLAMBDA_WEBKITGTK_PACKAGE=webkit2gtk-4.1
+cmake --build build
+sbcl --load ~/quicklisp/setup.lisp --load tests/webview.lisp
+```
+
+Configuration runs a disposable linked-process ABI probe and refuses cross
+compilation. Mixed libsoup dependencies can abort at load time, so the later
+in-process ABI check is only defense in depth. Do not combine a packaged bridge
+with a different wx/WebKit ABI from the one used to build and probe it.
+
+The Lisp and JavaScript interfaces below are unchanged on Linux, including
+`window.webkit.messageHandlers.wxlambda.postMessage`. The adapter calls native
+WebKitGTK asynchronous evaluation directly; it does not use wx's raw-owner
+`RunScriptAsync`. Completion data contains numeric owner/ticket IDs only.
+It suppresses script dialogs, file choosers, popups, fullscreen and printing,
+denies permission/authentication requests and cancels view-owned downloads.
+These paths and immediate/pending teardown still require Linux runtime tests.
+This is not a security sandbox; do not use the opt-in for untrusted browsing.
 
 ```lisp
 (defparameter preview (wxlambda:make-web-view parent))

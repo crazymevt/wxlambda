@@ -47,7 +47,7 @@
            #:ui-action #:ui-action-p #:defer-ui-action #:cancel-ui-action #:ui-action-pending-p
            #:run #:stop #:make-frame #:make-panel #:make-button #:make-text
            #:make-column #:make-row #:add-child #:add-spacer #:add-stretch
-           #:window-name #:frame-title #:frame-accelerators
+           #:maximized-p #:window-name #:frame-title #:frame-accelerators
            #:layout-window #:window-position #:window-size #:show-window #:shown-p #:enable-window #:enabled-p #:destroy-window
            #:text #:on-click #:off-click #:queue-click #:native-error
            #:on-text-change #:off-text-change

@@ -859,3 +859,12 @@ bitmap artwork and the existing toggle event/state protocol.
 
 ABI63 adds `:border :none` for flat bitmap toggles and `window-colours` for
 reading native container colours without forcing an application theme.
+
+Frame maximization (ABI73): `(wxlambda:maximized-p frame)` reads native state;
+`(setf (wxlambda:maximized-p frame) t)` requests maximize, NIL restores.
+This is not full screen; window-manager policy and asynchronous updates apply.
+Writes reject callbacks; use owner-bound `defer-ui-action`.
+See `examples/window-state.lisp` for an interactive deferred toggle.
+
+The [CI guide](docs/CI.md) describes pinned platform jobs, retained evidence and
+the distinction between real WebView execution and expected-unavailable checks.

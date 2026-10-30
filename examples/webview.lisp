@@ -3,6 +3,10 @@
 (asdf:load-system "wxlambda")
 (defpackage #:wxlambda-webview (:use #:cl) (:export #:start #:exercise))
 (in-package #:wxlambda-webview)
+;; Same page protocol on WKWebView and opt-in experimental Linux WebKitGTK.
+;; See docs/WEB-VIEW.md for the pinned Linux build; Windows is not enabled yet.
+;; Windows SDK/creation-patch prerequisites are in docs/WEB-VIEW-PORTABILITY.md;
+;; applying them alone does not make this example runnable on Windows.
 (defparameter *page*
   "<!doctype html><meta charset='utf-8'><title>Development λ</title>
 <style>body{font:18px system-ui;background:#172033;color:#e4edf8;padding:24px}button{padding:12px}</style>
@@ -19,7 +23,7 @@
              (setf timer (wxlambda:start-ui-timer
                (lambda ()
                  (cond ((funcall predicate) (wxlambda:stop))
-                       ((> (get-internal-real-time) deadline) (error "Timed out waiting for WebKit")))) 10))
+                       ((> (get-internal-real-time) deadline) (error "Timed out waiting for WebView")))) 10))
              (wxlambda:run))
         (when timer (wxlambda:cancel-ui-timer timer)))))
   (assert (funcall predicate)))

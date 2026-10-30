@@ -1807,6 +1807,28 @@ void exercise_search_controls() {
 
 #include "grid-extra-native.inc"
 
+void exercise_frame_maximization() {
+    const auto id=wxl_frame("Maximize guards",320,240);
+    const auto panel=wxl_panel(id);
+    expect(id && panel && wxl_frame_maximized(id)>=0,"Frame maximization getter");
+    expect(wxl_frame_maximized(panel)==-1 && wxl_set_frame_maximized(panel,0)==-1,"Maximization requires native frame type");
+    expect(wxl_set_frame_maximized(id,0)==0,"Quiescent restore request");
+    {
+        InputOperation operation(window(id));
+        expect(wxl_set_frame_maximized(id,0)==-1,"Recursive native maximize rejects");
+        expect(wxl_destroy(id)==-1,"Maximization operation protects native frame lifetime");
+    }
+    ++callback_depth;
+    const int rejected=wxl_set_frame_maximized(id,0), readable=wxl_frame_maximized(id);
+    --callback_depth;
+    expect(rejected==-1 && readable>=0,"Maximize write defers but callback reads remain supported");
+    int foreign=0;
+    std::thread worker([&] { foreign=wxl_frame_maximized(id); }); worker.join();
+    expect(foreign==-1,"Maximization rejects foreign threads");
+    delete window(id);
+    expect(wxl_frame_maximized(id)==-1 && wxl_set_frame_maximized(id,0)==-1,"Maximization rejects stale frame identity");
+}
+
 int main() {
     std::thread([] { std::this_thread::sleep_for(std::chrono::seconds(10)); std::_Exit(124); }).detach();
     auto old_assert_handler = wxSetAssertHandler(capture_assert);
@@ -1816,6 +1838,7 @@ int main() {
         wxIdleEvent::SetMode(wxIDLE_PROCESS_ALL);
         expect(wxl_start(ignore_event, ignore_ui_action) == 0, "Application startup failed");
         active = true;
+        exercise_frame_maximization();
         exercise_client_data(foreign_destroyed);
         exercise_binding_data();
         exercise_idle();

@@ -31,7 +31,10 @@ def scenarios():
     yield "aui-notebook", "aui-notebook.lisp", {}
     yield "grid", "grid.lisp", {}
     yield "grid-extra", "grid-extra.lisp", {}
-    yield "webview", "webview.lisp", {}
+    web_mode = os.environ.get("WXLAMBDA_TEST_WEBVIEW", "supported")
+    if web_mode not in ("supported", "unavailable"):
+        raise ValueError("WXLAMBDA_TEST_WEBVIEW must be supported or unavailable")
+    yield ("webview" if web_mode == "supported" else "webview-unavailable"), "webview.lisp", {"WXLAMBDA_WEBVIEW_TEST_MODE": web_mode}
     yield "activity-indicator", "activity-indicator.lisp", {}
     yield "drawing-canvas", "drawing-canvas.lisp", {}
     yield "record-manager", "record-manager.lisp", {}
@@ -125,6 +128,7 @@ def main():
     except (OSError, subprocess.CalledProcessError):
         commit, dirty = None, None
     evidence = {"schema_version": 1, "started_utc": datetime.now(timezone.utc).isoformat(),
+                "webview_test_mode": os.environ.get("WXLAMBDA_TEST_WEBVIEW", "supported"),
                 "platform": platform.platform(), "command": command,
                 "commit": commit, "working_tree_dirty": dirty,
                 "expected_gui_scenarios": len(cases) - 1,

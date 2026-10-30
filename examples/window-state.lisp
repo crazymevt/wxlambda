@@ -14,15 +14,20 @@
          (panel (wxlambda:make-panel frame))
          (text (wxlambda:make-text panel :value "Hide/show and disable/enable me"))
          (visibility (wxlambda:make-button panel :label "Toggle text visibility"))
-         (input (wxlambda:make-button panel :label "Toggle text input")))
+         (input (wxlambda:make-button panel :label "Toggle text input"))
+         (maximize (wxlambda:make-button panel :label "Maximize / restore")))
     (wxlambda:make-column panel)
-    (dolist (child (list text visibility input)) (wxlambda:add-child panel child))
+    (dolist (child (list text visibility input maximize)) (wxlambda:add-child panel child))
     (wxlambda:on-click visibility
       (lambda ()
         (wxlambda:show-window text (not (wxlambda:shown-p text)))
         (wxlambda:layout-window panel)))
     (wxlambda:on-click input
       (lambda () (wxlambda:enable-window text (not (wxlambda:enabled-p text)))))
+    (wxlambda:on-click maximize
+      (lambda () (wxlambda:defer-ui-action
+        (lambda () (setf (wxlambda:maximized-p frame) (not (wxlambda:maximized-p frame))))
+        :owner frame)))
     (wxlambda:show-window frame)
     (values frame panel text visibility input)))
 
@@ -30,6 +35,10 @@
   "Run the example's actual callbacks, then release handlers and close it."
   (multiple-value-bind (frame panel text visibility input) (open-window)
     (declare (ignore panel))
+    (assert (member (wxlambda:maximized-p frame) '(t nil)))
+    (assert (null (setf (wxlambda:maximized-p frame) nil)))
+    (wxlambda:process-events)
+    (assert (not (wxlambda:maximized-p frame)))
     (assert (wxlambda:shown-p text))
     (assert (wxlambda:enabled-p text))
     (wxlambda:queue-click visibility)

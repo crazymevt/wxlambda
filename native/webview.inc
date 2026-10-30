@@ -19,7 +19,8 @@ public:
         requests.clear();
     }
     bool Create(wxWindow* parent) {
-#if defined(__WXOSX__) && wxMAJOR_VERSION==3 && wxMINOR_VERSION==2 && wxRELEASE_NUMBER==12
+#if (defined(__WXOSX__) || (defined(__WXGTK3__) && defined(WXLAMBDA_EXPERIMENTAL_GTK_WEBVIEW))) && wxMAJOR_VERSION==3 && wxMINOR_VERSION==2 && wxRELEASE_NUMBER==12
+        require(wxl_web_backend_compatible()==1,"Incompatible WebKitGTK ABIs loaded; rebuild wxWidgets and bridge against the same WebKitGTK package");
         if (!wxPanel::Create(parent,wxID_ANY)) return false;
         require(wxWebView::IsBackendAvailable(wxWebViewBackendWebKit),"WKWebView backend is unavailable");
         browser=wxWebView::New(this,wxID_ANY,"about:blank",wxDefaultPosition,wxDefaultSize,wxWebViewBackendWebKit);
@@ -29,12 +30,12 @@ public:
         return true;
 #else
         (void)parent;
-        throw std::runtime_error("Interactive WebView currently requires verified macOS wxWidgets3.2.12 WKWebView");
+        throw std::runtime_error("Interactive WebView requires wxWidgets3.2.12 and macOS WKWebView or opt-in experimental Linux GTK3 WebKitGTK; Windows is not yet lifetime-safe");
 #endif
     }
     void initialise(wxl_handle id) {
         identifier=id;
-        require(wxl_web_cocoa_configure(browser->GetNativeBackend(),id)==1,"Cannot configure guarded WKWebView bridge");
+        require(wxl_web_cocoa_configure(browser->GetNativeBackend(),id)==1,"Cannot configure guarded WebView bridge");
         browser->Bind(wxEVT_WEBVIEW_LOADED,&WebContainer::loaded,this);
         browser->Bind(wxEVT_WEBVIEW_ERROR,&WebContainer::failed,this);
         input_owners.emplace(this,false); web_owners.insert(this);

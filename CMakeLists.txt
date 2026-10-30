@@ -4,6 +4,26 @@ find_package(wxWidgets 3.2 REQUIRED COMPONENTS core base adv webview stc aui)
 include(${wxWidgets_USE_FILE})
 include(CheckCXXSourceCompiles)
 include(CMakePushCheckState)
+option(WXLAMBDA_VERIFY_EDGE_COMPLETION_PATCH "Require the pinned Windows Edge prerequisite patch (does not enable WebView)" OFF)
+if(WXLAMBDA_VERIFY_EDGE_COMPLETION_PATCH)
+  if(NOT WIN32 OR NOT MSVC)
+    message(FATAL_ERROR "The Edge completion prerequisite currently targets Windows/MSVC")
+  endif()
+  cmake_push_check_state(RESET)
+  set(CMAKE_REQUIRED_INCLUDES ${wxWidgets_INCLUDE_DIRS})
+  set(CMAKE_REQUIRED_LIBRARIES ${wxWidgets_LIBRARIES})
+  unset(WXLAMBDA_HAS_EDGE_COMPLETION_PATCH CACHE)
+  check_cxx_source_compiles("#include <wx/msw/webview_edge.h>
+#include <wx/version.h>
+#if !wxUSE_WEBVIEW_EDGE || wxMAJOR_VERSION!=3 || wxMINOR_VERSION!=2 || wxRELEASE_NUMBER!=12
+#error Pinned wx3.2.12 with Edge enabled is required
+#endif
+int main() { return wxWebViewEdge::MSWGetWXLambdaCompletionGuardVersion()!=1; }" WXLAMBDA_HAS_EDGE_COMPLETION_PATCH)
+  cmake_pop_check_state()
+  if(NOT WXLAMBDA_HAS_EDGE_COMPLETION_PATCH)
+    message(FATAL_ERROR "Patched Edge headers/binary not found: apply ci/patch-wx-edge.py and rebuild pinned wxWidgets")
+  endif()
+endif()
 cmake_push_check_state(RESET)
 set(CMAKE_REQUIRED_INCLUDES ${wxWidgets_INCLUDE_DIRS})
 check_cxx_source_compiles("#include <wx/setup.h>
@@ -103,9 +123,61 @@ endif()
 if(NOT WXLAMBDA_HAS_DRAWING_WORKFLOWS)
   message(FATAL_ERROR "wxlambda requires wxUSE_IMAGE/wxUSE_LIBPNG/wxUSE_GRAPHICS_CONTEXT/wxUSE_ACTIVITYINDICATOR/wxUSE_STREAMS/wxUSE_FFILE")
 endif()
+option(WXLAMBDA_EXPERIMENTAL_GTK_WEBVIEW "Enable experimental WebKitGTK WebView (Linux GTK3 only; runtime unverified)" OFF)
+if(WXLAMBDA_EXPERIMENTAL_GTK_WEBVIEW)
+  if(NOT CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    message(FATAL_ERROR "Experimental GTK WebView requires Linux")
+  endif()
+  find_package(PkgConfig REQUIRED)
+  # Match the WebKit ABI used by wxWidgets; never link both 4.0 and 4.1.
+  set(WXLAMBDA_WEBKITGTK_PACKAGE "webkit2gtk-4.0" CACHE STRING "WebKitGTK pkg-config package matching wxWidgets")
+  if(NOT WXLAMBDA_WEBKITGTK_PACKAGE MATCHES "^webkit2gtk-4\\.[01]$")
+    message(FATAL_ERROR "Select webkit2gtk-4.0 or webkit2gtk-4.1 matching wxWidgets")
+  endif()
+  if(WXLAMBDA_WEBKITGTK_PACKAGE STREQUAL "webkit2gtk-4.0")
+    set(WXLAMBDA_EXPECTED_WEBKITGTK_MASK 1)
+  else()
+    set(WXLAMBDA_EXPECTED_WEBKITGTK_MASK 2)
+  endif()
+  pkg_check_modules(WXLAMBDA_WEBKITGTK REQUIRED IMPORTED_TARGET ${WXLAMBDA_WEBKITGTK_PACKAGE}>=2.22 glib-2.0>=2.66)
+  # Mixed libsoup generations can abort at library load, before a runtime guard.
+  # Probe in a disposable configure process, not in the user's Lisp process.
+  if(CMAKE_CROSSCOMPILING)
+    message(FATAL_ERROR "Experimental WebView requires a native ABI probe; cross compilation is not supported")
+  endif()
+  include(CheckCXXSourceRuns)
+  cmake_push_check_state(RESET)
+  set(CMAKE_REQUIRED_INCLUDES ${wxWidgets_INCLUDE_DIRS})
+  set(CMAKE_REQUIRED_LIBRARIES ${wxWidgets_LIBRARIES} PkgConfig::WXLAMBDA_WEBKITGTK ${CMAKE_DL_LIBS})
+  unset(WXLAMBDA_WEBKITGTK_ABI_MATCHES CACHE)
+  check_cxx_source_runs("#include <wx/webview.h>
+#include <webkit2/webkit2.h>
+#include <link.h>
+#include <cstring>
+int main() {
+  wxWebView* (*volatile factory)(const wxString&) = &wxWebView::New;
+  if (!factory || !webkit_get_major_version()) return 1;
+  unsigned seen=0;
+  dl_iterate_phdr([](dl_phdr_info* p, size_t, void* data) {
+    auto& mask=*static_cast<unsigned*>(data);
+    if (std::strstr(p->dlpi_name, \"libwebkit2gtk-4.0.so\")) mask|=1;
+    if (std::strstr(p->dlpi_name, \"libwebkit2gtk-4.1.so\")) mask|=2;
+    return 0;
+  }, &seen);
+  return seen==${WXLAMBDA_EXPECTED_WEBKITGTK_MASK} ? 0 : 1;
+}" WXLAMBDA_WEBKITGTK_ABI_MATCHES)
+  cmake_pop_check_state()
+  if(NOT WXLAMBDA_WEBKITGTK_ABI_MATCHES)
+    message(FATAL_ERROR "WebKitGTK ABI probe failed: wxWidgets and bridge must use the same WebKitGTK ABI; see CMake error log")
+  endif()
+endif()
 if(APPLE)
   enable_language(OBJCXX)
   set(WXLAMBDA_WEBVIEW_SOURCE native/webview-cocoa.mm)
+elseif(WXLAMBDA_EXPERIMENTAL_GTK_WEBVIEW)
+  set(WXLAMBDA_WEBVIEW_SOURCE native/webview-gtk.cpp)
+  add_compile_definitions(WXLAMBDA_EXPERIMENTAL_GTK_WEBVIEW=1)
+  add_compile_definitions(WXLAMBDA_EXPECTED_WEBKITGTK_MASK=${WXLAMBDA_EXPECTED_WEBKITGTK_MASK})
 else()
   set(WXLAMBDA_WEBVIEW_SOURCE native/webview-unavailable.cpp)
 endif()
@@ -113,6 +185,9 @@ add_library(wxlambda SHARED native/wxlambda.cpp ${WXLAMBDA_WEBVIEW_SOURCE})
 target_compile_features(wxlambda PRIVATE cxx_std_17)
 target_compile_definitions(wxlambda PRIVATE WXLAMBDA_BUILD)
 target_link_libraries(wxlambda PRIVATE ${wxWidgets_LIBRARIES})
+if(WXLAMBDA_EXPERIMENTAL_GTK_WEBVIEW)
+  target_link_libraries(wxlambda PRIVATE PkgConfig::WXLAMBDA_WEBKITGTK ${CMAKE_DL_LIBS})
+endif()
 if(APPLE)
   target_link_libraries(wxlambda PRIVATE "-framework WebKit")
 endif()
@@ -121,11 +196,21 @@ install(TARGETS wxlambda LIBRARY DESTINATION lib RUNTIME DESTINATION bin ARCHIVE
 install(FILES native/wxlambda.h native/drawing-canvas-api.h native/activity-indicator-api.h native/grid-api.h native/grid-extra-api.h native/webview-api.h native/stc-api.h native/input-events-api.h native/aui-api.h native/thread-events-api.h native/views-api.h native/images-api.h DESTINATION include)
 
 option(WXLAMBDA_BUILD_NATIVE_TESTS "Build native invariant regressions (GUI session required)" OFF)
+option(WXLAMBDA_BUILD_PORTABILITY_TESTS "Build GUI-independent asynchronous lifetime regression" OFF)
+if(WXLAMBDA_BUILD_PORTABILITY_TESTS)
+  enable_testing()
+  add_executable(wxlambda-async-owner-native tests/async-owner-native.cpp)
+  target_compile_features(wxlambda-async-owner-native PRIVATE cxx_std_11)
+  add_test(NAME asynchronous-owner-retirement COMMAND wxlambda-async-owner-native)
+endif()
 if(WXLAMBDA_BUILD_NATIVE_TESTS)
   add_executable(wxlambda-client-data-native tests/client-data-native.cpp ${WXLAMBDA_WEBVIEW_SOURCE})
   target_compile_features(wxlambda-client-data-native PRIVATE cxx_std_17)
   target_compile_definitions(wxlambda-client-data-native PRIVATE WXLAMBDA_BUILD)
   target_link_libraries(wxlambda-client-data-native PRIVATE ${wxWidgets_LIBRARIES})
+  if(WXLAMBDA_EXPERIMENTAL_GTK_WEBVIEW)
+    target_link_libraries(wxlambda-client-data-native PRIVATE PkgConfig::WXLAMBDA_WEBKITGTK ${CMAKE_DL_LIBS})
+  endif()
   if(APPLE)
     target_link_libraries(wxlambda-client-data-native PRIVATE "-framework WebKit")
   endif()

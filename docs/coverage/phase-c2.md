@@ -17,7 +17,7 @@ class or constructor does not imply full upstream coverage.
 
 ## Current coverage and remaining work
 
-28 implemented; 258 partial; 2576 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
+28 implemented; 260 partial; 2574 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
 
 Counts describe inventory entries, not distinct APIs or percent completion.
 See the [coverage summary](README.md) for phase/header comparisons.
@@ -2684,7 +2684,7 @@ See the [coverage summary](README.md) for phase/header comparisons.
 
 [Upstream source](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h)
 
-0 implemented; 3 partial; 65 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
+0 implemented; 5 partial; 63 pending; 0 context entries. Native gaps stay visible; feature priority is separate.
 
 - [ ] [L11](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L11) `enum {`
 - [ ] [L13](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L13) `wxUSER_ATTENTION_INFO = 1, wxUSER_ATTENTION_ERROR = 2 }`
@@ -2720,10 +2720,10 @@ See the [coverage summary](README.md) for phase/header comparisons.
 - [ ] [L264](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L264) `virtual bool IsAlwaysMaximized() const;`
 - [ ] [L271](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L271) `virtual bool IsFullScreen() const;`
 - [ ] [L276](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L276) `virtual bool IsIconized() const;`
-- [ ] [L281](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L281) `virtual bool IsMaximized() const;`
+- [~] [L281](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L281) `virtual bool IsMaximized() const;` — **Partial**: `maximized-p`; ABI: `wxl_frame_maximized`. Managed frames only; other top-level families unbound. Native window-manager policy applies.
 - [ ] [L292](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L292) `bool IsUsingNativeDecorations() const;`
 - [ ] [L310](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L310) `virtual bool Layout();`
-- [ ] [L323](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L323) `virtual void Maximize(bool maximize = true);`
+- [~] [L323](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L323) `virtual void Maximize(bool maximize = true);` — **Partial**: `maximized-p`; ABI: `wxl_set_frame_maximized`. Managed frames only; other top-level families unbound. Native window-manager policy applies. Writes reject callbacks and same-frame native reentry; defer actions. Input operation scope protects synchronous native-event lifetimes.
 - [ ] [L350](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L350) `wxMenu *MSWGetSystemMenu() const;`
 - [ ] [L369](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L369) `virtual void RequestUserAttention(int flags = wxUSER_ATTENTION_INFO);`
 - [ ] [L381](https://github.com/wxWidgets/wxWidgets/blob/v3.2.12/interface/wx/toplevel.h#L381) `void Restore();`

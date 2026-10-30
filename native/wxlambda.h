@@ -382,6 +382,9 @@ WXL_API int wxl_set_name(wxl_handle window, const char *value, size_t length);
 WXL_API const char *wxl_title(wxl_handle frame, size_t *length);
 WXL_API int wxl_set_title(wxl_handle frame, const char *value, size_t length);
 WXL_API int wxl_show(wxl_handle window);
+/* Maximization getter: 0/1 or -1 on error. Setter: 0 success, -1 error. */
+WXL_API int wxl_frame_maximized(wxl_handle frame);
+WXL_API int wxl_set_frame_maximized(wxl_handle frame, int maximized);
 /* Boolean operations return 0/1, or -1 on error. Setters return whether the
    native state changed. wxl_show is retained with its original status contract. */
 WXL_API int wxl_show_state(wxl_handle window, int show);

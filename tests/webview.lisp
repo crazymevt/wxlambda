@@ -12,6 +12,16 @@
   (wxlambda:bind-event view :web-message (lambda (event) (declare (ignore event))))
   (error "Expected WebView rollback"))
 (defclass mixed-web-view (wxlambda:web-view wxlambda:panel) ())
+(if (string= (or (uiop:getenv "WXLAMBDA_WEBVIEW_TEST_MODE") "supported") "unavailable")
+    (progn
+      (wxlambda:with-application ()
+        (let ((frame (wxlambda:make-frame)))
+          (assert (handler-case (progn (wxlambda:make-web-view frame) nil)
+                    (wxlambda:native-error (condition)
+                      (search "Interactive WebView requires" (princ-to-string condition)))))
+          (wxlambda:destroy-window frame)))
+      (format t "PASS: WebView unavailable contract (not backend execution)~%"))
+    (progn
 (wxlambda:with-application ()
   (assert (wxlambda-webview:exercise))
   (let* ((frame (wxlambda:make-frame :width 500 :height 400))
@@ -28,6 +38,10 @@
     (dolist (url '("http://" "http://[" "https://example.test/a b" "%" "relative.html" "javascript:alert(1)"))
       (web-error (lambda () (setf (wxlambda:web-view-url view) url))))
     (web-error (lambda () (wxlambda:set-web-page view "HTML" :base-url "relative.html")))
+    ;; URL validation must agree across the Cocoa and experimental GTK adapters.
+    (dolist (space (list #\Space #\Tab #\Newline (code-char 160)))
+      (web-error (lambda () (setf (wxlambda:web-view-url view)
+        (format nil "https://example.test/a~Ab" space)))))
     (dolist (kind '(:web-message :web-script-result :web-loaded :web-error))
       (web-error (lambda () (wxlambda:make-event :kind kind))))
     (wxlambda:bind-event view :web-script-result (lambda (event) (push event results)))
@@ -71,4 +85,4 @@
       (wxlambda:destroy-window keeper))
     (assert (not late))
     (web-error (lambda () (wxlambda:web-view-title view)))))
-(format t "PASS: interactive WebView real JavaScript JSON messages/results, dialog suppression, callback guards, CLOS rollback and pending teardown~%")
+(format t "PASS: interactive WebView real JavaScript JSON messages/results, dialog suppression, callback guards, CLOS rollback and pending teardown~%")))

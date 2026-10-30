@@ -76,6 +76,7 @@ void scriptResult(uint64_t owner, uint64_t ticket, int success, NSData* data) {
 }
 @end
 
+extern "C" int wxl_web_backend_compatible(void) { return 1; }
 extern "C" int wxl_web_cocoa_configure(void* backend,uint64_t owner) {
     @try {
         id candidate=(id)backend;

@@ -1509,7 +1509,7 @@ bool process_deferred_ui_action() {
 
 }
 extern "C" {
-int wxl_abi_version() { return 72; }
+int wxl_abi_version() { return 73; }
 const char* wxl_last_error() { return error.c_str(); }
 int wxl_clipboard_text_available() {
     return boolean_result([&] {
@@ -3794,6 +3794,18 @@ int wxl_set_title(wxl_handle id, const char* value, size_t length) {
 int wxl_show(wxl_handle id) { return status([&] { auto* object = window(id); require(!protected_views_provider(object),"Virtual list provider cannot show its owner/ancestors"); require(!dynamic_cast<wxDialog*>(object), "Use SHOW-MODAL for dialogs"); object->Show(); }); }
 int wxl_show_state(wxl_handle id, int show) {
     return boolean_result([&] { auto* object = window(id); require(!protected_views_provider(object),"Virtual list provider cannot show its owner/ancestors"); require(!dynamic_cast<wxDialog*>(object), "Use SHOW-MODAL for dialogs"); return object->Show(show != 0); });
+}
+int wxl_frame_maximized(wxl_handle id) {
+    return boolean_result([&] { return as<wxFrame>(id)->IsMaximized(); });
+}
+int wxl_set_frame_maximized(wxl_handle id, int maximized) {
+    return status([&] {
+        auto* frame = as<wxFrame>(id);
+        require(callback_depth == 0, "Defer frame maximization until callbacks return");
+        require(!protected_views_provider(frame), "Virtual list provider cannot maximize its ancestors");
+        InputOperation operation(frame);
+        frame->Maximize(maximized != 0);
+    });
 }
 int wxl_shown(wxl_handle id) {
     return boolean_result([&] { return window(id)->IsShown(); });

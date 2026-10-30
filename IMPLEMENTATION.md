@@ -7,6 +7,79 @@ factual discovery records, not a required sequence or release gate.
 
 ## Session handoff: broad GUI coverage
 
+### Public-repository / CI preparation (2026-10-30)
+
+User explicitly requested committing the complete pending tree and setting up CI
+for a new public GitHub repository. This snapshot includes the pending ABI73
+frame maximization work and the experimental WebView/Windows prerequisite work;
+it is not cross-platform browser acceptance. No existing git remote is replaced.
+GitHub CLI authenticated successfully as crazymevt; proposed wxlambda name was
+not found. Repository creation/push await the owner/name/publication choice.
+No project-wide licence was selected implicitly.
+
+Independent release review found missing maximize callback/reentry/lifetime
+guards, missing Linux WebView development dependency and macOS version drift.
+Resolved with guarded/deferred writes, Lisp/native regressions, the correct
+Linux development package and pinned macOS wx3.2.12 source build. CI now includes
+pure checks, real experimental Linux WebView tests, pinned macOS GUI tests,
+distro Linux and Windows GUI/prerequisite checks. Unavailable browser contracts
+are explicitly named and recorded, never reported as JavaScript execution.
+Workflow triggers on push/PR/manual dispatch, retains failure diagnostics and
+uses read-only permissions/pinned action revisions (verified against GitHub).
+See docs/CI.md. The shared docset dependency is public and pinned.
+
+Verification: complete local macOS GUI runner93/93 passed, actual WebView mode;
+full native invariant suite passed with zero wx assertions;28 Python tests passed
+with real source/SDK integration inputs; CMake rebuild/portability CTest and
+ASan/UBSan registry checks passed; actionlint and diff whitespace checks passed.
+Pinned coverage regenerated (398 headers/24206 entries); docset704 entries,
+zero checker problems, export/link/discovery/symbol/guide/example checks passed.
+A limited private-key/common-token-format scan of2341 historical blobs and the
+working source found no matches; this is not an exhaustive security audit.
+Linux/Windows native CI results are not yet available. The editor REPL remains
+disconnected; local GUI batch checks used approved desktop access.
+
+
+### In-progress WebView portability (2026-10-30)
+
+The user requests Linux and Windows WebView for KryptonEdit. Linux GTK3 private
+WebKitGTK remains experimental/OFF by default (wx3.2.12, same Lisp/JS protocol).
+Configuration uses a disposable linked-process probe to catch mixed WebKitGTK/
+libsoup dependencies; both configure and runtime checks now require the selected
+4.0/4.1 ABI specifically. Linux execution is still unverified; its dedicated CI
+builds pinned wx3.2.12 rather than claiming the Ubuntu distro build is evidence.
+
+Windows bridge construction remains disabled. This follow-up adds
+ci/patch-wx-edge.py: hash-pinned source/header patching, numeric cancellation
+identities for creation/script/user-script completions and native event delegates,
+retirement before teardown, late-controller Close and HRESULT/null checks.
+The non-owning registry is main-thread-only, noncopyable, monotonic and fails
+closed on exhaustion; no wx owner pointer is captured by those async closures.
+ci/stage-webview2.py privately stages checksum-pinned SDK1.0.3179.45 x64 files
+and licence/notices, not the Runtime. Windows CI enables Edge compilation and
+requires a patched header/binary link marker; this is not backend activation.
+Next dependency: native Windows verification of this prerequisite, then guarded
+asynchronous readiness/pre-ready loading and native UI/message/script adapters.
+No nested wait or legacy IE fallback. See docs/WEB-VIEW-PORTABILITY.md.
+
+Verified reporting-test-only commit: 1b95df3. The reporting unit failure is fixed by checking the actual ordered unique
+scenario manifest rather than a hard-coded91. All26 Python tests passed with
+real pinned wx source and NuGet integration inputs (no skips). Patch validation,
+application/reapplication and offline SDK staging/reapplication passed. C++11
+registry tests passed with AddressSanitizer/UBSan, including pointer reuse,
+between-stage retirement, late controller closing and exhaustion. Independent
+review identified copy/move and null-completion hardening; resolved. Native
+Windows compilation/COM execution and Linux GUI tests remain unrun here.
+
+Earlier local evidence: macOS release bridge/native-test build, WebView Lisp
+regression/offline example and full native invariant suite passed. Sandbox GUI
+attempt stalled on desktop-service errors and was terminated, not counted as a
+pass. Docset checks reported703 entries, zero problems, discovery/symbol lookup/
+guides/examples passed. Final follow-up checks: release rebuild and portability CTest passed; macOS WebView Lisp/example and full native invariant suite passed again with approved desktop access. Independent follow-up review found Windows docset-test dependency staging missing; CI now checks out the pinned shared docset library. Coverage/docset regeneration and zero-problem checks were rerun after final documentation updates.
+Unrelated dirty changes remain preserved; no unverified platform-completion
+commit or cross-platform acceptance is claimed. The editor REPL is disconnected.
+
+
 The user has explicitly requested the general-purpose native capabilities in
 [the KryptonEdit survey](docs/KRYPTONEDIT-COVERAGE.md), superseding the prior
 “no next batch” handoff for that application-driven scope. Preserve ABI56 grid/
@@ -3842,3 +3915,18 @@ The application separately ignores incidental focus activation during its own
 page synchronization. Native and application regressions cover reverse cycling,
 reordered groups, independent cursors and retained selected views.
 Independent review found no actionable issue in native selection scoping or application navigation/masks. macOS verification passed: native rebuild, complete native invariant harness including focused outgoing-page selection and injected CHILD_FOCUS reentry (zero wx assertions), 49 focused application navigation checks and complete application UI suite, pinned coverage inventory (14 checks), and docset build/check with export/discovery/lookup and guide/example coverage. Windows/Linux and physical shortcut input remain unverified. No new ABI entry point/version change.
+
+## ABI73: frame maximization
+
+Added frame-only MAXIMIZED-P / SETF using wxFrame IsMaximized/Maximize, with
+managed handle/type checks and virtual-provider mutation protection. KryptonEdit
+uses it for launch/close persistence. Full screen, iconization, and other top-level
+families remain outside this binding. Verification results are recorded below.
+
+ABI73 verification (macOS only): native CMake build passed; 14 pinned-source
+coverage-inventory tests passed; docset build/check passed (702 entries, zero
+problems, discovery/symbol/guide/example checks). Updated window-state example
+exercise passed. KryptonEdit maximize/save/recreate/restore checks passed for
+both T and NIL (6 assertions), and 784,532 backend checks passed. Independent
+review found a header return-contract comment issue, now corrected. Windows
+and Linux GUI behavior and manual title-bar interactions were not run.
