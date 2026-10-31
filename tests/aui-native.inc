@@ -60,7 +60,8 @@ void exercise_aui_notebook() {
             dc.SelectObject(wxNullBitmap);
             if (pass==0 && tabs==left) {
                 const auto image=publish_image(bitmap.ConvertToImage());
-                const char* path="/private/tmp/wxlambda-themed-tab.png";
+                const auto path_storage=native_temporary_path("wxlambda-themed-tab.png");
+                const char* path=path_storage.c_str();
                 expect(wxl_save_image(image,path,std::strlen(path))==0,"Save themed-tab drawing fixture");
                 expect(wxl_image_destroy(image,0)==0,"Release themed-tab drawing fixture");
             }

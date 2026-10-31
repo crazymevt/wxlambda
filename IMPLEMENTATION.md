@@ -7,6 +7,35 @@ factual discovery records, not a required sequence or release gate.
 
 ## Session handoff: broad GUI coverage
 
+### Third public CI repair / Windows diagnostic (2026-10-30)
+
+Run41150497972 passed macOS GUI and documentation/portability jobs. Windows
+now passed patched-Edge configuration, bridge build, portability CTest and
+smoke/API scenarios; it timed out in events-payloads without a diagnostic.
+Distro Linux passed images but reached another `/private/tmp` path in the
+drawing-monitor example. Experimental GTK's probe compiled/linked successfully
+but could not load libwx_baseu at runtime (exit127), not a demonstrated ABI mix.
+
+The configure step now exports the pinned wx loader path, without adding the
+current directory on an empty previous path. Remaining native/Lisp PNG fixtures
+and the drawing example use platform temp directories. Independent review found
+locale encoding/narrow-file creation/mixed separators in the adjacent generic
+dialog fixture; it now uses wx-native file construction/IO and copied UTF-8.
+Windows alone opts into stderr+abort native assertion diagnostics rather than
+unattended assert dialogs, and events-payloads prints flushed progress markers.
+Normal assertion behavior remains unchanged outside opt-in. The Windows timeout
+is still under investigation, not claimed fixed by these diagnostics.
+
+Local verification: bridge/native rebuild, all93 GUI scenarios plus runtime
+preflight, native invariants and isolated diagnostic stderr/abort fixture passed
+on macOS. Python45 checks passed with four optional integration skips; actionlint
+and docset build/check passed (704 entries, zero problems; discovery, exports,
+symbols, guides/examples). Initial assertion-fixture attempt revealed local
+Homebrew sets wxDEBUG_LEVEL=0, so its guarded code never executed; the override
+now uses wxApp's unconditionally declared virtual hook and the isolated fixture
+passes. Normal wx assertion handling is retained unless explicitly opted in.
+Remote Windows/Linux runtime outcomes remain pending a new run.
+
 ### Second public CI repair (2026-10-30)
 
 Run41147194208 passed pure documentation/reporting checks, but failed all four

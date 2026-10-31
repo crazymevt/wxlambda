@@ -7,7 +7,8 @@ void exercise_images() {
  expect(wxl_image_pixel(copy,0,0,pixel,0)==0&&pixel[3]==0,"Bitmap alpha/copy independence");
  expect(wxl_image_pixel(copy,1,1,pixel,0)==0&&pixel[0]==1&&pixel[1]==2&&pixel[2]==3&&pixel[3]==255,"Bitmap opaque colour");
  auto scaled=wxl_scale_image(image,8,8,0); expect(scaled,"Scale");
- const char* path="/private/tmp/wxlambda-images-stage.png"; expect(wxl_save_image(image,path,std::strlen(path))==0,"Save PNG");
+ const auto path_storage=native_temporary_path("wxlambda-images-stage.png");
+ const char* path=path_storage.c_str(); expect(wxl_save_image(image,path,std::strlen(path))==0,"Save PNG");
  auto loaded=wxl_load_image(path,std::strlen(path)); expect(loaded&&wxl_image_pixel(loaded,0,0,pixel,0)==0&&pixel[0]==4&&pixel[3]==200,"PNG round trip");
  auto frame=wxl_frame("Images",400,300),control=wxl_static_bitmap(frame,bitmap); expect(frame&&control,"Display");
 #ifdef wxHAS_BITMAPTOGGLEBUTTON
@@ -26,7 +27,8 @@ void exercise_images() {
  scene.kind=6;scene.width=1;scene.height=1;scene.pixels=rgba_bytes;scene.pixel_length=4;
  expect(wxl_set_canvas_content(canvas,0xffffff,&scene,1)==0,"RGBA canvas construction");
  for(int extent:{0,-1,257}) { scene.width=extent;expect(wxl_set_canvas_content(canvas,0xffffff,&scene,1)==-1,"RGBA native dimension guard"); } scene.width=1;
- const char* canvas_path="/private/tmp/wxlambda-rgba-stage.png";
+ const auto canvas_path_storage=native_temporary_path("wxlambda-rgba-stage.png");
+ const char* canvas_path=canvas_path_storage.c_str();
  expect(wxl_save_canvas_image(canvas,canvas_path,std::strlen(canvas_path),1,1)==0,"Transparent canvas PNG");
  auto rendered=wxl_load_image(canvas_path,std::strlen(canvas_path));expect(rendered&&wxl_image_pixel(rendered,0,0,pixel,0)==0&&pixel[0]==255&&pixel[1]==255&&pixel[2]==255,"RGBA transparency composition");
  rgba_bytes[3]=255;expect(wxl_set_canvas_content(canvas,0xffffff,&scene,1)==0,"Opaque RGBA scene");rgba_bytes[0]=0;

@@ -20,7 +20,7 @@ void exercise_drawing_canvas() {
     items[3].kind=2;items[3].width=100;items[3].height=0;items[3].option=2;
     expect(wxl_set_canvas_content(canvas,0xffffff,items,4)==0,"Compile retained scene");
     pixels[2]=0;label[0]='X';items[0].rgb=0;
-    const std::string path="/private/tmp/wxl-canvas-native-λ.png";
+    const std::string path=native_temporary_path(wxString::FromUTF8("wxl-canvas-native-λ.png"));
     expect(wxl_save_canvas_image(canvas,path.data(),path.size(),160,100)==0,"Native PNG export");
     wxFFileInputStream file(wxString::FromUTF8(path)); wxPNGHandler png; wxImage image;
     expect(png.LoadFile(&image,file,false) && image.GetWidth()==160 && image.GetHeight()==100,"Export PNG decode/dimensions");
@@ -33,8 +33,9 @@ void exercise_drawing_canvas() {
     bad={};bad.kind=1;bad.width=0;bad.height=1;
     expect(wxl_set_canvas_content(canvas,0,&bad,1)==-1 && wxl_set_canvas_content(canvas,0,nullptr,513)==-1 &&
            wxl_set_canvas_content(canvas,0x1000000,nullptr,0)==-1 && wxl_canvas_client_size(canvas,nullptr,&height)==-1,"Raw scene/output bounds");
+    const std::string directory=wxFileName::GetTempDir().utf8_string();
     expect(wxl_save_canvas_image(canvas,path.data(),path.size(),0,10)==-1 && wxl_save_canvas_image(canvas,path.data(),path.size(),2049,10)==-1 &&
-           wxl_save_canvas_image(canvas,"/private/tmp",12,10,10)==-1,"PNG dimensions/open errors reject without native prompt");
+           wxl_save_canvas_image(canvas,directory.data(),directory.size(),10,10)==-1,"PNG dimensions/open errors reject without native prompt");
     window(canvas)->SetSize(240,140); wxl_poll();
     expect(wxl_canvas_client_size(canvas,&width,&height)==0 && std::abs(window(canvas)->FromDIP(width)-window(canvas)->GetClientSize().x)<=1,"Resize/DIP query and native repaint");
     auto* probe=new ManagedWindow<CanvasOperationProbe>();expect(probe->Create(window(panel)),"Canvas probe creation");

@@ -12,6 +12,23 @@ the loaded-library ABI check and rejects mixed WebKitGTK generations. Windows
 CI selects Release for probes to match its release-only wx build. These fixes
 do not enable the unavailable Windows browser contract or bypass either gate.
 
+Experimental GTK configuration exports the same wx library search path as its
+runtime tests: the ABI probe must load the just-built wx libraries, not only
+link them. Native/Lisp PNG fixtures use platform temporary directories, including
+the drawing monitor's default export.
+
+Windows GUI CI sets `WXLAMBDA_TEST_ABORT_ON_ASSERT`. A wx assertion prints its
+file/line/function/condition/message and aborts rather than opening an unattended
+native assertion dialog. Outside this opt-in test mode, normal wx assertion
+handling is unchanged. This is diagnostic, not assertion suppression or a claim
+that the Windows event-payload timeout is fixed.
+
+The private native test binary has an isolated assertion fixture, checked with
+`python3 tests/assert-diagnostic.py build/wxlambda-client-data-native`. The child
+must fail promptly and emit file/line metadata; no assertion is reported as a
+successful GUI operation. Experimental Linux CI runs this diagnostic separately
+before its ordinary native invariants.
+
 ## Jobs and their actual scope
 
 | Job | What it checks |

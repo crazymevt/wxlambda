@@ -46,6 +46,7 @@
 #include <wx/splitter.h>
 #include <cmath>
 #include <cstdio>
+#include <cstdlib>
 #include <wx/textdlg.h>
 #include <wx/choicdlg.h>
 #include <wx/generic/msgdlgg.h>
@@ -126,6 +127,21 @@ bool process_deferred_ui_action();
 unsigned idle_processing_depth = 0;
 class App final : public wxApp, public ClientDataAccess {
 public:
+    void OnAssertFailure(const wxChar* file, int line, const wxChar* function,
+                         const wxChar* condition, const wxChar* message) override {
+        // Opt-in CI diagnostics: never hide an assertion behind an unattended
+        // modal dialog. Fail the process, retaining the native assertion text.
+        if (std::getenv("WXLAMBDA_TEST_ABORT_ON_ASSERT")) {
+            std::fprintf(stderr, "WXLAMBDA WX ASSERT: %s:%d %s: %s (%s)\n",
+                         wxString(file).utf8_str().data(), line,
+                         wxString(function).utf8_str().data(),
+                         wxString(condition).utf8_str().data(),
+                         wxString(message).utf8_str().data());
+            std::fflush(stderr);
+            std::abort();
+        }
+        wxApp::OnAssertFailure(file, line, function, condition, message);
+    }
     wxClientDataType ClientStorageKind() const override { return m_clientDataType; }
     bool OnInit() override { return true; }
     bool ProcessIdle() override {

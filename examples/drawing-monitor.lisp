@@ -66,7 +66,9 @@
            (loop repeat 300 while (wxlambda:ui-timer-active-p (funcall ticket)) do (wxlambda:process-events) (sleep 0.005))
            (assert (= 3 (funcall count))) (assert (not (wxlambda:activity-running-p indicator)))
            (setf (wxlambda:canvas-content canvas) (monitor-scene (funcall count) 640 300))
-           (wxlambda:save-canvas-image canvas (or export-path (format nil "/private/tmp/wxl-monitor-~A.png" (lisp-implementation-type))) :width 640 :height 300)
+           (wxlambda:save-canvas-image canvas
+             (or export-path (merge-pathnames (format nil "wxl-monitor-~A.png" (lisp-implementation-type))
+                                              (uiop:temporary-directory))) :width 640 :height 300)
            (wxlambda:queue-click toggle)
            (loop repeat 30 until (wxlambda:ui-timer-active-p (funcall ticket)) do (wxlambda:process-events))
            (assert (wxlambda:ui-timer-active-p (funcall ticket)))

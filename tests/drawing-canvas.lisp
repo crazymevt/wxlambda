@@ -17,7 +17,9 @@
   (let* ((frame (wxlambda:make-frame)) (panel (wxlambda:make-panel frame))
          (canvas (wxlambda:make-drawing-canvas panel :class 'custom-canvas :tag :factory))
          (button (wxlambda:make-button panel)) (delivered nil)
-         (path (format nil "/private/tmp/wxl-canvas-λ-~A.png" (lisp-implementation-type))))
+         (path (uiop:native-namestring
+                (merge-pathnames (format nil "wxl-canvas-λ-~A.png" (lisp-implementation-type))
+                                 (uiop:temporary-directory)))))
     (assert (eq :factory (canvas-tag canvas)))
     (canvas-error (lambda () (make-instance 'mixed-canvas :parent panel)))
     (canvas-error (lambda () (wxlambda:make-drawing-canvas panel :class 'wxlambda:panel)))

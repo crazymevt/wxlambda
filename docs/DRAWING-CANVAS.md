@@ -1,5 +1,9 @@
 # Retained drawing canvas and monitoring workflow
 
+The monitoring example's `exercise` writes its default PNG in
+`uiop:temporary-directory`, on every platform. Supply `:export-path` to choose
+another destination; the bridge does not create missing parent directories.
+
 ABI55 adds native-backed `drawing-canvas`, `make-drawing-canvas`,
 `canvas-content`/SETF, `canvas-client-size` and `save-canvas-image`. This is a
 bounded retained renderer for practical drawings and monitoring tools. Lisp

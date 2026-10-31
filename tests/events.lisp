@@ -26,6 +26,7 @@
                (text (wxlambda:make-text panel :value "Initial"))
                (button (wxlambda:make-button panel :label "Test events")))
           (setf saved-control text)
+          (format t "~&EVENT-CHECKPOINT: controls created~%") (finish-output)
           (wxlambda:make-column panel)
           (wxlambda:add-child panel text)
           (wxlambda:add-child panel button)
@@ -46,6 +47,7 @@
                            (setf (wxlambda:text text) "Silent update")))))
                 ;; Event delivery also works before starting the event loop.
                 (setf (wxlambda:text text :notify t) "Outer λ 日本語 😀")
+                (format t "~&EVENT-CHECKPOINT: nested text delivery returned~%") (finish-output)
                 (assert (= 2 text-calls))
                 (assert (string= "Silent update" (wxlambda:text text)))
                 (setf (wxlambda:text text) "Silent again")
@@ -85,7 +87,9 @@
                   :with-event t)
                 (wxlambda:show-window frame)
                 (wxlambda:queue-click button)
+                (format t "~&EVENT-CHECKPOINT: entering RUN~%") (finish-output)
                 (wxlambda:run)
+                (format t "~&EVENT-CHECKPOINT: RUN returned~%") (finish-output)
                 (assert (= 1 click-calls))
                 ;; Copies remain usable after native events and windows are gone.
                 (assert (wxlambda:event-p saved-click))

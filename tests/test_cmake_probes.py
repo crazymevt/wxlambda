@@ -6,6 +6,18 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class ConfigureProbeTests(unittest.TestCase):
+    def test_gtk_probe_runtime_can_find_pinned_wx(self):
+        workflow = (ROOT / '.github/workflows/ci.yml').read_text()
+        step = workflow.split('- name: Build experimental bridge and native regressions', 1)[1]
+        step = step.split('- name:', 1)[0]
+        self.assertLess(step.index('export LD_LIBRARY_PATH='), step.index('cmake -S .'))
+
+    def test_png_fixtures_do_not_assume_macos_tmp(self):
+        for relative in ('tests/images.lisp', 'tests/drawing-canvas.lisp',
+                         'examples/drawing-monitor.lisp', 'tests/client-data-native.cpp',
+                         'tests/images-native.inc', 'tests/canvas-native.inc', 'tests/aui-native.inc'):
+            self.assertNotIn('/private/tmp', (ROOT / relative).read_text(), relative)
+
     def test_all_isolated_checks_inherit_wx_definitions(self):
         source = (ROOT / "CMakeLists.txt").read_text()
         self.assertIn('foreach(definition IN LISTS wxWidgets_DEFINITIONS)', source)

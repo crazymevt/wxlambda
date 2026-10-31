@@ -17,6 +17,9 @@ void capture_assert(const wxString&, int, const wxString&, const wxString&, cons
     ++assertion_count;
 }
 void expect(bool ok, const char* message);
+std::string native_temporary_path(const wxString& leaf) {
+    return wxFileName(wxFileName::GetTempDir(), leaf).GetFullPath().utf8_string();
+}
 bool binding_called = false;
 unsigned menu_calls = 0;
 int menu_checked_payload = -1;
@@ -107,11 +110,12 @@ void exercise_generic_dialogs() {
         expect(wxl_dialog_show(message, &result) == 0 && result == 1, "Message cancellation failed");
         delete as<wxDialog>(message);
     }
-    const auto temporary_file = wxFileName::CreateTempFileName("/private/tmp/wxl-generic-workflow-");
+    const auto temporary_file = wxFileName::CreateTempFileName(wxFileName::GetTempDir() + wxFILE_SEP_PATH + "wxl-generic-workflow-");
     expect(wxRemoveFile(temporary_file) && wxMkdir(temporary_file), "Cannot prepare isolated file workflow directory");
-    const std::string directory = temporary_file.ToStdString();
-    const auto existing_path = directory + "/existing.txt";
-    std::ofstream(existing_path) << "test";
+    const std::string directory = temporary_file.utf8_string();
+    const auto existing_native = wxFileName(temporary_file, "existing.txt").GetFullPath();
+    const auto existing_path = existing_native.utf8_string();
+    { wxFFile fixture(existing_native, "wb"); expect(fixture.IsOpened() && fixture.Write("test") && fixture.Close(), "Cannot write isolated file fixture"); }
     const auto cwd = wxGetCwd();
     const char* wildcard = "Text|*.txt|All|*";
     for (int scenario = 0; scenario < 4; ++scenario) {
@@ -123,7 +127,7 @@ void exercise_generic_dialogs() {
         expect(wxl_set_file_dialog_filter_index(file, 1) == 0 && wxl_file_dialog_filter_index(file) == 1 && wxl_set_file_dialog_filter_index(file, 2) == -1,
                "File filter bounds failed");
         expect(wxl_set_file_dialog_path(file, existing_path.data(), existing_path.size()) == 0, "File path setter failed");
-        if (!save) { const auto missing = directory + "/missing.txt"; expect(wxl_set_file_dialog_path(file, missing.data(), missing.size()) == 0, "Missing-file path setup failed"); }
+        if (!save) { const auto missing = wxFileName(temporary_file, "missing.txt").GetFullPath().utf8_string(); expect(wxl_set_file_dialog_path(file, missing.data(), missing.size()) == 0, "Missing-file path setup failed"); }
         if (scenario == 2) expect(wxMkdir(temporary_file + "/NewName"), "Cannot prepare isolated NewDir error path");
         int result = -1;
         DialogTimer inner([&] {
@@ -161,7 +165,8 @@ void exercise_generic_dialogs() {
         expect(wxl_dialog_show(file, &result) == 0 && result == 0 && wxl_dialog_depth() == 0, "Actual file OK acceptance failed");
         size_t path_length = 0;
         const auto* path = wxl_file_dialog_path(file, &path_length);
-        expect(path && std::string(path, path_length) == directory + "/" + name, "File accepted native path mismatch");
+        const auto expected_path = wxFileName(temporary_file, wxString::FromUTF8(name)).GetFullPath().utf8_string();
+        expect(path && std::string(path, path_length) == expected_path, "File accepted native path mismatch");
         delete as<WxlGenericFileDialog>(file);
     }
     {
@@ -1834,7 +1839,13 @@ void exercise_frame_maximization() {
     expect(wxl_frame_maximized(id)==-1 && wxl_set_frame_maximized(id,0)==-1,"Maximization rejects stale frame identity");
 }
 
-int main() {
+int main(int argc, char** argv) {
+    if (argc == 2 && std::string(argv[1]) == "--assert-diagnostic") {
+        // Explicit subprocess-only fixture: CI's opt-in must fail, not show UI.
+        App app;
+        app.OnAssertFailure(wxT("assert-fixture"), 17, wxT("diagnostic"), wxT("false"), wxT("expected test assertion"));
+        return 2;
+    }
     std::thread([] { std::this_thread::sleep_for(std::chrono::seconds(10)); std::_Exit(124); }).detach();
     auto old_assert_handler = wxSetAssertHandler(capture_assert);
     unsigned foreign_destroyed = 0;

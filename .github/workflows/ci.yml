@@ -73,6 +73,7 @@ jobs:
         run: python3 ci/fetch-deps.py
       - name: Build experimental bridge and native regressions
         run: |
+          export LD_LIBRARY_PATH="$RUNNER_TEMP/wx/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
           cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
             -DwxWidgets_CONFIG_EXECUTABLE="$RUNNER_TEMP/wx/bin/wx-config" \
             -DWXLAMBDA_EXPERIMENTAL_GTK_WEBVIEW=ON \
@@ -83,13 +84,14 @@ jobs:
       - name: Offline WebView example and Lisp lifetime regressions
         run: |
           mkdir -p test-results
-          export LD_LIBRARY_PATH="$RUNNER_TEMP/wx/lib:${LD_LIBRARY_PATH:-}"
+          export LD_LIBRARY_PATH="$RUNNER_TEMP/wx/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
           set -o pipefail
           xvfb-run -a timeout 60s sbcl --noinform --no-sysinit --no-userinit --non-interactive \
             --load ci/setup.lisp --load tests/webview.lisp 2>&1 | tee test-results/webview.log
       - name: Native invariant regressions
         run: |
-          export LD_LIBRARY_PATH="$RUNNER_TEMP/wx/lib:${LD_LIBRARY_PATH:-}"
+          export LD_LIBRARY_PATH="$RUNNER_TEMP/wx/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+          python3 tests/assert-diagnostic.py build/wxlambda-client-data-native
           set -o pipefail
           xvfb-run -a timeout 120s build/wxlambda-client-data-native 2>&1 | tee test-results/native.log
           ctest --test-dir build --output-on-failure
@@ -255,6 +257,8 @@ jobs:
         run: ctest --test-dir build -C Release --output-on-failure
       - name: Test Lisp loading and GUI lifecycle
         shell: pwsh
+        env:
+          WXLAMBDA_TEST_ABORT_ON_ASSERT: '1'
         run: |
           $env:PATH = "$env:GITHUB_WORKSPACE/vendor/wxWidgets/lib/vc_x64_dll;$env:GITHUB_WORKSPACE/vendor/wxWidgets/3rdparty/webview2/build/native/x64;$env:PATH"
           if (-not (Test-Path build/wxlambda.dll)) { throw 'Bridge DLL missing from build/' }
