@@ -7,6 +7,36 @@ factual discovery records, not a required sequence or release gate.
 
 ## Session handoff: broad GUI coverage
 
+### Second public CI repair (2026-10-30)
+
+Run41147194208 passed pure documentation/reporting checks, but failed all four
+platform jobs after the initial bootstrap repairs. macOS reached menus and
+asserted on the previously accepted INT_MAX menu ID, then timed out in the native
+assert dialog. Distro Linux reached images and could not open the hardcoded
+`/private/tmp` PNG path. Windows Edge probe failed because the platform header
+was included before wx setup/public WebView declarations; GTK ABI probing failed
+at compilation with "No Target!", not a demonstrated WebKit library mismatch.
+
+Repairs enforce the actual wx3.2.12 portable menu range1..32766 in both Lisp and
+native entry, with Lisp/direct-native boundary tests and aligned guide/reference/
+example/coverage. Image tests use UIOP's platform temporary directory. Configure
+probes explicitly inherit wxWidgets_DEFINITIONS, and Edge includes the public
+header first. Windows CI probes use Release to match its release-only wx build;
+developer debug configurations are not globally overridden. Neither backend
+gate is disabled and Windows browser support remains unavailable.
+
+Independent review confirmed the native SHRT_MAX bound and the probe root
+causes; its direct-native boundary and Windows probe-configuration suggestions
+are incorporated. Remote GTK/Windows success still requires a new CI run.
+
+Local verification: both bridge/native targets rebuilt; all93 GUI scenarios
+plus runtime preflight passed using pinned Lisp dependencies. The native suite
+passed with zero wx assertions, including the new direct menu boundaries.
+Python checks:43 tests, four optional integration fixtures skipped; CTest
+portability test and actionlint passed. Pinned coverage regeneration and docset
+build/check passed (704 entries, zero problems; exports/discovery/symbols/guides/
+examples verified). No Windows/Linux runtime success is inferred from macOS.
+
 ### First public CI repair (2026-10-30)
 
 Run41145097504 failed during setup/build in four jobs: distro Linux omitted

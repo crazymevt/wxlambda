@@ -2630,7 +2630,7 @@
       "native": [
         "wxl_menu_item"
       ],
-      "scope": "Managed parent, positive unique-per-bar signed32 IDs, normal/check/separator only, validated label/help; no submenu. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting/radio scope; ABI67 adds owned submenus and temporary popup choices; popup choices now accept nonselectable :separator entries between command groups. Structural changes reject during callbacks/pumps/RUN. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
+      "scope": "Managed parent, portable unique-per-bar IDs 1..32766, rejected before native allocation outside this range, normal/check/separator only, validated label/help; no submenu. Managed frame-owned menu tree only; active GUI main thread, no arbitrary native adoption/reparenting/radio scope; ABI67 adds owned submenus and temporary popup choices; popup choices now accept nonselectable :separator entries between command groups. Structural changes reject during callbacks/pumps/RUN. ABI43 safe deferred UI actions are explicit structural boundaries under RUN/poll; normal callback/modal guards and no nested RUN/pumps/finish remain. See docs/DEFERRED-UI-ACTIONS.md."
     },
     {
       "header": "wx/menuitem.h",

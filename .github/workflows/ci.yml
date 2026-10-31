@@ -241,6 +241,7 @@ jobs:
       - name: Configure bridge
         run: >-
           cmake -S . -B build -A x64
+          -DCMAKE_TRY_COMPILE_CONFIGURATION=Release
           -DwxWidgets_ROOT_DIR="${{ github.workspace }}/vendor/wxWidgets"
           -DwxWidgets_LIB_DIR="${{ github.workspace }}/vendor/wxWidgets/lib/vc_x64_dll"
           -DwxWidgets_CONFIGURATION=mswu

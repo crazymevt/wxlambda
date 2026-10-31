@@ -82,7 +82,9 @@ are Unicode strings without NUL. Normal/check and tab labels must be nonempty.
 item counts include separators.
 
 MENU-ITEM-ID and MENU-ITEM-KIND are immutable. Normal/check IDs are integers from
-1 through 2147483647, unique across the managed bar. Kinds are :NORMAL (default),
+1 through 32766, unique across the managed bar. This portable bound avoids
+wxWidgets' native menu-ID assertion (32767 itself is excluded). Invalid IDs
+are rejected before native allocation. Kinds are :NORMAL (default),
 :CHECK or :SEPARATOR. Separators require :ID NIL and empty label/help; use
 MAKE-MENU-ITEM with :KIND :SEPARATOR. Explicit :ENABLED-P or :CHECKED-P
 on a separator rejects even NIL. Normal items permit NIL checked state but reject

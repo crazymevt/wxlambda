@@ -2064,8 +2064,8 @@ wxl_handle wxl_menu_item(wxl_handle menu_id, int item_id, const char* label, siz
         require_dispatch_entry(true); const auto parent = menu_resource(menu_id, 1);
         require(kind >= 0 && kind <= 2, "Unsupported menu item kind");
         require((label || !length) && (help || !help_length), "Null menu item text");
-        require(kind == 2 ? item_id == 0 && !length && !help_length : item_id > 0,
-                "Menu item requires a positive ID; separator requires zero and empty text");
+        require(kind == 2 ? item_id == 0 && !length && !help_length : item_id > 0 && item_id < 32767,
+                "Menu item ID must be 1..32766; separator requires zero and empty text");
         require(kind == 2 || length != 0, "Menu item label must be nonempty");
         auto* bar=as<wxFrame>(parent.frame)->GetMenuBar();
         require(bar,"Menu is not attached to its frame");

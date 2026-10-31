@@ -6,6 +6,7 @@
 (in-package #:wxlambda-menus)
 
 (defun exercise ()
+  ;; Menu command IDs are portable integers 1..32766, unique within the bar.
   (let* ((frame (wxlambda:make-frame :title "Menu actions"))
          (bar (wxlambda:make-menu-bar frame))
          (file (wxlambda:make-menu bar :label "&File"))

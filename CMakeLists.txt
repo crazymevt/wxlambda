@@ -4,16 +4,25 @@ find_package(wxWidgets 3.2 REQUIRED COMPONENTS core base adv webview stc aui)
 include(${wxWidgets_USE_FILE})
 include(CheckCXXSourceCompiles)
 include(CMakePushCheckState)
+# Directory COMPILE_DEFINITIONS from UsewxWidgets are not inherited by
+# try_compile/try_run. In particular GTK needs __WXGTK__ and MSW needs the
+# selected DLL/Unicode configuration even in isolated configure probes.
+set(WXLAMBDA_WX_PROBE_DEFINITIONS)
+foreach(definition IN LISTS wxWidgets_DEFINITIONS)
+  list(APPEND WXLAMBDA_WX_PROBE_DEFINITIONS "-D${definition}")
+endforeach()
 option(WXLAMBDA_VERIFY_EDGE_COMPLETION_PATCH "Require the pinned Windows Edge prerequisite patch (does not enable WebView)" OFF)
 if(WXLAMBDA_VERIFY_EDGE_COMPLETION_PATCH)
   if(NOT WIN32 OR NOT MSVC)
     message(FATAL_ERROR "The Edge completion prerequisite currently targets Windows/MSVC")
   endif()
   cmake_push_check_state(RESET)
+  set(CMAKE_REQUIRED_DEFINITIONS ${WXLAMBDA_WX_PROBE_DEFINITIONS})
   set(CMAKE_REQUIRED_INCLUDES ${wxWidgets_INCLUDE_DIRS})
   set(CMAKE_REQUIRED_LIBRARIES ${wxWidgets_LIBRARIES})
   unset(WXLAMBDA_HAS_EDGE_COMPLETION_PATCH CACHE)
-  check_cxx_source_compiles("#include <wx/msw/webview_edge.h>
+  check_cxx_source_compiles("#include <wx/webview.h>
+#include <wx/msw/webview_edge.h>
 #include <wx/version.h>
 #if !wxUSE_WEBVIEW_EDGE || wxMAJOR_VERSION!=3 || wxMINOR_VERSION!=2 || wxRELEASE_NUMBER!=12
 #error Pinned wx3.2.12 with Edge enabled is required
@@ -25,6 +34,7 @@ int main() { return wxWebViewEdge::MSWGetWXLambdaCompletionGuardVersion()!=1; }"
   endif()
 endif()
 cmake_push_check_state(RESET)
+set(CMAKE_REQUIRED_DEFINITIONS ${WXLAMBDA_WX_PROBE_DEFINITIONS})
 set(CMAKE_REQUIRED_INCLUDES ${wxWidgets_INCLUDE_DIRS})
 check_cxx_source_compiles("#include <wx/setup.h>
 #if !wxUSE_FILEDLG || !wxUSE_DIRDLG || !wxUSE_FILECTRL || !wxUSE_TREECTRL || !wxUSE_BMPBUTTON || !wxUSE_STATLINE
@@ -152,6 +162,7 @@ if(WXLAMBDA_EXPERIMENTAL_GTK_WEBVIEW)
   endif()
   include(CheckCXXSourceRuns)
   cmake_push_check_state(RESET)
+  set(CMAKE_REQUIRED_DEFINITIONS ${WXLAMBDA_WX_PROBE_DEFINITIONS})
   set(CMAKE_REQUIRED_INCLUDES ${wxWidgets_INCLUDE_DIRS})
   set(CMAKE_REQUIRED_LIBRARIES ${wxWidgets_LIBRARIES} PkgConfig::WXLAMBDA_WEBKITGTK ${CMAKE_DL_LIBS})
   unset(WXLAMBDA_WEBKITGTK_ABI_MATCHES CACHE)

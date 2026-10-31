@@ -5,6 +5,13 @@ pull requests and manual dispatch, with read-only repository permissions and
 superseded runs cancelled per branch. Action revisions and source dependencies
 are pinned. A workflow configuration is not evidence that a remote run passed.
 
+Configure probes explicitly inherit wxWidgets compile definitions, including
+the selected port, Unicode and DLL configuration. The Edge probe includes the
+public WebView header before its platform header; the GTK probe still executes
+the loaded-library ABI check and rejects mixed WebKitGTK generations. Windows
+CI selects Release for probes to match its release-only wx build. These fixes
+do not enable the unavailable Windows browser contract or bypass either gate.
+
 ## Jobs and their actual scope
 
 | Job | What it checks |

@@ -1751,7 +1751,7 @@ live checkbox, including when called from inside its handler."
                        (not checked-supplied) (not enabled-supplied))
             (error "Separators require empty text and no checked/enabled initargs")))
         (progn
-          (check-type id (integer 1 2147483647)) (check-menu-text label)
+          (check-type id (integer 1 32766)) (check-menu-text label)
           (when (and checked-p (not (eq kind :check)))
             (error "Only check items accept a true checked state"))))
     (cffi:with-foreign-string ((label-pointer label-bytes) label :encoding :utf-8)

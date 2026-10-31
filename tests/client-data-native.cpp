@@ -308,6 +308,11 @@ void exercise_menus() {
     expect(!wxl_menu(bar, embedded_nul, 3), "NUL menu title must reject");
     const auto menu = wxl_menu(bar, "&File", 5);
     expect(!wxl_menu_item(menu, 18004, "", 0, nullptr, 0, 0), "Empty item label must reject");
+    for (const int invalid_id : {0, -1, 32767, 32768, 2147483647})
+        expect(!wxl_menu_item(menu, invalid_id, "ID", 2, nullptr, 0, 0), "Nonportable menu ID must reject before wx allocation");
+    const auto maximum_item = wxl_menu_item(menu, 32766, "Maximum", 7, nullptr, 0, 0);
+    expect(maximum_item != 0, "Maximum portable menu ID must succeed");
+    expect(wxl_menu_destroy(maximum_item) == 0, "Maximum menu item cleanup must succeed");
     expect(!wxl_menu_item(menu, 18004, "text", 4, embedded_nul, 3, 0), "NUL help must reject");
     const auto check = wxl_menu_item(menu, 18001, "&Check\tCtrl+K", 13, "help", 4, 1);
     const auto separator = wxl_menu_item(menu, 0, nullptr, 0, nullptr, 0, 2);

@@ -24,7 +24,7 @@
          (bitmap (make-bitmap :image image))
          (display (make-static-bitmap frame bitmap))
          (scaled nil) (loaded nil) (converted nil) (displayed nil)
-         (path (make-pathname :name (format nil "wxlambda-image-~A" (lisp-implementation-type)) :type "png" :defaults #p"/private/tmp/")))
+         (path (make-pathname :name (format nil "wxlambda-image-~A" (lisp-implementation-type)) :type "png" :defaults (uiop:temporary-directory))))
     (unwind-protect
          (progn
            (assert (eq :supplied (image-test-tag image)))
