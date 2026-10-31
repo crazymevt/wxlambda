@@ -2987,9 +2987,26 @@ int wxl_tree_delete(wxl_handle id) {
         const auto selected = tree->HasFlag(wxTR_MULTIPLE)?wxTreeItemId():first_tree_selection(tree);
         const auto selected_token = tree_token(tree, selected);
         const auto parent = node.parent;
+        std::vector<wxl_handle> selected_tokens;
+        if (tree->HasFlag(wxTR_MULTIPLE)) {
+            for (const auto& item : tree_selected_items(tree)) {
+                const auto token=tree_token(tree,item);
+                require(token!=0,"Unmanaged native tree selection");
+                selected_tokens.push_back(token);
+            }
+        }
         invalidate_tree_subtree(id);
         tree->Delete(native);
-        if(tree->HasFlag(wxTR_MULTIPLE))return;
+        if (tree->HasFlag(wxTR_MULTIPLE)) {
+            // MSW may select a caret/parent item while deleting. Preserve only
+            // the pre-delete set whose managed tokens survived invalidation.
+            tree->UnselectAll();
+            for (const auto token : selected_tokens) {
+                const auto found=tree_nodes.find(token);
+                if (found!=tree_nodes.end()) tree->SelectItem(found->second.native,true);
+            }
+            return;
+        }
         if (selected_token && tree_nodes.count(selected_token)) tree->SelectItem(selected);
         else if (parent && tree_nodes.count(parent)) tree->SelectItem(tree_nodes.at(parent).native);
         else if (tree->GetRootItem().IsOk()) tree->SelectItem(tree->GetRootItem());

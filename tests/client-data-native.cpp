@@ -20,6 +20,11 @@ void capture_assert(const wxString&, int, const wxString&, const wxString&, cons
     ++assertion_count;
 }
 void expect(bool ok, const char* message);
+std::atomic<const char*> native_phase{"before startup"};
+void native_checkpoint(const char* phase) {
+    native_phase.store(phase);
+    std::cout << "NATIVE-PHASE: " << phase << std::endl;
+}
 std::string native_temporary_path(const wxString& leaf) {
     return wxFileName(wxFileName::GetTempDir(), leaf).GetFullPath().utf8_string();
 }
@@ -786,6 +791,39 @@ void exercise_list_box() {
     expect(wxl_list_count(list) == -1 && wxl_list_append(list, "stale", 5) == -1, "Stale list handle must reject");
 }
 
+
+void exercise_multi_tree_deletion() {
+#if !defined(__WXQT__)
+    const auto frame=wxl_frame("Multi tree deletion",320,240);
+    const auto tree=wxl_tree_with_selection(frame,1);
+    auto add=[&](wxl_handle parent,const char* text) {
+        wxl_handle result=0;
+        expect(wxl_tree_add(tree,parent,text,std::strlen(text),&result)==0 && result,"Multi-tree fixture add");
+        return result;
+    };
+    const auto root=add(0,"Root"), branch=add(root,"Branch"), leaf=add(branch,"Leaf"), survivor=add(root,"Survivor");
+    const wxl_handle selected[]={branch,leaf,survivor};
+    expect(wxl_set_tree_selections(tree,selected,3)==0,"Multi-tree initial set");
+    expect(wxl_tree_delete(branch)==0,"Multi-tree subtree delete");
+    expect(wxl_poll()==0,"Multi-tree post-delete polling");
+    wxl_handle result[4]{};size_t count=0;
+    expect(wxl_tree_selections(tree,result,4,&count)==0 && count==1 && result[0]==survivor,
+           "Subtree delete must retain only surviving pre-delete selections");
+    expect(wxl_tree_item_alive(branch)==0 && wxl_tree_item_alive(leaf)==0,"Deleted multi-tree tokens remain invalid");
+    expect(wxl_tree_delete(survivor)==0 && wxl_tree_selections(tree,result,4,&count)==0 && count==0,
+           "Last selected item deletion must not select its parent");
+    expect(wxl_poll()==0 && wxl_tree_selections(tree,result,4,&count)==0 && count==0,
+           "Empty multi-tree selection must survive polling");
+    const auto unselected=add(root,"Unselected");
+    expect(wxl_tree_delete(unselected)==0 && wxl_tree_selections(tree,result,4,&count)==0 && count==0,
+           "Unselected item deletion must preserve empty selection");
+    const auto child=add(root,"Last child");
+    const wxl_handle all[]={root,child};
+    expect(wxl_set_tree_selections(tree,all,2)==0 && wxl_tree_delete(root)==0 && wxl_poll()==0 &&
+           wxl_tree_selections(tree,result,4,&count)==0 && count==0,"Deleting selected root must leave no selection");
+    delete window(frame);
+#endif
+}
 
 void exercise_tree() {
     const auto frame = wxl_frame("Tree", 320, 280);
@@ -1886,59 +1924,67 @@ int main(int argc, char** argv) {
         app.OnAssertFailure(wxT("assert-fixture"), 17, wxT("diagnostic"), wxT("false"), wxT("expected test assertion"));
         return 2;
     }
-    std::thread([] { std::this_thread::sleep_for(std::chrono::seconds(10)); std::_Exit(124); }).detach();
+    std::thread([] {
+        std::this_thread::sleep_for(std::chrono::seconds(10));
+        std::fprintf(stderr,"NATIVE-WATCHDOG: 10 seconds elapsed in %s\n",native_phase.load());
+        std::fflush(stderr);
+        std::_Exit(124);
+    }).detach();
     auto old_assert_handler = wxSetAssertHandler(capture_assert);
     unsigned foreign_destroyed = 0;
     bool active = false;
     try {
         wxIdleEvent::SetMode(wxIDLE_PROCESS_ALL);
+        native_checkpoint("application-start");
         expect(wxl_start(ignore_event, ignore_ui_action) == 0, "Application startup failed");
         active = true;
-        exercise_frame_maximization();
-        exercise_client_data(foreign_destroyed);
-        exercise_binding_data();
-        exercise_idle();
-        exercise_menus();
-        exercise_dialogs();
-        exercise_generic_dialogs();
-        exercise_text_editing();
-        exercise_notebook();
-        exercise_list_box();
-        exercise_tree();
-        exercise_splitter();
-        exercise_frame_actions();
-        exercise_accelerators();
+        native_checkpoint("exercise_frame_maximization"); exercise_frame_maximization();
+        native_checkpoint("exercise_client_data"); exercise_client_data(foreign_destroyed);
+        native_checkpoint("exercise_binding_data"); exercise_binding_data();
+        native_checkpoint("exercise_idle"); exercise_idle();
+        native_checkpoint("exercise_menus"); exercise_menus();
+        native_checkpoint("exercise_dialogs"); exercise_dialogs();
+        native_checkpoint("exercise_generic_dialogs"); exercise_generic_dialogs();
+        native_checkpoint("exercise_text_editing"); exercise_text_editing();
+        native_checkpoint("exercise_notebook"); exercise_notebook();
+        native_checkpoint("exercise_list_box"); exercise_list_box();
+        native_checkpoint("exercise_tree"); exercise_tree();
+        native_checkpoint("exercise_multi_tree_deletion"); exercise_multi_tree_deletion();
+        native_checkpoint("exercise_splitter"); exercise_splitter();
+        native_checkpoint("exercise_frame_actions"); exercise_frame_actions();
+        native_checkpoint("exercise_accelerators"); exercise_accelerators();
 #if wxUSE_CLIPBOARD
-        exercise_clipboard();
+        native_checkpoint("exercise_clipboard"); exercise_clipboard();
 #endif
-        exercise_deferred_actions();
-        exercise_ui_timers();
-        exercise_numeric_input();
-        exercise_radio_groups();
-        exercise_toggle_buttons();
-        exercise_combo_boxes();
-        exercise_scrolling_panels();
-        exercise_focus_navigation();
-        exercise_tooltips();
-        exercise_date_picker();
-        exercise_time_picker();
-        exercise_search_controls();
-        exercise_activity_indicator();
-        exercise_drawing_canvas();
-        exercise_grid();
-        exercise_grid_extra();
-        exercise_web_view();
-        exercise_aui_notebook();
-        exercise_aui_group_drag();
-        exercise_aui_selection_focus();
-        exercise_input_events();
-        exercise_thread_events();
-        exercise_styled_text();
-        exercise_report_views();
-        exercise_images();
+        native_checkpoint("exercise_deferred_actions"); exercise_deferred_actions();
+        native_checkpoint("exercise_ui_timers"); exercise_ui_timers();
+        native_checkpoint("exercise_numeric_input"); exercise_numeric_input();
+        native_checkpoint("exercise_radio_groups"); exercise_radio_groups();
+        native_checkpoint("exercise_toggle_buttons"); exercise_toggle_buttons();
+        native_checkpoint("exercise_combo_boxes"); exercise_combo_boxes();
+        native_checkpoint("exercise_scrolling_panels"); exercise_scrolling_panels();
+        native_checkpoint("exercise_focus_navigation"); exercise_focus_navigation();
+        native_checkpoint("exercise_tooltips"); exercise_tooltips();
+        native_checkpoint("exercise_date_picker"); exercise_date_picker();
+        native_checkpoint("exercise_time_picker"); exercise_time_picker();
+        native_checkpoint("exercise_search_controls"); exercise_search_controls();
+        native_checkpoint("exercise_activity_indicator"); exercise_activity_indicator();
+        native_checkpoint("exercise_drawing_canvas"); exercise_drawing_canvas();
+        native_checkpoint("exercise_grid"); exercise_grid();
+        native_checkpoint("exercise_grid_extra"); exercise_grid_extra();
+        native_checkpoint("exercise_web_view"); exercise_web_view();
+        native_checkpoint("exercise_aui_notebook"); exercise_aui_notebook();
+        native_checkpoint("exercise_aui_group_drag"); exercise_aui_group_drag();
+        native_checkpoint("exercise_aui_selection_focus"); exercise_aui_selection_focus();
+        native_checkpoint("exercise_input_events"); exercise_input_events();
+        native_checkpoint("exercise_thread_events"); exercise_thread_events();
+        native_checkpoint("exercise_styled_text"); exercise_styled_text();
+        native_checkpoint("exercise_report_views"); exercise_report_views();
+        native_checkpoint("exercise_images"); exercise_images();
         bool shutdown_ran=false;
         ui_action_probe=[&](uint64_t,int) { shutdown_ran=true; };
         expect(wxl_defer_ui_action(5000,0)==0 && wxl_start_ui_timer(5001,1,0,0)==0,"Queue shutdown action/timer");
+        native_checkpoint("application-finish");
         expect(wxl_finish() == 0, "Application cleanup failed");
         expect(image_resources.empty()&&bitmap_resources.empty(),"Automatic image/bitmap shutdown before wx cleanup");
         active = false;

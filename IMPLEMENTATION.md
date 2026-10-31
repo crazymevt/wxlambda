@@ -7,6 +7,38 @@ factual discovery records, not a required sequence or release gate.
 
 ## Session handoff: broad GUI coverage
 
+### Run41155287791 partial-result investigation (2026-10-30)
+
+Investigated completed jobs while distro Linux GUI remained in progress; no
+replacement push/cancellation. macOS and documentation jobs passed. Windows
+passed every events mode (MSW text reentry repaired), then failed multi-tree:
+deleting selected A left a native-added selection alongside surviving B.
+The native delete bridge explicitly returned without normalizing multi-select
+state. It now captures managed selection tokens before subtree invalidation,
+deletes, then restores only surviving tokens under existing selection blockers/
+TreeOperation. Single-selection fallback is unchanged. Native regression covers
+selected parent/descendant deletion, unrelated survivor, empty set, root deletion
+and post-delete polling; the Lisp example also checks after polling.
+
+GTK preflight now confirms SBCL's current alternate stack is outside pthread
+bounds, producing a contained NATIVE-ERROR rather than the former JSC abort.
+Interactive Linux WebView hosting is still unresolved. Its separate native
+harness reached the unchanged internal10-second watchdog with no phase output;
+flushed checkpoints and an atomic static-string phase label now identify the
+stalled phase before exit124. The outer120-second workflow timeout is unrelated.
+No timeout was extended and no real JavaScript gate was disabled.
+Independent review confirmed token/lifetime restoration and watchdog thread
+safety requirements; these are incorporated. Remote results are not inferred
+from local checks. Keep the in-progress run alive; do not push over it.
+
+Local verification: bridge/native rebuild and direct multi-tree deletion
+regressions passed, all93 GUI scenarios plus runtime preflight passed on macOS;
+Python46 tests passed (four optional skips). Coverage regeneration, portability
+CTest and docset build/check passed (704 entries, zero problems; exports,
+discovery, symbols, guides/examples). Windows behavior still requires remote
+validation; GTK's underlying native stall and interactive Lisp hosting remain
+open. This slice is held locally to avoid superseding the running GUI job.
+
 ### Fourth CI slice: runtime text/notebook fixes, GTK containment (2026-10-30)
 
 Run41152027217 still failed three platform jobs, now at runtime. Windows

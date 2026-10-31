@@ -2166,7 +2166,7 @@
     "kind": "generic-function",
     "arguments": "ITEM live TREE-ITEM.",
     "returns": "T after success.",
-    "description": "Invalidate/delete whole subtree. Preserve an outside selection, otherwise choose surviving parent/root silently; deleting root leaves empty. Revision-prune invalid cached views.",
+    "description": "Invalidate/delete whole subtree and revision-prune invalid cached views. Single-selection trees preserve an outside selection, otherwise choose surviving parent/root silently; deleting root leaves empty. Multiple-selection trees restore only surviving pre-delete selected tokens, with no native caret/parent additions, including when all selections were deleted.",
     "scope": "Active main-thread session; managed tree-control/items only. Native tokens validate owner/lifetime; No raw IDs/adoption, item data, label editing, sorting, virtual models or arbitrary styles. ABI66 supports copied icons, ABI69 guarded drag, and ABI70 multiple selection. Same-tree writes and nested native loops defer during tree callbacks. wxQt tree construction is explicitly unavailable pending generation-safe asynchronous event translation.",
     "wxwidgets": "wxTreeCtrl::Delete and internal delete notifications (wxWidgets 3.2.12)."
   },

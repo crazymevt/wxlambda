@@ -21,6 +21,8 @@
            (assert (= 2 (length (wxlambda:tree-selections tree))))
            (wxlambda:delete-tree-item a)
            (assert (equal (list b) (wxlambda:tree-selections tree)))
+           (wxlambda:process-events)
+           (assert (equal (list b) (wxlambda:tree-selections tree)))
            (setf (wxlambda:selection tree) nil)
            (assert (null (wxlambda:tree-selections tree)))
            (assert (zerop events)) t)

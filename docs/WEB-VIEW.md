@@ -16,8 +16,8 @@ JavaScriptCore's stack sanitizer during real execution. A pre-construction
 pthread-stack compatibility check rejects alternate native stacks before entering
 that VM. This contains the crash; it is not completed SBCL/Linux WebView support.
 Do not disable JavaScriptCore assertions or main-thread guards as a workaround.
-The stack mismatch is the leading explanation, not yet confirmed by the new
-preflight on that CI host. WebKitGTK2.52.6 checks saved stack tops against pthread
+Run41155287791 confirmed rejection by the new preflight: the current native
+stack is outside pthread's range on that SBCL host. WebKitGTK2.52.6 checks saved stack tops against pthread
 bounds in [VM.cpp](https://github.com/WebKit/WebKit/blob/webkitgtk-2.52.6/Source/JavaScriptCore/runtime/VM.cpp)
 and derives those bounds in [StackBounds.cpp](https://github.com/WebKit/WebKit/blob/webkitgtk-2.52.6/Source/WTF/wtf/StackBounds.cpp).
 Windows construction remains unavailable: adding Windows is

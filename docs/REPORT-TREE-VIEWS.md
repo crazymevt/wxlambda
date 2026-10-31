@@ -1,5 +1,10 @@
 # Report lists, native virtual text and tree interaction
 
+Multi-selection subtree deletion preserves only surviving pre-delete selected
+items, silently, including after polling. Deleting all selected items leaves an
+empty selection; native MSW caret/parent fallback is not added to that set.
+Single-selection tree deletion retains its separate documented ancestor fallback.
+
 `list-control` is a native-backed WINDOW around `wxListCtrl` in REPORT and
 single-selection mode. `:parent` is required. `:virtual-p` is fixed at construction
 and defaults NIL. Factories validate `:class`; direct subclasses, slot/default

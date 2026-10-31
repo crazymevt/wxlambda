@@ -31,6 +31,11 @@ before its ordinary native invariants.
 
 ## Jobs and their actual scope
 
+The native GUI harness keeps a ten-second internal watchdog (separate from the
+workflow's outer timeout). It prints flushed `NATIVE-PHASE` checkpoints and names
+the current phase before exiting124, so startup stalls can be distinguished from
+specific native invariant failures without increasing timeouts or hiding hangs.
+
 Headless Linux GUI fixtures set `NO_AT_BRIDGE=1` to avoid waiting for an absent
 AT-SPI accessibility bus under Xvfb. This is scoped to CI, not library startup,
 and does not establish accessibility support. The switch is handled by the
