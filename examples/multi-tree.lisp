@@ -19,6 +19,8 @@
            (assert (= 2 (length (wxlambda:tree-selections tree))))
            (setf (wxlambda:tree-item-expanded-p root) nil)
            (assert (= 2 (length (wxlambda:tree-selections tree))))
+           ;; Delete while the selected children are hidden by a collapsed root.
+           ;; Only B survives; neither the root nor C should become selected.
            (wxlambda:delete-tree-item a)
            (assert (equal (list b) (wxlambda:tree-selections tree)))
            (wxlambda:process-events)

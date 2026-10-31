@@ -802,8 +802,27 @@ void exercise_multi_tree_deletion() {
         return result;
     };
     const auto root=add(0,"Root"), branch=add(root,"Branch"), leaf=add(branch,"Leaf"), survivor=add(root,"Survivor");
+#if defined(__WXMSW__)
+    const wxl_handle initial[]={root,survivor};
+    wxl_handle cleared[4]{}; size_t cleared_count=0;
+    expect(wxl_set_tree_selections(tree,initial,2)==0,"No-caret fixture selection");
+    as<wxTreeCtrl>(tree)->ClearFocusedItem();
+    expect(wxl_set_tree_selections(tree,nullptr,0)==0 && wxl_poll()==0 &&
+           wxl_tree_selections(tree,cleared,4,&cleared_count)==0 && cleared_count==0,
+           "No-caret multi-selection clear must remove actual selected bits");
+    expect(wxl_set_tree_selections(tree,initial,2)==0,"No-caret replacement fixture");
+    as<wxTreeCtrl>(tree)->ClearFocusedItem();
+    expect(wxl_set_tree_selections(tree,&survivor,1)==0 &&
+           wxl_tree_selections(tree,cleared,4,&cleared_count)==0 && cleared_count==1 && cleared[0]==survivor,
+           "No-caret replacement must not retain previous selected items");
+#endif
     const wxl_handle selected[]={branch,leaf,survivor};
     expect(wxl_set_tree_selections(tree,selected,3)==0,"Multi-tree initial set");
+    expect(wxl_set_tree_expanded(root,1)==0 && wxl_set_tree_expanded(root,0)==0,"Collapse multi-tree before deletion");
+#if defined(__WXMSW__)
+    // Reproduce the no-caret state in which wx3.2.12 UnselectAll is a no-op.
+    as<wxTreeCtrl>(tree)->ClearFocusedItem();
+#endif
     expect(wxl_tree_delete(branch)==0,"Multi-tree subtree delete");
     expect(wxl_poll()==0,"Multi-tree post-delete polling");
     wxl_handle result[4]{};size_t count=0;

@@ -2868,6 +2868,21 @@ wxArrayTreeItemIds tree_selected_items(wxTreeCtrl* tree) {
     else if (tree->GetSelection().IsOk()) result.Add(tree->GetSelection());
     return result;
 }
+void clear_tree_selections(wxTreeCtrl* tree) {
+#if defined(__WXMSW__)
+    const bool missing_caret = tree->HasFlag(wxTR_MULTIPLE) && !tree->GetFocusedItem().IsOk();
+#endif
+    tree->UnselectAll();
+#if defined(__WXMSW__)
+    // MSW UnselectAll returns early without a caret, even when selected items
+    // remain (e.g. after deleting the focused item in a collapsed subtree).
+    // Preserve ordinary native anchor reset, aggregate notification and veto.
+    // Only the missing-caret no-op needs per-item deselection. SelectItem(false)
+    // restores a caret if necessary without selecting an unrelated item.
+    if (missing_caret)
+        for (const auto& item : tree_selected_items(tree)) tree->SelectItem(item, false);
+#endif
+}
 wxTreeItemId first_tree_selection(wxTreeCtrl* tree) {
     const auto items=tree_selected_items(tree);return items.empty()?wxTreeItemId():items[0];
 }
@@ -2907,7 +2922,7 @@ int wxl_set_tree_selections(wxl_handle owner,const wxl_handle* items,size_t coun
         std::unordered_set<wxl_handle> unique;std::vector<wxTreeItemId> selected;
         for(size_t i=0;i<count;++i){const auto& node=tree_node(items[i]);require(node.owner==owner&&unique.insert(items[i]).second,"Foreign/duplicate selection item");selected.push_back(node.native);}
         wxEventBlocker changing(tree,wxEVT_TREE_SEL_CHANGING),changed(tree,wxEVT_TREE_SEL_CHANGED);
-        tree->UnselectAll();for(const auto& item:selected)tree->SelectItem(item,true);
+        clear_tree_selections(tree);for(const auto& item:selected)tree->SelectItem(item,true);
     });
 }
 int wxl_tree_add(wxl_handle owner, wxl_handle parent, const char* value, size_t length, wxl_handle* result) {
@@ -3000,7 +3015,7 @@ int wxl_tree_delete(wxl_handle id) {
         if (tree->HasFlag(wxTR_MULTIPLE)) {
             // MSW may select a caret/parent item while deleting. Preserve only
             // the pre-delete set whose managed tokens survived invalidation.
-            tree->UnselectAll();
+            clear_tree_selections(tree);
             for (const auto token : selected_tokens) {
                 const auto found=tree_nodes.find(token);
                 if (found!=tree_nodes.end()) tree->SelectItem(found->second.native,true);
@@ -3020,7 +3035,7 @@ int wxl_tree_select(wxl_handle owner, wxl_handle item, int notify) {
         require(item || tree->HasFlag(wxTR_MULTIPLE) || !tree->GetRootItem().IsOk(), "Nonempty trees require a selected item");
         wxTreeItemId native;
         if(item){const auto& node=tree_node(item);require(node.owner==owner,"Item belongs to another tree");native=node.native;}
-        auto change = [&] { if(tree->HasFlag(wxTR_MULTIPLE))tree->UnselectAll();if(native.IsOk())tree->SelectItem(native); };
+        auto change = [&] { if(tree->HasFlag(wxTR_MULTIPLE))clear_tree_selections(tree);if(native.IsOk())tree->SelectItem(native); };
         if (notify) change(); else { wxEventBlocker changing(tree, wxEVT_TREE_SEL_CHANGING), changed(tree, wxEVT_TREE_SEL_CHANGED); change(); }
     });
 }

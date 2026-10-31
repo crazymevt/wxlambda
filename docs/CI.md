@@ -142,3 +142,12 @@ Initial remote jobs may reveal platform-specific failures. Keep those failures
 visible and fix them; do not silently disable tests or relabel unavailable
 behavior as supported browser functionality. Add required status checks only
 with an accurate understanding of these distinct scopes.
+
+Run41158781880 reached Windows multi-tree deletion despite its overall cancelled
+status. Pinned MSW `UnselectAll` can return early with selected items but no
+focused caret. Managed clearing now retains the native call and individually
+deselects remaining items; the native fixture explicitly clears focus before
+empty and replacement writes. Remote Windows validation is still required.
+The same run confirms experimental SBCL/WebKitGTK stack rejection, while the
+native watchdog expires in application startup before browser invariants. These
+Linux failures remain unresolved and the real JavaScript gate stays enabled.

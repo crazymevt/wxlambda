@@ -141,3 +141,7 @@ teardown suppression with zero wx assertions. Physical mouse/keyboard navigation
 large/deep/virtual trees, accessibility, hosted Windows/Linux, graphical Cadre and
 a complete file/tree manager remain separate verification. See [coverage](WXWIDGETS-COVERAGE.md),
 [event contexts](EVENT-CONTEXTS.md) and [Cadre installation](DOCSET.md).
+
+Multi-selection clearing and deletion normalize actual selected items even when
+the native Windows tree has no focused caret. This avoids wx3.2.12
+`UnselectAll` returning early and retaining an unrelated selection.

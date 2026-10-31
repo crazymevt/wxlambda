@@ -7,6 +7,38 @@ factual discovery records, not a required sequence or release gate.
 
 ## Session handoff: broad GUI coverage
 
+### Latest CI run41158781880 investigation (2026-10-31)
+
+The latest run has overall cancelled status, but its Windows and experimental
+GTK jobs completed with failures. macOS and documentation jobs passed; no
+success is inferred for cancelled distro Linux. Windows again failed the
+multi-tree example after deletion despite the previous survivor-token repair.
+Pinned MSW wx3.2.12 UnselectAll returns early when there is no native caret,
+even with selected item bits. Selection clearing now retains normal native
+UnselectAll behavior (including anchor reset), then explicitly deselects any
+remaining selected items only for the MSW missing-caret case. Set/list clearing
+and post-delete normalization share that helper. Regressions explicitly remove MSW focus before empty/replacement
+writes and exercise collapsed subtree deletion and polling. The example
+explains its collapsed-child deletion case. Independent review findings on anchor reset,
+deterministic no-caret tests and aggregate veto preservation were incorporated.
+
+GTK still rejects SBCL's alternate stack before JavaScriptCore entry. The native
+checkpoint now proves its separate ten-second watchdog expires during
+application-start, before WebView or other invariants. These Linux failures are
+not repaired by the Windows selection change. No stack/JavaScript safety gate
+or real browser acceptance test was disabled; compatible Lisp hosting and GTK
+startup diagnosis remain open. Remote Windows regression validation remains
+required.
+
+Local verification: final bridge/native rebuild, full native invariant suite
+(zero wx assertions), multi-tree Lisp example/test and portability CTest passed
+on macOS. Sandbox-only GUI attempts could not connect to macOS desktop services;
+reruns with desktop access passed. Docset build/check passed:704 entries, zero
+problems, public exports/discovery/symbol lookup/guides/examples. Pinned coverage
+regeneration completed; its first concurrent regression check observed changing
+output during regeneration; the rerun passed all14 checks. No Linux/Windows runtime
+success is claimed.
+
 ### Run41155287791 partial-result investigation (2026-10-30)
 
 Investigated completed jobs while distro Linux GUI remained in progress; no
