@@ -7,6 +7,34 @@ factual discovery records, not a required sequence or release gate.
 
 ## Session handoff: broad GUI coverage
 
+### Run41251791770 Windows follow-up (2026-10-31)
+
+Windows compiled but failed the same multi-tree example; the prior no-caret
+clear workaround did not resolve this runtime case. The fixture checked only
+selection counts before deletion. Pinned MSW collapse calls TreeView_Expand;
+a native caret replacement can substitute the collapsed parent for a selected
+child without changing the count. Deletion then faithfully preserves that
+already-changed set. This is a source-backed diagnosis pending Windows execution,
+not proof inferred from macOS. Expansion/collapse now snapshots and restores the
+exact multi-selection on MSW under existing TreeOperation/selection blockers.
+Other ports retain native behavior: review found generic/GTK selection replay
+would expand ancestors again. Native and Lisp regressions compare identities
+after expand/collapse and after polling;
+Lisp failures include selected item text; tests also verify collapsed state.
+Independent review's GTK replay finding is resolved with MSW-only restoration;
+no actionable findings remain. Local bridge rebuild, full native invariants
+(zero wx assertions), strengthened Lisp example and portability CTest passed on
+macOS. Pinned coverage regeneration and all14 coverage checks passed. Docset
+build/check passed (704 entries, zero problems, exports/discovery/symbol lookup/
+guides/examples); it is rebuilt again after this final handoff update.
+Windows behavior still needs remote execution.
+
+The documentation job also failed committed-docset/source equality: the final
+handoff edit was made after docset generation. Rebuild/check must follow every
+handoff edit because IMPLEMENTATION.md is included in the docset. No checker
+requirement is relaxed. Linux's known stack/startup failures remain unresolved.
+Do not supersede the still-running Linux job with a push.
+
 ### Latest CI run41158781880 investigation (2026-10-31)
 
 The latest run has overall cancelled status, but its Windows and experimental

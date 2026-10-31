@@ -818,7 +818,19 @@ void exercise_multi_tree_deletion() {
 #endif
     const wxl_handle selected[]={branch,leaf,survivor};
     expect(wxl_set_tree_selections(tree,selected,3)==0,"Multi-tree initial set");
-    expect(wxl_set_tree_expanded(root,1)==0 && wxl_set_tree_expanded(root,0)==0,"Collapse multi-tree before deletion");
+    auto exact_selected = [&] {
+        wxl_handle actual[4]{}; size_t count=0;
+        if (wxl_tree_selections(tree,actual,4,&count)!=0 || count!=3) return false;
+        for (const auto wanted : selected) {
+            bool found=false;
+            for (size_t i=0;i<count;++i) if(actual[i]==wanted) found=true;
+            if (!found) return false;
+        }
+        return true;
+    };
+    expect(wxl_set_tree_expanded(root,1)==0 && wxl_tree_expanded(root)==1 && exact_selected(),"Expand preserves exact multi-tree selection");
+    expect(wxl_set_tree_expanded(root,0)==0 && wxl_tree_expanded(root)==0 && exact_selected(),"Collapse preserves exact multi-tree selection");
+    expect(wxl_poll()==0 && wxl_tree_expanded(root)==0 && exact_selected(),"Collapsed selections retain identities after polling");
 #if defined(__WXMSW__)
     // Reproduce the no-caret state in which wx3.2.12 UnselectAll is a no-op.
     as<wxTreeCtrl>(tree)->ClearFocusedItem();

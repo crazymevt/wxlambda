@@ -2984,6 +2984,9 @@ int wxl_set_tree_expanded(wxl_handle id, int expanded) {
         require(expanded == 0 || expanded == 1, "Invalid tree expansion flag");
         const auto& node = tree_node(id); auto* tree = as<wxTreeCtrl>(node.owner); TreeOperation operation(tree);
         wxEventBlocker changing(tree, wxEVT_TREE_SEL_CHANGING), changed(tree, wxEVT_TREE_SEL_CHANGED);
+#if defined(__WXMSW__)
+        const auto multiple_selected = tree->HasFlag(wxTR_MULTIPLE) ? tree_selected_items(tree) : wxArrayTreeItemIds();
+#endif
         auto selected = tree->HasFlag(wxTR_MULTIPLE)?wxTreeItemId():first_tree_selection(tree);
         auto cursor = tree_token(tree, selected);
         while (!expanded && cursor && tree_nodes.count(cursor)) {
@@ -2991,7 +2994,15 @@ int wxl_set_tree_expanded(wxl_handle id, int expanded) {
             cursor = tree_nodes.at(cursor).parent;
         }
         if (expanded) tree->Expand(node.native); else tree->Collapse(node.native);
-        if(!tree->HasFlag(wxTR_MULTIPLE))tree->SelectItem(selected.IsOk() ? selected : tree->GetRootItem());
+#if defined(__WXMSW__)
+        // Win32 collapse can replace the caret selection with its parent.
+        // Generic/GTK SelectItem expands ancestors, so never replay there.
+        if(tree->HasFlag(wxTR_MULTIPLE)) {
+            clear_tree_selections(tree);
+            for (const auto& item : multiple_selected) tree->SelectItem(item, true);
+        }
+#endif
+        if(!tree->HasFlag(wxTR_MULTIPLE)) tree->SelectItem(selected.IsOk() ? selected : tree->GetRootItem());
     });
 }
 int wxl_tree_delete(wxl_handle id) {

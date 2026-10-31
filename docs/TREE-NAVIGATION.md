@@ -145,3 +145,9 @@ a complete file/tree manager remain separate verification. See [coverage](WXWIDG
 Multi-selection clearing and deletion normalize actual selected items even when
 the native Windows tree has no focused caret. This avoids wx3.2.12
 `UnselectAll` returning early and retaining an unrelated selection.
+
+Programmatic multi-tree expansion/collapse preserves selected item identities,
+including hidden descendants. On Windows the bridge restores the captured selection under
+selection-event blockers because the caret may otherwise select the collapsed
+parent. Other ports retain native behavior; replaying generic/GTK selections
+could expand ancestors. Tests compare item identities, rather than only counts.
