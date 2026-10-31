@@ -31,10 +31,13 @@ before its ordinary native invariants.
 
 ## Jobs and their actual scope
 
-The native GUI harness keeps a ten-second internal watchdog (separate from the
-workflow's outer timeout). It prints flushed `NATIVE-PHASE` checkpoints and names
-the current phase before exiting124, so startup stalls can be distinguished from
-specific native invariant failures without increasing timeouts or hiding hangs.
+The native GUI harness bounds startup to45 seconds, then starts a separate
+ten-second invariant watchdog (both within the workflow's120-second outer
+native timeout). Cold GTK startup has taken about25 seconds in the Lisp job;
+the former ten-second budget expired before native invariants could begin.
+Flushed `NATIVE-PHASE` checkpoints and budget-specific exit124 diagnostics retain
+hang evidence. This allows native-host testing to progress; it does not resolve
+SBCL's WebKitGTK stack incompatibility or establish Linux acceptance.
 
 Headless Linux GUI fixtures set `NO_AT_BRIDGE=1` to avoid waiting for an absent
 AT-SPI accessibility bus under Xvfb. This is scoped to CI, not library startup,
@@ -151,3 +154,9 @@ empty and replacement writes. Remote Windows validation is still required.
 The same run confirms experimental SBCL/WebKitGTK stack rejection, while the
 native watchdog expires in application startup before browser invariants. These
 Linux failures remain unresolved and the real JavaScript gate stays enabled.
+
+Windows also builds the private native fixture and runs `--poll-only` before
+the Lisp suite. It waits for a real managed native timer, checks safe-idle
+delivery and restores the previous active-loop identity. It preserves an
+already-active loop and does not substitute direct `Notify` calls for OS timer
+delivery. The drawing-monitor example remains the Lisp integration regression.

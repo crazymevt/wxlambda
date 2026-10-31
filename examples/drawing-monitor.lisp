@@ -63,6 +63,7 @@
     (unwind-protect
          (progn
            (wxlambda:show-window frame)
+           ;; Full polling must deliver native timer messages without RUN.
            (loop repeat 300 while (wxlambda:ui-timer-active-p (funcall ticket)) do (wxlambda:process-events) (sleep 0.005))
            (assert (= 3 (funcall count))) (assert (not (wxlambda:activity-running-p indicator)))
            (setf (wxlambda:canvas-content canvas) (monitor-scene (funcall count) 640 300))

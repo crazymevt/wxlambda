@@ -21,6 +21,7 @@ void capture_assert(const wxString&, int, const wxString&, const wxString&, cons
 }
 void expect(bool ok, const char* message);
 std::atomic<const char*> native_phase{"before startup"};
+std::atomic<bool> native_startup_complete{false};
 void native_checkpoint(const char* phase) {
     native_phase.store(phase);
     std::cout << "NATIVE-PHASE: " << phase << std::endl;
@@ -791,6 +792,36 @@ void exercise_list_box() {
     expect(wxl_list_count(list) == -1 && wxl_list_append(list, "stale", 5) == -1, "Stale list handle must reject");
 }
 
+
+void exercise_poll_loop() {
+    auto* previous=wxEventLoopBase::GetActive();
+    expect(previous==nullptr,"Standalone polling fixture starts without an active loop");
+    unsigned calls=0;
+    ui_action_probe=[&](uint64_t token,int kind) {
+        expect(token==980001 && kind==3,"Real polling timer identity/one-shot kind");
+        expect(!timer_notify_depth && ui_action_running && !callback_depth,"Native timer delivers in safe idle phase");
+#if defined(__WXMSW__)
+        expect(wxEventLoopBase::GetActive()!=nullptr,"MSW polling timer sees active loop");
+#endif
+        ++calls;
+    };
+    expect(wxl_start_ui_timer(980001,1,1,0)==0,"Real polling timer start");
+    const auto deadline=std::chrono::steady_clock::now()+std::chrono::seconds(1);
+    while (!calls && std::chrono::steady_clock::now()<deadline) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        expect(wxl_poll()==0,"Full poll without RUN");
+        expect(wxEventLoopBase::GetActive()==previous,"Temporary polling loop restores previous identity");
+    }
+    expect(calls==1 && wxl_ui_timer_active(980001)==0,"Real polling timer delivers once and retires");
+    expect(wxl_poll()==0 && calls==1,"One-shot timer remains retired after polling");
+    ui_action_probe={};
+    {
+        wxEventLoop outer;
+        wxEventLoopActivator activate(&outer);
+        expect(wxl_poll()==0 && wxEventLoopBase::GetActive()==&outer,"Full poll preserves an existing active loop");
+    }
+    expect(wxEventLoopBase::GetActive()==previous,"External polling loop scope restores identity");
+}
 
 void exercise_multi_tree_deletion() {
 #if !defined(__WXQT__)
@@ -1956,8 +1987,17 @@ int main(int argc, char** argv) {
         return 2;
     }
     std::thread([] {
+        // Cold GTK startup has taken about25 seconds in CI, before any test.
+        // Bound startup separately; retain the ten-second invariant budget.
+        for (unsigned i=0; i<450 && !native_startup_complete.load(); ++i)
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        if (!native_startup_complete.load()) {
+            std::fprintf(stderr,"NATIVE-WATCHDOG: 45-second startup budget elapsed in %s\n",native_phase.load());
+            std::fflush(stderr);
+            std::_Exit(124);
+        }
         std::this_thread::sleep_for(std::chrono::seconds(10));
-        std::fprintf(stderr,"NATIVE-WATCHDOG: 10 seconds elapsed in %s\n",native_phase.load());
+        std::fprintf(stderr,"NATIVE-WATCHDOG: 10-second invariant budget elapsed in %s\n",native_phase.load());
         std::fflush(stderr);
         std::_Exit(124);
     }).detach();
@@ -1969,6 +2009,16 @@ int main(int argc, char** argv) {
         native_checkpoint("application-start");
         expect(wxl_start(ignore_event, ignore_ui_action) == 0, "Application startup failed");
         active = true;
+        native_startup_complete.store(true);
+        native_checkpoint("exercise_poll_loop"); exercise_poll_loop();
+        if (argc==2 && std::string(argv[1])=="--poll-only") {
+            expect(wxl_finish()==0,"Polling regression application cleanup");
+            active=false;
+            expect(assertion_count.load()==0,"Polling regression triggered a wx assertion");
+            wxSetAssertHandler(old_assert_handler);
+            std::cout << "PASS: real native timer polling and active-loop restoration" << std::endl;
+            return 0;
+        }
         native_checkpoint("exercise_frame_maximization"); exercise_frame_maximization();
         native_checkpoint("exercise_client_data"); exercise_client_data(foreign_destroyed);
         native_checkpoint("exercise_binding_data"); exercise_binding_data();

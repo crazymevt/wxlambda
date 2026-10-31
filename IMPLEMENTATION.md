@@ -7,6 +7,43 @@ factual discovery records, not a required sequence or release gate.
 
 ## Session handoff: broad GUI coverage
 
+### Run41253467427 Windows native polling (2026-10-31)
+
+Remote Windows passed multi-tree (including exact identities/collapsed state),
+overlay/images/AUI/grid and reached drawing-canvas. Its drawing-monitor real
+timer delivered zero updates. Pinned wx3.2.12 wxAppConsoleBase::Yield creates a
+temporary event loop without activating it; MSW DoYieldFor calls app Dispatch,
+which returns false without an active loop. Full polling now scopes a native
+loop activator around Yield and ProcessIdle on MSW when no loop exists, while
+preserving an existing loop and all pump/native-entry/safe-idle guards.
+
+The native regression starts a real managed one-shot timer (no manual Notify),
+requires safe-idle delivery, no initial active loop, one-shot retirement and
+previous/outer loop identity restoration. Windows builds the private fixture
+and runs --poll-only before the Lisp suite; its separate native-results path
+preserves the main runner's fresh test-results requirement. The drawing-monitor
+example remains a real native-timer integration check. Independent review
+confirmed the source mechanism and scope; its explicit no-loop and steady-clock
+bounded wait findings were incorporated. Remote MSW compilation/runtime remain
+required; local macOS checks cannot establish Windows behavior.
+
+Linux still rejects SBCL's alternate stack before WebKitGTK execution. Native
+regressions previously expired in application-start after10 seconds, while
+Lisp GTK initialization repeatedly takes about25 seconds. The native fixture
+now budgets45 seconds for startup separately, then retains the ten-second
+invariant watchdog; the outer native timeout remains120 seconds. Both paths
+report their budget and phase and exit124. This permits native-host evidence
+without weakening the real JavaScript/stack gate or claiming SBCL compatibility.
+Do not supersede the still-running distro Linux job with an unrequested push.
+Local verification: bridge/native rebuild, all93 GUI scenarios plus runtime
+preflight, --poll-only and full native invariants passed on macOS (zero wx
+assertions). Python46 checks passed with four optional skips; portability CTest,
+actionlint and isolated assert diagnostic passed. Pinned coverage regeneration
+and all14 inventory checks passed. Docset build/check is run after this final
+handoff update; its results are reported with the delivered commit. The MSW
+native executable build and the revised GTK startup budget require remote
+validation; no new Windows/Linux runtime success is inferred.
+
 ### Run41251791770 Windows follow-up (2026-10-31)
 
 Windows compiled but failed the same multi-tree example; the prior no-caret

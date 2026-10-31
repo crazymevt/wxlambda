@@ -39,7 +39,7 @@ due work is separate from the1024-action queue, so a full action queue cannot
 silently discard a one-shot tick. Expired-owner cleanup can retire records before
 ordinary work; it invokes no user function.
 
-RUN/full `process-events` drives delivery. A full poll can perform several idle
+RUN/full `process-events` drives delivery. On Windows, full polling temporarily activates a native event loop when none exists; it restores the prior loop afterward. An existing loop is preserved. A full poll can perform several idle
 iterations; `process-pending-events` does not run timer functions or guarantee
 OS timer notification processing. Functions wait while a modal/dialog/clipboard
 or guarded callback/native operation is active, while another safe UI function

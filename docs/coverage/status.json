@@ -504,7 +504,7 @@
       "native": [
         "wxl_poll"
       ],
-      "scope": "Active bridge application only; onlyIfNeeded is fixed true and native boolean result is discarded. Dispatch is forbidden during RUN, pumps or native-to-Lisp callbacks; idle processing also runs."
+      "scope": "Active bridge application only; onlyIfNeeded is fixed true and native boolean result is discarded. Dispatch is forbidden during RUN, pumps or native-to-Lisp callbacks; idle processing also runs. MSW full polling activates a scoped native loop when none exists so native messages/timers dispatch, preserves an existing loop and restores the prior active identity afterward."
     },
     {
       "header": "wx/app.h",

@@ -258,11 +258,21 @@ jobs:
           -DwxWidgets_USE_REL_AND_DBG=OFF
           -DWXLAMBDA_VERIFY_EDGE_COMPLETION_PATCH=ON
           -DWXLAMBDA_BUILD_PORTABILITY_TESTS=ON
+          -DWXLAMBDA_BUILD_NATIVE_TESTS=ON
           -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE="${{ github.workspace }}/build"
       - name: Build bridge
         run: cmake --build build --config Release --parallel 2
       - name: Check GUI-independent owner retirement
         run: ctest --test-dir build -C Release --output-on-failure
+      - name: Native standalone polling regression
+        shell: pwsh
+        env:
+          WXLAMBDA_TEST_ABORT_ON_ASSERT: '1'
+        run: |
+          $env:PATH = "$env:GITHUB_WORKSPACE/vendor/wxWidgets/lib/vc_x64_dll;$env:GITHUB_WORKSPACE/vendor/wxWidgets/3rdparty/webview2/build/native/x64;$env:PATH"
+          New-Item -ItemType Directory -Force native-results | Out-Null
+          & build/wxlambda-client-data-native.exe --poll-only 2>&1 | Tee-Object -FilePath native-results/native-poll.log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Test Lisp loading and GUI lifecycle
         shell: pwsh
         env:
@@ -279,6 +289,7 @@ jobs:
           name: gui-windows-2022-sbcl
           path: |
             test-results/
+            native-results/
             build/CMakeFiles/*.log
             build/CMakeFiles/*.yaml
             build/Testing/Temporary/*.log

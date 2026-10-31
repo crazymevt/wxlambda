@@ -21,6 +21,7 @@
 #include <wx/sysopt.h>
 #include <wx/accel.h>
 #include <wx/timer.h>
+#include <wx/evtloop.h>
 #include <wx/tooltip.h>
 #include <wx/datectrl.h>
 #include <wx/timectrl.h>
@@ -1686,6 +1687,17 @@ int wxl_poll() {
         require_dispatch_entry();
         UiDriverScope driver;
         PumpScope scope;
+#if defined(__WXMSW__)
+        if (!wxEventLoopBase::GetActive()) {
+            // MSW Yield dispatches through wxTheApp->Dispatch(), which needs
+            // an active loop. wxApp's own temporary Yield loop isn't activated.
+            wxEventLoop loop;
+            wxEventLoopActivator activate(&loop);
+            wxTheApp->Yield(true);
+            wxTheApp->ProcessIdle();
+            return;
+        }
+#endif
         wxTheApp->Yield(true);
         wxTheApp->ProcessIdle();
     });
