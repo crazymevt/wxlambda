@@ -6,6 +6,13 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class ConfigureProbeTests(unittest.TestCase):
+    def test_native_evidence_survives_only_lisp_failure(self):
+        workflow = (ROOT / '.github/workflows/ci.yml').read_text()
+        self.assertIn('id: experimental-build', workflow)
+        step = workflow.split('- name: Native invariant regressions', 1)[1].split('- name:', 1)[0]
+        self.assertIn("!cancelled() && steps.experimental-build.outcome == 'success'", step)
+        self.assertLess(step.index('mkdir -p test-results'), step.index('tee test-results/native.log'))
+
     def test_gtk_probe_runtime_can_find_pinned_wx(self):
         workflow = (ROOT / '.github/workflows/ci.yml').read_text()
         step = workflow.split('- name: Build experimental bridge and native regressions', 1)[1]

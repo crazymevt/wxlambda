@@ -7,6 +7,47 @@ factual discovery records, not a required sequence or release gate.
 
 ## Session handoff: broad GUI coverage
 
+### Fourth CI slice: runtime text/notebook fixes, GTK containment (2026-10-30)
+
+Run41152027217 still failed three platform jobs, now at runtime. Windows
+diagnostics identified MSW UpdatesCountFilter reentry on nested text writes.
+Linux advanced to NOTEBOOK, where a programmatic veto read back page1 rather
+than page0. Experimental GTK built and passed the ABI probe, then SBCL aborted
+in JavaScriptCore sanitizeStackForVM during actual browser execution.
+
+Whole-value text writes now ChangeValue first, then dispatch one wxEVT_TEXT
+with copied native readback outside MSW mutation accounting. Nested synchronous
+writes remain supported and outer payloads stay frozen. Programmatic notebook
+notification now uses public native SendPageChangingEvent preflight, silent
+ChangeSelection, then SendPageChangedEvent only if allowed; same-page writes
+are silent. This avoids GTK's deferred OS event-after rollback dependency.
+Independent review confirmed both upstream mechanisms and existing lifetime
+guards. Direct native regressions cover nesting, unchanged notify, veto before/
+after polling, allowed notification and unchanged notebook silence. Initial
+native veto regression failed because it Vetoed then Skipped its only handler;
+corrected to consume a veto, preserving native wx event-handling semantics.
+
+GTK preflights whether the current C stack is within pthread bounds before
+browser construction, rejecting incompatible alternate stacks rather than
+entering JSC. This is crash containment, not a completed Linux WebView fix.
+The stack mismatch is a source-backed hypothesis pending CI preflight evidence;
+no JSC assertion, GUI-thread check or real JavaScript test is disabled. A private
+GTK native fixture checks normal-stack acceptance and alternate-stack rejection.
+Native evidence runs after Lisp failure only if the native build succeeded,
+with its own log-directory setup, as requested by independent review.
+
+Headless Linux fixtures also opt out of the absent AT-SPI bridge, whose DBus
+warnings accompanied roughly25-second startup stalls in the failing run. This
+is CI-only, not an application/global accessibility policy or acceptance claim.
+
+Local verification after resuming the interrupted slice: bridge/native rebuild,
+native text nesting/notebook veto regressions and all93 GUI scenarios plus
+preflight passed on macOS. Python46 tests passed (four optional skips), as did
+actionlint, portability CTest, pinned coverage regeneration and docset build/
+check (704 entries, zero problems; exports/discovery/symbols/guides/examples).
+The GTK stack predicate/alternate-stack fixture require remote Linux execution;
+no local macOS pass establishes Windows/GTK correctness or resolves JSC hosting.
+
 ### Third public CI repair / Windows diagnostic (2026-10-30)
 
 Run41150497972 passed macOS GUI and documentation/portability jobs. Windows

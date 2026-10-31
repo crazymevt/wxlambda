@@ -10,6 +10,9 @@
 #include <chrono>
 #include <wx/listbox.h>
 #include <fstream>
+#if defined(__WXGTK3__) && defined(WXLAMBDA_EXPERIMENTAL_GTK_WEBVIEW)
+#include <ucontext.h>
+#endif
 
 namespace {
 std::atomic<unsigned> assertion_count{0};
@@ -630,6 +633,23 @@ void exercise_text_editing() {
     expect(wxl_text_multiline(frame) == -1 && wxl_text_editable(frame) == -1 &&
            wxl_set_text_editable(text, 2) == -1 && wxl_set_text_editable(text, 1) == 0,
            "Text type/editable checks failed");
+    std::vector<wxString> notifications;
+    as<wxTextCtrl>(text)->Bind(wxEVT_TEXT, [&](wxCommandEvent& event) {
+        const auto copied=event.GetString();
+        notifications.push_back(copied);
+        if (copied=="outer") {
+            expect(wxl_set_text(text,"inner",5,1)==0,"Nested notifying text write failed");
+            expect(event.GetString()=="outer","Outer text payload changed after reentry");
+        } else if (copied=="inner") {
+            expect(wxl_set_text(text,"silent",6,0)==0,"Nested silent text write failed");
+        }
+        event.Skip();
+    });
+    expect(wxl_set_text(text,"outer",5,1)==0 && notifications==std::vector<wxString>{"outer","inner"},
+           "Text notification nesting/order changed");
+    expect(as<wxTextCtrl>(text)->GetValue()=="silent","Nested text commit was overwritten");
+    expect(wxl_set_text(text,"silent",6,0)==0 && notifications.size()==2,"Silent text write emitted an event");
+    expect(wxl_set_text(text,"silent",6,1)==0 && notifications.size()==3,"Unchanged explicit text notification missing");
     delete window(frame);
     expect(wxl_text_multiline(text) == -1 && wxl_replace_text(text, 0, 0, "", 0) == -1, "Stale text handle must reject");
 }
@@ -677,6 +697,26 @@ void exercise_notebook() {
     expect(book_calls == 1 && parent_calls == 1 && notebook_operations.empty(), "Native/propagated event guard did not unwind");
     expect(wxl_unbind(904) == 1 && wxl_unbind(905) == 1, "Notebook binding cleanup failed");
     notebook_probe = nullptr;
+    bool veto_selection=true;
+    unsigned changing_count=0, changed_count=0;
+    as<wxNotebook>(book)->Bind(wxEVT_NOTEBOOK_PAGE_CHANGING, [&](wxBookCtrlEvent& e) {
+        ++changing_count;
+        if (veto_selection) e.Veto();
+        else e.Skip();
+    });
+    as<wxNotebook>(book)->Bind(wxEVT_NOTEBOOK_PAGE_CHANGED, [&](wxBookCtrlEvent& e) {
+        ++changed_count; e.Skip();
+    });
+    expect(wxl_set_notebook_selection(book,0,0)==0,"Notebook veto baseline failed");
+    expect(wxl_set_notebook_selection(book,1,1)==0 && wxl_notebook_selection(book)==0 &&
+           changing_count==1 && changed_count==0,"Programmatic veto must preserve selection synchronously");
+    wxl_poll();
+    expect(wxl_notebook_selection(book)==0,"Vetoed selection changed after polling");
+    veto_selection=false;
+    expect(wxl_set_notebook_selection(book,1,1)==0 && wxl_notebook_selection(book)==1 &&
+           changing_count==2 && changed_count==1,"Allowed notebook event sequence failed");
+    expect(wxl_set_notebook_selection(book,1,1)==0 && changing_count==2 && changed_count==1,
+           "Unchanged notebook selection must remain silent");
     expect(!wxl_owned_event(WXL_EVENT_NOTEBOOK_CHANGED, 1, "", 0, 0, 0, 0, 0), "Synthetic book event must reject");
     expect(wxl_set_notebook_selection(book, 1, 0) == 0 && wxl_notebook_selection(book) == 1, "Notebook navigation did not recover");
     delete window(frame);

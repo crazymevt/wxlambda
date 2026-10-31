@@ -20,6 +20,11 @@
            (assert (string= (wxlambda:text text) (format nil "Replaced λ~%Still multiline")))
            (setf (wxlambda:text-editable-p text) nil)
            (assert (not (wxlambda:text-editable-p text)))
+           ;; Explicit notification also works for an unchanged whole value,
+           ;; after native mutation accounting has unwound.
+           (let ((before changes))
+             (setf (wxlambda:text text :notify t) (wxlambda:text text))
+             (assert (= (1+ before) changes)))
            t)
       (wxlambda:destroy-window frame)
       (wxlambda:process-events))))

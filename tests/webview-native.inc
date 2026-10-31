@@ -1,4 +1,20 @@
+#if defined(__WXGTK3__) && defined(WXLAMBDA_EXPERIMENTAL_GTK_WEBVIEW)
+int alternate_web_stack_result=-1;
+void probe_alternate_web_stack() { alternate_web_stack_result=wxl_web_backend_stack_compatible(); }
+#endif
 void exercise_web_view() {
+#if defined(__WXGTK3__) && defined(WXLAMBDA_EXPERIMENTAL_GTK_WEBVIEW)
+    expect(wxl_web_backend_stack_compatible()==1,"Native main stack must be recognized");
+    ucontext_t original{}, alternate{};
+    std::vector<unsigned char> memory(128*1024);
+    expect(getcontext(&alternate)==0,"Cannot prepare alternate-stack fixture");
+    alternate.uc_stack.ss_sp=memory.data();
+    alternate.uc_stack.ss_size=memory.size();
+    alternate.uc_link=&original;
+    makecontext(&alternate,probe_alternate_web_stack,0);
+    expect(swapcontext(&original,&alternate)==0 && alternate_web_stack_result==0,
+           "Alternate stack must reject before JSC entry");
+#endif
     const auto frame=wxl_frame("WebView native",400,300), id=wxl_web_view(frame);
     expect(id && !wxl_web_view(0),"WebView native construction/parent validation");
     auto* view=web_container(id); size_t length=0;

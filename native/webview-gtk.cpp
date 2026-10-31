@@ -10,6 +10,8 @@
 #include <cstring>
 #include <string>
 #include <link.h>
+#include <pthread.h>
+#include <cstdint>
 
 namespace {
 constexpr const char* state_key="wxlambda-web-bridge";
@@ -117,6 +119,21 @@ extern "C" int wxl_web_backend_compatible(void) {
         return 0;
     },&seen);
     return seen==WXLAMBDA_EXPECTED_WEBKITGTK_MASK;
+}
+extern "C" int wxl_web_backend_stack_compatible(void) {
+    // JSC uses pthread stack bounds for conservative scanning and validates its
+    // saved stack top against them. Lisp-hosted alternate stacks must not enter
+    // that VM: rejecting here is safer than a later release assertion/abort.
+    volatile char marker=0;
+    pthread_attr_t attributes;
+    if (pthread_getattr_np(pthread_self(), &attributes)!=0) return 0;
+    void* base=nullptr;
+    size_t size=0;
+    const int result=pthread_attr_getstack(&attributes, &base, &size);
+    pthread_attr_destroy(&attributes);
+    const auto current=reinterpret_cast<uintptr_t>(&marker);
+    const auto low=reinterpret_cast<uintptr_t>(base);
+    return result==0 && base && current>=low && current-low<size;
 }
 extern "C" int wxl_web_cocoa_configure(void* backend,uint64_t owner) {
     auto* view=WEBKIT_WEB_VIEW(backend);

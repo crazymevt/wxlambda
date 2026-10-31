@@ -60,14 +60,19 @@ the port; adding with Select does not promise an event count or bypass veto.
 
 ```lisp
 (setf (wxlambda:selection book) 0)           ; native ChangeSelection: silent
-(setf (wxlambda:selection book :notify t) 1) ; native SetSelection: vetoable
+(setf (wxlambda:selection book :notify t) 1) ; native veto preflight, commit, changed
 ```
 
 The writer requires an existing integer page index; NIL and `-1` are not accepted
 as clearing/sentinel operations. It returns the requested index even if a native
 changing handler vetoes; read `selection` afterward for actual state. Silent writes
-bypass page-changing events and veto deliberately. Notifying writes use native
-events; same-page changes and construction can differ in event counts by port.
+bypass page-changing events and veto deliberately. Notifying programmatic writes
+use wx's SendPageChangingEvent helper before a silent ChangeSelection commit,
+then SendPageChangedEvent only when allowed. A handled veto preserves selection
+before the writer returns and after polling, without depending on GTK's later
+OS event-after rollback. Same-page writes are silent. Construction and actual
+user navigation retain native-port event behavior; no public synthetic event
+API is added.
 
 Bind `:notebook-page-changing` or `:notebook-page-changed` with `bind-event`. Both
 carry immutable snapshots in the notify family, or an exact borrowed event context

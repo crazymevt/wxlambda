@@ -1,3 +1,5 @@
+;;; Experimental GTK additionally requires a pthread-recognized native stack;
+;;; incompatible Lisp stacks reject construction instead of entering JSC.
 (require :asdf)
 (asdf:load-asd (merge-pathnames "../wxlambda.asd" *load-truename*))
 (asdf:load-system "wxlambda")

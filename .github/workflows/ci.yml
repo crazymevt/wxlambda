@@ -44,6 +44,9 @@ jobs:
     name: Experimental WebView / pinned wx3.2.12 / Linux GTK3
     runs-on: ubuntu-24.04
     timeout-minutes: 60
+    env:
+      # No accessibility service in Xvfb; these are not AT-SPI acceptance tests.
+      NO_AT_BRIDGE: '1'
     defaults:
       run:
         shell: bash
@@ -72,6 +75,7 @@ jobs:
       - name: Fetch pinned Lisp dependencies
         run: python3 ci/fetch-deps.py
       - name: Build experimental bridge and native regressions
+        id: experimental-build
         run: |
           export LD_LIBRARY_PATH="$RUNNER_TEMP/wx/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
           cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
@@ -89,7 +93,10 @@ jobs:
           xvfb-run -a timeout 60s sbcl --noinform --no-sysinit --no-userinit --non-interactive \
             --load ci/setup.lisp --load tests/webview.lisp 2>&1 | tee test-results/webview.log
       - name: Native invariant regressions
+        # Retain native-host evidence even if Lisp/WebKit hosting fails.
+        if: ${{ !cancelled() && steps.experimental-build.outcome == 'success' }}
         run: |
+          mkdir -p test-results
           export LD_LIBRARY_PATH="$RUNNER_TEMP/wx/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
           python3 tests/assert-diagnostic.py build/wxlambda-client-data-native
           set -o pipefail
@@ -164,6 +171,7 @@ jobs:
         if: runner.os == 'Linux'
         env:
           WXLAMBDA_TEST_WEBVIEW: unavailable
+          NO_AT_BRIDGE: '1'
         run: >-
           xvfb-run -a python3 tests/run.py
           sbcl --noinform --no-sysinit --no-userinit --non-interactive

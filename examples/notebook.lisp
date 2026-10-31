@@ -47,6 +47,9 @@
            (setf (wxlambda:selection book) 0 (wxlambda:checked-p allow) nil)
            (setf (wxlambda:selection book :notify t) 1)
            (assert (= 0 (wxlambda:selection book)))
+           ;; Programmatic veto does not require a later OS input event.
+           (wxlambda:process-events)
+           (assert (= 0 (wxlambda:selection book)))
            (setf (wxlambda:checked-p allow) t)
            (setf (wxlambda:selection book :notify t) 1)
            (assert (= 1 (wxlambda:selection book)))

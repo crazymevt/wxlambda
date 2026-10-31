@@ -11,7 +11,16 @@ and links the system WebKit framework. JavaScript is enabled.
 ### Cross-platform extension status
 
 Linux GTK3 has an **experimental, opt-in** WebKitGTK adapter, not yet verified
-on a Linux host. Windows construction remains unavailable: adding Windows is
+on a Linux host. CI with SBCL/WebKitGTK2.52.6 builds successfully but aborts in
+JavaScriptCore's stack sanitizer during real execution. A pre-construction
+pthread-stack compatibility check rejects alternate native stacks before entering
+that VM. This contains the crash; it is not completed SBCL/Linux WebView support.
+Do not disable JavaScriptCore assertions or main-thread guards as a workaround.
+The stack mismatch is the leading explanation, not yet confirmed by the new
+preflight on that CI host. WebKitGTK2.52.6 checks saved stack tops against pthread
+bounds in [VM.cpp](https://github.com/WebKit/WebKit/blob/webkitgtk-2.52.6/Source/JavaScriptCore/runtime/VM.cpp)
+and derives those bounds in [StackBounds.cpp](https://github.com/WebKit/WebKit/blob/webkitgtk-2.52.6/Source/WTF/wtf/StackBounds.cpp).
+Windows construction remains unavailable: adding Windows is
 not complete. See [the backend audit](WEB-VIEW-PORTABILITY.md) for the concrete
 Windows lifetime prerequisite patch and the remaining acceptance gates.
 

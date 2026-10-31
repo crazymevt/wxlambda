@@ -67,6 +67,8 @@
            (setf veto t)
            (assert (= 1 (setf (wxlambda:selection book :notify t) 1)))
            (assert (= 0 (wxlambda:selection book)))
+           (wxlambda:process-events)
+           (assert (= 0 (wxlambda:selection book)))
            (assert (find :notebook-page-changing events :key #'wxlambda:event-kind))
            (assert (not (wxlambda:event-context-active-p saved-context)))
            (setf veto nil events nil)

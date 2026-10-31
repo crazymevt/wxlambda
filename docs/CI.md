@@ -31,6 +31,11 @@ before its ordinary native invariants.
 
 ## Jobs and their actual scope
 
+Headless Linux GUI fixtures set `NO_AT_BRIDGE=1` to avoid waiting for an absent
+AT-SPI accessibility bus under Xvfb. This is scoped to CI, not library startup,
+and does not establish accessibility support. The switch is handled by the
+[AT-SPI bridge](https://github.com/GNOME/at-spi2-core/blob/main/atk-adaptor/bridge.c).
+
 | Job | What it checks |
 | --- | --- |
 | Documentation/reporting/portability | Python unit tests, committed docset consistency/public exports and GUI-independent ASan/UBSan cancellation tests. Shared docset library is pinned. |

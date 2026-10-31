@@ -29,8 +29,12 @@ including on Windows. Single-line newline handling remains native-port behavior.
 No styles for password, rich text, wrapping, tabs, Enter processing or input filters
 are added. Rich-text/STC controls and native file load/save are outside this slice.
 
-Whole-value SETF is silent by default; `:notify t` uses native SetValue instead of
-ChangeValue. `replace-text` uses native Replace and its text-change notification:
+Whole-value SETF uses silent native ChangeValue. With `:notify t`, the bridge
+then dispatches one wxEVT_TEXT with copied native readback, even if unchanged.
+Notification happens after native mutation has returned, so synchronous nested
+notifying/silent text writes do not reenter MSW's unfinished update counter.
+The outer event retains its copied text across nested writes. Actual user input
+events remain native. `replace-text` uses native Replace and its notification:
 
 ```lisp
 (wxlambda:replace-text control from to "replacement λ")

@@ -12,6 +12,9 @@ extern "C" {
 int wxl_web_cocoa_configure(void* backend, uint64_t owner);
 /* Check loaded backend ABI before creating any browser child. */
 int wxl_web_backend_compatible(void);
+// GTK only: validate the current native stack against pthread metadata before
+// entering JavaScriptCore. Not a public Lisp/native resource API.
+int wxl_web_backend_stack_compatible(void);
 int wxl_web_cocoa_run_script(void* backend, uint64_t owner, uint64_t ticket,
                              const char* bytes, size_t length);
 int wxl_web_cocoa_load(void* backend, const char* bytes, size_t length,

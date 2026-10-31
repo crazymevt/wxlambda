@@ -3176,8 +3176,15 @@ int wxl_set_notebook_selection(wxl_handle id, int index, int notify) {
         require(notify == 0 || notify == 1, "Invalid notebook notification flag");
         require(index >= 0 && static_cast<size_t>(index) < book->GetPageCount(), "Notebook selection out of bounds");
         NotebookOperation operation(book);
-        if (notify) book->SetSelection(static_cast<size_t>(index));
-        else book->ChangeSelection(static_cast<size_t>(index));
+        const int old = book->GetSelection();
+        if (!notify) book->ChangeSelection(static_cast<size_t>(index));
+        else if (old != index && book->SendPageChangingEvent(index)) {
+            // wxGTK SetSelection defers a veto rollback to GTK event-after,
+            // which programmatic navigation need not generate. Use wx's own
+            // preflight/event helpers around a silent native commit instead.
+            book->ChangeSelection(static_cast<size_t>(index));
+            book->SendPageChangedEvent(old, book->GetSelection());
+        }
     });
 }
 wxl_handle wxl_text(wxl_handle parent, const char* value, size_t length, int multiline, int editable) {
@@ -3869,8 +3876,16 @@ int wxl_set_text(wxl_handle id, const char* value, size_t length, int notify) {
         auto* control = as<wxTextCtrl>(id);
         require(notify == 0 || notify == 1, "Invalid text notification flag");
         const auto text = text_value(value, length);
-        if (notify) control->SetValue(text);
-        else control->ChangeValue(text);
+        // MSW SetValue dispatches inside UpdatesCountFilter. Nested setters
+        // from its callback would reenter that unfinished mutation scope.
+        control->ChangeValue(text);
+        if (notify) {
+            wxCommandEvent event(wxEVT_TEXT, control->GetId());
+            event.SetEventObject(control);
+            event.SetString(control->GetValue()); // Freeze before nested writes.
+            control->HandleWindowEvent(event);
+            // The callback may have scheduled deletion: no control access here.
+        }
     });
 }
 const char* wxl_get_text(wxl_handle id, size_t* length) {

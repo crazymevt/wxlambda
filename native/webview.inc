@@ -21,6 +21,9 @@ public:
     bool Create(wxWindow* parent) {
 #if (defined(__WXOSX__) || (defined(__WXGTK3__) && defined(WXLAMBDA_EXPERIMENTAL_GTK_WEBVIEW))) && wxMAJOR_VERSION==3 && wxMINOR_VERSION==2 && wxRELEASE_NUMBER==12
         require(wxl_web_backend_compatible()==1,"Incompatible WebKitGTK ABIs loaded; rebuild wxWidgets and bridge against the same WebKitGTK package");
+#if defined(__WXGTK3__) && defined(WXLAMBDA_EXPERIMENTAL_GTK_WEBVIEW)
+        require(wxl_web_backend_stack_compatible()==1,"WebKitGTK JavaScriptCore requires a pthread-recognized native stack; this Lisp runtime uses an incompatible alternate stack");
+#endif
         if (!wxPanel::Create(parent,wxID_ANY)) return false;
         require(wxWebView::IsBackendAvailable(wxWebViewBackendWebKit),"WKWebView backend is unavailable");
         browser=wxWebView::New(this,wxID_ANY,"about:blank",wxDefaultPosition,wxDefaultSize,wxWebViewBackendWebKit);
